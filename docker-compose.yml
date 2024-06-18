@@ -26,7 +26,8 @@ services:
       - 8001:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
-    env_file: "env.yml"
+    env_file:
+      - .env
     deploy:
       resources:
         limits:
@@ -38,7 +39,8 @@ services:
     build: .
     volumes:
       - cronjobs:/app
-    env_file: "env.yml"
+    env_file:
+      - .env
     depends_on:
       - bas_db
     networks:
