@@ -27,50 +27,49 @@ jobs:
         bundle install
 
     - name: Create env file
-      run: touch env.yml
+      run: touch .env
 
     - name: Add Secrets into yml file
       run: |
-        echo prod:>> env.yml
-        echo -e '  DB_HOST:' ${DB_HOST}>> env.yml
-        echo -e '  DB_PORT:' ${DB_PORT}>> env.yml
-        echo -e '  DB_NAME:' ${DB_NAME}>> env.yml
-        echo -e '  DB_USER:' ${DB_USER}>> env.yml
-        echo -e '  DB_PASSWORD:' ${DB_PASSWORD}>> env.yml
-        echo -e '  DISCORD_BOT_NAME:' ${DISCORD_BOT_NAME}>> env.yml
-        echo -e '  NOTION_SECRET:' ${NOTION_SECRET}>> env.yml
-        echo -e '  BIRTHDAY_TABLE:' ${BIRTHDAY_TABLE}>> env.yml
-        echo -e '  BIRTHDAY_NOTION_DATABASE_ID:' ${BIRTHDAY_NOTION_DATABASE_ID}>> env.yml
-        echo -e '  BIRTHDAY_DISCORD_WEBHOOK:' ${BIRTHDAY_DISCORD_WEBHOOK}>> env.yml
-        echo -e '  NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK:' ${NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK}>> env.yml
-        echo -e '  OPENAI_SECRET:' ${OPENAI_SECRET}>> env.yml
-        echo -e '  PTO_TABLE:' ${PTO_TABLE}>> env.yml
-        echo -e '  PTO_NOTION_DATABASE_ID:' ${PTO_NOTION_DATABASE_ID}>> env.yml
-        echo -e '  PTO_OPENAI_ASSISTANT:' ${PTO_OPENAI_ASSISTANT}>> env.yml
-        echo -e '  PTO_DISCORD_WEBHOOK:' ${PTO_DISCORD_WEBHOOK}>> env.yml
-        echo -e '  NEXT_WEEK_PTO_OPENAI_ASSISTANT:' ${NEXT_WEEK_PTO_OPENAI_ASSISTANT}>> env.yml
-        echo -e '  NEXT_WEEK_PTO_DISCORD_WEBHOOK:' ${NEXT_WEEK_PTO_DISCORD_WEBHOOK}>> env.yml
-        echo -e '  WIP_TABLE:' ${WIP_TABLE}>> env.yml
-        echo -e '  WIP_COUNT_NOTION_DATABASE_ID:' ${WIP_COUNT_NOTION_DATABASE_ID}>> env.yml
-        echo -e '  WIP_LIMIT_NOTION_DATABASE_ID:' ${WIP_LIMIT_NOTION_DATABASE_ID}>> env.yml
-        echo -e '  WIP_LIMIT_DISCORD_WEBHOOK:' ${WIP_LIMIT_DISCORD_WEBHOOK}>> env.yml
-        echo -e '  SUPPORT_EMAIL_TABLE:' ${SUPPORT_EMAIL_TABLE}>> env.yml
-        echo -e '  SUPPORT_EMAIL_ACCOUNT:' ${SUPPORT_EMAIL_ACCOUNT}>> env.yml
-        echo -e '  SUPPORT_EMAIL_REFRESH_TOKEN:' ${SUPPORT_EMAIL_REFRESH_TOKEN}>> env.yml
-        echo -e '  SUPPORT_EMAIL_CLIENT_ID:' ${SUPPORT_EMAIL_CLIENT_ID}>> env.yml
-        echo -e '  SUPPORT_EMAIL_CLIENT_SECRET:' ${SUPPORT_EMAIL_CLIENT_SECRET}>> env.yml
-        echo -e '  SUPPORT_EMAIL_INBOX:' ${SUPPORT_EMAIL_INBOX}>> env.yml
-        echo -e '  SUPPORT_EMAIL_RECEPTOR:' ${SUPPORT_EMAIL_RECEPTOR}>> env.yml
-        echo -e '  SUPPORT_EMAIL_DISCORD_WEBHOOK:' ${SUPPORT_EMAIL_DISCORD_WEBHOOK}>> env.yml
+        echo -e 'DB_HOST='${DB_HOST}>> .env
+        echo -e 'DB_PORT='${DB_PORT}>> .env
+        echo -e 'POSTGRES_DB='${POSTGRES_DB}>> .env
+        echo -e 'POSTGRES_USER='${POSTGRES_USER}>> .env
+        echo -e 'POSTGRES_PASSWORD='${POSTGRES_PASSWORD}>> .env
+        echo -e 'DISCORD_BOT_NAME='${DISCORD_BOT_NAME}>> .env
+        echo -e 'NOTION_SECRET='${NOTION_SECRET}>> .env
+        echo -e 'BIRTHDAY_TABLE='${BIRTHDAY_TABLE}>> .env
+        echo -e 'BIRTHDAY_NOTION_DATABASE_ID='${BIRTHDAY_NOTION_DATABASE_ID}>> .env
+        echo -e 'BIRTHDAY_DISCORD_WEBHOOK='${BIRTHDAY_DISCORD_WEBHOOK}>> .env
+        echo -e 'NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK='${NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK}>> .env
+        echo -e 'OPENAI_SECRET='${OPENAI_SECRET}>> .env
+        echo -e 'PTO_TABLE='${PTO_TABLE}>> .env
+        echo -e 'PTO_NOTION_DATABASE_ID='${PTO_NOTION_DATABASE_ID}>> .env
+        echo -e 'PTO_OPENAI_ASSISTANT='${PTO_OPENAI_ASSISTANT}>> .env
+        echo -e 'PTO_DISCORD_WEBHOOK='${PTO_DISCORD_WEBHOOK}>> .env
+        echo -e 'NEXT_WEEK_PTO_OPENAI_ASSISTANT='${NEXT_WEEK_PTO_OPENAI_ASSISTANT}>> .env
+        echo -e 'NEXT_WEEK_PTO_DISCORD_WEBHOOK='${NEXT_WEEK_PTO_DISCORD_WEBHOOK}>> .env
+        echo -e 'WIP_TABLE='${WIP_TABLE}>> .env
+        echo -e 'WIP_COUNT_NOTION_DATABASE_ID='${WIP_COUNT_NOTION_DATABASE_ID}>> .env
+        echo -e 'WIP_LIMIT_NOTION_DATABASE_ID='${WIP_LIMIT_NOTION_DATABASE_ID}>> .env
+        echo -e 'WIP_LIMIT_DISCORD_WEBHOOK='${WIP_LIMIT_DISCORD_WEBHOOK}>> .env
+        echo -e 'SUPPORT_EMAIL_TABLE='${SUPPORT_EMAIL_TABLE}>> .env
+        echo -e 'SUPPORT_EMAIL_ACCOUNT='${SUPPORT_EMAIL_ACCOUNT}>> .env
+        echo -e 'SUPPORT_EMAIL_REFRESH_TOKEN='${SUPPORT_EMAIL_REFRESH_TOKEN}>> .env
+        echo -e 'SUPPORT_EMAIL_CLIENT_ID='${SUPPORT_EMAIL_CLIENT_ID}>> .env
+        echo -e 'SUPPORT_EMAIL_CLIENT_SECRET='${SUPPORT_EMAIL_CLIENT_SECRET}>> .env
+        echo -e 'SUPPORT_EMAIL_INBOX='${SUPPORT_EMAIL_INBOX}>> .env
+        echo -e 'SUPPORT_EMAIL_RECEPTOR='${SUPPORT_EMAIL_RECEPTOR}>> .env
+        echo -e 'SUPPORT_EMAIL_DISCORD_WEBHOOK='${SUPPORT_EMAIL_DISCORD_WEBHOOK}>> .env
 
 
       env:
         # DB CONNECTION
         DB_HOST: ${{secrets.DB_HOST}}
         DB_PORT: ${{secrets.DB_PORT}}
-        DB_NAME: ${{secrets.DB_NAME}}
-        DB_USER: ${{secrets.DB_USER}}
-        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+        POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+        POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
 
         # DISCORD
         DISCORD_BOT_NAME: ${{secrets.DISCORD_BOT_NAME}}
@@ -124,8 +123,8 @@ jobs:
       uses: burnett01/rsync-deployments@5.0
       with:
         switches: -avzr --delete
-        path: .
-        remote_path: /root
+        path: bas_scripts.zip
+        remote_path: /root/app
         remote_host: ${{ secrets.DO_DROPLET_IP }}
         remote_user: root
         remote_key: ${{ secrets.DO_SSH_KEY }}
@@ -137,7 +136,7 @@ jobs:
         username: root
         key: ${{ secrets.DO_SSH_KEY }}
         script: |
-          cd /root
-          unzip bas_scripts.zip
+          cd /root/app
+          unzip -o bas_scripts.zip
           docker stop bas_cronjobs
           docker-compose up -d

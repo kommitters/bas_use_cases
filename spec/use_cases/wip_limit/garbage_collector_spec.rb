@@ -6,9 +6,9 @@ require_relative '../../../src/use_cases/wip_limit/garbage_collector'
 ENV['WIP_TABLE'] = 'WIP_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
-ENV['DB_NAME'] = 'DB_NAME'
-ENV['DB_USER'] = 'DB_USER'
-ENV['DB_PASSWORD'] = 'DB_PASSWORD'
+ENV['POSTGRES_DB'] = 'POSTGRES_DB'
+ENV['POSTGRES_USER'] = 'POSTGRES_USER'
+ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
 RSpec.describe GarbageCollector::WipLimit do
   before do
@@ -16,9 +16,9 @@ RSpec.describe GarbageCollector::WipLimit do
       table_name: ENV.fetch('WIP_TABLE'),
       db_host: ENV.fetch('DB_HOST'),
       db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('DB_NAME'),
-      db_user: ENV.fetch('DB_USER'),
-      db_password: ENV.fetch('DB_PASSWORD')
+      db_name: ENV.fetch('POSTGRES_DB'),
+      db_user: ENV.fetch('POSTGRES_USER'),
+      db_password: ENV.fetch('POSTGRES_PASSWORD')
     }
 
     @bot = GarbageCollector::WipLimit.new(params)

@@ -11,9 +11,9 @@ params = {
   table_name: ENV.fetch('WIP_TABLE'),
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('DB_NAME'),
-  db_user: ENV.fetch('DB_USER'),
-  db_password: ENV.fetch('DB_PASSWORD')
+  db_name: ENV.fetch('POSTGRES_DB'),
+  db_user: ENV.fetch('POSTGRES_USER'),
+  db_password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
 # Process bot

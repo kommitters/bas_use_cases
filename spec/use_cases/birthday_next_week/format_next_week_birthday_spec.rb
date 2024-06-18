@@ -6,9 +6,9 @@ require_relative '../../../src/use_cases/birthday_next_week/format_next_week_bir
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
-ENV['DB_NAME'] = 'DB_NAME'
-ENV['DB_USER'] = 'DB_USER'
-ENV['DB_PASSWORD'] = 'DB_PASSWORD'
+ENV['POSTGRES_DB'] = 'POSTGRES_DB'
+ENV['POSTGRES_USER'] = 'POSTGRES_USER'
+ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
 RSpec.describe Format::NextWeekBirthday do
   before do
@@ -18,9 +18,9 @@ RSpec.describe Format::NextWeekBirthday do
       table_name: ENV.fetch('BIRTHDAY_TABLE'),
       db_host: ENV.fetch('DB_HOST'),
       db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('DB_NAME'),
-      db_user: ENV.fetch('DB_USER'),
-      db_password: ENV.fetch('DB_PASSWORD')
+      db_name: ENV.fetch('POSTGRES_DB'),
+      db_user: ENV.fetch('POSTGRES_USER'),
+      db_password: ENV.fetch('POSTGRES_PASSWORD')
     }
 
     @bot = Format::NextWeekBirthday.new(params)

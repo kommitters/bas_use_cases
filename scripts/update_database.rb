@@ -6,9 +6,9 @@ require 'pg'
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: 5432,
-  dbname: ENV.fetch('DB_NAME'),
-  user: ENV.fetch('DB_USER'),
-  password: ENV.fetch('DB_PASSWORD')
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
 # Read the SQL file

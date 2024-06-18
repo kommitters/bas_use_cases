@@ -11,6 +11,7 @@
 /tmp/
 package-lock.json
 /logs
+.env
 
 # Used by dotenv library to load environment variables.
 # .env
