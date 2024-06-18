@@ -33,9 +33,9 @@ jobs:
       run: |
         echo -e 'DB_HOST='${DB_HOST}>> .env
         echo -e 'DB_PORT='${DB_PORT}>> .env
-        echo -e 'DB_NAME='${DB_NAME}>> .env
-        echo -e 'DB_USER='${DB_USER}>> .env
-        echo -e 'DB_PASSWORD='${DB_PASSWORD}>> .env
+        echo -e 'POSTGRES_DB='${POSTGRES_DB}>> .env
+        echo -e 'POSTGRES_USER='${POSTGRES_USER}>> .env
+        echo -e 'POSTGRES_PASSWORD='${POSTGRES_PASSWORD}>> .env
         echo -e 'DISCORD_BOT_NAME='${DISCORD_BOT_NAME}>> .env
         echo -e 'NOTION_SECRET='${NOTION_SECRET}>> .env
         echo -e 'BIRTHDAY_TABLE='${BIRTHDAY_TABLE}>> .env
@@ -67,9 +67,9 @@ jobs:
         # DB CONNECTION
         DB_HOST: ${{secrets.DB_HOST}}
         DB_PORT: ${{secrets.DB_PORT}}
-        DB_NAME: ${{secrets.DB_NAME}}
-        DB_USER: ${{secrets.DB_USER}}
-        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+        POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+        POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
 
         # DISCORD
         DISCORD_BOT_NAME: ${{secrets.DISCORD_BOT_NAME}}

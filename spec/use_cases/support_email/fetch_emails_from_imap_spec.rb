@@ -6,9 +6,9 @@ require_relative '../../../src/use_cases/support_email/fetch_emails_from_imap'
 ENV['SUPPORT_EMAIL_TABLE'] = 'SUPPORT_EMAIL_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
-ENV['DB_NAME'] = 'DB_NAME'
-ENV['DB_USER'] = 'DB_USER'
-ENV['DB_PASSWORD'] = 'DB_PASSWORD'
+ENV['POSTGRES_DB'] = 'POSTGRES_DB'
+ENV['POSTGRES_USER'] = 'POSTGRES_USER'
+ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 ENV['SUPPORT_EMAIL_ACCOUNT'] = 'SUPPORT_EMAIL_ACCOUNT'
 ENV['SUPPORT_EMAIL_REFRESH_TOKEN'] = 'SUPPORT_EMAIL_REFRESH_TOKEN'
 ENV['SUPPORT_EMAIL_CLIENT_ID'] = 'SUPPORT_EMAIL_CLIENT_ID'
@@ -22,9 +22,9 @@ RSpec.describe Fetch::EmailsFromImap do
       table_name: ENV.fetch('SUPPORT_EMAIL_TABLE'),
       db_host: ENV.fetch('DB_HOST'),
       db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('DB_NAME'),
-      db_user: ENV.fetch('DB_USER'),
-      db_password: ENV.fetch('DB_PASSWORD'),
+      db_name: ENV.fetch('POSTGRES_DB'),
+      db_user: ENV.fetch('POSTGRES_USER'),
+      db_password: ENV.fetch('POSTGRES_PASSWORD'),
       email_account: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),
       email_refresh_token: ENV.fetch('SUPPORT_EMAIL_REFRESH_TOKEN'),
       email_client_id: ENV.fetch('SUPPORT_EMAIL_CLIENT_ID'),
