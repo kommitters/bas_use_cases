@@ -1,0 +1,143 @@
+name: Deploy to Prod
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy-prod:
+    name: Deploy Prod
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get this repository
+      uses: actions/checkout@v3
+
+    - name: Install rsync
+      run: sudo apt-get install -y rsync
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3.3
+
+    - name: Install Ruby Dependencies
+      run: |
+        gem install bundler
+        bundle config set path vendor/bundle
+        bundle install
+
+    - name: Create env file
+      run: touch env.yml
+
+    - name: Add Secrets into yml file
+      run: |
+        echo prod:>> env.yml
+        echo -e '  DB_HOST:' ${DB_HOST}>> env.yml
+        echo -e '  DB_PORT:' ${DB_PORT}>> env.yml
+        echo -e '  DB_NAME:' ${DB_NAME}>> env.yml
+        echo -e '  DB_USER:' ${DB_USER}>> env.yml
+        echo -e '  DB_PASSWORD:' ${DB_PASSWORD}>> env.yml
+        echo -e '  DISCORD_BOT_NAME:' ${DISCORD_BOT_NAME}>> env.yml
+        echo -e '  NOTION_SECRET:' ${NOTION_SECRET}>> env.yml
+        echo -e '  BIRTHDAY_TABLE:' ${BIRTHDAY_TABLE}>> env.yml
+        echo -e '  BIRTHDAY_NOTION_DATABASE_ID:' ${BIRTHDAY_NOTION_DATABASE_ID}>> env.yml
+        echo -e '  BIRTHDAY_DISCORD_WEBHOOK:' ${BIRTHDAY_DISCORD_WEBHOOK}>> env.yml
+        echo -e '  NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK:' ${NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK}>> env.yml
+        echo -e '  OPENAI_SECRET:' ${OPENAI_SECRET}>> env.yml
+        echo -e '  PTO_TABLE:' ${PTO_TABLE}>> env.yml
+        echo -e '  PTO_NOTION_DATABASE_ID:' ${PTO_NOTION_DATABASE_ID}>> env.yml
+        echo -e '  PTO_OPENAI_ASSISTANT:' ${PTO_OPENAI_ASSISTANT}>> env.yml
+        echo -e '  PTO_DISCORD_WEBHOOK:' ${PTO_DISCORD_WEBHOOK}>> env.yml
+        echo -e '  NEXT_WEEK_PTO_OPENAI_ASSISTANT:' ${NEXT_WEEK_PTO_OPENAI_ASSISTANT}>> env.yml
+        echo -e '  NEXT_WEEK_PTO_DISCORD_WEBHOOK:' ${NEXT_WEEK_PTO_DISCORD_WEBHOOK}>> env.yml
+        echo -e '  WIP_TABLE:' ${WIP_TABLE}>> env.yml
+        echo -e '  WIP_COUNT_NOTION_DATABASE_ID:' ${WIP_COUNT_NOTION_DATABASE_ID}>> env.yml
+        echo -e '  WIP_LIMIT_NOTION_DATABASE_ID:' ${WIP_LIMIT_NOTION_DATABASE_ID}>> env.yml
+        echo -e '  WIP_LIMIT_DISCORD_WEBHOOK:' ${WIP_LIMIT_DISCORD_WEBHOOK}>> env.yml
+        echo -e '  SUPPORT_EMAIL_TABLE:' ${SUPPORT_EMAIL_TABLE}>> env.yml
+        echo -e '  SUPPORT_EMAIL_ACCOUNT:' ${SUPPORT_EMAIL_ACCOUNT}>> env.yml
+        echo -e '  SUPPORT_EMAIL_REFRESH_TOKEN:' ${SUPPORT_EMAIL_REFRESH_TOKEN}>> env.yml
+        echo -e '  SUPPORT_EMAIL_CLIENT_ID:' ${SUPPORT_EMAIL_CLIENT_ID}>> env.yml
+        echo -e '  SUPPORT_EMAIL_CLIENT_SECRET:' ${SUPPORT_EMAIL_CLIENT_SECRET}>> env.yml
+        echo -e '  SUPPORT_EMAIL_INBOX:' ${SUPPORT_EMAIL_INBOX}>> env.yml
+        echo -e '  SUPPORT_EMAIL_RECEPTOR:' ${SUPPORT_EMAIL_RECEPTOR}>> env.yml
+        echo -e '  SUPPORT_EMAIL_DISCORD_WEBHOOK:' ${SUPPORT_EMAIL_DISCORD_WEBHOOK}>> env.yml
+
+
+      env:
+        # DB CONNECTION
+        DB_HOST: ${{secrets.DB_HOST}}
+        DB_PORT: ${{secrets.DB_PORT}}
+        DB_NAME: ${{secrets.DB_NAME}}
+        DB_USER: ${{secrets.DB_USER}}
+        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+
+        # DISCORD
+        DISCORD_BOT_NAME: ${{secrets.DISCORD_BOT_NAME}}
+
+        # NOTION
+        NOTION_SECRET: ${{secrets.NOTION_SECRET}}
+
+        # BIRTHDAY NOTIFICATION
+        BIRTHDAY_TABLE: ${{secrets.BIRTHDAY_TABLE}}
+        BIRTHDAY_NOTION_DATABASE_ID: ${{secrets.BIRTHDAY_NOTION_DATABASE_ID}}
+
+        ## TODAY BIRTHDAY
+        BIRTHDAY_DISCORD_WEBHOOK: ${{secrets.BIRTHDAY_DISCORD_WEBHOOK}}
+
+        ## NEXT WEEK BIRTHDAY
+        NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK: ${{secrets.NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK}}
+
+        # PTO NOTIFICATION
+        OPENAI_SECRET: ${{secrets.OPENAI_SECRET}}
+        PTO_TABLE: ${{secrets.PTO_TABLE}}
+        PTO_NOTION_DATABASE_ID: ${{secrets.PTO_NOTION_DATABASE_ID}}
+
+        ## TODAY PTO
+        PTO_OPENAI_ASSISTANT: ${{secrets.PTO_OPENAI_ASSISTANT}}
+        PTO_DISCORD_WEBHOOK: ${{secrets.PTO_DISCORD_WEBHOOK}}
+
+        ## NEXT WEEK PTOS
+        NEXT_WEEK_PTO_OPENAI_ASSISTANT: ${{secrets.NEXT_WEEK_PTO_OPENAI_ASSISTANT}}
+        NEXT_WEEK_PTO_DISCORD_WEBHOOK: ${{secrets.NEXT_WEEK_PTO_DISCORD_WEBHOOK}}
+
+        # WIP LIMIT NOTIFICATION
+        WIP_TABLE: ${{secrets.WIP_TABLE}}
+        WIP_COUNT_NOTION_DATABASE_ID: ${{secrets.WIP_COUNT_NOTION_DATABASE_ID}}
+        WIP_LIMIT_NOTION_DATABASE_ID: ${{secrets.WIP_LIMIT_NOTION_DATABASE_ID}}
+        WIP_LIMIT_DISCORD_WEBHOOK: ${{secrets.WIP_LIMIT_DISCORD_WEBHOOK}}
+
+        # SUPPORT EMAIL NOTIFICATION
+        SUPPORT_EMAIL_TABLE: ${{secrets.SUPPORT_EMAIL_TABLE}}
+        SUPPORT_EMAIL_ACCOUNT: ${{secrets.SUPPORT_EMAIL_ACCOUNT}}
+        SUPPORT_EMAIL_REFRESH_TOKEN: ${{secrets.SUPPORT_EMAIL_REFRESH_TOKEN}}
+        SUPPORT_EMAIL_CLIENT_ID: ${{secrets.SUPPORT_EMAIL_CLIENT_ID}}
+        SUPPORT_EMAIL_CLIENT_SECRET: ${{secrets.SUPPORT_EMAIL_CLIENT_SECRET}}
+        SUPPORT_EMAIL_INBOX: ${{secrets.SUPPORT_EMAIL_INBOX}}
+        SUPPORT_EMAIL_RECEPTOR: ${{secrets.SUPPORT_EMAIL_RECEPTOR}}
+        SUPPORT_EMAIL_DISCORD_WEBHOOK: ${{secrets.SUPPORT_EMAIL_DISCORD_WEBHOOK}}
+
+    - name: compress project
+      run: zip -r bas_scripts.zip .
+
+    - name: Transfer files to Droplet using rsync
+      uses: burnett01/rsync-deployments@5.0
+      with:
+        switches: -avzr --delete
+        path: .
+        remote_path: /root
+        remote_host: ${{ secrets.DO_DROPLET_IP }}
+        remote_user: root
+        remote_key: ${{ secrets.DO_SSH_KEY }}
+
+    - name: Deploy to DigitalOcean Droplet
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_DROPLET_IP }}
+        username: root
+        key: ${{ secrets.DO_SSH_KEY }}
+        script: |
+          cd /root
+          unzip bas_scripts.zip
+          docker stop bas_cronjobs
+          docker-compose up -d
