@@ -7,9 +7,13 @@ CREATE TABLE IF NOT EXISTS birthday (
     status varchar(255),
     error_message jsonb,
     version varchar(255),
-    inserted_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS pto (
@@ -21,9 +25,13 @@ CREATE TABLE IF NOT EXISTS pto (
     status varchar(255),
     error_message jsonb,
     version varchar(255),
-    inserted_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS support_emails (
@@ -35,9 +43,13 @@ CREATE TABLE IF NOT EXISTS support_emails (
     status varchar(255),
     error_message jsonb,
     version varchar(255),
-    inserted_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS wip_limits (
@@ -49,7 +61,11 @@ CREATE TABLE IF NOT EXISTS wip_limits (
     status varchar(255),
     error_message jsonb,
     version varchar(255),
-    inserted_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
 );
