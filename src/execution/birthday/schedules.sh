@@ -5,10 +5,10 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "43 20 * * * fetch_birthday_from_notion.rb"
-    "44 20 * * * format_birthday.rb"
-    "45 20 * * * notify_birthday_in_discord.rb"
-    "46 20 * * * garbage_collector.rb"
+    "40 12 * * * fetch_birthday_from_notion.rb"
+    "50 12 * * * format_birthday.rb"
+    "00 13 * * * notify_birthday_in_discord.rb"
+    "10 13 * * * garbage_collector.rb"
 )
 
 # Temporary file to store the new crontab
