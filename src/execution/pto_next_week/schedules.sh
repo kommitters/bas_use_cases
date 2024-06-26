@@ -5,10 +5,10 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "55 20 * * * fetch_next_week_pto_from_notion.rb"
-    "56 20 * * * humanize_next_week_pto.rb"
-    "57 20 * * * notify_next_week_pto_in_discord.rb"
-    "58 20 * * * garbage_collector.rb"
+    "40 12 * * MON-FRI fetch_next_week_pto_from_notion.rb"
+    "50 12 * * MON-FRI humanize_next_week_pto.rb"
+    "00 13 * * MON-FRI notify_next_week_pto_in_discord.rb"
+    "10 13 * * MON-FRI garbage_collector.rb"
 )
 
 # Temporary file to store the new crontab

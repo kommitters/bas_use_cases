@@ -16,4 +16,4 @@ gem 'octokit', '~> 8.1.0'
 
 gem 'pg', '1.5.5'
 
-gem 'bas', '1.0.0'
+gem 'bas', '1.0.1'

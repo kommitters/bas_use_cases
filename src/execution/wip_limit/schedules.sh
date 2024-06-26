@@ -5,12 +5,12 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "03 21 * * * fetch_domains_wip_count.rb"
-    "04 21 * * * fetch_domains_wip_limit.rb"
-    "05 21 * * * compare_wip_limit_count.rb"
-    "06 21 * * * format_wip_limit_exceeded.rb"
-    "07 21 * * * notify_domains_wip_limit_exceeded.rb"
-    "08 21 * * * garbage_collector.rb"
+    "20 12,14,18,20 * * * fetch_domains_wip_count.rb"
+    "30 12,14,18,20 * * * fetch_domains_wip_limit.rb"
+    "40 12,14,18,20 * * * compare_wip_limit_count.rb"
+    "50 12,14,18,20 * * * format_wip_limit_exceeded.rb"
+    "00 13,15,19,21 * * * notify_domains_wip_limit_exceeded.rb"
+    "10 21 * * * garbage_collector.rb"
 )
 
 # Temporary file to store the new crontab

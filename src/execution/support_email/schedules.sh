@@ -5,10 +5,10 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "59 20 * * * fetch_emails_from_imap.rb"
-    "0 21 * * * format_emails.rb"
-    "01 21 * * * notify_support_emails.rb"
-    "02 21 * * * garbage_collector.rb"
+    "40 12,14,18,20 * * * fetch_emails_from_imap.rb"
+    "50 12,14,18,20 * * * format_emails.rb"
+    "00 13,15,19,21 * * * notify_support_emails.rb"
+    "10 21 * * * garbage_collector.rb"
 )
 
 # Temporary file to store the new crontab
