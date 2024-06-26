@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.2 (26.06.2024)
+- Update schedules and BAS version to 1.0.1
+
 ## 0.0.1 (18.06.2024)
 - Add script and cronjobs base architecture
 - Add docker compose services config
