@@ -19,6 +19,7 @@ services:
   bas_db:
     image: postgres:13-alpine
     container_name: bas_db
+    restart: unless-stopped
     networks:
       - bas_network
     ports:
