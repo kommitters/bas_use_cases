@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../use_cases/review_images/write_text_review_requests'
+require_relative '../../use_cases/review_text/write_text_review_requests'
 
 # Configuration
 params = {

@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../use_cases/review_images/fetch_text_from_notion'
+require_relative '../../use_cases/review_text/fetch_text_from_notion'
 
 # Configuration
 params = {

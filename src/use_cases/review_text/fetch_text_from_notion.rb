@@ -50,7 +50,7 @@ module Fetch
       {
         database_id: @notion_database_id,
         secret: @notion_secret,
-        property: "paragraph"
+        property: 'paragraph'
       }
     end
 

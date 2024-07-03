@@ -3,7 +3,7 @@ GEM
   specs:
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    bas (1.0.0)
+    bas (1.1.1)
     base64 (0.2.0)
     date (3.3.4)
     diff-lcs (1.5.1)
@@ -19,6 +19,7 @@ GEM
       multi_xml (>= 0.5.2)
     jwt (2.8.1)
       base64
+    md_to_notion (0.1.4)
     mini_mime (1.1.5)
     multi_xml (0.6.0)
     net-http (0.4.1)
@@ -70,10 +71,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  bas (= 1.0.0)
+  bas (~> 1.1)
   gmail_xoauth
   httparty
   jwt (~> 2.8.1)
+  md_to_notion (~> 0.1.4)
   net-imap (~> 0.4.10)
   net-smtp (~> 0.4.0.1)
   octokit (~> 8.1.0)

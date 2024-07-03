@@ -49,7 +49,7 @@ module Review
       {
         secret: @openai_secret,
         assistant_id: @openai_assistant,
-        media_type: 'image'
+        media_type: 'images'
       }
     end
 
