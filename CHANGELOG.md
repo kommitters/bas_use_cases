@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0 (26.06.2024)
+- Add review images use case
+- Add review text use case
+
 ## 0.0.2 (26.06.2024)
 - Update schedules and BAS version to 1.0.1
 
