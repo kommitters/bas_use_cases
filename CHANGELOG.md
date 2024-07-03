@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.1.0 (26.06.2024)
+## 0.1.1 (03.07.2024)
+- Update review media schedules
+
+## 0.1.0 (03.07.2024)
 - Add review images use case
 - Add review text use case
 
