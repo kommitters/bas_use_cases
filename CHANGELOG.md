@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.2 (09.07.2024)
+- Update bas gem version to 1.1.3
+
 ## 0.1.1 (03.07.2024)
 - Update review media schedules
 
