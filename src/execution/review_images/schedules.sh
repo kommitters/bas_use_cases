@@ -5,11 +5,10 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "00 12-23 * * MON-FRI fetch_images_from_notion.rb"
-    "*/5 12-23 * * MON-FRI write_image_review_requests.rb"
-    "*/5 12-23 * * MON-FRI review_image.rb"
-    "*/5 12-23 * * MON-FRI write_image_review_in_notion.rb"
-    "*/5 12-23 * * MON-FRI update_review_image_state.rb"
+    "*/1 12-23 * * MON-FRI fetch_images_from_notion.rb"
+    "*/1 12-23 * * MON-FRI write_image_review_requests.rb"
+    "*/1 12-23 * * MON-FRI review_image.rb"
+    "*/1 12-23 * * MON-FRI write_image_review_in_notion.rb"
     "10 0 * * MON-FRI garbage_collector.rb"
 )
 

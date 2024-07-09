@@ -7,6 +7,7 @@ module Write
   # Service to fetch images from a notion database
   class TextReviewRequests
     def initialize(params)
+      @notion_secret = params[:notion_secret]
       @table_name = params[:table_name]
       @db_host = params[:db_host]
       @db_port = params[:db_port]
@@ -47,7 +48,8 @@ module Write
       {
         connection:,
         db_table: @table_name,
-        tag: 'ReviewTextRequest'
+        tag: 'ReviewTextRequest',
+        secret: @notion_secret
       }
     end
 
