@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/bot/fetch_next_week_ptos_from_notion'
+require 'date'
 require 'json'
 
 module Fetch
