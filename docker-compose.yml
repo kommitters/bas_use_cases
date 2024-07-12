@@ -31,7 +31,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 150M
+          memory: 125M
 
   bas_cronjobs:
     container_name: bas_cronjobs
@@ -49,4 +49,4 @@ services:
     deploy:
       resources:
         limits:
-          memory: 310M
+          memory: 125M
