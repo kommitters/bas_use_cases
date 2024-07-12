@@ -4,7 +4,7 @@ require 'bas/bot/notify_discord'
 require 'json'
 
 module Notify
-  # Service to format digital ocean billing alerts
+  # Service to notify digital ocean billing alerts on dicord
   class DoBollAlertDiscord
     def initialize(params)
       @discord_webhook = params[:discord_webhook]

@@ -45,7 +45,7 @@ module Format
     end
 
     def process_options
-      { threshold: @threshold }
+      { threshold: @threshold.to_f }
     end
 
     def write_options

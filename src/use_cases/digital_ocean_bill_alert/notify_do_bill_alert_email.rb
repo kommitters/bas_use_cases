@@ -4,7 +4,7 @@ require 'bas/bot/notify_do_bill_alert_email'
 require 'json'
 
 module Notify
-  # Service to format digital ocean billing alerts
+  # Service to notify digital ocean billing alerts by email
   class DoBillAlertEmail
     def initialize(params)
       @refresh_token = params[:refresh_token]
@@ -54,7 +54,7 @@ module Notify
         client_id: @client_id,
         client_secret: @client_secret,
         user_email: @user_email,
-        recipient_email: @recipient_email
+        recipient_email: eval(@recipient_email)
       }
     end
 

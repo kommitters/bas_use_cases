@@ -4,7 +4,7 @@ require 'bas/bot/fetch_billing_from_digital_ocean'
 require 'json'
 
 module Fetch
-  # Service to fetch ptos from a notion database
+  # Service to fetch Digital Ocean current balance
   class BillingFromDigitalOcean
     def initialize(params)
       @digital_ocean_secret = params[:digital_ocean_secret]
