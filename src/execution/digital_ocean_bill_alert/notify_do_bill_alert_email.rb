@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../use_cases/digital_ocean_bill_alert/notify_do_bill_alert_email.rb'
+require_relative '../../use_cases/digital_ocean_bill_alert/notify_do_bill_alert_email'
 
 # Configuration
 params = {

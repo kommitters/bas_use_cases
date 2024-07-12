@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../use_cases/digital_ocean_bill_alert/notify_do_bill_alert_discord'
+require_relative '../../../src/use_cases/digital_ocean_bill_alert/notify_do_bill_alert_discord'
 
 ENV['DIGITAL_OCEAN_DISCORD_WEBHOOK'] = 'DIGITAL_OCEAN_DISCORD_WEBHOOK'
 ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'

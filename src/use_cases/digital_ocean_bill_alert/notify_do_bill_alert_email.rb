@@ -6,7 +6,7 @@ require 'json'
 module Notify
   # Service to notify digital ocean billing alerts by email
   class DoBillAlertEmail
-    def initialize(params)
+    def initialize(params) # rubocop:disable Metrics/MethodLength
       @refresh_token = params[:refresh_token]
       @client_id = params[:client_id]
       @client_secret = params[:client_secret]
@@ -54,7 +54,7 @@ module Notify
         client_id: @client_id,
         client_secret: @client_secret,
         user_email: @user_email,
-        recipient_email: eval(@recipient_email)
+        recipient_email: @recipient_email.split(',')
       }
     end
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../use_cases/digital_ocean_bill_alert/garbage_collector'
+require_relative '../../../src/use_cases/digital_ocean_bill_alert/garbage_collector'
 
 ENV['DO_TABLE'] = 'DO_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'

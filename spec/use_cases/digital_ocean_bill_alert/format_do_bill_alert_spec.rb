@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../use_cases/digital_ocean_bill_alert/format_do_bill_alert'
+require_relative '../../../src/use_cases/digital_ocean_bill_alert/format_do_bill_alert'
 
 ENV['DIGITAL_OCEAN_THRESHOLD'] = 'DIGITAL_OCEAN_THRESHOLD'
 ENV['DO_TABLE'] = 'DO_TABLE'

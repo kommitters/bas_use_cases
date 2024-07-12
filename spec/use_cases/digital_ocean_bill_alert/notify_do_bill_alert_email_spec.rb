@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../use_cases/digital_ocean_bill_alert/notify_do_bill_alert_email'
+require_relative '../../../src/use_cases/digital_ocean_bill_alert/notify_do_bill_alert_email'
 
 ENV['DIGITAL_OCEAN_REFRESH_TOKEN'] = 'DIGITAL_OCEAN_REFRESH_TOKEN'
 ENV['DIGITAL_OCEAN_CLIENT_ID'] = 'DIGITAL_OCEAN_CLIENT_ID'
