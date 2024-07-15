@@ -41,8 +41,7 @@ module Notify
       {
         connection:,
         db_table: @table_name,
-        tag: 'FormatDoBillAlert',
-        avoid_process: true
+        tag: 'FormatDoBillAlert'
       }
     end
 

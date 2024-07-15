@@ -8,7 +8,6 @@ CRON_JOBS=(
     "*/5 * * * * fetch_billing_from_digital_ocean.rb"
     "*/5 * * * * format_do_bill_alert.rb"
     "*/5 * * * * notify_do_bill_alert_discord.rb"
-    "1,6,11,16,21,26,31,36,41,46,51,56 * * * * notify_do_bill_alert_email.rb"
     "00 00 * * * garbage_collector.rb"
 )
 
