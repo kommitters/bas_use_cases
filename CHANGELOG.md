@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.0 (16.07.2024)
+- Add digital ocean bill alert use case
+
 ## 0.1.2 (09.07.2024)
 - Update bas gem version to 1.1.3
 
