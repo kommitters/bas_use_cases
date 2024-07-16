@@ -7,7 +7,7 @@ on:
 jobs:
   deploy-prod:
     name: Deploy Prod
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Get this repository
@@ -66,6 +66,10 @@ jobs:
         echo -e 'REVIEW_IMAGE_OPENAI_ASSISTANT='${REVIEW_IMAGE_OPENAI_ASSISTANT}>> .env
         echo -e 'REVIEW_TEXT_TABLE='${REVIEW_TEXT_TABLE}>> .env
         echo -e 'REVIEW_TEXT_OPENAI_ASSISTANT='${REVIEW_TEXT_OPENAI_ASSISTANT}>> .env
+        echo -e 'DO_TABLE='${DO_TABLE}>> .env
+        echo -e 'DIGITAL_OCEAN_SECRET='${DIGITAL_OCEAN_SECRET}>> .env
+        echo -e 'DIGITAL_OCEAN_THRESHOLD='${DIGITAL_OCEAN_THRESHOLD}>> .env
+        echo -e 'DIGITAL_OCEAN_DISCORD_WEBHOOK='${DIGITAL_OCEAN_DISCORD_WEBHOOK}>> .env
 
 
       env:
@@ -128,6 +132,12 @@ jobs:
         REVIEW_TEXT_TABLE: ${{secrets.REVIEW_TEXT_TABLE}}
         REVIEW_TEXT_OPENAI_ASSISTANT: ${{secrets.REVIEW_TEXT_OPENAI_ASSISTANT}}
 
+        # DIGITAL OCEAN
+        DO_TABLE: ${{secrets.DO_TABLE}}
+        DIGITAL_OCEAN_SECRET: ${{secrets.DIGITAL_OCEAN_SECRET}}
+        DIGITAL_OCEAN_THRESHOLD: ${{secrets.DIGITAL_OCEAN_THRESHOLD}}
+        DIGITAL_OCEAN_DISCORD_WEBHOOK: ${{secrets.DIGITAL_OCEAN_DISCORD_WEBHOOK}}
+
     - name: compress project
       run: zip -r bas_scripts.zip .
 
@@ -150,4 +160,4 @@ jobs:
         script: |
           cd /root/app
           unzip -o bas_scripts.zip
-          docker-compose restart
+          docker-compose up -d --force-recreate
