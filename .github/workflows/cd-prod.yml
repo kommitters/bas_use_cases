@@ -160,4 +160,4 @@ jobs:
         script: |
           cd /root/app
           unzip -o bas_scripts.zip
-          docker-compose up -d --force-recreate
+          docker-compose restart

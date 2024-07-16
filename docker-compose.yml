@@ -31,7 +31,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 125M
+          memory: 60M
 
   bas_cronjobs:
     container_name: bas_cronjobs
@@ -39,8 +39,6 @@ services:
     build: .
     volumes:
       - cronjobs:/app
-    env_file:
-      - .env
     depends_on:
       - bas_db
     networks:
@@ -49,4 +47,4 @@ services:
     deploy:
       resources:
         limits:
-          memory: 125M
+          memory: 200M

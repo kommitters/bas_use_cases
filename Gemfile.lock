@@ -13,7 +13,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    bas (1.2.0)
+    bas (1.2.1)
       gmail_xoauth (~> 0.4.1)
       google-api-client (~> 0.53)
       googleauth (~> 1.11)
@@ -116,7 +116,7 @@ GEM
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
     retriable (3.1.2)
-    rexml (3.3.1)
+    rexml (3.3.2)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)

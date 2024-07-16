@@ -1,8 +1,14 @@
 #!/bin/bash
 
 # Absolute path to the directory containing the use cases execution
+ENV_FILE="/app/.env"
 SCRIPTS_DIR="/app/src/execution"
 RUBY_PATH="/app/vendor/bundle/ruby/3.3.0"
+
+# Load the environment variables from the .env file
+set -a
+source $ENV_FILE
+set +a
 
 # Environment variables
 ENV_VARS=(
