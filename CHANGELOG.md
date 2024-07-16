@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 (16.07.2024)
+- Update environment variables config
+
 ## 0.2.0 (16.07.2024)
 - Add digital ocean bill alert use case
 
