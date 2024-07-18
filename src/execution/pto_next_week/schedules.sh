@@ -5,8 +5,8 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "40 12 * * THU fetch_next_week_pto_from_notion.rb"
-    "50 12 * * THU humanize_next_week_pto.rb"
+    "40 1 * * THU fetch_next_week_pto_from_notion.rb"
+    "50 1 * * THU humanize_next_week_pto.rb"
     "00 13 * * THU notify_next_week_pto_in_discord.rb"
     "10 13 * * THU garbage_collector.rb"
 )

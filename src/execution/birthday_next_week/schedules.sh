@@ -5,8 +5,8 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    "40 12 * * * fetch_next_week_birthday_from_notion.rb"
-    "50 12 * * * format_next_week_birthday.rb"
+    "00 1 * * * fetch_next_week_birthday_from_notion.rb"
+    "10 1 * * * format_next_week_birthday.rb"
     "00 13 * * * notify_next_week_birthday_in_discord.rb"
     "10 13 * * * garbage_collector.rb"
 )
