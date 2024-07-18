@@ -4,7 +4,7 @@ require 'bas/bot/review_domain_availability'
 require 'json'
 
 module Review
-  # Service to fetch images from a notion database
+  # Service to execute a http request to a domain and check availability
   class DomainAvailability
     def initialize(params)
       @table_name = params[:table_name]

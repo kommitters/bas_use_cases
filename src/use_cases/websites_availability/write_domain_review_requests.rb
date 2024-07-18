@@ -4,7 +4,7 @@ require 'bas/bot/write_domain_review_requests'
 require 'json'
 
 module Write
-  # Service to fetch Digital Ocean current balance
+  # Service to created web domain review requests on the shared storage
   class DomainReviewRequests
     def initialize(params)
       @table_name = params[:table_name]

@@ -4,7 +4,7 @@ require 'bas/bot/fetch_domain_services_from_notion'
 require 'json'
 
 module Fetch
-  # Service to fetch Digital Ocean current balance
+  # Service to fetch web domains from a notion database
   class DomainServicesFromNotion
     def initialize(params)
       @notion_database_id = params[:notion_database_id]
