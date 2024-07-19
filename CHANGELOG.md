@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 (19.07.2024)
+- Add websites availability use case
+
 ## 0.2.1 (16.07.2024)
 - Update environment variables config
 
