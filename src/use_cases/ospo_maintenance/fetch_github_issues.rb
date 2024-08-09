@@ -43,7 +43,7 @@ module Fetch
         private_pem: @params[:private_pem],
         app_id: @params[:app_id],
         repo: @params[:repo],
-        filters: { state: "all" },
+        filters: { state: "open" },
         organization: @params[:organization],
         domain: @params[:domain],
         work_item_type: @params[:work_item_type],
