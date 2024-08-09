@@ -8,7 +8,7 @@ require_relative '../../use_cases/wip_limit/notify_domains_wip_limit_exceeded'
 params = {
   discord_webhook: ENV.fetch('WIP_LIMIT_DISCORD_WEBHOOK'),
   discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
-  table_name: ENV.fetch('WIP_TABLE'),
+  table_name: 'wip_limits',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

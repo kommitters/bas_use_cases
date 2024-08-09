@@ -7,7 +7,7 @@ require_relative '../../use_cases/digital_ocean_bill_alert/fetch_billing_from_di
 # Configuration
 params = {
   digital_ocean_secret: ENV.fetch('DIGITAL_OCEAN_SECRET'),
-  table_name: ENV.fetch('DO_TABLE'),
+  table_name: 'do_billing',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

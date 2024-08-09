@@ -8,7 +8,7 @@ require_relative '../../use_cases/review_images/review_image'
 params = {
   openai_secret: ENV.fetch('OPENAI_SECRET'),
   openai_assistant: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
-  table_name: ENV.fetch('REVIEW_IMAGES_TABLE'),
+  table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

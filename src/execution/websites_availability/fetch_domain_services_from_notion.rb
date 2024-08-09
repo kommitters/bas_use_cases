@@ -8,7 +8,7 @@ require_relative '../../use_cases/websites_availability/fetch_domain_services_fr
 params = {
   notion_database_id: ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'),
   notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('WEBSITES_AVAILABILITY_TABLE'),
+  table_name: 'web_availability',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

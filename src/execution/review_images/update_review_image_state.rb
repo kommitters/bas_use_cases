@@ -7,7 +7,7 @@ require_relative '../../use_cases/review_images/update_review_image_state'
 # Configuration
 params = {
   notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('REVIEW_IMAGES_TABLE'),
+  table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

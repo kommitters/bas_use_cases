@@ -8,7 +8,7 @@ require_relative '../../use_cases/wip_limit/fetch_domains_wip_count'
 params = {
   notion_database_id: ENV.fetch('WIP_COUNT_NOTION_DATABASE_ID'),
   notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('WIP_TABLE'),
+  table_name: 'wip_limits',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

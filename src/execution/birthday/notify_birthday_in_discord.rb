@@ -6,7 +6,7 @@ require_relative '../../use_cases/birthday/notify_birthday_in_discord'
 
 # Configuration
 params = {
-  discord_webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK'),
+  discord_webhook: 'birthday',
   discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
   table_name: ENV.fetch('BIRTHDAY_TABLE'),
   db_host: ENV.fetch('DB_HOST'),

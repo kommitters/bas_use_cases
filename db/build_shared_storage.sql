@@ -141,3 +141,21 @@ CREATE TABLE IF NOT EXISTS web_availability (
         time zone DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS github_issues (
+    id SERIAL NOT NULL,
+    "data" jsonb,
+    tag varchar(255),
+    archived boolean,
+    stage varchar(255),
+    status varchar(255),
+    error_message jsonb,
+    version varchar(255),
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+);

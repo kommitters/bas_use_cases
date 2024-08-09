@@ -7,7 +7,7 @@ require_relative '../../use_cases/review_text/garbage_collector'
 
 # Configuration
 params = {
-  table_name: ENV.fetch('REVIEW_TEXT_TABLE'),
+  table_name: 'review_text',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

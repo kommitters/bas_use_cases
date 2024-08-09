@@ -8,7 +8,7 @@ require_relative '../../use_cases/pto_next_week/humanize_next_week_pto'
 params = {
   openai_secret: ENV.fetch('OPENAI_SECRET'),
   openai_assistant: ENV.fetch('NEXT_WEEK_PTO_OPENAI_ASSISTANT'),
-  table_name: ENV.fetch('PTO_TABLE'),
+  table_name: 'pto',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

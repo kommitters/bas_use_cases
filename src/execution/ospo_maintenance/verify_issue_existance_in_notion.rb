@@ -8,7 +8,7 @@ require_relative '../../use_cases/ospo_maintenance/verify_issue_existance_in_not
 params = {
   database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
   secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('OSPO_MAINTENANCE_TABLE'),
+  table_name: 'github_issues',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

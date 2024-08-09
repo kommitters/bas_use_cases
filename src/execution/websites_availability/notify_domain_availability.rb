@@ -8,7 +8,7 @@ require_relative '../../use_cases/websites_availability/notify_domain_availabili
 params = {
   discord_webhook: ENV.fetch('WEBSITES_AVAILABILITY_DISCORD_WEBHOOK'),
   discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
-  table_name: ENV.fetch('WEBSITES_AVAILABILITY_TABLE'),
+  table_name: 'web_availability',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

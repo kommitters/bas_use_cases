@@ -7,7 +7,7 @@ require_relative '../../use_cases/wip_limit/garbage_collector'
 
 # Configuration
 params = {
-  table_name: ENV.fetch('WIP_TABLE'),
+  table_name: 'wip_limits',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),
