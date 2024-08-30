@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1 (30.08.2024)
+- Update bas gem version to 1.4.2
+
 ## 0.3.0 (19.07.2024)
 - Add websites availability use case
 
