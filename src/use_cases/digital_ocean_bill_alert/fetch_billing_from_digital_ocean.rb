@@ -17,7 +17,7 @@ module Fetch
     end
 
     def execute
-      options = { process_options:, write_options: }
+      options = { read_options:, process_options:, write_options: }
 
       bot = Bot::FetchBillingFromDigitalOcean.new(options)
 
@@ -33,6 +33,15 @@ module Fetch
         dbname: @db_name,
         user: @db_user,
         password: @db_password
+      }
+    end
+
+    def read_options
+      {
+        connection:,
+        db_table: @table_name,
+        tag: 'FetchBillingFromDigitalOcean',
+        avoid_process: true
       }
     end
 

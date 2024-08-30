@@ -7,7 +7,7 @@ on:
 jobs:
   deploy-prod:
     name: Deploy Prod
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Get this repository
