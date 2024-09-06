@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.2 (06.09.2024)
+- Update bas gem version to 1.4.3
+
 ## 0.3.1 (30.08.2024)
 - Update bas gem version to 1.4.2
 
