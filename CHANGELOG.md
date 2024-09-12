@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0 (12.09.2024)
+- Add ChaincertsDapp to the OPSO maintenance projects
+
 ## 0.3.2 (06.09.2024)
 - Update bas gem version to 1.4.3
 
