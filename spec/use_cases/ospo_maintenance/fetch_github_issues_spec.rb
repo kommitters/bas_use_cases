@@ -15,12 +15,12 @@ ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 RSpec.describe Fetch::GithubIssues do
   before do
     params = {
-      tag: "GithubIssues",
-      repo: "org/repo",
-      organization: "org",
-      domain: "domain",
-      work_item_type: "activity",
-      type_id: "123456789",
+      tag: 'GithubIssues',
+      repo: 'org/repo',
+      organization: 'org',
+      domain: 'domain',
+      work_item_type: 'activity',
+      type_id: '123456789',
       private_pem: ENV.fetch('OSPO_MAINTENANCE_SECRET'),
       app_id: ENV.fetch('OSPO_MAINTENANCE_APP_ID'),
       table_name: ENV.fetch('OSPO_MAINTENANCE_TABLE'),

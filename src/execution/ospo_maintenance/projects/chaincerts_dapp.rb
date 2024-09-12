@@ -6,12 +6,12 @@ require_relative '../../use_cases/ospo_maintenance/fetch_github_issues'
 
 # Configuration
 params = {
-  tag: 'StellarBaseGithubIssues',
-  repo: 'kommitters/stellar_base',
+  tag: 'ChaincertsDAppGithubIssues',
+  repo: 'kommitters/chaincerts-dapp',
   organization: 'kommitters',
   domain: 'kommit.engineering',
   work_item_type: 'activity',
-  type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
+  type_id: '97518e360a514a32922aaddb553d742b',
   private_pem: ENV.fetch('OSPO_MAINTENANCE_SECRET'),
   app_id: ENV.fetch('OSPO_MAINTENANCE_APP_ID'),
   table_name: 'github_issues',

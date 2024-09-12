@@ -11,7 +11,7 @@ module Verify
     end
 
     def execute
-      options = { read_options: ,process_options:, write_options: }
+      options = { read_options:, process_options:, write_options: }
 
       bot = Bot::VerifyIssueExistanceInNotion.new(options)
 

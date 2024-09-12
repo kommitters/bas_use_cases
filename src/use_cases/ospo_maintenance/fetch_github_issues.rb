@@ -11,7 +11,7 @@ module Fetch
     end
 
     def execute
-      options = { read_options: ,process_options:, write_options: }
+      options = { read_options:, process_options:, write_options: }
 
       bot = Bot::FetchGithubIssues.new(options)
 
@@ -38,19 +38,19 @@ module Fetch
       }
     end
 
-    def process_options
+    def process_options # rubocop:disable Metrics/MethodLength
       {
         private_pem: @params[:private_pem],
         app_id: @params[:app_id],
         repo: @params[:repo],
-        filters: { state: "open" },
+        filters: { state: 'open' },
         organization: @params[:organization],
         domain: @params[:domain],
         work_item_type: @params[:work_item_type],
         type_id: @params[:type_id],
         connection:,
         db_table: @params[:table_name],
-        tag: "GithubIssueRequest"
+        tag: 'GithubIssueRequest'
       }
     end
 
