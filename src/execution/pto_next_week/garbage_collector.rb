@@ -7,7 +7,7 @@ require_relative '../../use_cases/pto_next_week/garbage_collector'
 
 # Configuration
 params = {
-  table_name: ENV.fetch('PTO_TABLE'),
+  table_name: 'pto',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

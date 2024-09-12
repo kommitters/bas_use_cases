@@ -7,7 +7,7 @@ require_relative '../../use_cases/review_text/update_review_text_state'
 # Configuration
 params = {
   notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('REVIEW_TEXT_TABLE'),
+  table_name: 'review_text',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

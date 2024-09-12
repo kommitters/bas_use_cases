@@ -8,7 +8,7 @@ require_relative '../../use_cases/review_text/review_text'
 params = {
   openai_secret: ENV.fetch('OPENAI_SECRET'),
   openai_assistant: ENV.fetch('REVIEW_TEXT_OPENAI_ASSISTANT'),
-  table_name: ENV.fetch('REVIEW_TEXT_TABLE'),
+  table_name: 'review_text',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

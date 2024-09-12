@@ -7,7 +7,7 @@ require_relative '../../use_cases/websites_availability/garbage_collector'
 
 # Configuration
 params = {
-  table_name: ENV.fetch('WEBSITES_AVAILABILITY_TABLE'),
+  table_name: 'web_availability',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),

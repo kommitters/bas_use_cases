@@ -8,7 +8,7 @@ require_relative '../../use_cases/review_text/fetch_text_from_notion'
 params = {
   notion_database_id: ENV.fetch('REVIEW_NOTION_DATABASE_ID'),
   notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: ENV.fetch('REVIEW_TEXT_TABLE'),
+  table_name: 'review_text',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
   db_name: ENV.fetch('POSTGRES_DB'),
