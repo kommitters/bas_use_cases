@@ -5,13 +5,11 @@ LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
-    # "*/1 * * * * projects/chaincerts_dapp.rb"
-    # "*/1 * * * * verify_issue_existance_in_notion.rb"
-    # "*/1 * * * * create_work_item.rb"
-    # "*/1 * * * update_work_item.rb"
+    "*/10 * * * * projects/chaincerts_dapp.rb"
+    "*/10 * * * * verify_issue_existance_in_notion.rb"
+    "*/10 * * * * create_work_item.rb"
+    "*/10 * * * update_work_item.rb"
 )
-
-CRON_JOBS=()
 
 # Temporary file to store the new crontab
 TEMP_CRONTAB=$(mktemp)
