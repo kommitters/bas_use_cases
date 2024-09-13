@@ -4,13 +4,7 @@ SCRIPTS_DIR="/app/src/execution/review_text"
 LOGS_DIR="/app/logs"
 
 # Cronjobs
-CRON_JOBS=(
-    "*/13 15-22 * * MON-FRI fetch_text_from_notion.rb"
-    "*/13 15-22 * * MON-FRI write_text_review_requests.rb"
-    "*/13 15-22 * * MON-FRI review_text.rb"
-    "*/13 15-22 * * MON-FRI write_text_review_in_notion.rb"
-    "10 0 * * MON-FRI garbage_collector.rb"
-)
+CRON_JOBS=()
 
 # Temporary file to store the new crontab
 TEMP_CRONTAB=$(mktemp)

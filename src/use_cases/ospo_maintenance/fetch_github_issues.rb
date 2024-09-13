@@ -22,11 +22,11 @@ module Fetch
 
     def connection
       {
-        host: @db_host,
-        port: @db_port,
-        dbname: @db_name,
-        user: @db_user,
-        password: @db_password
+        host: @params[:db_host],
+        port: @params[:db_port],
+        dbname: @params[:db_name],
+        user: @params[:db_user],
+        password: @params[:db_password]
       }
     end
 
@@ -43,7 +43,7 @@ module Fetch
         private_pem: @params[:private_pem],
         app_id: @params[:app_id],
         repo: @params[:repo],
-        filters: { state: 'open' },
+        filters: { state: 'all' },
         organization: @params[:organization],
         domain: @params[:domain],
         work_item_type: @params[:work_item_type],
