@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1 (12.09.2024)
+- Fix pem file reading error
+
 ## 0.4.0 (12.09.2024)
 - Add ChaincertsDapp to the OPSO maintenance projects
 
