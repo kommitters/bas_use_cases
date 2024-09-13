@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.2 (12.09.2024)
+- Hotfix database config
+
 ## 0.4.1 (12.09.2024)
 - Fix pem file reading error
 
