@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'bas/bot/fetch_media_from_notion'
+require 'bas/bot/notify_discord'
 require 'json'
 
 module Fetch
-  # Service to fetch images from a notion database
-  class ImagesFromNotion
+  # Service to fetch images from Discord thread
+  class ImagesFromDiscord
     def initialize(params)
-      @notion_database_id = params[:notion_database_id]
-      @notion_secret = params[:notion_secret]
+      @discord_bot_token = params[:discord_bot_token]
+      @discord_channel_id = params[:discord_channel_id]
       @table_name = params[:table_name]
       @db_host = params[:db_host]
       @db_port = params[:db_port]
@@ -20,7 +20,7 @@ module Fetch
     def execute
       options = { read_options:, process_options:, write_options: }
 
-      bot = Bot::FetchMediaFromNotion.new(options)
+      bot = Bot::FetchImagesFromDiscord.new(options)
 
       bot.execute
     end
@@ -41,16 +41,14 @@ module Fetch
       {
         connection:,
         db_table: @table_name,
-        tag: 'FetchImagesFromNotion',
-        avoid_process: true
+        tag: 'FetchImagesFromDiscord'
       }
     end
 
     def process_options
       {
-        database_id: @notion_database_id,
-        secret: @notion_secret,
-        property: 'image'
+        secret_token: @discord_bot_token
+        discord_channel: @discord_channel_id
       }
     end
 
@@ -58,7 +56,7 @@ module Fetch
       {
         connection:,
         db_table: @table_name,
-        tag: 'FetchImagesFromNotion'
+        tag: 'NotifyDiscord'
       }
     end
   end

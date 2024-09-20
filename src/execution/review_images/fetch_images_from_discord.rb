@@ -2,12 +2,12 @@
 
 require 'logger'
 
-require_relative '../../use_cases/review_images/fetch_images_from_notion'
+require_relative '../../use_cases/review_images/fetch_images_from_discord'
 
 # Configuration
 params = {
-  notion_database_id: ENV.fetch('REVIEW_NOTION_DATABASE_ID'),
-  notion_secret: ENV.fetch('NOTION_SECRET'),
+  discord_bot_token: ENV.fetch('DISCORD_BOT_TOKEN'),
+  discord_channel_id: ENV.fetch('DISCORD_CHANNEL_ID'),
   table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
@@ -18,7 +18,7 @@ params = {
 
 # Process bot
 begin
-  bot = Fetch::ImagesFromNotion.new(params)
+  bot = Fetch::ImagesFromDiscord.new(params)
 
   bot.execute
 rescue StandardError => e
