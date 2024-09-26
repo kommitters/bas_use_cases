@@ -2,11 +2,11 @@
 
 require 'logger'
 
-require_relative '../../use_cases/review_images/write_image_review_in_notion'
+require_relative '../../use_cases/review_images/write_image_review_in_discord'
 
 # Configuration
 params = {
-  notion_secret: ENV.fetch('NOTION_SECRET'),
+  discord_bot_token: ENV.fetch('DISCORD_BOT_TOKEN'),
   table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),
@@ -17,7 +17,7 @@ params = {
 
 # Process bot
 begin
-  bot = Write::ImageReviewInNotion.new(params)
+  bot = Write::ImageReviewInDiscord.new(params)
 
   bot.execute
 rescue StandardError => e
