@@ -1,0 +1,8 @@
+# Gemfile
+source 'https://rubygems.org'
+
+gem 'rake' # for task management
+gem 'rspec' # for testing, if you prefer RSpec
+
+gem 'telegram-bot-ruby', '~> 1.0'
+gem 'bas', '1.4.2'
