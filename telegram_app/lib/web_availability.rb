@@ -1,8 +1,14 @@
+# frozen_string_literal: true
+
 require 'telegram/bot'
 
 require_relative 'utils/add_review'
 
 module Bots
+  ##
+  # Telegram base bot to process chat commands to add availability websites
+  # check requests# frozen_string_literal: true
+  #
   class WebAvailability
     attr_reader :bot, :user_message, :connection
     attr_accessor :user_data
@@ -23,7 +29,7 @@ module Bots
       bot.listen { |message| process_message(message) }
     end
 
-    private 
+    private
 
     def process_message(message)
       @user_message = message
@@ -46,16 +52,16 @@ module Bots
 
     def input_response
       if user_data[user_message.chat.id] == :awaiting_url
-        validate_website()
-      else 
+        validate_website
+      else
         send_message(INSTRUCTION)
       end
     end
 
     def validate_website
       if user_message.text.start_with?('http://', 'https://')
-        user_data[user_message.chat.id] = nil 
-        save_website()
+        user_data[user_message.chat.id] = nil
+        save_website
         send_message(WEBSITE_ADDED)
       else
         send_message(INVALID)
@@ -63,13 +69,12 @@ module Bots
     end
 
     def save_website
-      config = {connection: , chat_id: user_message.chat.id, url: user_message.text}
-      
+      config = { connection:, chat_id: user_message.chat.id, url: user_message.text }
       Utils::AddReview.new(config).execute
     end
 
     def send_message(text)
-      bot.api.send_message(chat_id: user_message.chat.id, text: )
+      bot.api.send_message(chat_id: user_message.chat.id, text:)
     end
   end
 end

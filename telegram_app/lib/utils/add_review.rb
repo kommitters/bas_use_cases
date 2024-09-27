@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/utils/postgres/request"
+require 'bas/utils/postgres/request'
 
 module Utils
   ##
@@ -30,7 +30,7 @@ module Utils
     end
 
     def build_query
-      query = "INSERT INTO websites (chat_id, url) VALUES ($1, $2);"
+      query = 'INSERT INTO websites (chat_id, url) VALUES ($1, $2);'
       params = [config[:chat_id], config[:url]]
 
       [query, params]

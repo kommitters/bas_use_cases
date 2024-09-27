@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "httparty"
+require 'httparty'
 
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/write/postgres"
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -45,19 +45,19 @@ module Bot
 
     def conditions
       {
-        where: "archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC",
-        params: [false, read_options[:tag], "unprocessed"]
+        where: 'archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC',
+        params: [false, read_options[:tag], 'unprocessed']
       }
     end
 
     def availability
-      url = read_response.data["url"]
+      url = read_response.data['url']
 
       HTTParty.get(url, {})
     end
 
     def notification(response)
-      "⚠️ The Domain #{read_response.data["url"]} is down with an error code of #{response.code}"
+      "⚠️ The Domain #{read_response.data['url']} is down with an error code of #{response.code}"
     end
   end
 end

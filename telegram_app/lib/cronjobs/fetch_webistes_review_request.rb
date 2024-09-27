@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# 
 
 require 'logger'
 require_relative '../bots/fetch_website_review_request'
@@ -7,7 +6,7 @@ require_relative '../bots/fetch_website_review_request'
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  dbname: "bas",
+  dbname: 'bas',
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
@@ -15,13 +14,13 @@ connection = {
 options = {
   process_options: {
     connection:,
-    db_table: "websites",
-    tag: "ReviewTextRequest"
+    db_table: 'websites',
+    tag: 'ReviewTextRequest'
   },
   write_options: {
     connection:,
-    db_table: "telegram_web_availability",
-    tag: "FetchWebsiteReviewRequest"
+    db_table: 'telegram_web_availability',
+    tag: 'FetchWebsiteReviewRequest'
   }
 }
 

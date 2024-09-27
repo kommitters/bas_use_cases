@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'json'
-require "bas/bot/base"
-require "bas/read/default"
-require "bas/utils/postgres/request"
-require "bas/write/postgres"
+require 'bas/bot/base'
+require 'bas/read/default'
+require 'bas/utils/postgres/request'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -23,7 +23,7 @@ module Bot
 
       { success: { urls: } }
     end
-    
+
     def write
       write = Write::Postgres.new(write_options, process_response)
 
@@ -35,7 +35,7 @@ module Bot
     def params
       {
         connection: process_options[:connection],
-        query: "SELECT chat_id, url FROM websites WHERE chat_id IS NOT NULL AND url IS NOT NULL;"
+        query: 'SELECT chat_id, url FROM websites WHERE chat_id IS NOT NULL AND url IS NOT NULL;'
       }
     end
 
