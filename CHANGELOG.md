@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.0 (30.09.2024)
+- Add telegram bot service to process web availability
+
 ## 0.4.2 (12.09.2024)
 - Hotfix database config
 
