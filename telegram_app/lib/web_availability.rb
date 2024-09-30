@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'logger'
 require 'telegram/bot'
 
 require_relative 'utils/add_review'
@@ -26,7 +27,13 @@ module Bots
     end
 
     def execute
-      bot.listen { |message| process_message(message) }
+      bot.listen do |message|
+        begin
+          process_message(message)
+        rescue StandardError => e
+          Logger.new($stdout).error(e.message)
+        end
+      end      
     end
 
     private
