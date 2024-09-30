@@ -28,12 +28,10 @@ module Bots
 
     def execute
       bot.listen do |message|
-        begin
-          process_message(message)
-        rescue StandardError => e
-          Logger.new($stdout).error(e.message)
-        end
-      end      
+        process_message(message)
+      rescue StandardError => e
+        Logger.new($stdout).error(e.message)
+      end
     end
 
     private
