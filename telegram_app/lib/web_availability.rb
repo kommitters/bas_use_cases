@@ -3,7 +3,7 @@
 require 'logger'
 require 'telegram/bot'
 
-require_relative 'utils/add_review'
+require_relative 'services/add_website'
 
 module Bots
   ##
@@ -65,8 +65,8 @@ module Bots
 
     def validate_website
       if user_message.text.start_with?('http://', 'https://')
-        user_data[user_message.chat.id] = nil
         save_website
+        user_data[user_message.chat.id] = nil
         send_message(WEBSITE_ADDED)
       else
         send_message(INVALID)
@@ -75,7 +75,7 @@ module Bots
 
     def save_website
       config = { connection:, chat_id: user_message.chat.id, url: user_message.text }
-      Utils::AddReview.new(config).execute
+      Services::AddWebsite.new(config).execute
     end
 
     def send_message(text)
