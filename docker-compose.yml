@@ -48,3 +48,20 @@ services:
       resources:
         limits:
           memory: 200M
+
+  discord-bot:
+    container_name: discord_bot
+    restart: always
+    build: .
+    volumes:
+      - .env:/app/.env
+      - ./discord_bot:/app
+    depends_on:
+      - bas_db
+    networks:
+      - bas_network
+    command: ["bash", "/app/scripts/update_container.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 100M

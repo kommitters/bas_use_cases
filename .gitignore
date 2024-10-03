@@ -12,7 +12,7 @@
 package-lock.json
 /logs
 .env
-
+/discord_bot/vendor
 # Used by dotenv library to load environment variables.
 # .env
 
