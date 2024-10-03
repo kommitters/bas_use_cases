@@ -12,7 +12,7 @@ module Bots
 
     def initialize(token, connection)
       token = "Bot #{token}"
-      @bot = Discordrb::Bot.new(token)
+      @bot = Discordrb::Bot.new(token: token)
       @connection = connection
     end
 

@@ -36,7 +36,9 @@ do
   echo "$ENV_VAR" >> $TEMP_CRONTAB
 done
 
-echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/review_image.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+# cat $TEMP_CRONTAB
+
+echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/review_media.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/write_media_review_in_discord.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 
 
