@@ -1,21 +1,13 @@
 # frozen_string_literal: true
 
-require 'bas/utils/postgres/request'
+require_relative 'base'
 
 module Services
   ##
   # This class is an implementation of the Write::Base interface, specifically designed
   # to wtite to a PostgresDB used as <b>common storage</b>.
   #
-  class AddWebsite
-    attr_reader :config
-
-    WEBSITE_TABLE = 'websites'
-    WEBSITE_URL = 'url'
-    CHATS_IDS_TABLE = 'telegram_chats'
-    CHATS_IDS_ID = 'chat_id'
-    RELATION_TABLE = 'websites_telegram_chats'
-
+  class AddWebsite < Services::Base
     def initialize(config)
       @config = config
     end
@@ -63,15 +55,6 @@ module Services
       query = "INSERT INTO #{RELATION_TABLE} (website_id, telegram_chat_id) VALUES (#{website_id}, #{chat_id});"
 
       execute_query(query)
-    end
-
-    def execute_query(query)
-      params = {
-        connection: config[:connection],
-        query: 
-      }
-
-      Utils::Postgres::Request.execute(params)
     end
   end
 end
