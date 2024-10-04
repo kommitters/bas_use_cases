@@ -12,10 +12,13 @@ set +a
 export GEM_HOME="/app/vendor/bundle/ruby/3.3.0"
 export GEM_PATH="/app/vendor/bundle/ruby/3.3.0"
 
+# UPDATE DATABASE
+ruby /app/scripts/update_database.rb
+
 echo "Starting telegram bot"
 
 # ACTIVATE BOT
-ruby /app/bin/web_availability.rb &
+ruby /app/bin/web_availability.rb >> /app/logs.log 2>&1 &
 
 echo "Starting cronjobs"
 

@@ -6,7 +6,7 @@ require_relative '../bots/notify_telegram'
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  dbname: 'bas',
+  dbname: 'telegram_web_availability',
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
@@ -18,6 +18,7 @@ options = {
     tag: 'ReviewWebsiteAvailability'
   },
   process_options: {
+    connection:,
     token: ENV.fetch('TELEGRAM_BOT_TOKEN')
   },
   write_options: {
@@ -32,5 +33,5 @@ begin
 
   bot.execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info("(NotifyTelegram) #{e.message}")
 end

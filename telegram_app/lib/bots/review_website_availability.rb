@@ -29,7 +29,10 @@ module Bot
       if response.code == 200
         { success: { review: nil }.merge(read_response.data) }
       else
-        { success: { notification: notification(response) }.merge(read_response.data) }
+        notification = notification(response)
+        logs = request_log(response)
+
+        { success: { notification:, logs: }.merge(read_response.data) }
       end
     end
 
@@ -54,6 +57,15 @@ module Bot
       url = read_response.data['url']
 
       HTTParty.get(url, {})
+    end
+
+    def request_log(response)
+      {
+        body: response.body.inspect,
+        headers: response.headers.inspect,
+        request: response.request.inspect,
+        response: response.response.inspect
+      }
     end
 
     def notification(response)

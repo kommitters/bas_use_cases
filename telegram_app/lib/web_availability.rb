@@ -17,7 +17,7 @@ module Bots
     attr_accessor :user_data
 
     MAX_USER_LIMIT = 2
-    START = 'Hello! Use /add_website to add a new website.'
+    START = 'Hello! Use any of the available commands: /add_website, /list_websites, /remove_website'
     ADD_WEBSITE = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
     INVALID = 'Invalid URL. Please enter a valid website.'
@@ -78,7 +78,7 @@ module Bots
         
         send_message(REMOVE_INSTRUCTION)
 
-        message = "Click the website you want to remove: \n#{remove_options}"
+        message = "Active websites: \n#{remove_options}"
 
         send_message(message)
       else

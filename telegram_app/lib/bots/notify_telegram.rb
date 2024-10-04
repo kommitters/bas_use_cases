@@ -3,6 +3,7 @@
 require 'telegram/bot'
 require 'bas/bot/base'
 require 'bas/read/postgres'
+require 'bas/utils/postgres/request'
 require 'bas/write/postgres'
 
 module Bot
@@ -43,7 +44,33 @@ module Bot
     def telegram_bot
       bot = Telegram::Bot::Client.new(process_options[:token])
 
-      bot.api.send_message(chat_id: read_response.data['chat_id'], text: read_response.data['notification'])
+      website_users.each do |chat_id|
+        bot.api.send_message(chat_id: , text: read_response.data['notification'])
+      end
+    end
+
+    def website_users
+      requests = Utils::Postgres::Request.execute(params)
+
+      requests.values.flatten
+    end
+
+    def params
+      {
+        connection: process_options[:connection],
+        query: query
+      }
+    end
+
+    def query
+      """
+      SELECT chat_id
+      FROM 
+        telegram_chats 
+        JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id 
+        JOIN websites on websites.id = website_id 
+      WHERE url = '#{read_response.data['url']}'
+      """
     end
   end
 end

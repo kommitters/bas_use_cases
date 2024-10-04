@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../lib/web_availability'
+require_relative '../lib/services/list_websites'
 
 # Telegram bot execution module
 module WebAvailability
@@ -9,7 +10,7 @@ module WebAvailability
   connection = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
-    dbname: 'bas',
+    dbname: 'telegram_web_availability',
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }

@@ -6,7 +6,7 @@ require_relative '../bots/review_website_availability'
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  dbname: 'bas',
+  dbname: 'telegram_web_availability',
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
@@ -29,5 +29,5 @@ begin
 
   bot.execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info("(ReviewWebsiteAvailability) #{e.message}")
 end
