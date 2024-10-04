@@ -5,6 +5,7 @@ require 'telegram/bot'
 
 require_relative 'services/add_website'
 require_relative 'services/list_websites'
+require_relative 'services/remove_website'
 
 module Bots
   ##
@@ -23,6 +24,8 @@ module Bots
     INSTRUCTION = 'Send /add_website to add a website.'
     LIMIT_EXCEEDED = 'The website can not be saved. You exceeded the maximum amount'
     NO_WEBSITES = 'You dont have websites saved'
+    REMOVE_INSTRUCTION = "Send the number of the website you want to remove"
+    WEBSITE_REMOVED = "The website was removed!"
 
     def initialize(token, connection)
       @bot = Telegram::Bot::Client.new(token)
@@ -47,6 +50,7 @@ module Bots
       when '/start' then start
       when '/add_website' then add_website
       when '/list_websites' then list_websites
+      when '/remove_website' then remove_website
       else input_response
       end
     end
@@ -68,9 +72,25 @@ module Bots
       send_message(message)
     end
 
+    def remove_website
+      if user_websites.size > 0
+        user_data[user_message.chat.id] = :awaiting_remove_url
+        
+        send_message(REMOVE_INSTRUCTION)
+
+        message = "Click the website you want to remove: \n#{remove_options}"
+
+        send_message(message)
+      else
+        send_message(NO_WEBSITES)
+      end
+    end
+
     def input_response
       if user_data[user_message.chat.id] == :awaiting_url
         validate_website
+      elsif user_data[user_message.chat.id] == :awaiting_remove_url
+        validate_remove_option
       else
         send_message(INSTRUCTION)
       end
@@ -81,6 +101,17 @@ module Bots
         add_new_website
       else
         send_message(INVALID)
+      end
+    end
+
+    def validate_remove_option
+      option = user_message.text  
+    
+      if websites_options[option].nil?
+        remove_website
+      else
+        delete_website(websites_options[option])
+        send_message(WEBSITE_REMOVED)
       end
     end
 
@@ -103,6 +134,19 @@ module Bots
     def user_websites
       config = { connection:, chat_id: user_message.chat.id }
       Services::ListWebsites.new(config).execute
+    end
+
+    def delete_website(website)
+      config = { connection:, website:, chat_id: user_message.chat.id }
+      Services::RemoveWebsite.new(config).execute
+    end
+
+    def remove_options
+      websites_options.map { |index, website| "- #{index} : \"#{website}\"" }.join("\n")
+    end
+
+    def websites_options
+      Hash[user_websites.each_with_index.map { |website, index| [index.to_s, website] }]
     end
 
     def send_message(text)

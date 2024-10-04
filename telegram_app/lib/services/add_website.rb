@@ -39,18 +39,6 @@ module Services
       chat[0]['id']
     end
 
-    def query_item(table, attribute, value)
-      query = "SELECT id FROM #{table} WHERE #{attribute}='#{value}';"
-
-      execute_query(query)
-    end
-
-    def insert_item(table, attribute, value)
-      query = "INSERT INTO #{table} (#{attribute}) VALUES ('#{value}') ON CONFLICT (#{attribute}) DO NOTHING RETURNING id;"
-
-      execute_query(query)
-    end
-
     def insert_relation(website_id, chat_id)
       query = "INSERT INTO #{RELATION_TABLE} (website_id, telegram_chat_id) VALUES (#{website_id}, #{chat_id});"
 
