@@ -5,4 +5,6 @@ ruby '3.3.3'
 
 gem 'rspec'
 
-gem 'bas', '~> 1.1'
+gem 'bas', '1.5.0'
+
+gem 'discordrb'

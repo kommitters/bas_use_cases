@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Absolute path to the directory containing the use cases execution
-SCRIPTS_DIR="/app/src/execution"
-RUBY_PATH="/app/vendor/bundle/ruby/3.3.0"
+SCRIPTS_DIR="/app/lib/cronjobs"
+RUBY_PATH="/usr/local/bundle"
 
 # Environment variables
 ENV_VARS=(
@@ -37,7 +37,7 @@ do
 done
 
 # cat $TEMP_CRONTAB
-
+echo $TEMP_CRONTAB
 echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/review_media.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/write_media_review_in_discord.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 

@@ -2,16 +2,17 @@
 
 require 'logger'
 require 'bas/bot/review_media'
+puts "IN RM"
 
 connection = {
-  openai_secret: ENV.fetch('OPENAI_SECRET'),
-  openai_assistant: ENV.fetch('OPENAI_ASSISTANT_ID'),
+  openai_secret: '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',
+  openai_assistant: 'asst_mjRHSJH23rsunYzVgOAnxImf',
+  db_host: 'bas_db',
+  db_port: '5432',
+  db_name: 'bas',
   table_name: 'review_images',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+  db_user: 'postgres',
+  db_password: 'postgres'
 }
 
 options = {
@@ -21,8 +22,8 @@ options = {
     tag: 'ReviewMediaRequest'
   },
   process_options: {
-    secret: ENV.fetch('OPENAI_SECRET'),
-    assistant_id:  ENV.fetch('OPENAI_ASSISTANT_ID'),
+    secret: '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',
+    assistant_id: 'asst_mjRHSJH23rsunYzVgOAnxImf',
     media_type: 'images'
   },
   write_options: {

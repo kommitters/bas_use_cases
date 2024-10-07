@@ -7,17 +7,18 @@ module DiscordImages
   class Error < StandardError; end
 
   connection = {
-    host: ENV.fetch('DB_HOST'),
-    port: ENV.fetch('DB_PORT'),
+    host: 'bas_db',
+    port: '5432',
     dbname: 'bas',
     table_name: 'review_images',
-    user: ENV.fetch('POSTGRES_USER'),
-    password: ENV.fetch('POSTGRES_PASSWORD')
+    user: 'postgres',
+    password: 'postgres'
   }
 
-  token = ENV.fetch('DISCORD_BOT_TOKEN')
+  token = 'MTI4NDE1MzY1NTc1NDM2MzA0MQ.GdL5Fk.tU9kMLBbk4E0v3XVms0H90SBnlbC5mSljhAcQk'
+  client_id = '1285982248813990028'
 
-  bot = Bots::DiscordImages.new(token, connection)
-
-  bot.execute
+  bdi = Bots::DiscordImages.new(token, client_id, connection)
+  bdi.execute
+  bdi.bot.run
 end

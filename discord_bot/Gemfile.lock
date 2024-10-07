@@ -14,7 +14,7 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    bas (1.4.2)
+    bas (1.5.0)
       gmail_xoauth (~> 0.4.1)
       google-api-client (~> 0.53)
       googleauth (~> 1.11)
@@ -51,7 +51,17 @@ GEM
       logger
     faraday-net_http (3.3.0)
       net-http
+    ffi (1.17.0)
+    ffi (1.17.0-aarch64-linux-gnu)
+    ffi (1.17.0-aarch64-linux-musl)
+    ffi (1.17.0-arm-linux-gnu)
+    ffi (1.17.0-arm-linux-musl)
+    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0-x86-linux-gnu)
+    ffi (1.17.0-x86-linux-musl)
+    ffi (1.17.0-x86_64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
+    ffi (1.17.0-x86_64-linux-musl)
     gems (1.2.0)
     gmail_xoauth (0.4.3)
       oauth (>= 0.3.6)
@@ -99,9 +109,10 @@ GEM
       base64
     logger (1.6.1)
     md_to_notion (0.1.4)
-    mime-types (3.5.2)
+    mime-types (3.6.0)
+      logger
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2024.0903)
+    mime-types-data (3.2024.1001)
     mini_mime (1.1.5)
     minitest (5.25.1)
     multi_json (1.15.0)
@@ -134,7 +145,6 @@ GEM
     os (1.1.4)
     pg (1.5.8)
     public_suffix (6.0.1)
-    rake (13.2.1)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -154,7 +164,7 @@ GEM
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.1)
+    rspec-mocks (3.13.2)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
@@ -184,12 +194,23 @@ GEM
       websocket
 
 PLATFORMS
-  x86_64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  ruby
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
-  bas (= 1.4.2)
-  discordrb
-  rake
+  bas (= 1.5.0)
+  discordrb (= 3.5)
+  ffi (>= 1.9.24)
+  net-smtp (~> 0.4.0.1)
   rspec
 
 BUNDLED WITH
