@@ -11,8 +11,8 @@ module DiscordImages
     port: '5432',
     dbname: 'bas',
     table_name: 'review_images',
-    user: 'postgres',
-    password: 'postgres'
+    user: 'admin',
+    password: 'WzxuH87TADlaGd49VGcP'
   }
 
   token = 'MTI4NDE1MzY1NTc1NDM2MzA0MQ.GdL5Fk.tU9kMLBbk4E0v3XVms0H90SBnlbC5mSljhAcQk'

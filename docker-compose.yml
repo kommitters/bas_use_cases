@@ -55,6 +55,8 @@ services:
     build: .
     volumes:
       - .env:/app/.env
+      - ./Gemfile:/app/Gemfile
+      - ./Gemfile.lock:/app/Gemfile.lock
       - ./discord_bot:/app
     depends_on:
       - bas_db

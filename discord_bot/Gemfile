@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-source 'https://rubygems.org'
-
-gem 'bas', '1.5.0'
-
-gem 'rspec'
-gem 'ffi', '>= 1.9.24'
-gem 'discordrb', '3.5'

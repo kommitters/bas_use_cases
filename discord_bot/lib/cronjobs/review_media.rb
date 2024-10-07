@@ -5,14 +5,11 @@ require 'bas/bot/review_media'
 puts "IN RM"
 
 connection = {
-  openai_secret: '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',
-  openai_assistant: 'asst_mjRHSJH23rsunYzVgOAnxImf',
-  db_host: 'bas_db',
-  db_port: '5432',
-  db_name: 'bas',
-  table_name: 'review_images',
-  db_user: 'postgres',
-  db_password: 'postgres'
+  host: 'bas_db',
+  port: '5432',
+  dbname: 'bas',
+  user: 'admin',
+  password: 'WzxuH87TADlaGd49VGcP'
 }
 
 options = {
@@ -22,6 +19,8 @@ options = {
     tag: 'ReviewMediaRequest'
   },
   process_options: {
+    openai_secret: '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',
+    openai_assistant: 'asst_mjRHSJH23rsunYzVgOAnxImf',
     secret: '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',
     assistant_id: 'asst_mjRHSJH23rsunYzVgOAnxImf',
     media_type: 'images'
@@ -29,7 +28,7 @@ options = {
   write_options: {
     connection:,
     db_table: 'review_images',
-    tag: 'ReviewText'
+    tag: 'ReviewImage'
   }
 }
 
