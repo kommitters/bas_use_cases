@@ -15,7 +15,7 @@ options = {
   read_options: {
     connection:,
     db_table: 'telegram_web_availability',
-    tag: 'ReviewWebsiteAvailability'
+    tag: 'WebsiteAvailability'
   },
   process_options: {
     connection:,

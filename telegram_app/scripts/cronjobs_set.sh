@@ -32,7 +32,6 @@ do
 done
 
 echo "*/1 * * * * /usr/local/bin/ruby /app/lib/cronjobs/fetch_webistes_review_request.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-echo "*/1 * * * * /usr/local/bin/ruby /app/lib/cronjobs/write_domain_review_request.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 echo "*/1 * * * * /usr/local/bin/ruby /app/lib/cronjobs/review_website_availability.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 echo "*/1 * * * * /usr/local/bin/ruby /app/lib/cronjobs/notify_telegram.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 

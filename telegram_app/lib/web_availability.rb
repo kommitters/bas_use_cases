@@ -112,7 +112,7 @@ module Bots
     end
 
     def validate_remove_option
-      option = valid_url
+      option = user_message.text
     
       if websites_options[option].nil?
         remove_website

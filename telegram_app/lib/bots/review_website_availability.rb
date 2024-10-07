@@ -23,17 +23,15 @@ module Bot
     #
     def process
       return { success: { review: nil } } if unprocessable_response
+      
+      read_response.data['urls'].each do |url_obj|
+        url = url_obj['url']
+        response = availability(url)
 
-      response = availability
-
-      if response.code == 200
-        { success: { review: nil }.merge(read_response.data) }
-      else
-        notification = notification(response)
-        logs = request_log(response)
-
-        { success: { notification:, logs: }.merge(read_response.data) }
+        response.is_a?(Hash) ? write_invalid_response(response, url) : manage_response(response)
       end
+
+      { success: { review: :ok } }
     end
 
     # write function to execute the PostgresDB write component
@@ -53,10 +51,39 @@ module Bot
       }
     end
 
-    def availability
-      url = read_response.data['url']
+    def availability(url)
+      begin
+        HTTParty.get(url, {})
+      rescue StandardError => error
+        { error: }
+      end
+    end
 
-      HTTParty.get(url, {})
+    def manage_response(response)
+      response.code == 200 ? write_ok_response(response) : write_error_response(response)
+    end
+
+    def write_ok_response(response)
+      logs = request_log(response)
+      write_data = { success: { notification: :ok, logs:, url: response.request.uri } }
+      
+      Write::Postgres.new(process_options, write_data).execute
+    end
+
+    def write_error_response(response)
+      notification = notification(response)
+      logs = request_log(response)
+
+      write_data = { success: { notification:, logs:, url: response.request.uri } }
+
+      Write::Postgres.new(process_options, write_data).execute
+    end
+
+    def write_invalid_response(response, url)
+      notification = invalid_notifiction(url, response[:error])
+      write_data = { success: { notification:, logs: response[:error], url: } }
+      
+      Write::Postgres.new(process_options, write_data).execute
     end
 
     def request_log(response)
@@ -69,7 +96,11 @@ module Bot
     end
 
     def notification(response)
-      "⚠️ The Domain #{read_response.data['url']} is down with an error code of #{response.code}"
+      "⚠️ The Domain #{response.request.uri} is down with an error code of #{response.code}"
+    end
+
+    def invalid_notifiction(url, reason)
+      "⚠️ The Domain #{url} is down: #{reason}"
     end
   end
 end
