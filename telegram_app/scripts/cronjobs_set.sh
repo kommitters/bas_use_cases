@@ -2,7 +2,7 @@
 
 # Absolute path to the directory containing the use cases execution
 SCRIPTS_DIR="/app/src/execution"
-RUBY_PATH="/app/vendor/bundle/ruby/3.3.0"
+RUBY_PATH="/usr/local/bundle"
 
 # Environment variables
 ENV_VARS=(

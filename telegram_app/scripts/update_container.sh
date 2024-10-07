@@ -9,18 +9,17 @@ set -a
 source $ENV_FILE
 set +a
 
-export GEM_HOME="/app/vendor/bundle/ruby/3.3.0"
-export GEM_PATH="/app/vendor/bundle/ruby/3.3.0"
+export GEM_HOME="/usr/local/bundle"
+export GEM_PATH="/usr/local/bundle"
 
 # UPDATE DATABASE
+echo "Starting database update"
 ruby /app/scripts/update_database.rb
 
-echo "Starting telegram bot"
-
 # ACTIVATE BOT
+echo "Starting telegram bot"
 ruby /app/bin/web_availability.rb >> /app/logs.log 2>&1 &
 
-echo "Starting cronjobs"
-
 # UPDATE CRONJOBS
+echo "Starting cronjobs"
 bash /app/scripts/cronjobs_set.sh

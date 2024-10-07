@@ -17,7 +17,7 @@ module Bots
     attr_accessor :user_data
 
     MAX_USER_LIMIT = 2
-    START = 'Hello! Use any of the available commands: /add_website, /list_websites, /remove_website'
+    START = 'Hello! Use any of the available commands: -/add_website -/list_websites -/remove_website'
     ADD_WEBSITE = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
     INVALID = 'Invalid URL. Please enter a valid website.'
@@ -26,6 +26,7 @@ module Bots
     NO_WEBSITES = 'You dont have websites saved'
     REMOVE_INSTRUCTION = "Send the number of the website you want to remove"
     WEBSITE_REMOVED = "The website was removed!"
+    PROCESSING = "Processing... 🏃‍♂️"
 
     def initialize(token, connection)
       @bot = Telegram::Bot::Client.new(token)
@@ -65,6 +66,8 @@ module Bots
     end
 
     def list_websites
+      send_message(PROCESSING)
+
       websites = user_websites.map { |website| "- #{website}" }
 
       message = websites.size > 0 ? "Your websites are: \n#{websites.join("\n")}" : NO_WEBSITES
@@ -73,6 +76,8 @@ module Bots
     end
 
     def remove_website
+      send_message(PROCESSING)
+
       if user_websites.size > 0
         user_data[user_message.chat.id] = :awaiting_remove_url
         
@@ -87,6 +92,8 @@ module Bots
     end
 
     def input_response
+      send_message(PROCESSING)
+
       if user_data[user_message.chat.id] == :awaiting_url
         validate_website
       elsif user_data[user_message.chat.id] == :awaiting_remove_url
@@ -97,7 +104,7 @@ module Bots
     end
 
     def validate_website
-      if user_message.text.start_with?('http://', 'https://')
+      if valid_url
         add_new_website
       else
         send_message(INVALID)
@@ -105,7 +112,7 @@ module Bots
     end
 
     def validate_remove_option
-      option = user_message.text  
+      option = valid_url
     
       if websites_options[option].nil?
         remove_website
@@ -127,7 +134,7 @@ module Bots
     end
 
     def save_website
-      config = { connection:, chat_id: user_message.chat.id, url: user_message.text }
+      config = { connection:, chat_id: user_message.chat.id, url: valid_url }
       Services::AddWebsite.new(config).execute
     end
 
@@ -139,6 +146,12 @@ module Bots
     def delete_website(website)
       config = { connection:, website:, chat_id: user_message.chat.id }
       Services::RemoveWebsite.new(config).execute
+    end
+
+    def valid_url
+      input = user_message.text
+      
+      input.start_with?('http://', 'https://') ? input : "https://#{input}"
     end
 
     def remove_options

@@ -75,6 +75,8 @@ services:
     volumes:
       - .env:/app/.env
       - ./telegram_app:/app
+      - ./Gemfile:/app/Gemfile
+      - ./Gemfile.lock:/app/Gemfile.lock
     depends_on:
       - bas_db
     networks:
