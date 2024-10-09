@@ -12,12 +12,13 @@ module Bots
   # Telegram base bot to process chat commands to add availability websites
   # check requests# frozen_string_literal: true
   #
-  class WebAvailability
+  class WebAvailability # rubocop:disable Metrics/ClassLength
     attr_reader :bot, :user_message, :connection
     attr_accessor :user_data
 
     MAX_USER_LIMIT = 2
-    START = 'Hello! Use any of the available commands: -/add_website -/list_websites -/remove_website'
+    COMMANDS = %w[add_website list_websites remove_website].freeze
+    START = 'Hello! Use any of the available commands:'
     ADD_WEBSITE = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
     INVALID = 'Invalid URL. Please enter a valid website.'
@@ -57,7 +58,10 @@ module Bots
     end
 
     def start
-      send_message(START)
+      commands = COMMANDS.map { |command| "- /#{command} " }
+      message = "#{START}\n#{commands.join("\n")}"
+
+      send_message(message)
     end
 
     def add_website
