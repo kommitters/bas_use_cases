@@ -2,24 +2,23 @@
 
 require 'logger'
 require 'bas/bot/write_media_review_in_discord'
-puts "IN WMFD"
 
 connection = {
-  host: 'bas_db',
-  port: '5432',
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
   dbname: 'bas',
-  user: 'postgres',
-  password: 'postgres'
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
 options = {
   read_options: {
     connection:,
     db_table: 'review_images',
-    tag: 'ReviewText'
+    tag: 'ReviewImage'
   },
   process_options: {
-    secret_token: "Bot MTI4NDE1MzY1NTc1NDM2MzA0MQ.GdL5Fk.tU9kMLBbk4E0v3XVms0H90SBnlbC5mSljhAcQk",
+    secret_token: "Bot #{ENV.fetch('DISCORD_BOT_TOKEN')}"
   },
   write_options: {
     connection:,

@@ -17,6 +17,9 @@ echo "Starting discord bot"
 # ACTIVATE BOT
 ruby /app/bin/discord_images.rb &
 
+# CREATE DB
+ruby /app/scripts/create_review_media_table.rb
+
 echo "Starting cronjobs"
 
 # UPDATE CRONJOBS

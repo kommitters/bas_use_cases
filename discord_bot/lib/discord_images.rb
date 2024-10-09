@@ -3,6 +3,7 @@ require 'logger'
 require 'discordrb'
 
 require 'bas/utils/discord/request'
+require 'bas/write/postgres'
 
 module Bots
   ##
@@ -30,10 +31,11 @@ module Bots
     def process_message(message, event)
       if message.attachments.any?
         event.respond("Hi, I'm processing your image...")
+
         response = Utils::Discord::Request.get_discord_images(message)
 
         if !response.nil?
-          { success: response }
+          save_in_shared_storage(response)
         else
           { error: "response is empty" }
         end
@@ -42,5 +44,15 @@ module Bots
       end
     end
 
+    def save_in_shared_storage(response)
+      process_options = {
+        connection:,
+        db_table: "review_images",
+        tag: "ReviewMediaRequest"
+      }
+
+      write_data = { success: response }
+      Write::Postgres.new(process_options, write_data).execute
+    end
   end
 end
