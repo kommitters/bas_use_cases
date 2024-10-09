@@ -27,10 +27,7 @@ module Services
     end
 
     def delete_website(website_id, chat_id)
-      query = <<-SQL.squish
-        DELETE FROM websites_telegram_chats
-        WHERE website_id = '#{website_id}' AND telegram_chat_id = '#{chat_id}';
-      SQL
+      query = "DELETE FROM websites_telegram_chats WHERE website_id = #{website_id} AND telegram_chat_id = #{chat_id};"
 
       execute_query(query)
     end

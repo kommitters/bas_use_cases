@@ -15,13 +15,7 @@ module Services
     private
 
     def user_websites
-      query = <<-SQL.squish
-        SELECT url
-        FROM telegram_chats
-        JOIN websites_telegram_chats ON telegram_chats.id = telegram_chat_id
-        JOIN websites ON websites.id = website_id
-        WHERE chat_id = '#{config[:chat_id]}';
-      SQL
+      query = "SELECT url FROM telegram_chats JOIN websites_telegram_chats ON telegram_chats.id = telegram_chat_id JOIN websites ON websites.id = website_id WHERE chat_id = '#{config[:chat_id]}';" # rubocop:disable Layout/LineLength
 
       execute_query(query)
     end

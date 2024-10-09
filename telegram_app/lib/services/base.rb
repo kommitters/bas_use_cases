@@ -28,10 +28,7 @@ module Services
     end
 
     def insert_item(table, attribute, value)
-      query = <<-SQL.squish
-        INSERT INTO '#{table}' ('#{attribute}')
-        VALUES ('#{value}') ON CONFLICT ('#{attribute}') DO NOTHING RETURNING id;
-      SQL
+      query = "INSERT INTO #{table} (#{attribute}) VALUES ('#{value}') ON CONFLICT (#{attribute}) DO NOTHING RETURNING id;" # rubocop:disable Layout/LineLength
 
       execute_query(query)
     end

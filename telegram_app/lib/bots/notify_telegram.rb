@@ -63,14 +63,7 @@ module Bot
     end
 
     def query
-      <<-SQL.squish
-        SELECT chat_id
-        FROM
-          telegram_chats
-          JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id
-          JOIN websites on websites.id = website_id
-        WHERE url = '#{read_response.data['url']}'
-      SQL
+      "SELECT chat_id FROM telegram_chats JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id JOIN websites on websites.id = website_id WHERE url = '#{read_response.data['url']}'" # rubocop:disable Layout/LineLength
     end
   end
 end
