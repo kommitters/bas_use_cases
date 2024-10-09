@@ -19,7 +19,7 @@ options = {
   },
   process_options: {
     secret: ENV.fetch('OPENAI_SECRET'),
-    assistant_id: ENV.fetch('OPENAI_ASSISTANT_ID'),
+    assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
     media_type: 'images'
   },
   write_options: {
