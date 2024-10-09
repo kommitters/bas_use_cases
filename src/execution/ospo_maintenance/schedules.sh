@@ -8,7 +8,7 @@ CRON_JOBS=(
     "*/10 * * * * projects/chaincerts_dapp.rb"
     "*/10 * * * * verify_issue_existance_in_notion.rb"
     "*/10 * * * * create_work_item.rb"
-    "*/10 * * * update_work_item.rb"
+    "*/10 * * * * update_work_item.rb"
 )
 
 # Temporary file to store the new crontab

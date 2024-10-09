@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+# Gemfile
+source 'https://rubygems.org'
+
+gem 'bas', '1.4.2'
+
+gem 'rake' # for task management
+gem 'rspec' # for testing, if you prefer RSpec
+
+gem 'telegram-bot-ruby', '~> 1.0'

@@ -26,6 +26,14 @@ jobs:
         bundle config set path vendor/bundle
         bundle install
 
+    - name: Install Telegram Bot Dependencies
+      run: |
+        cd telegram_app
+        gem install bundler
+        bundle config set path vendor/bundle
+        bundle install
+        cd ..
+
     - name: Create env file
       run: touch .env
 
@@ -71,6 +79,7 @@ jobs:
         echo -e 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID='${OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID}>> .env
         echo -e 'DISCORD_BOT_TOKEN='${DISCORD_BOT_TOKEN}>> .env
         echo -e 'DISCORD_CLIENT_ID='${DISCORD_CLIENT_ID}>> .env
+        echo -e 'TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}>> .env
 
       env:
         # DB CONNECTION
@@ -145,6 +154,9 @@ jobs:
         # DISCORD BOT
         DISCORD_BOT_TOKEN: ${{secrets.DISCORD_BOT_TOKEN}}
         DISCORD_CLIENT_ID: ${{secrets.DISCORD_CLIENT_ID}}
+
+        # TELEGRAM BOT
+        TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
 
     - name: compress project
       run: zip -r bas_scripts.zip .
