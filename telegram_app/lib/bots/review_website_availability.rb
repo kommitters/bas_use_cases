@@ -23,7 +23,7 @@ module Bot
     #
     def process
       return { success: { review: nil } } if unprocessable_response
-      
+
       read_response.data['urls'].each do |url_obj|
         url = url_obj['url']
         response = availability(url)
@@ -52,11 +52,9 @@ module Bot
     end
 
     def availability(url)
-      begin
-        HTTParty.get(url, {})
-      rescue StandardError => error
-        { error: }
-      end
+      HTTParty.get(url)
+    rescue StandardError => e
+      { error: e.message }
     end
 
     def manage_response(response)
@@ -66,7 +64,6 @@ module Bot
     def write_ok_response(response)
       logs = request_log(response)
       write_data = { success: { notification: :ok, logs:, url: response.request.uri } }
-      
       Write::Postgres.new(process_options, write_data).execute
     end
 
@@ -82,7 +79,6 @@ module Bot
     def write_invalid_response(response, url)
       notification = invalid_notifiction(url, response[:error])
       write_data = { success: { notification:, logs: response[:error], url: } }
-      
       Write::Postgres.new(process_options, write_data).execute
     end
 

@@ -10,3 +10,5 @@ gem 'bas', '~> 1.5'
 gem 'discordrb'
 
 gem 'telegram-bot-ruby', '~> 1.0'
+
+gem 'rubocop'

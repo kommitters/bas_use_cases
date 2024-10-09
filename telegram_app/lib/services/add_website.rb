@@ -8,15 +8,11 @@ module Services
   # to wtite to a PostgresDB used as <b>common storage</b>.
   #
   class AddWebsite < Services::Base
-    def initialize(config)
-      @config = config
-    end
-
     # Execute the Postgres utility to write data in the <b>common storage</b>
     #
     def execute
-      website_id = process_website()
-      chat_id = process_chat()
+      website_id = process_website
+      chat_id = process_chat
 
       insert_relation(website_id, chat_id)
     end

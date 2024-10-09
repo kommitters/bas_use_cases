@@ -24,9 +24,9 @@ module Bots
     INSTRUCTION = 'Send /add_website to add a website.'
     LIMIT_EXCEEDED = 'The website can not be saved. You exceeded the maximum amount'
     NO_WEBSITES = 'You dont have websites saved'
-    REMOVE_INSTRUCTION = "Send the number of the website you want to remove"
-    WEBSITE_REMOVED = "The website was removed!"
-    PROCESSING = "Processing... 🏃‍♂️"
+    REMOVE_INSTRUCTION = 'Send the number of the website you want to remove'
+    WEBSITE_REMOVED = 'The website was removed!'
+    PROCESSING = 'Processing... 🏃‍♂️'
 
     def initialize(token, connection)
       @bot = Telegram::Bot::Client.new(token)
@@ -70,7 +70,7 @@ module Bots
 
       websites = user_websites.map { |website| "- #{website}" }
 
-      message = websites.size > 0 ? "Your websites are: \n#{websites.join("\n")}" : NO_WEBSITES
+      message = !websites.empty? ? "Your websites are: \n#{websites.join("\n")}" : NO_WEBSITES
 
       send_message(message)
     end
@@ -78,9 +78,8 @@ module Bots
     def remove_website
       send_message(PROCESSING)
 
-      if user_websites.size > 0
+      if !user_websites.empty?
         user_data[user_message.chat.id] = :awaiting_remove_url
-        
         send_message(REMOVE_INSTRUCTION)
 
         message = "Active websites: \n#{remove_options}"
@@ -113,7 +112,6 @@ module Bots
 
     def validate_remove_option
       option = user_message.text
-    
       if websites_options[option].nil?
         remove_website
       else
@@ -150,7 +148,6 @@ module Bots
 
     def valid_url
       input = user_message.text
-      
       input.start_with?('http://', 'https://') ? input : "https://#{input}"
     end
 

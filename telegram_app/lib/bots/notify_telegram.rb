@@ -45,7 +45,7 @@ module Bot
       bot = Telegram::Bot::Client.new(process_options[:token])
 
       website_users.each do |chat_id|
-        bot.api.send_message(chat_id: , text: read_response.data['notification'])
+        bot.api.send_message(chat_id:, text: read_response.data['notification'])
       end
     end
 
@@ -58,19 +58,19 @@ module Bot
     def params
       {
         connection: process_options[:connection],
-        query: query
+        query:
       }
     end
 
     def query
-      """
-      SELECT chat_id
-      FROM 
-        telegram_chats 
-        JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id 
-        JOIN websites on websites.id = website_id 
-      WHERE url = '#{read_response.data['url']}'
-      """
+      <<-SQL.squish
+        SELECT chat_id
+        FROM
+          telegram_chats
+          JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id
+          JOIN websites on websites.id = website_id
+        WHERE url = '#{read_response.data['url']}'
+      SQL
     end
   end
 end

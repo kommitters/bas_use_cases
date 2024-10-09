@@ -3,6 +3,10 @@
 require_relative 'base'
 
 module Services
+  ##
+  # Telegram service to remove association between users and domains
+  # when the user execute the /remove_webiste command
+  #
   class RemoveWebsite < Services::Base
     def execute
       delete_website(website_id, chat_id)
@@ -13,7 +17,7 @@ module Services
     def website_id
       website = query_item(WEBSITE_TABLE, WEBSITE_URL, config[:website])
 
-      website.first["id"]
+      website.first['id']
     end
 
     def chat_id
@@ -23,11 +27,10 @@ module Services
     end
 
     def delete_website(website_id, chat_id)
-      query = """
-        DELETE 
-        FROM websites_telegram_chats
-        WHERE website_id = #{website_id} AND telegram_chat_id = #{chat_id}
-      """
+      query = <<-SQL.squish
+        DELETE FROM websites_telegram_chats
+        WHERE website_id = '#{website_id}' AND telegram_chat_id = '#{chat_id}';
+      SQL
 
       execute_query(query)
     end

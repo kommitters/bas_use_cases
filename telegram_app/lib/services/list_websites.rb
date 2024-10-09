@@ -3,6 +3,10 @@
 require_relative 'base'
 
 module Services
+  ##
+  # Telegram service to list websites associated to a user
+  # when a user execute the /list_websites command.
+  #
   class ListWebsites < Services::Base
     def execute
       user_websites.values.flatten
@@ -11,14 +15,13 @@ module Services
     private
 
     def user_websites
-      query = """
-        SELECT url 
-        FROM 
-          telegram_chats 
-          JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id 
-          JOIN websites on websites.id = website_id 
+      query = <<-SQL.squish
+        SELECT url
+        FROM telegram_chats
+        JOIN websites_telegram_chats ON telegram_chats.id = telegram_chat_id
+        JOIN websites ON websites.id = website_id
         WHERE chat_id = '#{config[:chat_id]}';
-      """
+      SQL
 
       execute_query(query)
     end

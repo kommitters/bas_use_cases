@@ -3,6 +3,9 @@
 require 'bas/utils/postgres/request'
 
 module Services
+  ##
+  # Telegram base service to process commands logic and common behavior
+  #
   class Base
     attr_reader :config
 
@@ -11,7 +14,7 @@ module Services
     CHATS_IDS_TABLE = 'telegram_chats'
     CHATS_IDS_ID = 'chat_id'
     RELATION_TABLE = 'websites_telegram_chats'
-    
+
     def initialize(config)
       @config = config
     end
@@ -25,7 +28,10 @@ module Services
     end
 
     def insert_item(table, attribute, value)
-      query = "INSERT INTO #{table} (#{attribute}) VALUES ('#{value}') ON CONFLICT (#{attribute}) DO NOTHING RETURNING id;"
+      query = <<-SQL.squish
+        INSERT INTO '#{table}' ('#{attribute}')
+        VALUES ('#{value}') ON CONFLICT ('#{attribute}') DO NOTHING RETURNING id;
+      SQL
 
       execute_query(query)
     end
@@ -33,7 +39,7 @@ module Services
     def execute_query(query)
       params = {
         connection: config[:connection],
-        query: 
+        query:
       }
 
       Utils::Postgres::Request.execute(params)
