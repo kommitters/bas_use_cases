@@ -10,7 +10,7 @@ module WebAvailability
   connection = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
-    dbname: 'telegram_web_availability',
+    dbname: 'bas',
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }

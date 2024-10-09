@@ -6,7 +6,7 @@ require 'pg'
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: 5432,
-  dbname: 'telegram_web_availability',
+  dbname: 'bas',
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
