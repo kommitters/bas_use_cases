@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../lib/web_availability'
+require_relative '../lib/services/list_websites'
 
 # Telegram bot execution module
 module WebAvailability

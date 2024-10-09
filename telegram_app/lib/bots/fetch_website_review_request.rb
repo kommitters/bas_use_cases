@@ -35,15 +35,14 @@ module Bot
     def params
       {
         connection: process_options[:connection],
-        query: 'SELECT chat_id, url FROM websites WHERE chat_id IS NOT NULL AND url IS NOT NULL;'
+        query: 'SELECT url FROM websites WHERE url IS NOT NULL;'
       }
     end
 
     def normalize_response(requests)
       requests.map do |request|
         {
-          chat_id: request[0],
-          url: request[1]
+          url: request.first
         }
       end
     end

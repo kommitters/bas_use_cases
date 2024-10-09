@@ -162,8 +162,7 @@ CREATE TABLE IF NOT EXISTS github_issues (
 
 CREATE TABLE IF NOT EXISTS websites (
     id SERIAL NOT NULL,
-    chat_id varchar(255),
-    url varchar(255),
+    url varchar(255) NOT NULL UNIQUE,
     inserted_at timestamp
     with
         time zone DEFAULT CURRENT_TIMESTAMP,
@@ -171,6 +170,24 @@ CREATE TABLE IF NOT EXISTS websites (
     with
         time zone DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS telegram_chats (
+    id SERIAL NOT NULL,
+    chat_id varchar(255) NOT NULL UNIQUE,
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS websites_telegram_chats (
+    website_id INT REFERENCES websites(id) ON DELETE CASCADE,
+    telegram_chat_id INT REFERENCES telegram_chats(id) ON DELETE CASCADE,
+    PRIMARY KEY (website_id, telegram_chat_id)
 );
 
 CREATE TABLE IF NOT EXISTS telegram_web_availability (
@@ -190,3 +207,4 @@ CREATE TABLE IF NOT EXISTS telegram_web_availability (
         time zone DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
 );
+

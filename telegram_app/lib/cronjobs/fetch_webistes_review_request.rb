@@ -29,5 +29,5 @@ begin
 
   bot.execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info("(FetchWebsiteReviewRequest) #{e.message}")
 end

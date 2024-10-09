@@ -20,20 +20,6 @@ jobs:
       with:
         ruby-version: 3.3.3
 
-    - name: Install Ruby Dependencies
-      run: |
-        gem install bundler
-        bundle config set path vendor/bundle
-        bundle install
-
-    - name: Install Telegram Bot Dependencies
-      run: |
-        cd telegram_app
-        gem install bundler
-        bundle config set path vendor/bundle
-        bundle install
-        cd ..
-
     - name: Create env file
       run: touch .env
 

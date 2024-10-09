@@ -15,9 +15,10 @@ options = {
   read_options: {
     connection:,
     db_table: 'telegram_web_availability',
-    tag: 'ReviewWebsiteAvailability'
+    tag: 'WebsiteAvailability'
   },
   process_options: {
+    connection:,
     token: ENV.fetch('TELEGRAM_BOT_TOKEN')
   },
   write_options: {
@@ -32,5 +33,5 @@ begin
 
   bot.execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info("(NotifyTelegram) #{e.message}")
 end
