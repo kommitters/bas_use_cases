@@ -4,7 +4,7 @@ require 'bas/bot/write_media_review_in_discord'
 require 'json'
 
 module Write
-  # Service to fetch images from a private message with a Discord bot
+  # Service to send an image review via private message with a Discord bot
   class ImageReviewInDiscord
     def initialize(params)
       @discord_bot_token = params[:discord_bot_token]
