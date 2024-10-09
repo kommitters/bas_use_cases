@@ -6,7 +6,6 @@ require_relative '../../use_cases/review_images/write_image_review_requests'
 
 # Configuration
 params = {
-  notion_secret: ENV.fetch('NOTION_SECRET'),
   table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),

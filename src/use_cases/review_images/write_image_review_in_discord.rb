@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'bas/bot/write_media_review_in_notion'
+require 'bas/bot/write_media_review_in_discord'
 require 'json'
 
 module Write
-  # Service to fetch images from a notion database
-  class ImageReviewInNotion
+  # Service to send an image review via private message with a Discord bot
+  class ImageReviewInDiscord
     def initialize(params)
-      @notion_secret = params[:notion_secret]
+      @discord_bot_token = params[:discord_bot_token]
       @table_name = params[:table_name]
       @db_host = params[:db_host]
       @db_port = params[:db_port]
@@ -19,7 +19,7 @@ module Write
     def execute
       options = { read_options:, process_options:, write_options: }
 
-      bot = Bot::WriteMediaReviewInNotion.new(options)
+      bot = Bot::WriteMediaReviewInDiscord.new(options)
 
       bot.execute
     end
@@ -46,7 +46,7 @@ module Write
 
     def process_options
       {
-        secret: @notion_secret
+        secret_token: @discord_bot_token
       }
     end
 
@@ -54,7 +54,7 @@ module Write
       {
         connection:,
         db_table: @table_name,
-        tag: 'WriteImageReviewInNotion'
+        tag: 'WriteImageReviewInDiscord'
       }
     end
   end

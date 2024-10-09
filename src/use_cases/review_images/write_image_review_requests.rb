@@ -4,10 +4,9 @@ require 'bas/bot/write_media_review_requests'
 require 'json'
 
 module Write
-  # Service to fetch images from a notion database
+  # Service to request a image review sended through private message with a Discord bot
   class ImageReviewRequests
     def initialize(params)
-      @notion_secret = params[:notion_secret]
       @table_name = params[:table_name]
       @db_host = params[:db_host]
       @db_port = params[:db_port]
@@ -40,7 +39,7 @@ module Write
       {
         connection:,
         db_table: @table_name,
-        tag: 'FetchImagesFromNotion'
+        tag: 'FetchImagesFromDiscord'
       }
     end
 

@@ -48,7 +48,26 @@ services:
       resources:
         limits:
           memory: 500M
-  
+
+  discord-bot:
+    container_name: discord_bot
+    restart: always
+    build: .
+    volumes:
+      - .env:/app/.env
+      - ./Gemfile:/app/Gemfile
+      - ./Gemfile.lock:/app/Gemfile.lock
+      - ./discord_bot:/app
+    depends_on:
+      - bas_db
+    networks:
+      - bas_network
+    command: ["bash", "/app/scripts/update_container.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
   telegram-bot:
     container_name: telegram_bot
     restart: always
@@ -65,4 +84,3 @@ services:
       resources:
         limits:
           memory: 100M
-
