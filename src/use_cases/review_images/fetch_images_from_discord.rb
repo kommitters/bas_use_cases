@@ -47,7 +47,7 @@ module Fetch
 
     def process_options
       {
-        secret_token: @discord_bot_token
+        secret_token: @discord_bot_token,
         discord_channel: @discord_channel_id
       }
     end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'logger'
 require 'discordrb'
 
@@ -15,7 +16,7 @@ module Bots
 
     def initialize(token, client_id, connection)
       token = "Bot #{token}"
-      @bot = Discordrb::Bot.new(token: token, client_id: client_id)
+      @bot = Discordrb::Bot.new(token:, client_id:)
       @connection = connection
     end
 
@@ -31,24 +32,27 @@ module Bots
     def process_message(message, event)
       if message.attachments.any?
         event.respond("Hi, I'm processing your image...")
-
-        response = Utils::Discord::Request.get_discord_images(message)
-
-        if !response.nil?
-          save_in_shared_storage(response)
-        else
-          { error: "response is empty" }
-        end
+        get_images(message)
       else
-        event.respond("Please, send me an image to analyze")
+        event.respond('Please, send me an image to analyze')
+      end
+    end
+
+    def get_images(message)
+      response = Utils::Discord::Request.get_discord_images(message)
+
+      if !response.nil?
+        save_in_shared_storage(response)
+      else
+        { error: 'response is empty' }
       end
     end
 
     def save_in_shared_storage(response)
       process_options = {
         connection:,
-        db_table: "review_images",
-        tag: "ReviewMediaRequest"
+        db_table: 'review_images',
+        tag: 'ReviewMediaRequest'
       }
 
       write_data = { success: response }
