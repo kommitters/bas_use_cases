@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 (09.10.2024)
+- Add dicord bot to manage image review requests
+- Update telegram bot to manage list_websites and remove_websites commands
+
 ## 0.5.0 (30.09.2024)
 - Add telegram bot service to process web availability
 
