@@ -7,7 +7,7 @@ require_relative '../../use_cases/review_images/review_image'
 # Configuration
 params = {
   openai_secret: ENV.fetch('OPENAI_SECRET'),
-  openai_assistant: ENV.fetch('OPENAI_ASSISTANT_ID'),
+  openai_assistant: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
   table_name: 'review_images',
   db_host: ENV.fetch('DB_HOST'),
   db_port: ENV.fetch('DB_PORT'),

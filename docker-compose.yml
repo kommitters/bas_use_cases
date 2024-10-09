@@ -67,7 +67,7 @@ services:
       resources:
         limits:
           memory: 100M
-  
+
   telegram-bot:
     container_name: telegram_bot
     restart: always

@@ -4,7 +4,7 @@ require 'bas/bot/write_media_review_requests'
 require 'json'
 
 module Write
-  # Service to fetch images from a thread of Discord channel
+  # Service to request a image review sended through private message with a Discord bot
   class ImageReviewRequests
     def initialize(params)
       @table_name = params[:table_name]
