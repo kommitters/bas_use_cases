@@ -9,6 +9,7 @@ volumes:
       type: none
       o: bind
       device: .
+  cache:
 
 networks:
   bas_network:
@@ -16,6 +17,21 @@ networks:
     name: bas_network
 
 services:
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: bas_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server
+    volumes:
+      - cache:/data
+    networks:
+      - bas_network
+  deploy:
+      resources:
+        limits:
+          memory: 50M
   bas_db:
     image: postgres:13-alpine
     container_name: bas_db
