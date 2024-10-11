@@ -25,6 +25,10 @@ require_relative 'bots/pto_next_week/fetch_next_week_pto_from_notion'
 require_relative 'bots/pto_next_week/humanize_next_week_pto'
 require_relative 'bots/pto_next_week/notify_next_week_pto_in_discord'
 
+require_relative 'bots/support_email/fetch_emails_from_imap'
+require_relative 'bots/support_email/format_emails'
+require_relative 'bots/support_email/notify_support_emails'
+
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
 class FormatBirthdayWorker < UseCase::FormatBirthday; end
@@ -57,3 +61,8 @@ class NotifyPtoInDiscordWorker < UseCase::NotifyPtoInDiscord; end
 class FetchNextWeekPtoFromNotionWorker < UseCase::FetchNextWeekPtoFromNotion; end
 class HumanizeNextWeekPtoWorker < UseCase::HumanizeNextWeekPto; end
 class NotifyNextWeekPtoInDiscordWorker < UseCase::NotifyNextWeekPtoInDiscord; end
+
+# Support emails notification
+class FetchNextWeekPtoFromNotionWorker < UseCase::FetchEmailsFromImap; end
+class FetchNextWeekPtoFromNotionWorker < UseCase::FormatEmailsFromImap; end
+class FetchNextWeekPtoFromNotionWorker < UseCase::NotifySupportEmails; end
