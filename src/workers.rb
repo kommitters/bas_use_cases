@@ -16,6 +16,7 @@ require_relative 'bots/ospo_maintenance/create_work_item'
 require_relative 'bots/ospo_maintenance/update_work_item'
 require_relative 'bots/ospo_maintenance/verify_issue_existance_in_notion'
 require_relative 'bots/ospo_maintenance/projects/chaincerts_smart_contracts'
+require_relative 'bots/ospo_maintenance/projects/bas'
 
 require_relative 'bots/pto/fetch_pto_from_notion'
 require_relative 'bots/pto/humanize_pto'
@@ -61,7 +62,8 @@ class UpdateWorkItemWorker < UseCase::UpdateWorkItem; end
 class VerifyIssueExistanceInNotionWorker < UseCase::VerifyIssueExistanceInNotion; end
 
 ## OSPO Maintenance repos
-class FetchChaincertsSmartContractsIssuesWorker < UseCase::FetchChaincertsSmartContractsIssues; end
+class ChaincertsSmartContractsWorker < UseCase::ChaincertsSmartContracts; end
+class BasWorker < UseCase::Bas; end
 
 # PTO daily notification
 class FetchPtoFromNotionWorker < UseCase::FetchPtoFromNotion; end
