@@ -105,3 +105,10 @@
       cron: '00 13,15,19,21 * * *'
       class: NotifyDomainsWipLimitExceededWorker
 
+    review_media:
+      every: "10s"
+      class: ReviewMediaWorker
+    write_media_review_in_discord:
+      every: "10s"
+      class: WriteMediaReviewInDiscordWorker
+

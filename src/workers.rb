@@ -1,45 +1,48 @@
 # frozen_string_literal: true
 
-require_relative 'bots/birthday/fetch_birthday_from_notion'
-require_relative 'bots/birthday/format_birthday'
-require_relative 'bots/birthday/notify_birthday_in_discord'
+require_relative 'use_case/birthday/fetch_birthday_from_notion'
+require_relative 'use_case/birthday/format_birthday'
+require_relative 'use_case/birthday/notify_birthday_in_discord'
 
-require_relative 'bots/birthday_next_week/fetch_next_week_birthday_from_notion'
-require_relative 'bots/birthday_next_week/format_next_week_birthday'
-require_relative 'bots/birthday_next_week/notify_next_week_birthday_in_discord'
+require_relative 'use_case/birthday_next_week/fetch_next_week_birthday_from_notion'
+require_relative 'use_case/birthday_next_week/format_next_week_birthday'
+require_relative 'use_case/birthday_next_week/notify_next_week_birthday_in_discord'
 
-require_relative 'bots/digital_ocean_bill_alert/fetch_billing_from_digital_ocean'
-require_relative 'bots/digital_ocean_bill_alert/format_do_bill_alert'
-require_relative 'bots/digital_ocean_bill_alert/notify_do_bill_alert_discord'
+require_relative 'use_case/digital_ocean_bill_alert/fetch_billing_from_digital_ocean'
+require_relative 'use_case/digital_ocean_bill_alert/format_do_bill_alert'
+require_relative 'use_case/digital_ocean_bill_alert/notify_do_bill_alert_discord'
 
-require_relative 'bots/ospo_maintenance/create_work_item'
-require_relative 'bots/ospo_maintenance/update_work_item'
-require_relative 'bots/ospo_maintenance/verify_issue_existance_in_notion'
-require_relative 'bots/ospo_maintenance/projects/chaincerts_smart_contracts'
-require_relative 'bots/ospo_maintenance/projects/bas'
+require_relative 'use_case/ospo_maintenance/create_work_item'
+require_relative 'use_case/ospo_maintenance/update_work_item'
+require_relative 'use_case/ospo_maintenance/verify_issue_existance_in_notion'
+require_relative 'use_case/ospo_maintenance/projects/chaincerts_smart_contracts'
+require_relative 'use_case/ospo_maintenance/projects/bas'
 
-require_relative 'bots/pto/fetch_pto_from_notion'
-require_relative 'bots/pto/humanize_pto'
-require_relative 'bots/pto/notify_pto_in_discord'
+require_relative 'use_case/pto/fetch_pto_from_notion'
+require_relative 'use_case/pto/humanize_pto'
+require_relative 'use_case/pto/notify_pto_in_discord'
 
-require_relative 'bots/pto_next_week/fetch_next_week_pto_from_notion'
-require_relative 'bots/pto_next_week/humanize_next_week_pto'
-require_relative 'bots/pto_next_week/notify_next_week_pto_in_discord'
+require_relative 'use_case/pto_next_week/fetch_next_week_pto_from_notion'
+require_relative 'use_case/pto_next_week/humanize_next_week_pto'
+require_relative 'use_case/pto_next_week/notify_next_week_pto_in_discord'
 
-require_relative 'bots/support_email/fetch_emails_from_imap'
-require_relative 'bots/support_email/format_emails'
-require_relative 'bots/support_email/notify_support_emails'
+require_relative 'use_case/support_email/fetch_emails_from_imap'
+require_relative 'use_case/support_email/format_emails'
+require_relative 'use_case/support_email/notify_support_emails'
 
-require_relative 'bots/websites_availability/fetch_domain_services_from_notion'
-require_relative 'bots/websites_availability/notify_domain_availability'
-require_relative 'bots/websites_availability/review_domain_availability'
-require_relative 'bots/websites_availability/write_domain_review_requests'
+require_relative 'use_case/websites_availability/fetch_domain_services_from_notion'
+require_relative 'use_case/websites_availability/notify_domain_availability'
+require_relative 'use_case/websites_availability/review_domain_availability'
+require_relative 'use_case/websites_availability/write_domain_review_requests'
 
-require_relative 'bots/wip_limit/compare_wip_limit_count'
-require_relative 'bots/wip_limit/fetch_domains_wip_limit'
-require_relative 'bots/wip_limit/fetch_domains_wip_count'
-require_relative 'bots/wip_limit/format_wip_limit_exceeded'
-require_relative 'bots/wip_limit/notify_domains_wip_limit_exceeded'
+require_relative 'use_case/wip_limit/compare_wip_limit_count'
+require_relative 'use_case/wip_limit/fetch_domains_wip_limit'
+require_relative 'use_case/wip_limit/fetch_domains_wip_count'
+require_relative 'use_case/wip_limit/format_wip_limit_exceeded'
+require_relative 'use_case/wip_limit/notify_domains_wip_limit_exceeded'
+
+require_relative 'use_case/review_images/review_media'
+require_relative 'use_case/review_images/write_media_review_in_discord'
 
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
@@ -92,3 +95,7 @@ class FetchDomainsWipCountFromNotionWorker < UseCase::FetchDomainsWipCountFromNo
 class CompareWipLimitCountWorker < UseCase::CompareWipLimitCount; end
 class FormatWipLimitExceededWorker < UseCase::FormatWipLimitExceeded; end
 class NotifyDomainsWipLimitExceededWorker < UseCase::NotifyDomainsWipLimitExceeded; end
+
+# Review images (Discord Bot)
+class ReviewMediaWorker < UseCase::ReviewMedia; end
+class WriteMediaReviewInDiscordWorker < UseCase::WriteMediaReviewInDiscord; end

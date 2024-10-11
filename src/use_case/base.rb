@@ -11,8 +11,6 @@ module UseCase
   class Base
     include Sidekiq::Worker
 
-    def initialize; end
-
     def perform
       execute
     rescue StandardError => e
@@ -21,7 +19,9 @@ module UseCase
 
     protected
 
-    def execute; end
+    def execute
+      raise StandardError, 'missing execute method'
+    end
 
     def conenction
       {

@@ -21,6 +21,3 @@ ruby /app/bin/discord_images.rb &
 ruby /app/scripts/create_review_media_table.rb
 
 echo "Starting cronjobs"
-
-# UPDATE CRONJOBS
-bash /app/scripts/cronjobs_set.sh
