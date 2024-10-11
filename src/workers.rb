@@ -12,6 +12,11 @@ require_relative 'bots/digital_ocean_bill_alert/fetch_billing_from_digital_ocean
 require_relative 'bots/digital_ocean_bill_alert/format_do_bill_alert'
 require_relative 'bots/digital_ocean_bill_alert/notify_do_bill_alert_discord'
 
+require_relative 'bots/ospo_maintenance/create_work_item'
+require_relative 'bots/ospo_maintenance/update_work_item'
+require_relative 'bots/ospo_maintenance/verify_issue_existance_in_notion'
+require_relative 'bots/ospo_maintenance/projects/chaincerts_smart_contracts'
+
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
 class FormatBirthdayWorker < UseCase::FormatBirthday; end
@@ -26,3 +31,11 @@ class NotifyNextWeekBirthdayInDiscordWorker < UseCase::NotifyNextWeekBirthdayInD
 class FetchBillingFromDigitalOceanWorker < UseCase::FetchBillingFromDigitalOcean; end
 class FormatDoBillAlertWorker < UseCase::FormatDoBillAlert; end
 class NotifyDoBollAlertDiscordWorker < UseCase::NotifyDoBollAlertDiscord; end
+
+# OSPO Maintenance
+class CreateWorkItemWorker < UseCase::CreateWorkItem; end
+class UpdateWorkItemWorker < UseCase::UpdateWorkItem; end
+class VerifyIssueExistanceInNotionWorker < UseCase::VerifyIssueExistanceInNotion; end
+
+## OSPO Maintenance repos
+class FetchChaincertsSmartContractsIssuesWorker < UseCase::FetchChaincertsSmartContractsIssues; end
