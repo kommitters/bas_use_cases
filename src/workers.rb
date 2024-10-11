@@ -17,6 +17,14 @@ require_relative 'bots/ospo_maintenance/update_work_item'
 require_relative 'bots/ospo_maintenance/verify_issue_existance_in_notion'
 require_relative 'bots/ospo_maintenance/projects/chaincerts_smart_contracts'
 
+require_relative 'bots/pto/fetch_pto_from_notion'
+require_relative 'bots/pto/humanize_pto'
+require_relative 'bots/pto/notify_pto_in_discord'
+
+require_relative 'bots/pto_next_week/fetch_next_week_pto_from_notion'
+require_relative 'bots/pto_next_week/humanize_next_week_pto'
+require_relative 'bots/pto_next_week/notify_next_week_pto_in_discord'
+
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
 class FormatBirthdayWorker < UseCase::FormatBirthday; end
@@ -39,3 +47,13 @@ class VerifyIssueExistanceInNotionWorker < UseCase::VerifyIssueExistanceInNotion
 
 ## OSPO Maintenance repos
 class FetchChaincertsSmartContractsIssuesWorker < UseCase::FetchChaincertsSmartContractsIssues; end
+
+# PTO daily notification
+class FetchPtoFromNotionWorker < UseCase::FetchPtoFromNotion; end
+class HumanizePtoWorker < UseCase::HumanizePto; end
+class NotifyPtoInDiscordWorker < UseCase::NotifyPtoInDiscord; end
+
+# next week PTOs notification
+class FetchNextWeekPtoFromNotionWorker < UseCase::FetchNextWeekPtoFromNotion; end
+class HumanizeNextWeekPtoWorker < UseCase::HumanizeNextWeekPto; end
+class NotifyNextWeekPtoInDiscordWorker < UseCase::NotifyNextWeekPtoInDiscord; end
