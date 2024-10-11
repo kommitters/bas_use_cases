@@ -76,9 +76,9 @@ class HumanizeNextWeekPtoWorker < UseCase::HumanizeNextWeekPto; end
 class NotifyNextWeekPtoInDiscordWorker < UseCase::NotifyNextWeekPtoInDiscord; end
 
 # Support emails notification
-class FetchNextWeekPtoFromNotionWorker < UseCase::FetchEmailsFromImap; end
-class FetchNextWeekPtoFromNotionWorker < UseCase::FormatEmailsFromImap; end
-class FetchNextWeekPtoFromNotionWorker < UseCase::NotifySupportEmails; end
+class FetchEmailsFromImapWorker < UseCase::FetchEmailsFromImap; end
+class FormatEmailsFromImapWorker < UseCase::FormatEmailsFromImap; end
+class NotifySupportEmailsWorker < UseCase::NotifySupportEmails; end
 
 # Webiste availability
 class FetchDomainServicesFromNotionWorker < UseCase::FetchDomainServicesFromNotion; end
@@ -87,8 +87,8 @@ class ReviewDomainAvailabilityWorker < UseCase::ReviewDomainAvailability; end
 class NotifyDomainAvailabilityWorker < UseCase::NotifyDomainAvailability; end
 
 # Domains WIP limit exceeded notification
-class NotifyDomainAvailabilityWorker < UseCase::FetchDomainsWipLimitFromNotion; end
-class NotifyDomainAvailabilityWorker < UseCase::FetchDomainsWipCountFromNotion; end
-class NotifyDomainAvailabilityWorker < UseCase::CompareWipLimitCount; end
-class NotifyDomainAvailabilityWorker < UseCase::FormatWipLimitExceeded; end
-class NotifyDomainAvailabilityWorker < UseCase::NotifyDomainsWipLimitExceeded; end
+class FetchDomainsWipLimitFromNotionWorker < UseCase::FetchDomainsWipLimitFromNotion; end
+class FetchDomainsWipCountFromNotionWorker < UseCase::FetchDomainsWipCountFromNotion; end
+class CompareWipLimitCountWorker < UseCase::CompareWipLimitCount; end
+class FormatWipLimitExceededWorker < UseCase::FormatWipLimitExceeded; end
+class NotifyDomainsWipLimitExceededWorker < UseCase::NotifyDomainsWipLimitExceeded; end
