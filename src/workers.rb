@@ -29,6 +29,11 @@ require_relative 'bots/support_email/fetch_emails_from_imap'
 require_relative 'bots/support_email/format_emails'
 require_relative 'bots/support_email/notify_support_emails'
 
+require_relative 'bots/websites_availability/fetch_domain_services_from_notion'
+require_relative 'bots/websites_availability/notify_domain_availability'
+require_relative 'bots/websites_availability/review_domain_availability'
+require_relative 'bots/websites_availability/write_domain_review_requests'
+
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
 class FormatBirthdayWorker < UseCase::FormatBirthday; end
@@ -66,3 +71,9 @@ class NotifyNextWeekPtoInDiscordWorker < UseCase::NotifyNextWeekPtoInDiscord; en
 class FetchNextWeekPtoFromNotionWorker < UseCase::FetchEmailsFromImap; end
 class FetchNextWeekPtoFromNotionWorker < UseCase::FormatEmailsFromImap; end
 class FetchNextWeekPtoFromNotionWorker < UseCase::NotifySupportEmails; end
+
+# Webiste availability
+class FetchDomainServicesFromNotionWorker < UseCase::FetchDomainServicesFromNotion; end
+class WriteDomainReviewRequestsWorker < UseCase::WriteDomainReviewRequests; end
+class ReviewDomainAvailabilityWorker < UseCase::ReviewDomainAvailability; end
+class NotifyDomainAvailabilityWorker < UseCase::NotifyDomainAvailability; end
