@@ -12,12 +12,10 @@ module UseCase
     PTO_NOTION_DATABASE_ID = ENV.fetch('PTO_NOTION_DATABASE_ID')
     NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
-    def perform
+    def execute
       bot = Bot::FetchPtosFromNotion.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

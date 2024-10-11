@@ -13,9 +13,15 @@ module UseCase
 
     def initialize; end
 
+    def perform
+      execute
+    rescue StandardError => e
+      Logger.new($stdout).info(e.message)
+    end
+
     protected
 
-    def perform; end
+    def execute; end
 
     def conenction
       {

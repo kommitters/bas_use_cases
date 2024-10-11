@@ -12,12 +12,10 @@ module UseCase
     NEXT_WEEK_PTO_DISCORD_WEBHOOK = ENV.fetch('NEXT_WEEK_PTO_DISCORD_WEBHOOK')
     DISCORD_BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 
-    def perform
+    def execute
       bot = Bot::NotifyDiscord.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

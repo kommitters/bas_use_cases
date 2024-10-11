@@ -11,12 +11,10 @@ module UseCase
     TABLE = 'birthday'
     MESSAGE = ':birthday: :gift: The birthday of <name> will be in eight days! : <birthday_date>'
 
-    def perform
+    def execute
       bot = Bot::FormatBirthdays.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

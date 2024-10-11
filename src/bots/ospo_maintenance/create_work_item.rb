@@ -12,12 +12,10 @@ module UseCase
     OSPO_MAINTENANCE_NOTION_DATABASE_ID = ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID')
     NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
-    def perform
+    def execute
       bot = Bot::CreateWorkItem.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

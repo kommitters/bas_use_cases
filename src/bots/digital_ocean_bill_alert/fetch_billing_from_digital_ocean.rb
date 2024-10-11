@@ -11,12 +11,10 @@ module UseCase
     TABLE = 'do_billing'
     DIGITAL_OCEAN_SECRET = ENV.fetch('DIGITAL_OCEAN_SECRET')
 
-    def perform
+    def execute
       bot = Bot::FetchBillingFromDigitalOcean.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

@@ -10,12 +10,10 @@ module UseCase
   class FetchChaincertsSmartContractsIssues < UseCase::Base
     TABLE = 'github_issues'
 
-    def perform
+    def execute
       bot = Bot::FetchGithubIssues.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

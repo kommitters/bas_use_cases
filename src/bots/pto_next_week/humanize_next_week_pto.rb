@@ -12,12 +12,10 @@ module UseCase
     OPENAI_SECRET = ENV.fetch('OPENAI_SECRET')
     NEXT_WEEK_PTO_OPENAI_ASSISTANT = ENV.fetch('NEXT_WEEK_PTO_OPENAI_ASSISTANT')
 
-    def perform
+    def execute
       bot = Bot::HumanizePto.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private

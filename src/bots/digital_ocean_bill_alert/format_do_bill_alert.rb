@@ -11,12 +11,10 @@ module UseCase
     TABLE = 'do_billing'
     DIGITAL_OCEAN_THRESHOLD = ENV.fetch('DIGITAL_OCEAN_THRESHOLD')
 
-    def perform
+    def execute
       bot = Bot::FormatDoBillAlert.new(options)
 
       bot.execute
-    rescue StandardError => e
-      Logger.new($stdout).info(e.message)
     end
 
     private
