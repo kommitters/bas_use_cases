@@ -34,6 +34,12 @@ require_relative 'bots/websites_availability/notify_domain_availability'
 require_relative 'bots/websites_availability/review_domain_availability'
 require_relative 'bots/websites_availability/write_domain_review_requests'
 
+require_relative 'bots/wip_limit/compare_wip_limit_count'
+require_relative 'bots/wip_limit/fetch_domains_wip_limit'
+require_relative 'bots/wip_limit/fetch_domains_wip_count'
+require_relative 'bots/wip_limit/format_wip_limit_exceeded'
+require_relative 'bots/wip_limit/notify_domains_wip_limit_exceeded'
+
 # Notify Birthday In Discord
 class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
 class FormatBirthdayWorker < UseCase::FormatBirthday; end
@@ -77,3 +83,10 @@ class FetchDomainServicesFromNotionWorker < UseCase::FetchDomainServicesFromNoti
 class WriteDomainReviewRequestsWorker < UseCase::WriteDomainReviewRequests; end
 class ReviewDomainAvailabilityWorker < UseCase::ReviewDomainAvailability; end
 class NotifyDomainAvailabilityWorker < UseCase::NotifyDomainAvailability; end
+
+# Domains WIP limit exceeded notification
+class NotifyDomainAvailabilityWorker < UseCase::FetchDomainsWipLimitFromNotion; end
+class NotifyDomainAvailabilityWorker < UseCase::FetchDomainsWipCountFromNotion; end
+class NotifyDomainAvailabilityWorker < UseCase::CompareWipLimitCount; end
+class NotifyDomainAvailabilityWorker < UseCase::FormatWipLimitExceeded; end
+class NotifyDomainAvailabilityWorker < UseCase::NotifyDomainsWipLimitExceeded; end
