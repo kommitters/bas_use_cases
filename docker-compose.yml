@@ -28,10 +28,11 @@ services:
       - cache:/data
     networks:
       - bas_network
-  deploy:
-      resources:
-        limits:
-          memory: 50M
+    deploy:
+        resources:
+          limits:
+            memory: 50M
+
   bas_db:
     image: postgres:13-alpine
     container_name: bas_db
@@ -55,11 +56,15 @@ services:
     build: .
     volumes:
       - cronjobs:/app
+      # - .env:/app/.env
+      # - ./src/use_case:/app/use_case
+      # - ./src/workers.rb:/app/workers.rb
+      # - ./scripts/update_cronjobs_container.sh:/app/scripts/update_cronjobs_container.sh
     depends_on:
       - bas_db
     networks:
       - bas_network
-    command: ["bash", "/app/scripts/update_container.sh"]
+    command: ["bash", "/app/scripts/update_cronjobs_container.sh"]
     deploy:
       resources:
         limits:
@@ -78,7 +83,7 @@ services:
       - bas_db
     networks:
       - bas_network
-    command: ["bash", "/app/scripts/update_container.sh"]
+    command: ["bash", "/app/scripts/update_discord_container.sh"]
     deploy:
       resources:
         limits:

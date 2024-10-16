@@ -106,9 +106,9 @@
       class: NotifyDomainsWipLimitExceededWorker
 
     review_media:
-      every: "10s"
+      every: "5s"
       class: ReviewMediaWorker
     write_media_review_in_discord:
-      every: "10s"
+      every: "5s"
       class: WriteMediaReviewInDiscordWorker
 
