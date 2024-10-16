@@ -23,7 +23,7 @@ module UseCase
       raise StandardError, 'missing execute method'
     end
 
-    def conenction
+    def connection
       {
         host: ENV.fetch('DB_HOST'),
         port: ENV.fetch('DB_PORT'),
