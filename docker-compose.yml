@@ -56,6 +56,7 @@ services:
     build: .
     volumes:
       - cronjobs:/app
+      # Not all the root folder should be copied, just the required files.
       # - .env:/app/.env
       # - ./src/use_case:/app/use_case
       # - ./src/workers.rb:/app/workers.rb

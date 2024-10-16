@@ -9,9 +9,13 @@ set -a
 source $ENV_FILE
 set +a
 
-echo "Starting sidekiq"
+echo "Updating database ...."
+ruby /app/scripts/update_database.rb
+
+echo "Starting sidekiq ...."
 
 sidekiq -r /app/src/workers.rb -C /app/sidekiq.yml &
 
 # Keep the container alive
 tail -f /dev/null
+
