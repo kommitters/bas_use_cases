@@ -14,8 +14,11 @@ export GEM_PATH="/usr/local/bundle"
 
 # ACTIVATE BOT
 echo "Starting telegram bot"
-ruby /app/bin/web_availability.rb &
+ruby /app/bin/web_availability.rb
 
-# UPDATE CRONJOBS
-echo "Starting cronjobs"
-bash /app/scripts/cronjobs_set.sh
+# Keep the container alive
+tail -f /dev/null
+
+# # UPDATE CRONJOBS
+# echo "Starting cronjobs"
+# bash /app/scripts/cronjobs_set.sh

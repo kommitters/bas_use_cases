@@ -41,8 +41,12 @@
 # require_relative 'use_case/wip_limit/format_wip_limit_exceeded'
 # require_relative 'use_case/wip_limit/notify_domains_wip_limit_exceeded'
 
-require_relative 'use_case/review_images/review_media'
-require_relative 'use_case/review_images/write_media_review_in_discord'
+# require_relative 'use_case/review_images/review_media'
+# require_relative 'use_case/review_images/write_media_review_in_discord'
+
+require_relative 'bots/telegram_bots/fetch_website_review_request.rb'
+require_relative 'bots/telegram_bots/notify_telegram.rb'
+require_relative 'bots/telegram_bots/review_website_availability.rb'
 
 # # Notify Birthday In Discord
 # class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end
@@ -97,5 +101,10 @@ require_relative 'use_case/review_images/write_media_review_in_discord'
 # class NotifyDomainsWipLimitExceededWorker < UseCase::NotifyDomainsWipLimitExceeded; end
 
 # Review images (Discord Bot)
-class ReviewMediaWorker < UseCase::ReviewMedia; end
-class WriteMediaReviewInDiscordWorker < UseCase::WriteMediaReviewInDiscord; end
+# class ReviewMediaWorker < UseCase::ReviewMedia; end
+# class WriteMediaReviewInDiscordWorker < UseCase::WriteMediaReviewInDiscord; end
+
+# Telegram Bot
+class FetchWebsiteReviewRequestWorker < UseCase::FetchWebsiteReviewRequest; end
+class NotifyTelegramWorker < UseCase::NotifyTelegram; end
+class ReviewWebsiteAvailabilityWorker < UseCase::ReviewWebsiteAvailability; end

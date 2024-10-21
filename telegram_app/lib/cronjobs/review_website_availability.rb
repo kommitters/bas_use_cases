@@ -1,38 +1,30 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../bots/review_website_availability'
+require_relative '../../src/use_case/base'
+require_relative '../../src/bots/review_website_availability'
 
-connection = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: 'bas',
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
+module UseCase
+  # ReviewWebsiteAvailability
+  #
+  class ReviewWebsiteAvailability < UseCase::Base
+    TABLE = 'telegram_web_availability'
+    TELEGRAM_BOT_TOKEN = ENV.fetch('TELEGRAM_BOT_TOKEN')
 
-options = {
-  read_options: {
-    connection:,
-    db_table: 'telegram_web_availability',
-    tag: 'FetchWebsiteReviewRequest'
-  },
-  process_options: {
-    connection:,
-    db_table: 'telegram_web_availability',
-    tag: 'WebsiteAvailability'
-  },
-  write_options: {
-    connection:,
-    db_table: 'telegram_web_availability',
-    tag: 'ReviewWebsiteAvailability'
-  }
-}
+    def execute
+      bot = Bot::ReviewWebsiteAvailability.new(options)
 
-begin
-  bot = Bot::ReviewWebsiteAvailability.new(options)
+      bot.execute
+    end
 
-  bot.execute
-rescue StandardError => e
-  Logger.new($stdout).info("(ReviewWebsiteAvailability) #{e.message}")
+    private
+
+    def options
+      {
+        read_options: { connection:, db_table: TABLE, tag: 'FetchWebsiteReviewRequest' },
+        process_options: { connection:, db_table: TABLE, tag: 'WebsiteAvailability' },
+        write_options: { connection:, db_table: TABLE, tag: 'ReviewWebsiteAvailability' }
+      }
+    end
+  end
 end

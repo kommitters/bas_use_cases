@@ -105,9 +105,19 @@
     #   cron: '00 13,15,19,21 * * *'
     #   class: NotifyDomainsWipLimitExceededWorker
 
-    review_media:
-      every: "5s"
-      class: ReviewMediaWorker
-    write_media_review_in_discord:
+    # review_media:
+    #   every: "5s"
+    #   class: ReviewMediaWorker
+    # write_media_review_in_discord:
+    #   every: "2s"
+    #   class: WriteMediaReviewInDiscordWorker
+
+    fetch_websites_review_request:
       every: "2s"
-      class: WriteMediaReviewInDiscordWorker
+      class: FetchWebsiteReviewRequestWorker
+    notify_telegram:
+      every: "5s"
+      class: NotifyTelegramWorker
+    review_website_availability:
+      every: "7s"
+      class: ReviewWebsiteAvailabilityWorker

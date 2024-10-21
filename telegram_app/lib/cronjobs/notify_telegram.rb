@@ -1,37 +1,30 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../bots/notify_telegram'
+require_relative '../../src/use_case/base'
+require_relative '../../src/bots/notify_telegram'
 
-connection = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: 'bas',
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
+module UseCase
+  # NotifyTelegram
+  #
+  class NotifyTelegram < UseCase::Base
+    TABLE = 'telegram_web_availability'
+    TELEGRAM_BOT_TOKEN = ENV.fetch('TELEGRAM_BOT_TOKEN')
 
-options = {
-  read_options: {
-    connection:,
-    db_table: 'telegram_web_availability',
-    tag: 'WebsiteAvailability'
-  },
-  process_options: {
-    connection:,
-    token: ENV.fetch('TELEGRAM_BOT_TOKEN')
-  },
-  write_options: {
-    connection:,
-    db_table: 'telegram_web_availability',
-    tag: 'NotifyTelegram'
-  }
-}
+    def execute
+      bot = Bot::NotifyTelegram.new(options)
 
-begin
-  bot = Bot::NotifyTelegram.new(options)
+      bot.execute
+    end
 
-  bot.execute
-rescue StandardError => e
-  Logger.new($stdout).info("(NotifyTelegram) #{e.message}")
+    private
+
+    def options
+      {
+        read_options: { connection:, db_table: TABLE, tag: 'WebsiteAvailability' },
+        process_options: { connection:, token: TELEGRAM_BOT_TOKEN },
+        write_options: { connection:, db_table: TABLE, tag: 'NotifyTelegram' }
+      }
+    end
+  end
 end
