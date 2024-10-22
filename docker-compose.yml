@@ -55,12 +55,12 @@ services:
     restart: always
     build: .
     volumes:
-      - cronjobs:/app
+      # - cronjobs:/app
       # Not all the root folder should be copied, just the required files.
-      # - .env:/app/.env
-      # - ./src/use_case:/app/use_case
-      # - ./src/workers.rb:/app/workers.rb
-      # - ./scripts/update_cronjobs_container.sh:/app/scripts/update_cronjobs_container.sh
+      - .env:/app/.env
+      - ./src:/app/src
+      - ./sidekiq.yml:/app/sidekiq.yml
+      - ./scripts/update_cronjobs_container.sh:/app/scripts/update_cronjobs_container.sh
     depends_on:
       - bas_db
     networks:

@@ -9,7 +9,7 @@ module UseCase
   #
   class FormatEmailsFromImap < UseCase::Base
     TABLE = 'support_emails'
-    TEMPLATE = ENV.fetch('TEMPLATE')
+    TEMPLATE = 'The <sender> has requested support the <date>'
 
     def execute
       bot = Bot::FormatEmails.new(options)

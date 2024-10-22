@@ -2,7 +2,7 @@
 
 require_relative '../base'
 
-require 'bas/bot/humanize_pto'
+require 'bas/bot/notify_discord'
 
 module UseCase
   # NotifyPtoInDiscord

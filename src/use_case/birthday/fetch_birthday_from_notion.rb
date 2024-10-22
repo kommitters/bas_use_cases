@@ -13,7 +13,7 @@ module UseCase
     NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
-      bot = Bot::FetchWebsiteReviewRequest.new(options)
+      bot = Bot::FetchBirthdaysFromNotion.new(options)
 
       bot.execute
     end

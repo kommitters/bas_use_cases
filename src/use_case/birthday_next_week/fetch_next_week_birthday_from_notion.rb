@@ -2,7 +2,7 @@
 
 require_relative '../base'
 
-require 'bas/bot/fetch_birthdays_from_notion'
+require 'bas/bot/fetch_next_week_birthdays_from_notion'
 
 module UseCase
   # FetchNextWeekBirthdayFromNotion

@@ -5,9 +5,9 @@ require_relative '../base'
 require 'bas/bot/notify_discord'
 
 module UseCase
-  # NotifyDoBollAlertDiscord
+  # NotifyDoBillAlertDiscord
   #
-  class NotifyDoBollAlertDiscord < UseCase::Base
+  class NotifyDoBillAlertDiscord < UseCase::Base
     TABLE = 'do_billing'
     DISCORD_BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 

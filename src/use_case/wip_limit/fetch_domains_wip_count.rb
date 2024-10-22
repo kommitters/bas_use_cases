@@ -23,7 +23,7 @@ module UseCase
     def options
       {
         process_options: { database_id: WIP_COUNT_NOTION_DATABASE_ID, secret: NOTION_SECRET },
-        write_options: { connection:, db_table: @table_name, tag: 'FetchDomainsWipCountsFromNotion' }
+        write_options: { connection:, db_table: TABLE, tag: 'FetchDomainsWipCountsFromNotion' }
       }
     end
   end

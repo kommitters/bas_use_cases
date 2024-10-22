@@ -20,8 +20,8 @@ module UseCase
 
     def options
       {
-        read_options: { connection:, db_table: @table_name, tag: 'ReviewDomainRequest' },
-        write_options: { connection:, db_table: @table_name, tag: 'ReviewDomainAvailability' }
+        read_options: { connection:, db_table: TABLE, tag: 'ReviewDomainRequest' },
+        write_options: { connection:, db_table: TABLE, tag: 'ReviewDomainAvailability' }
       }
     end
   end
