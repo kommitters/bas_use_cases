@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../../src/use_case/base'
-require_relative '../../src/bots/notify_telegram'
+require_relative '../base'
+require_relative '../../bots/telegram_bots/notify_telegram'
 
 module UseCase
   # NotifyTelegram

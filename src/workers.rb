@@ -44,9 +44,9 @@
 # require_relative 'use_case/review_images/review_media'
 # require_relative 'use_case/review_images/write_media_review_in_discord'
 
-require_relative 'bots/telegram_bots/fetch_website_review_request.rb'
-require_relative 'bots/telegram_bots/notify_telegram.rb'
-require_relative 'bots/telegram_bots/review_website_availability.rb'
+require_relative 'use_case/telegram_web_availability/fetch_websites_review_request.rb'
+require_relative 'use_case/telegram_web_availability/notify_telegram.rb'
+require_relative 'use_case/telegram_web_availability/review_website_availability.rb'
 
 # # Notify Birthday In Discord
 # class FetchBirthdayFromNotionWorker < UseCase::FetchBirthdayFromNotion; end

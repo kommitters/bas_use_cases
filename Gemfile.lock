@@ -158,6 +158,7 @@ GEM
     net-protocol (0.2.2)
       timeout
     net-smtp (0.4.0.1)
+      net-protocol
     netrc (0.11.0)
     oauth (1.1.0)
       oauth-tty (~> 1.0, >= 1.0.1)

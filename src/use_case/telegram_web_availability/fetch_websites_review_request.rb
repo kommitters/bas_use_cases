@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../../src/use_case/base'
-require_relative '../../src/bots/fetch_website_review_request'
+require_relative '../base'
+require_relative '../../bots/telegram_bots/fetch_website_review_request'
 
 module UseCase
   # FetchWebsiteReviewRequest

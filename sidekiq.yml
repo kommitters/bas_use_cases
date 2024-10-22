@@ -113,11 +113,11 @@
     #   class: WriteMediaReviewInDiscordWorker
 
     fetch_websites_review_request:
-      every: "2s"
+      every: "5m"
       class: FetchWebsiteReviewRequestWorker
     notify_telegram:
-      every: "5s"
+      every: "5m"
       class: NotifyTelegramWorker
     review_website_availability:
-      every: "7s"
+      every: "5m"
       class: ReviewWebsiteAvailabilityWorker
