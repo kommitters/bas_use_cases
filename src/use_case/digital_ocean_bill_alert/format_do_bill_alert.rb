@@ -27,7 +27,7 @@ module UseCase
     end
 
     def threshold
-      ENV.fetch('DIGITAL_OCEAN_THRESHOLD')
+      ENV.fetch('DIGITAL_OCEAN_THRESHOLD').to_f
     end
   end
 end
