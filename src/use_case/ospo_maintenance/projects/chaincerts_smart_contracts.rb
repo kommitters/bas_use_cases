@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative '../../base'
 
 require 'bas/bot/fetch_github_issues'
 
