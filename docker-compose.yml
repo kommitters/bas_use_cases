@@ -55,8 +55,6 @@ services:
     restart: always
     build: .
     volumes:
-      # - cronjobs:/app
-      # Not all the root folder should be copied, just the required files.
       - .env:/app/.env
       - ./src:/app/src
       - ./sidekiq.yml:/app/sidekiq.yml

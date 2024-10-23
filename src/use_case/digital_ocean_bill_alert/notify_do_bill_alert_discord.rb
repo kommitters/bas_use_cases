@@ -21,13 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'FormatDoBillAlert' },
-        process_options: { name:, webhook: @discord_webhook },
+        process_options: { name:, webhook: },
         write_options: { connection:, db_table: TABLE, tag: 'NotifyDiscord' }
       }
     end
 
     def name
       ENV.fetch('DISCORD_BOT_NAME')
+    end
+
+    def webhook
+      ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK')
     end
   end
 end

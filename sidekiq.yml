@@ -57,13 +57,13 @@
       class: NotifyPtoInDiscordWorker
 
     fetch_next_week_pto_from_notion:
-      cron: '50 12 * * MON-FRI'
+      cron: '50 12 * * THU'
       class: FetchNextWeekPtoFromNotionWorker
     humanize_next_week_pto:
-      cron: '55 12 * * MON-FRI'
+      cron: '55 12 * * THU'
       class: HumanizeNextWeekPtoWorker
     notify_next_week_pto_in_discord:
-      cron: '00 13 * * MON-FRI'   
+      cron: '00 13 * * THU'   
       class: NotifyNextWeekPtoInDiscordWorker
 
     fetch_emails_from_imap:
@@ -121,3 +121,4 @@
     review_website_availability:
       every: "5m"
       class: ReviewWebsiteAvailabilityWorker
+      
