@@ -166,4 +166,6 @@ jobs:
         script: |
           cd /root/app
           unzip -o bas_scripts.zip
-          docker-compose restart
+          docker-compose stop
+          docker-compose down
+          docker-compose up -d

@@ -1,31 +1,11 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/notify_birthday_in_discord'
+require_relative '../../../src/use_case/birthday/notify_birthday_in_discord'
 
-ENV['BIRTHDAY_DISCORD_WEBHOOK'] = 'BIRTHDAY_DISCORD_WEBHOOK'
-ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'
-ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-RSpec.describe Notify::BirthdayInDiscord do
+RSpec.describe UseCase::NotifyBirthdayInDiscord do
   before do
-    params = {
-      discord_webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK'),
-      discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
-
-    @bot = Notify::BirthdayInDiscord.new(params)
+    @bot = UseCase::NotifyBirthdayInDiscord.new
   end
 
   context '.execute' do

@@ -1,0 +1,33 @@
+# frozen_string_literal: true
+
+require_relative '../base'
+
+require 'bas/bot/fetch_billing_from_digital_ocean'
+
+module UseCase
+  # FetchBillingFromDigitalOcean
+  #
+  class FetchBillingFromDigitalOcean < UseCase::Base
+    TABLE = 'do_billing'
+
+    def execute
+      bot = Bot::FetchBillingFromDigitalOcean.new(options)
+
+      bot.execute
+    end
+
+    private
+
+    def options
+      {
+        read_options: { connection:, db_table: TABLE, tag: 'FetchBillingFromDigitalOcean', avoid_process: true },
+        process_options: { secret: },
+        write_options: { connection:, db_table: TABLE, tag: 'FetchBillingFromDigitalOcean' }
+      }
+    end
+
+    def secret
+      ENV.fetch('DIGITAL_OCEAN_SECRET')
+    end
+  end
+end
