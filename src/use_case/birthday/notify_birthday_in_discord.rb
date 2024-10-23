@@ -9,8 +9,6 @@ module UseCase
   #
   class NotifyBirthdayInDiscord < UseCase::Base
     TABLE = 'birthday'
-    DISCORD_WEBHOOK = ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK')
-    DISCORD_BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 
     def execute
       bot = Bot::NotifyDiscord.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'FormatBirthdays' },
-        process_options: { webhook: DISCORD_WEBHOOK, name: DISCORD_BOT_NAME },
+        process_options: { webhook:, name: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchBirthdaysFromNotion' }
       }
+    end
+
+    def webhook
+      ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK')
+    end
+
+    def name
+      ENV.fetch('DISCORD_BOT_NAME')
     end
   end
 end

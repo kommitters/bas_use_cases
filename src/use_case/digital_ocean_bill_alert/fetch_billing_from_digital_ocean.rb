@@ -9,7 +9,6 @@ module UseCase
   #
   class FetchBillingFromDigitalOcean < UseCase::Base
     TABLE = 'do_billing'
-    DIGITAL_OCEAN_SECRET = ENV.fetch('DIGITAL_OCEAN_SECRET')
 
     def execute
       bot = Bot::FetchBillingFromDigitalOcean.new(options)
@@ -22,9 +21,13 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'FetchBillingFromDigitalOcean', avoid_process: true },
-        process_options: { secret: DIGITAL_OCEAN_SECRET },
+        process_options: { secret: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchBillingFromDigitalOcean' }
       }
+    end
+
+    def secret
+      ENV.fetch('DIGITAL_OCEAN_SECRET')
     end
   end
 end

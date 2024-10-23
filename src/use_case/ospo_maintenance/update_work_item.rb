@@ -9,8 +9,6 @@ module UseCase
   #
   class UpdateWorkItem < UseCase::Base
     TABLE = 'github_issues'
-    OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID = ENV.fetch('OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::UpdateWorkItem.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'UpdateWorkItemRequest' },
-        process_options: { users_database_id: OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID, secret: NOTION_SECRET },
+        process_options: { users_database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'UpdateWorkItem' }
       }
+    end
+
+    def users_database_id
+      ENV.fetch('OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

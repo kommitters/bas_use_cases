@@ -9,7 +9,6 @@ module UseCase
   #
   class ReviewWebsiteAvailability < UseCase::Base
     TABLE = 'telegram_web_availability'
-    TELEGRAM_BOT_TOKEN = ENV.fetch('TELEGRAM_BOT_TOKEN')
 
     def execute
       bot = Bot::ReviewWebsiteAvailability.new(options)

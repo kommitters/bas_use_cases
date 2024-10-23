@@ -9,8 +9,6 @@ module UseCase
   #
   class FetchDomainsWipLimitFromNotion < UseCase::Base
     TABLE = 'wip_limits'
-    WIP_LIMIT_NOTION_DATABASE_ID = ENV.fetch('WIP_LIMIT_NOTION_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::FetchDomainsWipLimitFromNotion.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'FetchDomainsWipCountsFromNotion' },
-        process_options: { database_id: WIP_LIMIT_NOTION_DATABASE_ID, secret: NOTION_SECRET },
+        process_options: { database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchDomainsWipLimitFromNotion' }
       }
+    end
+
+    def database_id
+      ENV.fetch('WIP_LIMIT_NOTION_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

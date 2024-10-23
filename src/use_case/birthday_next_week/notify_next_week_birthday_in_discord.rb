@@ -9,8 +9,6 @@ module UseCase
   #
   class NotifyNextWeekBirthdayInDiscord < UseCase::Base
     TABLE = 'birthday'
-    WEBHOOK = ENV.fetch('NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK')
-    BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 
     def execute
       bot = Bot::NotifyDiscord.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'FormatNextWeekBirthdays' },
-        process_options: { webhook: WEBHOOK, name: BOT_NAME },
+        process_options: { webhook:, name: },
         write_options: { connection:, db_table: TABLE, tag: 'NotifyDiscord' }
       }
+    end
+
+    def webhook
+      ENV.fetch('NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK')
+    end
+
+    def name
+      ENV.fetch('DISCORD_BOT_NAME')
     end
   end
 end

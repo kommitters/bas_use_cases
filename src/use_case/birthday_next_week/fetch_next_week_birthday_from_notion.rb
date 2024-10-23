@@ -9,8 +9,6 @@ module UseCase
   #
   class FetchNextWeekBirthdayFromNotion < UseCase::Base
     TABLE = 'birthday'
-    NOTION_DATABASE_ID = ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::FetchNextWeekBirthdaysFromNotion.new(options)
@@ -22,11 +20,18 @@ module UseCase
 
     def options
       {
-        read_options: { connection:, db_table: TABLE, tag: 'FetchNextWeekBirthdaysFromNotion',
-                        avoid_process: true },
-        process_options: { database_id: NOTION_DATABASE_ID, secret: NOTION_SECRET },
+        read_options: { connection:, db_table: TABLE, tag: 'FetchNextWeekBirthdaysFromNotion', avoid_process: true },
+        process_options: { database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchNextWeekBirthdaysFromNotion' }
       }
+    end
+
+    def database_id
+      ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

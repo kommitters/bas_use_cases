@@ -9,7 +9,6 @@ module UseCase
   #
   class NotifyTelegram < UseCase::Base
     TABLE = 'telegram_web_availability'
-    TELEGRAM_BOT_TOKEN = ENV.fetch('TELEGRAM_BOT_TOKEN')
 
     def execute
       bot = Bot::NotifyTelegram.new(options)
@@ -22,9 +21,13 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'WebsiteAvailability' },
-        process_options: { connection:, token: TELEGRAM_BOT_TOKEN },
+        process_options: { connection:, token: },
         write_options: { connection:, db_table: TABLE, tag: 'NotifyTelegram' }
       }
+    end
+
+    def token
+      ENV.fetch('TELEGRAM_BOT_TOKEN')
     end
   end
 end

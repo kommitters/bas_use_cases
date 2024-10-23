@@ -9,8 +9,6 @@ module UseCase
   #
   class NotifyDomainAvailability < UseCase::Base
     TABLE = 'web_availability'
-    WEBSITES_AVAILABILITY_DISCORD_WEBHOOK = ENV.fetch('WEBSITES_AVAILABILITY_DISCORD_WEBHOOK')
-    DISCORD_BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 
     def execute
       bot = Bot::NotifyDiscord.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'ReviewDomainAvailability' },
-        process_options: { webhook: WEBSITES_AVAILABILITY_DISCORD_WEBHOOK, name: DISCORD_BOT_NAME },
+        process_options: { webhook:, name: },
         write_options: { connection:, db_table: TABLE, tag: 'NotifyDiscord' }
       }
+    end
+
+    def webhook
+      ENV.fetch('WEBSITES_AVAILABILITY_DISCORD_WEBHOOK')
+    end
+
+    def name
+      ENV.fetch('DISCORD_BOT_NAME')
     end
   end
 end

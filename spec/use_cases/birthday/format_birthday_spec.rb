@@ -1,27 +1,11 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/format_birthday'
+require_relative '../../../src/use_case/birthday/format_birthday'
 
-ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-RSpec.describe Format::Birthday do
+RSpec.describe UseCase::FormatBirthday do
   before do
-    params = {
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
-
-    @bot = Format::Birthday.new(params)
+    @bot = UseCase::FormatBirthday.new
   end
 
   context '.execute' do

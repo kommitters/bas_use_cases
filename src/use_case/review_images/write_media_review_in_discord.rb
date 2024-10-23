@@ -9,7 +9,6 @@ module UseCase
   #
   class WriteMediaReviewInDiscord < UseCase::Base
     TABLE = 'review_images'
-    DISCORD_BOT_TOKEN = ENV.fetch('DISCORD_BOT_TOKEN')
 
     def execute
       bot = Bot::WriteMediaReviewInDiscord.new(options)
@@ -22,9 +21,13 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'ReviewImage' },
-        process_options: { secret_token: "Bot #{DISCORD_BOT_TOKEN}" },
+        process_options: { secret_token: "Bot #{token}" },
         write_options: { connection:, db_table: TABLE, tag: 'WriteMediaReviewInDiscord' }
       }
+    end
+
+    def token
+      ENV.fetch('DISCORD_BOT_TOKEN')
     end
   end
 end

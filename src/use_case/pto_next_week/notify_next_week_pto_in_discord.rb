@@ -9,8 +9,6 @@ module UseCase
   #
   class NotifyNextWeekPtoInDiscord < UseCase::Base
     TABLE = 'pto'
-    NEXT_WEEK_PTO_DISCORD_WEBHOOK = ENV.fetch('NEXT_WEEK_PTO_DISCORD_WEBHOOK')
-    DISCORD_BOT_NAME = ENV.fetch('DISCORD_BOT_NAME')
 
     def execute
       bot = Bot::NotifyDiscord.new(options)
@@ -23,7 +21,7 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'HumanizeNextWeekPto' },
-        process_options: { webhook: NEXT_WEEK_PTO_DISCORD_WEBHOOK, name: DISCORD_BOT_NAME },
+        process_options: { webhook:, name: },
         write_options: { connection:, db_table: TABLE, tag: 'NotifyDiscord' }
       }
     end
@@ -33,6 +31,14 @@ module UseCase
       today = Time.at(utc_today, in: '-05:00').strftime('%A, %B %m of %Y').to_s
 
       "Today is #{today} and the PTO's are: {data} Notify only the PTOs of the next week and nothing else"
+    end
+
+    def webhook
+      ENV.fetch('NEXT_WEEK_PTO_DISCORD_WEBHOOK')
+    end
+
+    def name
+      ENV.fetch('DISCORD_BOT_NAME')
     end
   end
 end

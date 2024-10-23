@@ -9,8 +9,6 @@ module UseCase
   #
   class FetchDomainServicesFromNotion < UseCase::Base
     TABLE = 'web_availability'
-    WEBSITES_AVAILABILITY_NOTION_DATABASE_ID = ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::FetchDomainServicesFromNotion.new(options)
@@ -22,9 +20,17 @@ module UseCase
 
     def options
       {
-        process_options: { database_id: WEBSITES_AVAILABILITY_NOTION_DATABASE_ID, secret: NOTION_SECRET },
+        process_options: { database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchDomainServicesFromNotion' }
       }
+    end
+
+    def database_id
+      ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

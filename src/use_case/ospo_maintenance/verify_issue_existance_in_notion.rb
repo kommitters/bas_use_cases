@@ -9,8 +9,6 @@ module UseCase
   #
   class VerifyIssueExistanceInNotion < UseCase::Base
     TABLE = 'github_issues'
-    OSPO_MAINTENANCE_NOTION_DATABASE_ID = ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::VerifyIssueExistanceInNotion.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'GithubIssueRequest' },
-        process_options: { database_id: OSPO_MAINTENANCE_NOTION_DATABASE_ID, secret: NOTION_SECRET },
+        process_options: { database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'VerifyIssueExistanceInNotio' }
       }
+    end
+
+    def database_id
+      ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

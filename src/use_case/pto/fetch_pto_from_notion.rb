@@ -9,8 +9,6 @@ module UseCase
   #
   class FetchPtoFromNotion < UseCase::Base
     TABLE = 'pto'
-    PTO_NOTION_DATABASE_ID = ENV.fetch('PTO_NOTION_DATABASE_ID')
-    NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 
     def execute
       bot = Bot::FetchPtosFromNotion.new(options)
@@ -22,9 +20,17 @@ module UseCase
 
     def options
       {
-        process_options: { database_id: PTO_NOTION_DATABASE_ID, secret: NOTION_SECRET },
+        process_options: { database_id:, secret: },
         write_options: { connection:, db_table: TABLE, tag: 'FetchPtosFromNotion' }
       }
+    end
+
+    def database_id
+      ENV.fetch('PTO_NOTION_DATABASE_ID')
+    end
+
+    def secret
+      ENV.fetch('NOTION_SECRET')
     end
   end
 end

@@ -9,8 +9,6 @@ module UseCase
   #
   class ReviewMedia < UseCase::Base
     TABLE = 'review_images'
-    REVIEW_IMAGE_OPENAI_ASSISTANT = ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT')
-    OPENAI_SECRET = ENV.fetch('OPENAI_SECRET')
 
     def execute
       bot = Bot::ReviewMedia.new(options)
@@ -23,9 +21,17 @@ module UseCase
     def options
       {
         read_options: { connection:, db_table: TABLE, tag: 'ReviewMediaRequest' },
-        process_options: { secret: OPENAI_SECRET, assistant_id: REVIEW_IMAGE_OPENAI_ASSISTANT, media_type: 'images' },
+        process_options: { secret:, assistant_id:, media_type: 'images' },
         write_options: { connection:, db_table: TABLE, tag: 'ReviewImage' }
       }
+    end
+
+    def secret
+      ENV.fetch('OPENAI_SECRET')
+    end
+
+    def assistant_id
+      ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT')
     end
   end
 end
