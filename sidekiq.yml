@@ -121,4 +121,3 @@
     review_website_availability:
       every: "5m"
       class: ReviewWebsiteAvailabilityWorker
-      
