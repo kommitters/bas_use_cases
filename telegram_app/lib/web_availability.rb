@@ -17,7 +17,7 @@ module Bots
     attr_accessor :user_data
 
     MAX_USER_LIMIT = 2
-    COMMANDS = %w[add_website list_websites remove_website].freeze
+    COMMANDS = %w[add list remove].freeze
     START = 'Hello! Use any of the available commands:'
     ADD_WEBSITE = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
@@ -50,9 +50,9 @@ module Bots
 
       case message.text
       when '/start' then start
-      when '/add_website' then add_website
-      when '/list_websites' then list_websites
-      when '/remove_website' then remove_website
+      when '/add' then add_website
+      when '/list' then list_websites
+      when '/remove' then remove_website
       else input_response
       end
     end
