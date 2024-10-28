@@ -1,0 +1,56 @@
+# frozen_string_literal: true
+
+require 'bas/bot/create_work_item'
+require 'json'
+
+module Create
+  # Service to fetch ptos from a notion database
+  class WorkItem
+    def initialize(params)
+      @params = params
+    end
+
+    def execute
+      options = { read_options:, process_options:, write_options: }
+
+      bot = Bot::CreateWorkItem.new(options)
+
+      bot.execute
+    end
+
+    private
+
+    def connection
+      {
+        host: @params[:db_host],
+        port: @params[:db_port],
+        dbname: @params[:db_name],
+        user: @params[:db_user],
+        password: @params[:db_password]
+      }
+    end
+
+    def read_options
+      {
+        connection:,
+        db_table: @params[:table_name],
+        tag: 'CreateWorkItemRequest'
+      }
+    end
+
+    def process_options
+      {
+        database_id: @params[:database_id],
+        secret: @params[:secret]
+      }
+    end
+
+    def write_options
+      {
+        connection:,
+        db_table: @params[:table_name],
+        tag: 'CreateWorkItem'
+      }
+    end
+  end
+end
