@@ -63,6 +63,7 @@ jobs:
         echo -e 'OSPO_MAINTENANCE_APP_ID='${OSPO_MAINTENANCE_APP_ID}>> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_DATABASE_ID='${OSPO_MAINTENANCE_NOTION_DATABASE_ID}>> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID='${OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID}>> .env
+        echo -e 'REVIEW_IMAGES_TABLE='${REVIEW_IMAGES_TABLE}>> .env
         echo -e 'DISCORD_BOT_TOKEN='${DISCORD_BOT_TOKEN}>> .env
         echo -e 'DISCORD_CLIENT_ID='${DISCORD_CLIENT_ID}>> .env
         echo -e 'TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}>> .env
@@ -138,6 +139,7 @@ jobs:
         OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID: ${{secrets.OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID}}
 
         # DISCORD BOT
+        REVIEW_IMAGES_TABLE: ${{secrets.REVIEW_IMAGES_TABLE}}
         DISCORD_BOT_TOKEN: ${{secrets.DISCORD_BOT_TOKEN}}
         DISCORD_CLIENT_ID: ${{secrets.DISCORD_CLIENT_ID}}
 
@@ -166,4 +168,6 @@ jobs:
         script: |
           cd /root/app
           unzip -o bas_scripts.zip
-          docker-compose restart
+          docker-compose stop
+          docker-compose down
+          docker-compose up --build -d
