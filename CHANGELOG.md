@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1 (28.10.2024)
+- Remove sidekiq configuration given production memory errors
+- Update bas version to 1.5.3
+
+## 1.0.0 (23.10.2024)
+- Remove logic to execute use cases bots with cronjobs
+- Add the sidekiq gem to manage the execution schedules
+- Add a redis container to manage the sidekiq execution queue.
+
 ## 0.6.0 (09.10.2024)
 - Add dicord bot to manage image review requests
 - Update telegram bot to manage list_websites and remove_websites commands
