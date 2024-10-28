@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_case/wip_limit/notify_domains_wip_limit_exceeded'
+require_relative '../../../src/use_cases/wip_limit/notify_domains_wip_limit_exceeded'
 
 ENV['WIP_LIMIT_DISCORD_WEBHOOK'] = 'WIP_LIMIT_DISCORD_WEBHOOK'
 ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'
@@ -12,17 +12,30 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe UseCase::NotifyDomainsWipLimitExceeded do
+RSpec.describe Notify::DomainsWipLimitExceeded do
   before do
-    @bot = UseCase::NotifyDomainsWipLimitExceeded.new
+    params = {
+      discord_webhook: ENV.fetch('WIP_LIMIT_DISCORD_WEBHOOK'),
+      discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
+      table_name: ENV.fetch('WIP_TABLE'),
+      db_host: ENV.fetch('DB_HOST'),
+      db_port: ENV.fetch('DB_PORT'),
+      db_name: ENV.fetch('POSTGRES_DB'),
+      db_user: ENV.fetch('POSTGRES_USER'),
+      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    }
 
-    bas_bot = instance_double(Bot::NotifyDiscord)
-
-    allow(Bot::NotifyDiscord).to receive(:new).and_return(bas_bot)
-    allow(bas_bot).to receive(:execute).and_return({})
+    @bot = Notify::DomainsWipLimitExceeded.new(params)
   end
 
   context '.execute' do
+    before do
+      bas_bot = instance_double(Bot::NotifyDiscord)
+
+      allow(Bot::NotifyDiscord).to receive(:new).and_return(bas_bot)
+      allow(bas_bot).to receive(:execute).and_return({})
+    end
+
     it 'should execute the bas bot' do
       expect(@bot.execute).not_to be_nil
     end
