@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/kommitters/conversational-bots.git
+  revision: 7b0b65db7ac7605010c1acbc94a6671b119ce308
+  specs:
+    conversational_bots (0.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -44,6 +50,7 @@ GEM
     discordrb-webhooks (3.5.0)
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
+    dotenv (2.8.1)
     drb (2.2.1)
     dry-core (1.0.1)
       concurrent-ruby (~> 1.0)
@@ -261,7 +268,9 @@ PLATFORMS
 
 DEPENDENCIES
   bas (~> 1.5)
+  conversational_bots!
   discordrb
+  dotenv (~> 2.8)
   rspec
   rubocop
   telegram-bot-ruby (~> 1.0)

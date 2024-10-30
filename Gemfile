@@ -12,3 +12,7 @@ gem 'discordrb'
 gem 'telegram-bot-ruby', '~> 1.0'
 
 gem 'rubocop'
+
+gem 'conversational_bots', github: 'kommitters/conversational-bots'
+
+gem 'dotenv', '~> 2.8'
