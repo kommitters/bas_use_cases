@@ -16,7 +16,6 @@ module Services
 
     def user_websites
       query = "SELECT url FROM (conversations JOIN observed_websites_conversations ON conversations.id = observed_websites_conversations.conversation_id JOIN observed_websites ON observed_websites.id = observed_websites_conversations.observed_website_id) WHERE conversations.conversation_id = '#{config[:conversation_id]}';" # rubocop:disable Layout/LineLength
-      puts query
       execute_query(query)
     end
   end
