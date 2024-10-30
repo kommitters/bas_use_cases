@@ -9,11 +9,11 @@ module Services
   class Base
     attr_reader :config
 
-    WEBSITE_TABLE = 'websites'
+    OBSERVED_WEBSITE_TABLE = 'observed_websites'
     WEBSITE_URL = 'url'
-    CHATS_IDS_TABLE = 'telegram_chats'
-    CHATS_IDS_ID = 'chat_id'
-    RELATION_TABLE = 'websites_telegram_chats'
+    CONVERSATIONS_IDS_TABLE = 'conversations'
+    CONVERSATIONS_IDS_ID = 'conversation_id'
+    RELATION_TABLE = 'observed_websites_conversations'
 
     def initialize(config)
       @config = config
@@ -29,7 +29,6 @@ module Services
 
     def insert_item(table, attribute, value)
       query = "INSERT INTO #{table} (#{attribute}) VALUES ('#{value}') ON CONFLICT (#{attribute}) DO NOTHING RETURNING id;" # rubocop:disable Layout/LineLength
-
       execute_query(query)
     end
 
