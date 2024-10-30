@@ -1,170 +1,146 @@
 # frozen_string_literal: true
 
-require 'logger'
-require 'telegram/bot'
+# rubocop:disable Metrics/ClassLength
 
-require_relative 'services/add_website'
 require_relative 'services/list_websites'
 require_relative 'services/remove_website'
+require_relative 'services/add_website'
 
+# Module containing bot implementations for various use cases.
 module Bots
-  ##
-  # Telegram base bot to process chat commands to add availability websites
-  # check requests# frozen_string_literal: true
-  #
-  class WebAvailability # rubocop:disable Metrics/ClassLength
-    attr_reader :bot, :user_message, :connection
-    attr_accessor :user_data
+  # Bot for managing website availability monitoring.
+  # Supports commands to add, list, and remove websites using service classes.
+  class WebAvailability
+    attr_reader :user_data, :commands
 
     MAX_USER_LIMIT = 2
-    COMMANDS = %w[add list remove].freeze
-    START = 'Hello! Use any of the available commands:'
-    ADD_WEBSITE = 'Please send the URL of the website you want to add.'
+    COMMANDS = %w[add_website list_websites remove_website].freeze
+    START_MESSAGE = "Hello! Use any of the available commands:\n#{COMMANDS.map { |cmd| "- /#{cmd}" }.join("\n")}".freeze
+    ADD_WEBSITE_PROMPT = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
-    INVALID = 'Invalid URL. Please enter a valid website.'
-    INSTRUCTION = 'Send /add_website to add a website.'
-    LIMIT_EXCEEDED = 'The website can not be saved. You exceeded the maximum amount'
-    NO_WEBSITES = 'You dont have websites saved'
-    REMOVE_INSTRUCTION = 'Send the number of the website you want to remove'
+    INVALID_URL = 'Invalid URL. Please enter a valid website.'
+    LIMIT_EXCEEDED = 'The website cannot be saved. You exceeded the maximum amount.'
+    NO_WEBSITES = 'You don’t have websites saved.'
+    REMOVE_PROMPT = 'Send the number of the website you want to remove.'
     WEBSITE_REMOVED = 'The website was removed!'
     PROCESSING = 'Processing... 🏃‍♂️'
 
-    def initialize(token, connection)
-      @bot = Telegram::Bot::Client.new(token)
-      @connection = connection
+    def initialize(db_connection)
       @user_data = {}
+      @db_connection = db_connection
+      @commands = {}
+      define_commands
     end
 
-    def execute
-      bot.listen do |message|
-        process_message(message)
-      rescue StandardError => e
-        Logger.new($stdout).error(e.message)
+    def define_commands
+      COMMANDS.each do |command|
+        register_command("/#{command}", "#{command.tr('_', ' ').capitalize} action", command.to_sym)
       end
     end
 
     private
 
-    def process_message(message)
-      @user_message = message
-
-      case message.text
-      when '/start' then start
-      when '/add' then add_website
-      when '/list' then list_websites
-      when '/remove' then remove_website
-      else input_response
-      end
+    def register_command(name, description, method_name)
+      @commands[name] = {
+        name:,
+        description:,
+        action: proc { |event, message, event_entity, instance|
+          send(method_name, event, message, event_entity, instance)
+        }
+      }
     end
 
-    def start
-      commands = COMMANDS.map { |command| "- /#{command} " }
-      message = "#{START}\n#{commands.join("\n")}"
-
-      send_message(message)
+    def start(_event, _message, event_entity, bot_instance)
+      bot_instance.send_message(event_entity, START_MESSAGE)
     end
 
-    def add_website
-      send_message(ADD_WEBSITE)
-      user_data[user_message.chat.id] = :awaiting_url
-    end
-
-    def list_websites
-      send_message(PROCESSING)
-
-      websites = user_websites.map { |website| "- #{website}" }
-
-      message = !websites.empty? ? "Your websites are: \n#{websites.join("\n")}" : NO_WEBSITES
-
-      send_message(message)
-    end
-
-    def remove_website
-      send_message(PROCESSING)
-
-      if !user_websites.empty?
-        user_data[user_message.chat.id] = :awaiting_remove_url
-        send_message(REMOVE_INSTRUCTION)
-
-        message = "Active websites: \n#{remove_options}"
-
-        send_message(message)
+    def custom_handler(_event, message, event_entity, bot_instance)
+      bot_instance.send_message(event_entity, PROCESSING)
+      case @user_data[event_entity.id]
+      when :awaiting_url
+        validate_website(message, event_entity, bot_instance)
+      when :awaiting_remove_url
+        validate_remove_option(message, event_entity, bot_instance)
       else
-        send_message(NO_WEBSITES)
+        bot_instance.send_message(event_entity, 'Send /add_website to add a website.')
       end
     end
 
-    def input_response
-      send_message(PROCESSING)
-
-      if user_data[user_message.chat.id] == :awaiting_url
-        validate_website
-      elsif user_data[user_message.chat.id] == :awaiting_remove_url
-        validate_remove_option
+    def validate_website(message, event_entity, bot_instance)
+      if valid_url?(message)
+        add_new_website(message, event_entity, bot_instance)
       else
-        send_message(INSTRUCTION)
+        bot_instance.send_message(event_entity, INVALID_URL)
       end
     end
 
-    def validate_website
-      if valid_url
-        add_new_website
+    def add_new_website(message, event_entity, bot_instance)
+      @user_data[event_entity.id] = nil
+      if user_websites(event_entity).size < MAX_USER_LIMIT
+        save_website(message, event_entity)
+        bot_instance.send_message(event_entity, WEBSITE_ADDED)
       else
-        send_message(INVALID)
+        bot_instance.send_message(event_entity, LIMIT_EXCEEDED)
       end
     end
 
-    def validate_remove_option
-      option = user_message.text
-      if websites_options[option].nil?
-        remove_website
-      else
-        delete_website(websites_options[option])
-        send_message(WEBSITE_REMOVED)
-      end
+    def valid_url?(message)
+      message.match?(%r{\Ahttp(s)?://\S+\.\S+}) ? message : "https://#{message}"
     end
 
-    def add_new_website
-      user_data[user_message.chat.id] = nil
-
-      if user_websites.size < MAX_USER_LIMIT
-        save_website
-        send_message(WEBSITE_ADDED)
-      else
-        send_message(LIMIT_EXCEEDED)
-      end
-    end
-
-    def save_website
-      config = { connection:, chat_id: user_message.chat.id, url: valid_url }
+    def save_website(message, event_entity)
+      config = { connection: @db_connection, conversation_id: event_entity.id, url: valid_url?(message) }
       Services::AddWebsite.new(config).execute
     end
 
-    def user_websites
-      config = { connection:, chat_id: user_message.chat.id }
-      Services::ListWebsites.new(config).execute
+    def add_website(_event, _message, event_entity, bot_instance)
+      bot_instance.send_message(event_entity, ADD_WEBSITE_PROMPT)
+      @user_data[event_entity.id] = :awaiting_url
     end
 
-    def delete_website(website)
-      config = { connection:, website:, chat_id: user_message.chat.id }
+    def list_websites(_event, _message, event_entity, bot_instance)
+      bot_instance.send_message(event_entity, PROCESSING)
+      websites = user_websites(event_entity)
+
+      message = websites.any? ? "Your websites are:\n#{websites.map { |w| "- #{w}" }.join("\n")}" : NO_WEBSITES
+      bot_instance.send_message(event_entity, message)
+    end
+
+    def remove_website(_event, _message, event_entity, bot_instance)
+      bot_instance.send_message(event_entity, PROCESSING)
+      websites = user_websites(event_entity)
+
+      if websites.any?
+        @user_data[event_entity.id] = :awaiting_remove_url
+        options_message = "Active websites:\n#{websites.each_with_index.map { |w, i| "- #{i}: #{w}" }.join("\n")}"
+        bot_instance.send_message(event_entity, "#{REMOVE_PROMPT}\n#{options_message}")
+      else
+        bot_instance.send_message(event_entity, NO_WEBSITES)
+      end
+    end
+
+    def validate_remove_option(message, event_entity, bot_instance)
+      index = message.to_i
+      websites = user_websites(event_entity)
+
+      if websites[index]
+        delete_website(websites[index], event_entity)
+        bot_instance.send_message(event_entity, WEBSITE_REMOVED)
+      else
+        bot_instance.send_message(event_entity, INVALID_URL)
+      end
+    end
+
+    def delete_website(website, event_entity)
+      config = { connection: @db_connection, website:, conversation_id: event_entity.id }
       Services::RemoveWebsite.new(config).execute
     end
 
-    def valid_url
-      input = user_message.text
-      input.start_with?('http://', 'https://') ? input : "https://#{input}"
-    end
-
-    def remove_options
-      websites_options.map { |index, website| "- #{index} : \"#{website}\"" }.join("\n")
-    end
-
-    def websites_options
-      Hash[user_websites.each_with_index.map { |website, index| [index.to_s, website] }]
-    end
-
-    def send_message(text)
-      bot.api.send_message(chat_id: user_message.chat.id, text:)
+    def user_websites(event_entity)
+      config = { connection: @db_connection, conversation_id: event_entity.id }
+      Services::ListWebsites.new(config).execute
     end
   end
 end
+
+# rubocop:enable Metrics/ClassLength
