@@ -13,6 +13,4 @@ gem 'telegram-bot-ruby', '~> 1.0'
 
 gem 'rubocop'
 
-gem 'conversational_bots', github: 'kommitters/conversational-bots'
-
-gem 'dotenv', '~> 2.8'
+gem 'conversational_bots', git: 'https://github.com/kommitters/conversational-bots.git', branch: 'main'
