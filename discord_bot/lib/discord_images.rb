@@ -9,10 +9,9 @@ module Bots
   # Discord bot to get images from a private message with a bot and return a review
   #
   class DiscordImages
-    attr_reader :user_data, :commands
+    attr_reader :commands
 
     def initialize(db_connection)
-      @user_data = {}
       @db_connection = db_connection
       @commands = {}
     end
@@ -33,8 +32,7 @@ module Bots
       @bot_instance = bot_instance
       @message = message
       @event_entity = event_entity
-      message = event.message
-      process_message(message, event)
+      process_message(event.message, event)
     end
 
     def get_images(message)

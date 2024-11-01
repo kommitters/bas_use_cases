@@ -1,44 +1,28 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
 require_relative '../lib/discord_images'
 require 'conversational_bots/bots/discord_bot'
-require 'dotenv/load'
 
 # Load environment variables
-DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
-DB_CONNECTION_STRING = ENV['DB_CONNECTION_STRING']
+DISCORD_BOT_TOKEN = ENV.fetch('DISCORD_BOT_TOKEN')
+db_user = ENV.fetch('POSTGRES_USER')
+db_password = ENV.fetch('POSTGRES_PASSWORD')
+db_host = ENV.fetch('DB_HOST')
+db_port = ENV.fetch('DB_PORT')
+db_name = ENV.fetch('POSTGRES_DB')
+DB_CONNECTION_STRING = "postgresql://#{db_user}:#{db_password}@#{db_host}:#{db_port}/#{db_name}".freeze
 
-# Ensure mandatory configuration is present
-if DISCORD_BOT_TOKEN.nil? || DB_CONNECTION_STRING.nil?
-  raise 'Missing DISCORD_TOKEN or DB_CONNECTION_STRING in environment'
+# Initialize bot commands and Discord bot, then start the bot
+bot_commands = Bots::DiscordImages.new(DB_CONNECTION_STRING)
+discord_bot = DiscordBot.new(
+  DISCORD_BOT_TOKEN,
+  bot_commands.commands,
+  bot_commands.method(:custom_handler)
+)
+
+begin
+  discord_bot.start
+rescue StandardError => e
+  puts "Error al iniciar el bot: #{e.message}"
 end
-
-# Discord bot execution module
-module DiscordImages
-  def self.run
-    bot_commands = initialize_bot_commands
-    discord_bot = initialize_discord_bot(bot_commands)
-    discord_bot.start # Start the bot directly
-  end
-
-  def self.initialize_bot_commands
-    Bots::DiscordImages.new(DB_CONNECTION_STRING)
-  rescue StandardError => e
-    puts "Failed to initialize bot commands: #{e.message}"
-    raise
-  end
-
-  def self.initialize_discord_bot(bot_commands)
-    DiscordBot.new(
-      DISCORD_BOT_TOKEN,
-      bot_commands.commands,
-      bot_commands.method(:custom_handler)
-    )
-  rescue StandardError => e
-    puts "Failed to initialize Discord bot: #{e.message}"
-    raise
-  end
-end
-
-# Start the bot
-DiscordImages.run
