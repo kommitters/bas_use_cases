@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'discordrb'
-
 require 'bas/utils/discord/request'
 require 'bas/write/postgres'
 
@@ -10,21 +8,12 @@ module Bots
   ##
   # Discord bot to get images from a private message with a bot and return a review
   #
-  #
   class DiscordImages
-    attr_reader :bot, :user_message, :connection
+    attr_reader :commands
 
-    def initialize(token, client_id, connection)
-      token = "Bot #{token}"
-      @bot = Discordrb::Bot.new(token:, client_id:)
-      @connection = connection
-    end
-
-    def execute
-      bot.pm do |event|
-        message = event.message
-        process_message(message, event)
-      end
+    def initialize(db_connection)
+      @db_connection = db_connection
+      @commands = {}
     end
 
     private
@@ -38,19 +27,23 @@ module Bots
       end
     end
 
+    def custom_handler(event, message, event_entity, bot_instance)
+      @event = event
+      @bot_instance = bot_instance
+      @message = message
+      @event_entity = event_entity
+
+      process_message(event.message, event)
+    end
+
     def get_images(message)
       response = Utils::Discord::Request.get_discord_images(message)
-
-      if !response.nil?
-        save_in_shared_storage(response)
-      else
-        { error: 'response is empty' }
-      end
+      save_in_shared_storage(response) if response
     end
 
     def save_in_shared_storage(response)
       process_options = {
-        connection:,
+        connection: @db_connection,
         db_table: 'review_images',
         tag: 'ReviewMediaRequest'
       }

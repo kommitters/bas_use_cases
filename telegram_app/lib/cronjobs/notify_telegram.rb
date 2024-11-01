@@ -14,7 +14,7 @@ connection = {
 options = {
   read_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'WebsiteAvailability'
   },
   process_options: {
@@ -23,7 +23,7 @@ options = {
   },
   write_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'NotifyTelegram'
   }
 }

@@ -14,17 +14,17 @@ connection = {
 options = {
   read_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'FetchWebsiteReviewRequest'
   },
   process_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'WebsiteAvailability'
   },
   write_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'ReviewWebsiteAvailability'
   }
 }

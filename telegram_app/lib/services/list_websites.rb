@@ -15,8 +15,7 @@ module Services
     private
 
     def user_websites
-      query = "SELECT url FROM telegram_chats JOIN websites_telegram_chats ON telegram_chats.id = telegram_chat_id JOIN websites ON websites.id = website_id WHERE chat_id = '#{config[:chat_id]}';" # rubocop:disable Layout/LineLength
-
+      query = "SELECT url FROM (conversations JOIN observed_websites_conversations ON conversations.id = observed_websites_conversations.conversation_id JOIN observed_websites ON observed_websites.id = observed_websites_conversations.observed_website_id) WHERE conversations.conversation_id = '#{config[:conversation_id]}';" # rubocop:disable Layout/LineLength
       execute_query(query)
     end
   end

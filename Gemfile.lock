@@ -1,8 +1,16 @@
+GIT
+  remote: https://github.com/kommitters/conversational-bots.git
+  revision: 7b0b65db7ac7605010c1acbc94a6671b119ce308
+  branch: main
+  specs:
+    conversational_bots (0.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.2.1.2)
+    activesupport (7.2.2)
       base64
+      benchmark (>= 0.3)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.3.1)
       connection_pool (>= 2.2.5)
@@ -28,7 +36,9 @@ GEM
       openssl (~> 3.2)
       pg (~> 1.5)
     base64 (0.2.0)
+    benchmark (0.3.0)
     bigdecimal (3.1.8)
+    coderay (1.1.3)
     concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
     csv (3.3.0)
@@ -45,8 +55,9 @@ GEM
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
     drb (2.2.1)
-    dry-core (1.0.1)
+    dry-core (1.0.2)
       concurrent-ruby (~> 1.0)
+      logger
       zeitwerk (~> 2.6)
     dry-inflector (1.1.0)
     dry-logic (1.5.0)
@@ -128,12 +139,13 @@ GEM
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
-    json (2.7.4)
+    json (2.7.5)
     jwt (2.8.2)
       base64
     language_server-protocol (3.17.0.3)
     logger (1.6.1)
     md_to_notion (0.1.4)
+    method_source (1.1.0)
     mime-types (3.6.0)
       logger
       mime-types-data (~> 3.2015)
@@ -170,10 +182,13 @@ GEM
       ffi
     os (1.1.4)
     parallel (1.26.3)
-    parser (3.3.5.0)
+    parser (3.3.5.1)
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     public_suffix (6.0.1)
     racc (1.8.1)
     rainbow (3.1.1)
@@ -192,7 +207,7 @@ GEM
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.1)
+    rspec-core (3.13.2)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -201,7 +216,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
-    rubocop (1.66.1)
+    rubocop (1.68.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -211,7 +226,7 @@ GEM
       rubocop-ast (>= 1.32.2, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.32.3)
+    rubocop-ast (1.33.0)
       parser (>= 3.3.1.0)
     ruby-progressbar (1.13.0)
     sawyer (0.9.2)
@@ -244,7 +259,7 @@ GEM
     websocket-client-simple (0.8.0)
       event_emitter
       websocket
-    zeitwerk (2.6.18)
+    zeitwerk (2.7.1)
 
 PLATFORMS
   aarch64-linux-gnu
@@ -261,7 +276,9 @@ PLATFORMS
 
 DEPENDENCIES
   bas (~> 1.5)
+  conversational_bots!
   discordrb
+  pry
   rspec
   rubocop
   telegram-bot-ruby (~> 1.0)

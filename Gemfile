@@ -12,3 +12,5 @@ gem 'discordrb'
 gem 'telegram-bot-ruby', '~> 1.0'
 
 gem 'rubocop'
+
+gem 'conversational_bots', git: 'https://github.com/kommitters/conversational-bots.git', branch: 'main'
