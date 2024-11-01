@@ -6,11 +6,6 @@ require_relative '../lib/web_availability'
 
 # Configuration variables
 TELEGRAM_BOT_TOKEN = ENV.fetch('TELEGRAM_BOT_TOKEN')
-db_user = ENV.fetch('POSTGRES_USER')
-db_password = ENV.fetch('POSTGRES_PASSWORD')
-db_host = ENV.fetch('DB_HOST')
-db_port = ENV.fetch('DB_PORT')
-db_name = ENV.fetch('POSTGRES_DB')
 connection = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
@@ -18,24 +13,25 @@ connection = {
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
-DB_CONNECTION_STRING = "postgresql://#{db_user}:#{db_password}@#{db_host}:#{db_port}/#{db_name}".freeze
 
 # Initialize bot commands and create an instance of the Telegram bot
 bot_commands = Bots::WebAvailability.new(connection)
+
+# Define bot commands after instantiating the object
 bot_commands.define_commands
 
-# bot_commands.define_commands
+# Create the TelegramBot object with the defined commands
 telegram_bot = TelegramBot.new(
   TELEGRAM_BOT_TOKEN,
   bot_commands.commands,
   bot_commands.method(:custom_handler)
 )
 
-# Start the bot directly
+# Start the bot
 begin
   telegram_bot.start
 rescue StandardError => e
   puts "Error in Telegram Bot: #{e.message}"
+ensure
+  puts 'Telegram bot stopped, exiting the program.'
 end
-
-puts 'Telegram bot stopped, exiting the program.'

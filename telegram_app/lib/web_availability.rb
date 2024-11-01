@@ -5,7 +5,6 @@ require_relative 'services/remove_website'
 require_relative 'services/add_website'
 # rubocop:disable Metrics/ClassLength
 
-# Module containing bot implementations for various use cases.
 module Bots
   # Bot for managing website availability monitoring.
   # Supports commands to add, list, and remove websites using service classes.
@@ -13,7 +12,7 @@ module Bots
     attr_reader :user_data, :commands
 
     MAX_USER_LIMIT = 2
-    COMMANDS = %w[add_website list_websites remove_website].freeze
+    COMMANDS = %w[add list remove].freeze
     START_MESSAGE = "Hello! Use any of the available commands:\n#{COMMANDS.map { |cmd| "- /#{cmd}" }.join("\n")}".freeze
     ADD_WEBSITE_PROMPT = 'Please send the URL of the website you want to add.'
     WEBSITE_ADDED = 'Thanks! The website has been added. You will be notified if the domain is down'
@@ -61,7 +60,7 @@ module Bots
       when :awaiting_remove_url
         validate_remove_option(message, event_entity, bot_instance)
       else
-        bot_instance.send_message(event_entity, 'Send /add_website to add a website.')
+        bot_instance.send_message(event_entity, 'Send /add to add a website.')
       end
     end
 
@@ -92,12 +91,12 @@ module Bots
       Services::AddWebsite.new(config).execute
     end
 
-    def add_website(_event, _message, event_entity, bot_instance)
+    def add(_event, _message, event_entity, bot_instance)
       bot_instance.send_message(event_entity, ADD_WEBSITE_PROMPT)
       @user_data[event_entity.id] = :awaiting_url
     end
 
-    def list_websites(_event, _message, event_entity, bot_instance)
+    def list(_event, _message, event_entity, bot_instance)
       bot_instance.send_message(event_entity, PROCESSING)
       websites = user_websites(event_entity)
 
@@ -105,7 +104,7 @@ module Bots
       bot_instance.send_message(event_entity, message)
     end
 
-    def remove_website(_event, _message, event_entity, bot_instance)
+    def remove(_event, _message, event_entity, bot_instance)
       bot_instance.send_message(event_entity, PROCESSING)
       websites = user_websites(event_entity)
 
