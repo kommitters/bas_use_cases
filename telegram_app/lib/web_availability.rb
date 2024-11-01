@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
-
 require_relative 'services/list_websites'
 require_relative 'services/remove_website'
 require_relative 'services/add_website'
+# rubocop:disable Metrics/ClassLength
 
 # Module containing bot implementations for various use cases.
 module Bots
@@ -24,12 +23,12 @@ module Bots
     REMOVE_PROMPT = 'Send the number of the website you want to remove.'
     WEBSITE_REMOVED = 'The website was removed!'
     PROCESSING = 'Processing... 🏃‍♂️'
+    # rubocop:enable Metrics/ClassLength
 
     def initialize(db_connection)
-      @user_data = {}
       @db_connection = db_connection
       @commands = {}
-      define_commands
+      @user_data = {}
     end
 
     def define_commands
@@ -142,5 +141,3 @@ module Bots
     end
   end
 end
-
-# rubocop:enable Metrics/ClassLength
