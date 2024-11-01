@@ -11,10 +11,10 @@ module Services
     # Execute the Postgres utility to write data in the <b>common storage</b>
     #
     def execute
-      website_id = process_website
+      observed_website_id = process_website
       conversation_id = process_chat
 
-      insert_relation(website_id, conversation_id)
+      insert_relation(observed_website_id, conversation_id)
     end
 
     private
@@ -35,9 +35,9 @@ module Services
       conversation[0]['id']
     end
 
-    def insert_relation(website_id, conversation_id)
+    def insert_relation(observed_website_id, conversation_id)
       query = "INSERT INTO #{RELATION_TABLE}
-              (observed_website_id, conversation_id) VALUES (#{website_id}, #{conversation_id});"
+              (observed_website_id, conversation_id) VALUES (#{observed_website_id}, #{conversation_id});"
 
       execute_query(query)
     end
