@@ -14,12 +14,12 @@ connection = {
 options = {
   process_options: {
     connection:,
-    db_table: 'websites',
+    db_table: 'observed_websites',
     tag: 'ReviewTextRequest'
   },
   write_options: {
     connection:,
-    db_table: 'telegram_web_availability',
+    db_table: 'observed_websites_availability',
     tag: 'FetchWebsiteReviewRequest'
   }
 }
