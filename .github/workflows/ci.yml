@@ -8,6 +8,8 @@ on:
 
 jobs:
   tests:
+    env: 
+      BUNDLE_GITHUB__COM: "${{ secrets.REPO_GITHUB_TOKEN }}:x-oauth-basic"
     name: Tests
     runs-on: ubuntu-latest
 
@@ -25,7 +27,6 @@ jobs:
         gem install bundler
         gem install rubocop
         gem install rspec
-        bundle config set path vendor/bundle
         bundle install
 
     - name: Run linter

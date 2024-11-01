@@ -60,10 +60,10 @@ module Bot
     end
 
     def query
-      "SELECT conversations.conversation_id 
-       FROM conversations 
-       JOIN observed_websites_conversations ON observed_websites_conversations.conversation_id = conversations.id 
-       JOIN observed_websites ON observed_websites.id = observed_websites_conversations.observed_website_id 
+      "SELECT conversations.conversation_id
+       FROM conversations
+       JOIN observed_websites_conversations ON observed_websites_conversations.conversation_id = conversations.id
+       JOIN observed_websites ON observed_websites.id = observed_websites_conversations.observed_website_id
        WHERE url = '#{read_response.data['url']}'"
     end
   end
