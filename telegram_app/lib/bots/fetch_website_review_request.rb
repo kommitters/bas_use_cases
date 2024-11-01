@@ -35,7 +35,7 @@ module Bot
     def params
       {
         connection: process_options[:connection],
-        query: 'SELECT url FROM websites WHERE url IS NOT NULL;'
+        query: 'SELECT url FROM observed_websites WHERE url IS NOT NULL;'
       }
     end
 
