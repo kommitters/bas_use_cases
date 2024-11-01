@@ -63,7 +63,7 @@ module Bot
     end
 
     def query
-      "SELECT chat_id FROM telegram_chats JOIN websites_telegram_chats on telegram_chats.id = telegram_chat_id JOIN websites on websites.id = website_id WHERE url = '#{read_response.data['url']}'" # rubocop:disable Layout/LineLength
+      "SELECT conversation_id FROM conversations JOIN observed_websites_conversations on conversation_id = conversations.id JOIN observed_websites on observed_websites.id = observed_website_id WHERE url = '#{read_response.data['url']}'" # rubocop:disable Layout/LineLength
     end
   end
 end
