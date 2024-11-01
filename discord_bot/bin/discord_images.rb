@@ -6,15 +6,18 @@ require 'conversational_bots/bots/discord_bot'
 
 # Load environment variables
 DISCORD_BOT_TOKEN = ENV.fetch('DISCORD_BOT_TOKEN')
-db_user = ENV.fetch('POSTGRES_USER')
-db_password = ENV.fetch('POSTGRES_PASSWORD')
-db_host = ENV.fetch('DB_HOST')
-db_port = ENV.fetch('DB_PORT')
-db_name = ENV.fetch('POSTGRES_DB')
-DB_CONNECTION_STRING = "postgresql://#{db_user}:#{db_password}@#{db_host}:#{db_port}/#{db_name}".freeze
+connection = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
 
 # Initialize bot commands and Discord bot, then start the bot
-bot_commands = Bots::DiscordImages.new(DB_CONNECTION_STRING)
+bot_commands = Bots::DiscordImages.new(connection)
+
+# Use the full namespace for DiscordBot
 discord_bot = DiscordBot.new(
   DISCORD_BOT_TOKEN,
   bot_commands.commands,
@@ -24,5 +27,5 @@ discord_bot = DiscordBot.new(
 begin
   discord_bot.start
 rescue StandardError => e
-  puts "Error al iniciar el bot: #{e.message}"
+  puts "Error starting the bot: #{e.message}"
 end

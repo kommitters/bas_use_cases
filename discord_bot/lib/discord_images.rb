@@ -32,6 +32,7 @@ module Bots
       @bot_instance = bot_instance
       @message = message
       @event_entity = event_entity
+
       process_message(event.message, event)
     end
 
