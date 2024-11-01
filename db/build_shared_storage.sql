@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS github_issues (
         PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS websites (
+CREATE TABLE IF NOT EXISTS observed_websites (
     id SERIAL NOT NULL,
     url varchar(255) NOT NULL UNIQUE,
     inserted_at timestamp
@@ -172,9 +172,9 @@ CREATE TABLE IF NOT EXISTS websites (
         PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS telegram_chats (
+CREATE TABLE IF NOT EXISTS conversations (
     id SERIAL NOT NULL,
-    chat_id varchar(255) NOT NULL UNIQUE,
+    conversation_id varchar(255) NOT NULL UNIQUE,
     inserted_at timestamp
     with
         time zone DEFAULT CURRENT_TIMESTAMP,
@@ -184,13 +184,13 @@ CREATE TABLE IF NOT EXISTS telegram_chats (
         PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS websites_telegram_chats (
-    website_id INT REFERENCES websites(id) ON DELETE CASCADE,
-    telegram_chat_id INT REFERENCES telegram_chats(id) ON DELETE CASCADE,
-    PRIMARY KEY (website_id, telegram_chat_id)
+CREATE TABLE IF NOT EXISTS observed_websites_conversations (
+    observed_website_id INT REFERENCES observed_websites(id) ON DELETE CASCADE,
+    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+    PRIMARY KEY (observed_website_id, conversation_id)
 );
 
-CREATE TABLE IF NOT EXISTS telegram_web_availability (
+CREATE TABLE IF NOT EXISTS observed_websites_availability (
     id SERIAL NOT NULL,
     "data" jsonb,
     tag varchar(255),
