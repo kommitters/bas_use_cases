@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'discordrb'
 require 'bas/utils/discord/request'
 require 'bas/write/postgres'
 
