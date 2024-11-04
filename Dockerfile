@@ -4,7 +4,8 @@ FROM ruby:3.3.3-bullseye
 ENV GEM_HOME="/usr/local/bundle"
 ENV GEM_PATH="/usr/local/bundle"
 
-ENV BUNDLE_GITHUB__COM="{{ GITHUB_TOKEN }}:x-oauth-basic"
+ARG BUNDLE_GITHUB__COM
+ENV BUNDLE_GITHUB__COM=${BUNDLE_GITHUB__COM}
 
 # Install cron
 RUN apt-get update && apt-get install -y cron build-essential libffi-dev

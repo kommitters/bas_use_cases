@@ -15,6 +15,13 @@ networks:
     driver: bridge
     name: bas_network
 
+x-common:
+  &default-build
+  build: 
+    context: .
+    args:
+      BUNDLE_GITHUB__COM: "${REPO_GITHUB_TOKEN}:x-oauth-basic"
+
 services:
   bas_db:
     image: postgres:13-alpine
@@ -36,7 +43,7 @@ services:
   bas_cronjobs:
     container_name: bas_cronjobs
     restart: always
-    build: .
+    <<: *default-build
     volumes:
       - cronjobs:/app
     depends_on:
@@ -52,7 +59,7 @@ services:
   discord-bot:
     container_name: discord_bot
     restart: always
-    build: .
+    <<: *default-build
     volumes:
       - .env:/app/.env
       - ./Gemfile:/app/Gemfile
@@ -60,6 +67,7 @@ services:
       - ./discord_bot:/app
     depends_on:
       - bas_db
+      - bas_cronjobs
     networks:
       - bas_network
     command: ["bash", "/app/scripts/update_container.sh"]
@@ -71,7 +79,7 @@ services:
   telegram-bot:
     container_name: telegram_bot
     restart: always
-    build: .
+    <<: *default-build
     volumes:
       - .env:/app/.env
       - ./telegram_app:/app
@@ -79,6 +87,7 @@ services:
       - ./Gemfile.lock:/app/Gemfile.lock
     depends_on:
       - bas_db
+      - bas_cronjobs
     networks:
       - bas_network
     command: ["bash", "/app/scripts/update_container.sh"]
