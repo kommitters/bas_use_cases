@@ -34,3 +34,93 @@ jobs:
 
     - name: Run tests
       run: bundle exec rspec
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/main' # Only run deploy on pushes to main
+    needs: tests  # Only run deploy if test succeeds
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get this repository
+      uses: actions/checkout@v3
+
+    - name: Install rsync
+      run: sudo apt-get install -y rsync
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3.3
+
+    - name: Create env file
+      run: touch .env
+
+    - name: Add Secrets into yml file
+      run: |
+        echo -e 'REPO_GITHUB_TOKEN=${{secrets.REPO_GITHUB_TOKEN}}' >> .env
+        echo -e 'DB_HOST=${{secrets.DB_HOST}}' >> .env
+        echo -e 'DB_PORT=${{secrets.DB_PORT}}' >> .env
+        echo -e 'POSTGRES_DB=${{secrets.POSTGRES_DB}}' >> .env
+        echo -e 'POSTGRES_USER=${{secrets.POSTGRES_USER}}' >> .env
+        echo -e 'POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}' >> .env
+        echo -e 'DISCORD_BOT_NAME=NoahSTG' >> .env
+        echo -e 'NOTION_SECRET=${{secrets.NOTION_SECRET}}' >> .env
+        echo -e 'BIRTHDAY_NOTION_DATABASE_ID=${{secrets.BIRTHDAY_NOTION_DATABASE_ID_STG}}' >> .env
+        echo -e 'BIRTHDAY_DISCORD_WEBHOOK=${{secrets.BIRTHDAY_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK=${{secrets.NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'OPENAI_SECRET=${{secrets.OPENAI_SECRET}}' >> .env
+        echo -e 'PTO_NOTION_DATABASE_ID=${{secrets.PTO_NOTION_DATABASE_ID_STG}}' >> .env
+        echo -e 'PTO_OPENAI_ASSISTANT=${{secrets.PTO_OPENAI_ASSISTANT}}' >> .env
+        echo -e 'PTO_DISCORD_WEBHOOK=${{secrets.PTO_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'NEXT_WEEK_PTO_OPENAI_ASSISTANT=${{secrets.NEXT_WEEK_PTO_OPENAI_ASSISTANT}}' >> .env
+        echo -e 'NEXT_WEEK_PTO_DISCORD_WEBHOOK=${{secrets.NEXT_WEEK_PTO_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'WIP_COUNT_NOTION_DATABASE_ID=${{secrets.WIP_COUNT_NOTION_DATABASE_ID_STG}}' >> .env
+        echo -e 'WIP_LIMIT_NOTION_DATABASE_ID=${{secrets.WIP_LIMIT_NOTION_DATABASE_ID_STG}}' >> .env
+        echo -e 'WIP_LIMIT_DISCORD_WEBHOOK=${{secrets.WIP_LIMIT_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'SUPPORT_EMAIL_ACCOUNT=${{secrets.SUPPORT_EMAIL_ACCOUNT}}' >> .env
+        echo -e 'SUPPORT_EMAIL_REFRESH_TOKEN=${{secrets.SUPPORT_EMAIL_REFRESH_TOKEN}}' >> .env
+        echo -e 'SUPPORT_EMAIL_CLIENT_ID=${{secrets.SUPPORT_EMAIL_CLIENT_ID}}' >> .env
+        echo -e 'SUPPORT_EMAIL_CLIENT_SECRET=${{secrets.SUPPORT_EMAIL_CLIENT_SECRET}}' >> .env
+        echo -e 'SUPPORT_EMAIL_INBOX=${{secrets.SUPPORT_EMAIL_INBOX}}' >> .env
+        echo -e 'SUPPORT_EMAIL_RECEPTOR=${{secrets.SUPPORT_EMAIL_RECEPTOR}}' >> .env
+        echo -e 'SUPPORT_EMAIL_DISCORD_WEBHOOK=${{secrets.SUPPORT_EMAIL_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'REVIEW_IMAGE_OPENAI_ASSISTANT='${REVIEW_IMAGE_OPENAI_ASSISTANT}>> .env
+        echo -e 'DIGITAL_OCEAN_SECRET=${{secrets.DIGITAL_OCEAN_SECRET}}' >> .env
+        echo -e 'DIGITAL_OCEAN_THRESHOLD=${{secrets.DIGITAL_OCEAN_THRESHOLD}}' >> .env
+        echo -e 'DIGITAL_OCEAN_DISCORD_WEBHOOK=${{secrets.DIGITAL_OCEAN_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'WEBSITES_AVAILABILITY_NOTION_DATABASE_ID=${{secrets.WEBSITES_AVAILABILITY_NOTION_DATABASE_ID}}' >> .env
+        echo -e 'WEBSITES_AVAILABILITY_DISCORD_WEBHOOK=${{secrets.WEBSITES_AVAILABILITY_DISCORD_WEBHOOK_STG}}' >> .env
+        echo -e 'OSPO_MAINTENANCE_SECRET=${{secrets.OSPO_MAINTENANCE_SECRET_STG}}' >> .env
+        echo -e 'OSPO_MAINTENANCE_APP_ID=${{secrets.OSPO_MAINTENANCE_APP_ID_STG}}' >> .env
+        echo -e 'OSPO_MAINTENANCE_NOTION_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_DATABASE_ID_STG}}' >> .env
+        echo -e 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID_STG}}' >> .env
+        echo -e 'REVIEW_IMAGES_TABLE=${{secrets.REVIEW_IMAGES_TABLE}}' >> .env
+        echo -e 'DISCORD_BOT_TOKEN=${{secrets.DISCORD_BOT_TOKEN_STG}}' >> .env
+        echo -e 'DISCORD_CLIENT_ID=${{secrets.DISCORD_CLIENT_ID_STG}}' >> .env
+        echo -e 'TELEGRAM_BOT_TOKEN=${{secrets.TELEGRAM_BOT_TOKEN_STG}}' >> .env
+
+    - name: compress project
+      run: zip -r bas_scripts.zip .
+
+    - name: Transfer files to Droplet using rsync
+      uses: burnett01/rsync-deployments@5.0
+      with:
+        switches: -avzr --delete
+        path: bas_scripts.zip
+        remote_path: /root/app
+        remote_host: ${{ secrets.DO_DROPLET_IP_STG }}
+        remote_user: root
+        remote_key: ${{ secrets.DO_SSH_KEY_STG }}
+
+    - name: Deploy to DigitalOcean Droplet
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_DROPLET_IP_STG }}
+        username: root
+        key: ${{ secrets.DO_SSH_KEY_STG }}
+        script: |
+          cd /root/app
+          unzip -o bas_scripts.zip
+          docker-compose stop
+          docker-compose down
+          docker-compose up --build -d
