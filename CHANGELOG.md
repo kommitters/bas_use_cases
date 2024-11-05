@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2 (05.11.2024)
+- Integrate conversational bots private gem
+
 ## 1.0.1 (28.10.2024)
 - Remove sidekiq configuration given production memory errors
 - Update bas version to 1.5.3
