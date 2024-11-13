@@ -2,37 +2,31 @@
 
 require 'logger'
 require 'bas/bot/review_media'
+require_relative 'config'
+require 'bas/shared_storage'
 
-connection = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: 'bas',
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "review_images",
+  tag: "ReviewMediaRequest"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "review_images",
+  tag: "ReviewImage"
 }
 
 options = {
-  read_options: {
-    connection:,
-    db_table: 'review_images',
-    tag: 'ReviewMediaRequest'
-  },
-  process_options: {
-    secret: ENV.fetch('OPENAI_SECRET'),
-    assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
-    media_type: 'images'
-  },
-  write_options: {
-    connection:,
-    db_table: 'review_images',
-    tag: 'ReviewImage'
-  }
+  secret: ENV.fetch("OPENAI_SECRET"),
+  assistant_id: ENV.fetch("REVIEW_IMAGE_OPENAI_ASSISTANT"),
+  media_type: "images"
 }
 
 begin
-  bot = Bot::ReviewMedia.new(options)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::ReviewMedia.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

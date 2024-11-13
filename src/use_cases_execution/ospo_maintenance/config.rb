@@ -1,0 +1,16 @@
+module Config 
+  PRIVATE_PEM = File.read('/app/github_private_key.pem')
+  APP_ID = ENV.fetch('OSPO_MAINTENANCE_APP_ID')
+  ORGANIZATION =  'kommitters'
+  DOMAIN = 'kommit.engineering'
+  WORK_ITEM_TYPE =  'activity'
+  TYPE_ID = 'ecc3b2bcc3c941d29e3499721c063dd6',
+  
+  CONNECTION = {
+    host: ENV.fetch('DB_HOST'),
+    port: ENV.fetch('DB_PORT'),
+    dbname: ENV.fetch('POSTGRES_DB'),
+    user: ENV.fetch('POSTGRES_USER'),
+    password: ENV.fetch('POSTGRES_PASSWORD')
+  }
+end

@@ -3,24 +3,32 @@
 require 'logger'
 
 require_relative '../../implementations/ospo_maintenance/create_work_item'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-    database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
-    secret: ENV.fetch('NOTION_SECRET'),
-  table_name: 'github_issues',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: "CreateWorkItemRequest"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: "CreateWorkItem"
+}
+
+options = {
+  database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET'),
 }
 
 # Process bot
 begin
-  bot = Create::WorkItem.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::CreateWorkItem.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

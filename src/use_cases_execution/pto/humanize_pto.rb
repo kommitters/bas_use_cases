@@ -3,24 +3,37 @@
 require 'logger'
 
 require_relative '../../implementations/pto/humanize_pto'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-  openai_secret: ENV.fetch('OPENAI_SECRET'),
-  openai_assistant: ENV.fetch('PTO_OPENAI_ASSISTANT'),
-  table_name: 'pto',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+utc_today = Time.now.utc
+today = Time.at(utc_today, in: "-05:00").strftime("%F").to_s
+
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "pto",
+  tag: "FetchPtosFromNotion"
 }
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "pto",
+  tag: "HumanizePto"
+}
+
+options = {
+  secret: ENV.fetch('OPENAI_SECRET'),
+  assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
+  prompt: "Today is #{today} and the PTO's are: {data}"
+}
+
 
 # Process bot
 begin
-  bot = Humanize::Pto.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::HumanizePto.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

@@ -3,31 +3,35 @@
 require 'logger'
 
 require_relative '../../implementations/support_email/fetch_emails_from_imap'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "support_emails",
+  tag: "FetchEmailsFromImap"
+}
+
 params = {
-  table_name: 'support_emails',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD'),
-  email_account: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),
-  email_refresh_token: ENV.fetch('SUPPORT_EMAIL_REFRESH_TOKEN'),
-  email_client_id: ENV.fetch('SUPPORT_EMAIL_CLIENT_ID'),
-  email_client_secret: ENV.fetch('SUPPORT_EMAIL_CLIENT_SECRET'),
-  email_inbox: ENV.fetch('SUPPORT_EMAIL_INBOX'),
-  email_receptor: ENV.fetch('SUPPORT_EMAIL_RECEPTOR'),
-  email_token_uri: 'https://oauth2.googleapis.com/token',
+  refresh_token: Config::REFRESH_TOKEN,
+  client_id: Config::CLIENT_ID,
+  client_secret: Config::CLIENT_SECRET,
+  token_uri: Config::TOKEN_URI,
+  email_domain: "imap.gmail.com",
   email_port: 993,
-  email_domain: 'imap.gmail.com'
+  user_email: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),
+  search_email: ENV.fetch('SUPPORT_EMAIL_RECEPTOR'),
+  inbox: "INBOX"
 }
 
 # Process bot
 begin
-  bot = Fetch::EmailsFromImap.new(params)
-
-  bot.execute
+  shared_storage_reader = SharedStorage::Default.new
+  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+  
+  Bot::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

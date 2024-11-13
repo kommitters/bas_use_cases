@@ -3,22 +3,33 @@
 require 'logger'
 
 require_relative '../../implementations/support_email/format_emails'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-  table_name: 'support_emails',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "support_emails",
+  tag: "FetchEmailsFromImap"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "support_emails",
+  tag: "FormatEmails"
+}
+
+options = {
+  template: "The <sender> has requested support the <date>",
+  frequency: 5,
+  timezone: "-05:00"
 }
 
 # Process bot
 begin
-  bot = Format::EmailsFromImap.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FormatEmails.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

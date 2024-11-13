@@ -3,41 +3,31 @@
 require 'logger'
 
 require_relative '../../implementations/format_do_bill_alert'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "do_billing",
+  tag: "FetchBillingFromDigitalOcean"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "do_billing",
+  tag: "FormatDoBillAlert"
+}
+
 options = {
-  read_options: {
-    connection: {
-      host: ENV.fetch('DB_HOST'),
-      port: ENV.fetch('DB_PORT'),
-      dbname: ENV.fetch('POSTGRES_DB'),
-      user: ENV.fetch('POSTGRES_USER'),
-      password: ENV.fetch('POSTGRES_PASSWORD')
-    },
-    db_table: "do_billing",
-    tag: "FetchBillingFromDigitalOcean"
-  },
-  process_options: {
-    threshold: ENV.fetch('DIGITAL_OCEAN_THRESHOLD').to_f
-  },
-  write_options: {
-    connection: {
-      host: ENV.fetch('DB_HOST'),
-      port: ENV.fetch('DB_PORT'),
-      dbname: ENV.fetch('POSTGRES_DB'),
-      user: ENV.fetch('POSTGRES_USER'),
-      password: ENV.fetch('POSTGRES_PASSWORD')
-    },
-    db_table: "do_billing",
-    tag: "FormatDoBillAlert"
-  }
+  threshold: ENV.fetch('DIGITAL_OCEAN_THRESHOLD').to_f
 }
 
 # Process bot
 begin
-  bot = Bot::FormatDoBillAlert.new(options)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FormatDoBillAlert.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

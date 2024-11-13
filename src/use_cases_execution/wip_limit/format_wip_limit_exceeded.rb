@@ -3,22 +3,30 @@
 require 'logger'
 
 require_relative '../../implementations/wip_limit/format_wip_limit_exceeded'
-
+require_relative 'config'
+require 'bas/shared_storage'
 # Configuration
-params = {
-  table_name: 'wip_limits',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+    connection: Config::CONNECTION,
+    db_table: "wip_limits",
+    tag: "CompareWipLimitCount"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "wip_limits",
+  tag: "FormatWipLimitExceeded"
+}
+
+options = {
+  template: ":warning: The <domain> WIP limit was exceeded by <exceeded>"
 }
 
 # Process bot
 begin
-  bot = Format::WipLimitExceeded.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FormatWipLimitExceeded.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

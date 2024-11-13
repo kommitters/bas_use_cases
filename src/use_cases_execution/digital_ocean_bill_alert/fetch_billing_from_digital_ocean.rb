@@ -3,30 +3,34 @@
 require 'logger'
 
 require_relative '../../implementations/fetch_billing_from_digital_ocean'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-options = {
-  process_options: {
-    secret: ENV.fetch('DIGITAL_OCEAN_SECRET')
-  },
-  write_options: {
-    connection: {
-      host: ENV.fetch('DB_HOST'),
-      port: ENV.fetch('DB_PORT'),
-      dbname: ENV.fetch('POSTGRES_DB'),
-      user: ENV.fetch('POSTGRES_USER'),
-      password: ENV.fetch('POSTGRES_PASSWORD')
-    },
+read_options = {
+    connection: Config::CONNECTION,
     db_table: "do_billing",
-    tag: "FetchBillingFromDigitalOcean"
+    tag: "FetchBillingFromDigitalOcean",
+    avoid_process: true,
+    where: "archived=$1 AND tag=$2 ORDER BY inserted_at DESC",
+    params: [false, "FetchBillingFromDigitalOcean"]
   }
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "do_billing",
+  tag: "FetchBillingFromDigitalOcean"
+}
+
+options = {
+  secret: ENV.fetch('DIGITAL_OCEAN_SECRET')
 }
 
 # Process bot
 begin
-  bot = Bot::FetchBillingFromDigitalOcean.new(options)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FetchBillingFromDigitalOcean.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

@@ -2,23 +2,32 @@
 
 require 'logger'
 
-require_relative '../../use_cases/birthday/format_birthday'
+require_relative '../../implementations/format_birthday'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-  table_name: 'birthday',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
+  tag: "FetchBirthdaysFromNotion"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
+  tag: "FormatBirthdays"
+}
+
+options = {
+  template: "The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:"
 }
 
 # Process bot
 begin
-  bot = Format::Birthday.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FormatBirthdays.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

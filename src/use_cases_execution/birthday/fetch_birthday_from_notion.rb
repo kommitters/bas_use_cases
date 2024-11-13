@@ -3,32 +3,27 @@
 require 'logger'
 
 require_relative '../../implementations/fetch_birthday_from_notion'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-options = {
-  process_options: {
-    database_id: '5ba9d10982b542f1b6d9c3a25f693886',
-    secret: 'secret_1bzN0RI03gmJRayvAe4Mq2Qzs6d8TmMTvgREzUDlgUj'
-  },
-  write_options: {
-    connection: {
-      host: 'bas_db',
-      port: 5432,
-      dbname: 'bas',
-      user: 'admin',
-      password: 'WzxuH87TADlaGd49VGcP'
-    },
-  db_table: "use_cases",
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
   tag: "FetchBirthdaysFromNotion"
-  },
+}
+
+options = {
+  database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET')
 }
 
 # Process bot
 begin
-  bot = Bot::FetchBirthdaysFromNotion.new(options)
-
-  result = bot.execute
-  puts result.inspect
+  shared_storage_reader = SharedStorage::Default.new
+  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+  
+  Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute  
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

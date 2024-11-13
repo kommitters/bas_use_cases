@@ -3,22 +3,33 @@
 require 'logger'
 
 require_relative '../../implementations/websites_availability/review_domain_availability'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-  table_name: 'web_availability',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "web_availability",
+  tag: "FetchDomainServicesFromNotion"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "web_availability",
+  tag: "ReviewWebsiteAvailability"
+}
+
+options = {
+  connection: Config::CONNECTION,
+  db_table: "web_availability",
+  tag: "ReviewDomainAvailability"
 }
 
 # Process bot
 begin
-  bot = Review::DomainAvailability.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::ReviewDomainAvailability.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

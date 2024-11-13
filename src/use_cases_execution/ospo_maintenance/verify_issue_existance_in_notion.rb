@@ -3,24 +3,32 @@
 require 'logger'
 
 require_relative '../../implementations/ospo_maintenance/verify_issue_existance_in_notion'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: "GithubIssueRequest"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: "VerifyIssueExistanceInNotio"
+}
+
+options = {
   database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
   secret: ENV.fetch('NOTION_SECRET'),
-  table_name: 'github_issues',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
 # Process bot
 begin
-  bot = Verify::IssueExistanceInNotion.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
