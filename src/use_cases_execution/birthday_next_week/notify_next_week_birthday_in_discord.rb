@@ -2,25 +2,33 @@
 
 require 'logger'
 
-require_relative '../../implementations/birthday_next_week/notify_next_week_birthday_in_discord'
+require_relative '../../implementations/notify_discord'
+require_relative 'config'
+require 'bas/shared_storage'
 
 # Configuration
-params = {
-  discord_webhook: ENV.fetch('NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK'),
-  discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
-  table_name: 'birthday',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
+  tag: "FormatNextWeekBirthdays"
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
+  tag: "NotifyDiscord"
+}
+
+options = {
+  name: ENV.fetch('DISCORD_BOT_NAME'),
+  webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK')
 }
 
 # Process bot
 begin
-  bot = Notify::NextWeekBirthdayInDiscord.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::NotifyDiscord.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

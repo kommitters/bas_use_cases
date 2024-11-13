@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage'
 
 require_relative '../../implementations/fetch_pto_from_notion'
 require_relative 'config'
-require 'bas/shared_storage'
-
 
 # Configuration
 

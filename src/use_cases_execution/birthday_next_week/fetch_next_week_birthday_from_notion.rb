@@ -2,25 +2,27 @@
 
 require 'logger'
 
-require_relative '../../implementations/birthday_next_week/fetch_next_week_birthday_from_notion'
-
+require_relative '../../implementations/fetch_next_week_birthday_from_notion'
+require_relative 'config'
 # Configuration
-params = {
-  notion_database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
-  notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: 'birthday',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "birthday",
+  tag: "FetchNextWeekBirthdaysFromNotion"
+}
+
+options = {
+  database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET'),
 }
 
 # Process bot
 begin
-  bot = Fetch::NextWeekBirthdayFromNotion.new(params)
+  shared_storage_reader = SharedStorage::Default.new
+  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
 
-  bot.execute
+  Bot::FetchNextWeekBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

@@ -1,26 +1,30 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage'
 
 require_relative '../../implementations/fetch_next_week_pto_from_notion'
+require_relative 'config'
 
 # Configuration
-params = {
-  notion_database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
-  notion_secret: ENV.fetch('NOTION_SECRET'),
-  table_name: 'pto',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
-}
+
+options = {
+    database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
+    secret: ENV.fetch('NOTION_SECRET'),
+  }
+
+  write_options = {
+    connection: Config::CONNECTION,
+    db_table: "pto",
+    tag: "FetchNextWeekPtosFromNotion"
+  }
 
 # Process bot
 begin
-  bot = Fetch::NextWeekPtoFromNotion.new(params)
+  shared_storage_reader = SharedStorage::Default.new
+  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
 
-  bot.execute
+  Bot::FetchNextWeekPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

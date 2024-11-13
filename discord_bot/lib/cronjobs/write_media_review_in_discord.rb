@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
-require 'bas/bot/write_media_review_in_discord'
+require_relative '../../../src/implementations/write_image_review_in_discord'
 require 'bas/shared_storage'
 require_relative 'config'
 
