@@ -4,7 +4,6 @@ module Config
   ORGANIZATION =  'kommitters'
   DOMAIN = 'kommit.engineering'
   WORK_ITEM_TYPE =  'activity'
-  TYPE_ID = 'ecc3b2bcc3c941d29e3499721c063dd6',
   
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),

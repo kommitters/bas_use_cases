@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/pto"
+SCRIPTS_DIR="/app/src/use_cases_execution/pto"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

@@ -1,12 +1,11 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/websites_availability"
+SCRIPTS_DIR="/app/src/use_cases_execution/websites_availability"
 LOGS_DIR="/app/logs"
 
 # Cronjobs
 CRON_JOBS=(
     "*/10 * * * * fetch_domain_services_from_notion.rb"
-    "*/10 * * * * write_domain_review_requests.rb"
     "*/1 * * * * review_domain_availability.rb"
     "*/1 * * * * notify_domain_availability.rb"
     "00 00 * * * garbage_collector.rb"

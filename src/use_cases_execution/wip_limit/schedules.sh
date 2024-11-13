@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/wip_limit"
+SCRIPTS_DIR="/app/src/use_cases_execution/wip_limit"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

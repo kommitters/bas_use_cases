@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/ospo_maintenance/create_work_item'
+require_relative '../../implementations/create_work_item'
 require_relative 'config'
 require 'bas/shared_storage'
 

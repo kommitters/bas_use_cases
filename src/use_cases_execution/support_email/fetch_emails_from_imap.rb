@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/support_email/fetch_emails_from_imap'
+require_relative '../../implementations/fetch_emails_from_imap'
 require_relative 'config'
 require 'bas/shared_storage'
 

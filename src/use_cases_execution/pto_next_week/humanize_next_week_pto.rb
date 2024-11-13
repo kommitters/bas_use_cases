@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto_next_week/humanize_next_week_pto'
+require_relative '../../implementations/humanize_pto'
 
 # Configuration
 params = {

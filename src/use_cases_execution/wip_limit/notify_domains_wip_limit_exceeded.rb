@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/wip_limit/notify_domains_wip_limit_exceeded'
+require_relative '../../implementations/notify_discord'
 require_relative 'config'
 require 'bas/shared_storage'
 

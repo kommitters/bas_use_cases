@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../../use_cases/ospo_maintenance/fetch_github_issues'
+require_relative '../../../implementations/fetch_github_issues'
 require_relative '../config'
 require 'bas/shared_storage'
 
@@ -30,7 +30,7 @@ options = {
   domain: Config::DOMAIN,
   status: "Backlog",
   work_item_type: Config::WORK_ITEM_TYPE,
-  type_id: Config::TYPE_ID,
+  type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
   connection: Config::CONNECTION,
   db_table: "github_issues",
   tag: "GithubIssueRequest"

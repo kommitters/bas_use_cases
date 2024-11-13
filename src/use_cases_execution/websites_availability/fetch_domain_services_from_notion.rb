@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/websites_availability/fetch_domain_services_from_notion'
+require_relative '../../implementations/fetch_domain_services_from_notion'
 require_relative 'config'
 require 'bas/shared_storage'
 

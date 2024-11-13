@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/digital_ocean_bill_alert/notify_do_bill_alert_discord'
+require_relative '../../implementations/notify_discord'
 require_relative 'config'
 require 'bas/shared_storage'
 

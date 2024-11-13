@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/wip_limit/format_wip_limit_exceeded'
+require_relative '../../implementations/format_wip_limit_exceeded'
 require_relative 'config'
 require 'bas/shared_storage'
 # Configuration

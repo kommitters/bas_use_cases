@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/digital_ocean_bill_alert"
+SCRIPTS_DIR="/app/src/use_cases_execution/digital_ocean_bill_alert"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

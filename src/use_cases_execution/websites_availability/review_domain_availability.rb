@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/websites_availability/review_domain_availability'
+require_relative '../../implementations/review_domain_availability'
 require_relative 'config'
 require 'bas/shared_storage'
 

@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto_next_week/fetch_next_week_pto_from_notion'
+require_relative '../../implementations/fetch_next_week_pto_from_notion'
 
 # Configuration
 params = {

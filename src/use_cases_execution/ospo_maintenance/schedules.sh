@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/ospo_maintenance"
+SCRIPTS_DIR="/app/src/use_cases_execution/ospo_maintenance"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

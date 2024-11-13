@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
-
-require_relative '../../implementations/support_email/notify_support_emails'
+require_relative '../../implementations/notify_discord'
 require_relative 'config'
 require 'bas/shared_storage'
 

@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto_next_week/notify_next_week_pto_in_discord'
+require_relative '../../implementations/notify_discord'
 
 # Configuration
 params = {

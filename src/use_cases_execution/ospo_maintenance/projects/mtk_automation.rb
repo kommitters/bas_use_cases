@@ -2,31 +2,46 @@
 
 require 'logger'
 
-require_relative '../../../use_cases/ospo_maintenance/fetch_github_issues'
+require_relative '../../../implementations/fetch_github_issues'
+require_relative '../config'
+require 'bas/shared_storage'
 
+repo_tag = 'MtkAutomationGithubIssues'
 # Configuration
-params = {
-  tag: 'MtkAutomationGithubIssues',
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: repo_tag,
+  where: "tag=$1 ORDER BY inserted_at DESC",
+  params: [repo_tag]
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: repo_tag,
+}
+
+options = {
+  private_pem: Config::PRIVATE_PEM,
+  app_id: Config::APP_ID,
   repo: 'kommitters/mtk-automation',
-  organization: 'kommitters',
-  domain: 'kommit.engineering',
-  work_item_type: 'activity',
+  filters: { state: "all" },
+  organization: Config::ORGANIZATION,
+  domain: Config::DOMAIN,
+  status: "Backlog",
+  work_item_type: Config::WORK_ITEM_TYPE,
   type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
-  private_pem: File.read('/app/github_private_key.pem'),
-  app_id: ENV.fetch('OSPO_MAINTENANCE_APP_ID'),
-  table_name: 'github_issues',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+  connection: Config::CONNECTION,
+  db_table: "github_issues",
+  tag: "GithubIssueRequest"
 }
 
 # Process bot
 begin
-  bot = Fetch::GithubIssues.new(params)
+  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  bot.execute
+  Bot::FetchGithubIssues.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

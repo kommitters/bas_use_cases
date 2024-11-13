@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/support_email"
+SCRIPTS_DIR="/app/src/use_cases_execution/support_email"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

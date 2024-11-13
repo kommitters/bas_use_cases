@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/websites_availability/notify_domain_availability'
+require_relative '../../implementations/notify_discord'
 require_relative 'config'
 require 'bas/shared_storage'
 

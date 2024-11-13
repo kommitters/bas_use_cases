@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTS_DIR="/app/src/execution/birthday"
+SCRIPTS_DIR="/app/src/use_cases_execution/birthday"
 LOGS_DIR="/app/logs"
 
 # Cronjobs

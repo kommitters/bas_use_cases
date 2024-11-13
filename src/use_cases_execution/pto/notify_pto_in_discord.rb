@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto/notify_pto_in_discord'
+require_relative '../../implementations/notify_discord'
 require_relative 'config'
 require 'bas/shared_storage'
 

@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto/humanize_pto'
+require_relative '../../implementations/humanize_pto'
 require_relative 'config'
 require 'bas/shared_storage'
 

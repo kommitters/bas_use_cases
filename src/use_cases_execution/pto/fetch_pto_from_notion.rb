@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/pto/fetch_pto_from_notion'
+require_relative '../../implementations/fetch_pto_from_notion'
 require_relative 'config'
 require 'bas/shared_storage'
 

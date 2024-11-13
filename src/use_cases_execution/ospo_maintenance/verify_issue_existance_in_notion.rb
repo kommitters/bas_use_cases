@@ -2,7 +2,7 @@
 
 require 'logger'
 
-require_relative '../../implementations/ospo_maintenance/verify_issue_existance_in_notion'
+require_relative '../../implementations/verify_issue_existance_in_notion'
 require_relative 'config'
 require 'bas/shared_storage'
 
