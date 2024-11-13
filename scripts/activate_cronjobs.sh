@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Absolute path to the directory containing the use cases execution
-SCRIPTS_DIR="/app/src/execution"
+SCRIPTS_DIR="/app/src/use_cases_execution"
 RUBY_PATH="/usr/local/bundle"
 
 # Environment variables
