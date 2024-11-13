@@ -2,24 +2,29 @@
 
 require 'logger'
 require 'json'
+require 'bas/shared_storage'
 
-require_relative '../../implementations/websites_availability/garbage_collector'
+require_relative '../../implementations/garbage_collector'
+require_relative 'config'
 
 # Configuration
-params = {
-  table_name: 'web_availability',
-  db_host: ENV.fetch('DB_HOST'),
-  db_port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  db_user: ENV.fetch('POSTGRES_USER'),
-  db_password: ENV.fetch('POSTGRES_PASSWORD')
+write_options = 
+{
+  connection: Config::CONNECTION,
+  db_table: "web_availability"
+}
+
+options = 
+{
+  connection: Config::CONNECTION,
+  db_table: "web_availability"
 }
 
 # Process bot
 begin
-  bot = GarbageCollector::DomainAvailability.new(params)
+  shared_storage = SharedStorage::Postgres.new({ write_options: })
 
-  bot.execute
+  Bot::GarbageCollector.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
