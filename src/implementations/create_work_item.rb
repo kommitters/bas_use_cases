@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "json"
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/utils/notion/request"
-require "bas/utils/notion/types"
-require "bas/write/postgres"
+require 'json'
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/utils/notion/request'
+require 'bas/utils/notion/types'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -39,8 +39,8 @@ module Bot
   class CreateWorkItem < Bot::Base
     include Utils::Notion::Types
 
-    UPDATE_REQUEST = "UpdateWorkItemRequest"
-    STATUS = "Backlog"
+    UPDATE_REQUEST = 'UpdateWorkItemRequest'
+    STATUS = 'Backlog'
 
     # process function to execute the Notion utility to create work items on a notion
     # database
@@ -51,7 +51,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        { success: { issue: read_response.data["issue"], notion_wi: response["id"] } }
+        { success: { issue: read_response.data['issue'], notion_wi: response['id'] } }
       else
         { error: { message: response.parsed_response, status_code: response.code } }
       end
@@ -69,9 +69,9 @@ module Bot
 
     def params
       {
-        endpoint: "pages",
+        endpoint: 'pages',
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body:
       }
     end
@@ -85,17 +85,17 @@ module Bot
 
     def properties # rubocop:disable Metrics/AbcSize
       {
-        "Responsible domain": select(read_response.data["domain"]),
-        "Github Issue Id": rich_text(read_response.data["issue"]["id"].to_s),
+        "Responsible domain": select(read_response.data['domain']),
+        "Github Issue Id": rich_text(read_response.data['issue']['id'].to_s),
         "Status": status(STATUS),
-        "Detail": title(read_response.data["issue"]["title"])
+        "Detail": title(read_response.data['issue']['title'])
       }.merge(work_item_type)
     end
 
     def work_item_type
-      case read_response.data["work_item_type"]
-      when "activity" then { "Activity": relation(read_response.data["type_id"]) }
-      when "project" then { "Project": relation(read_response.data["type_id"]) }
+      case read_response.data['work_item_type']
+      when 'activity' then { "Activity": relation(read_response.data['type_id']) }
+      when 'project' then { "Project": relation(read_response.data['type_id']) }
       else {}
       end
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/notion/request"
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
 
 module Bot
   ##
@@ -34,7 +34,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        birthdays_list = normalize_response(response.parsed_response["results"])
+        birthdays_list = normalize_response(response.parsed_response['results'])
 
         { success: { birthdays: birthdays_list } }
       else
@@ -48,17 +48,17 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body:
       }
     end
 
     def body
-      today = Time.now.utc.strftime("%F").to_s
+      today = Time.now.utc.strftime('%F').to_s
 
       {
         filter: {
-          and: [{ property: "BD_this_year", date: { equals: today } }] + last_edited_condition
+          and: [{ property: 'BD_this_year', date: { equals: today } }] + last_edited_condition
         }
       }
     end
@@ -68,7 +68,7 @@ module Bot
 
       [
         {
-          timestamp: "last_edited_time",
+          timestamp: 'last_edited_time',
           last_edited_time: { on_or_after: read_response.inserted_at }
         }
       ]
@@ -78,21 +78,21 @@ module Bot
       return [] if results.nil?
 
       results.map do |value|
-        birthday_fields = value["properties"]
+        birthday_fields = value['properties']
 
         {
-          "name" => extract_rich_text_field_value(birthday_fields["Complete Name"]),
-          "birthday_date" => extract_date_field_value(birthday_fields["BD_this_year"])
+          'name' => extract_rich_text_field_value(birthday_fields['Complete Name']),
+          'birthday_date' => extract_date_field_value(birthday_fields['BD_this_year'])
         }
       end
     end
 
     def extract_rich_text_field_value(data)
-      data["rich_text"][0]["plain_text"]
+      data['rich_text'][0]['plain_text']
     end
 
     def extract_date_field_value(data)
-      data["formula"]["date"]["start"]
+      data['formula']['date']['start']
     end
   end
 end

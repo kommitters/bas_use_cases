@@ -9,14 +9,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "do_billing",
-  tag: "FetchBillingFromDigitalOcean"
+  db_table: 'do_billing',
+  tag: 'FetchBillingFromDigitalOcean'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "do_billing",
-  tag: "FormatDoBillAlert"
+  db_table: 'do_billing',
+  tag: 'FormatDoBillAlert'
 }
 
 options = {

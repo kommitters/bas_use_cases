@@ -7,20 +7,20 @@ require 'bas/shared_storage'
 
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "review_images",
-  tag: "ReviewMediaRequest"
+  db_table: 'review_images',
+  tag: 'ReviewMediaRequest'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "review_images",
-  tag: "ReviewImage"
+  db_table: 'review_images',
+  tag: 'ReviewImage'
 }
 
 options = {
-  secret: ENV.fetch("OPENAI_SECRET"),
-  assistant_id: ENV.fetch("REVIEW_IMAGE_OPENAI_ASSISTANT"),
-  media_type: "images"
+  secret: ENV.fetch('OPENAI_SECRET'),
+  assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
+  media_type: 'images'
 }
 
 begin

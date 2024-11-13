@@ -9,14 +9,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "ReviewDomainAvailability"
+  db_table: 'web_availability',
+  tag: 'ReviewDomainAvailability'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "NotifyDiscord"
+  db_table: 'web_availability',
+  tag: 'NotifyDiscord'
 }
 
 options = {
@@ -28,7 +28,7 @@ options = {
 begin
   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Bot::NotifyDiscord.new(options, shared_storage).execute 
+  Bot::NotifyDiscord.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

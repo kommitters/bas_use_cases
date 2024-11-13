@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/digital_ocean/request"
+require 'bas/bot/base'
+require 'bas/utils/digital_ocean/request'
 
 module Bot
   ##
@@ -51,15 +51,15 @@ module Bot
 
     def params
       {
-        endpoint: "customers/my/balance",
+        endpoint: 'customers/my/balance',
         secret: process_options[:secret],
-        method: "get",
+        method: 'get',
         body: {}
       }
     end
 
     def last_billing
-      read_response.data.nil? ? nil : read_response.data["billing"]
+      read_response.data.nil? ? nil : read_response.data['billing']
     end
   end
 end

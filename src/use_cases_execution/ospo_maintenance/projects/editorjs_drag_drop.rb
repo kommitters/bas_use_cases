@@ -9,31 +9,31 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
+  db_table: 'github_issues',
   tag: 'EditroJsDragDropGithubIssues',
-  where: "tag=$1 ORDER BY inserted_at DESC",
-  params: ['EditroJsDragDropGithubIssues',]
+  where: 'tag=$1 ORDER BY inserted_at DESC',
+  params: ['EditroJsDragDropGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: 'EditroJsDragDropGithubIssues',
+  db_table: 'github_issues',
+  tag: 'EditroJsDragDropGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/editorjs-drag-drop',
-  filters: { state: "all" },
+  filters: { state: 'all' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
-  status: "Backlog",
+  status: 'Backlog',
   work_item_type: Config::WORK_ITEM_TYPE,
   type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: "GithubIssueRequest"
+  db_table: 'github_issues',
+  tag: 'GithubIssueRequest'
 }
 
 # Process bot

@@ -8,14 +8,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "FetchDomainsWipLimitFromNotion"
+  db_table: 'wip_limits',
+  tag: 'FetchDomainsWipLimitFromNotion'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "CompareWipLimitCount"
+  db_table: 'wip_limits',
+  tag: 'CompareWipLimitCount'
 }
 
 options = {}

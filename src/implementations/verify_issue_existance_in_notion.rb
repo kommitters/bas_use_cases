@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-require "json"
-
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/utils/notion/request"
-require "bas/utils/notion/update_db_state"
-require "bas/write/postgres"
+require 'json'
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/utils/notion/request'
+require 'bas/utils/notion/update_db_state'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -38,8 +37,8 @@ module Bot
   #   Bot::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
   #
   class VerifyIssueExistanceInNotion < Bot::Base
-    NOT_FOUND = "not found"
-    NOTION_PROPERTY = "Github Issue Id"
+    NOT_FOUND = 'not found'
+    NOTION_PROPERTY = 'Github Issue Id'
 
     # process function to execute the Notion utility to verify GitHub issues existance
     # on a notion database
@@ -50,7 +49,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        result = response.parsed_response["results"].first
+        result = response.parsed_response['results'].first
 
         { success: read_response.data.merge({ notion_wi: notion_wi_id(result) }) }
       else
@@ -72,7 +71,7 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body:
       }
     end
@@ -81,7 +80,7 @@ module Bot
       {
         filter: {
           property: NOTION_PROPERTY,
-          rich_text: { equals: read_response.data["issue"]["id"].to_s }
+          rich_text: { equals: read_response.data['issue']['id'].to_s }
         }
       }
     end
@@ -89,7 +88,7 @@ module Bot
     def notion_wi_id(result)
       return NOT_FOUND if result.nil?
 
-      result["id"]
+      result['id']
     end
 
     def tag
@@ -97,7 +96,7 @@ module Bot
 
       return write_options[:tag] if issue.nil? || issue[:notion_wi].nil?
 
-      issue[:notion_wi].eql?(NOT_FOUND) ? "CreateWorkItemRequest" : "UpdateWorkItemRequest"
+      issue[:notion_wi].eql?(NOT_FOUND) ? 'CreateWorkItemRequest' : 'UpdateWorkItemRequest'
     end
   end
 end

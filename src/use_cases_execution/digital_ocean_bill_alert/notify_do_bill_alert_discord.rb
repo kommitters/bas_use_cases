@@ -9,14 +9,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "do_billing",
-  tag: "FormatDoBillAlert"
+  db_table: 'do_billing',
+  tag: 'FormatDoBillAlert'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "do_billing",
-  tag: "NotifyDiscord"
+  db_table: 'do_billing',
+  tag: 'NotifyDiscord'
 }
 
 options = {

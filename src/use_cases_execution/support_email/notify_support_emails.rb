@@ -8,14 +8,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "support_emails",
-  tag: "FormatEmails"
+  db_table: 'support_emails',
+  tag: 'FormatEmails'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "support_emails",
-  tag: "NotifyDiscord"
+  db_table: 'support_emails',
+  tag: 'NotifyDiscord'
 }
 
 options = {

@@ -8,8 +8,8 @@ require 'bas/shared_storage'
 # Configuration
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "FetchDomainsWipCountsFromNotion"
+  db_table: 'wip_limits',
+  tag: 'FetchDomainsWipCountsFromNotion'
 }
 
 options = {
@@ -21,7 +21,7 @@ options = {
 begin
   shared_storage_reader = SharedStorage::Default.new
   shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
-  
+
   Bot::FetchDomainsWipCountsFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)

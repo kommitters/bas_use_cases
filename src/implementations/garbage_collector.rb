@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
+require 'bas/bot/base'
 
 module Bot
   ##
@@ -25,7 +25,7 @@ module Bot
   #   Bot::GarbageCollector.new(options, shared_storage).execute
   #
   class GarbageCollector < Bot::Base
-    SUCCESS_STATUS = "PGRES_COMMAND_OK"
+    SUCCESS_STATUS = 'PGRES_COMMAND_OK'
 
     # Process function to update records in a PostgresDB database table
     #

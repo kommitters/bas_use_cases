@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
+require 'bas/bot/base'
 
 module Bot
   ##
@@ -35,16 +35,16 @@ module Bot
   #
   class FormatEmails < Bot::Base
     EMAIL_ATTRIBUTES = %w[subject sender date].freeze
-    DEFAULT_TIME_ZONE = "+00:00"
+    DEFAULT_TIME_ZONE = '+00:00'
 
     # Process function to format the notification using a template
     #
     def process
-      return { success: { notification: "" } } if unprocessable_response
+      return { success: { notification: '' } } if unprocessable_response
 
-      emails_list = read_response.data["emails"]
+      emails_list = read_response.data['emails']
 
-      notification = process_emails(emails_list).reduce("") do |payload, email|
+      notification = process_emails(emails_list).reduce('') do |payload, email|
         "#{payload} #{build_template(EMAIL_ATTRIBUTES, email)} \n"
       end
 
@@ -55,16 +55,16 @@ module Bot
 
     def process_emails(emails)
       emails.each do |email|
-        date = DateTime.parse(email["date"]).to_time
-        email["date"] = at_timezone(date)
+        date = DateTime.parse(email['date']).to_time
+        email['date'] = at_timezone(date)
       end
-      emails.filter! { |email| email["date"] > time_window } unless process_options[:frequency].nil?
+      emails.filter! { |email| email['date'] > time_window } unless process_options[:frequency].nil?
 
       format_timestamp(emails)
     end
 
     def format_timestamp(emails)
-      emails.each { |email| email["date"] = email["date"].strftime("%F %r") }
+      emails.each { |email| email['date'] = email['date'].strftime('%F %r') }
     end
 
     def time_window

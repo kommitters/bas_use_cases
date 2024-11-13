@@ -55,7 +55,7 @@ module Bot
     def params
       {
         connection: process_options[:connection],
-        query: query
+        query:
       }
     end
 

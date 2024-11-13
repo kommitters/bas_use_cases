@@ -9,14 +9,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "FormatWipLimitExceeded"
+  db_table: 'wip_limits',
+  tag: 'FormatWipLimitExceeded'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "NotifyDiscord"
+  db_table: 'wip_limits',
+  tag: 'NotifyDiscord'
 }
 
 options = {

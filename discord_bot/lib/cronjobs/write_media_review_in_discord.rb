@@ -7,14 +7,14 @@ require_relative 'config'
 
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "review_images",
-  tag: "ReviewImage"
+  db_table: 'review_images',
+  tag: 'ReviewImage'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "review_images",
-  tag: "WriteMediaReviewInDiscord"
+  db_table: 'review_images',
+  tag: 'WriteMediaReviewInDiscord'
 }
 
 options = {

@@ -9,31 +9,31 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
+  db_table: 'github_issues',
   tag: 'EditroJsToggleBlockGithubIssues',
-  where: "tag=$1 ORDER BY inserted_at DESC",
-  params: ['EditroJsToggleBlockGithubIssues',]
+  where: 'tag=$1 ORDER BY inserted_at DESC',
+  params: ['EditroJsToggleBlockGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: 'EditroJsToggleBlockGithubIssues',
+  db_table: 'github_issues',
+  tag: 'EditroJsToggleBlockGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/editorjs-toggle-block',
-  filters: { state: "all" },
+  filters: { state: 'all' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
-  status: "Backlog",
+  status: 'Backlog',
   work_item_type: Config::WORK_ITEM_TYPE,
   type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: "GithubIssueRequest"
+  db_table: 'github_issues',
+  tag: 'GithubIssueRequest'
 }
 
 # Process bot

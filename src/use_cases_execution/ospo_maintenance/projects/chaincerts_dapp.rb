@@ -9,31 +9,31 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
+  db_table: 'github_issues',
   tag: 'ChaincertsDAppGithubIssues',
-  where: "tag=$1 ORDER BY inserted_at DESC",
-  params: ['ChaincertsDAppGithubIssues',]
+  where: 'tag=$1 ORDER BY inserted_at DESC',
+  params: ['ChaincertsDAppGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: 'ChaincertsDAppGithubIssues',
+  db_table: 'github_issues',
+  tag: 'ChaincertsDAppGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/chaincerts-dapp',
-  filters: { state: "all" },
+  filters: { state: 'all' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
-  status: "Backlog",
+  status: 'Backlog',
   work_item_type: Config::WORK_ITEM_TYPE,
   type_id: '97518e360a514a32922aaddb553d742b',
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: "GithubIssueRequest"
+  db_table: 'github_issues',
+  tag: 'GithubIssueRequest'
 }
 
 # Process bot

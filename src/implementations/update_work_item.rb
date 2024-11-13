@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
-require "json"
-require "md_to_notion"
-
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/utils/notion/request"
-require "bas/utils/notion/types"
-require "bas/utils/notion/delete_page_blocks"
-require "bas/utils/notion/fetch_database_record"
-require "bas/utils/notion/update_db_page"
-require "bas/write/postgres"
+require 'json'
+require 'md_to_notion'
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/utils/notion/request'
+require 'bas/utils/notion/types'
+require 'bas/utils/notion/delete_page_blocks'
+require 'bas/utils/notion/fetch_database_record'
+require 'bas/utils/notion/update_db_page'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -44,8 +43,8 @@ module Bot
   class UpdateWorkItem < Bot::Base
     include Utils::Notion::Types
 
-    DESCRIPTION = "Issue Description"
-    GITHUB_COLUMN = "Username"
+    DESCRIPTION = 'Issue Description'
+    GITHUB_COLUMN = 'Username'
 
     # process function to execute the Notion utility to update work items on a notion
     # database
@@ -57,7 +56,7 @@ module Bot
       if response.code == 200
         update_assigness
 
-        { success: { issue: read_response.data["issue"] } }
+        { success: { issue: read_response.data['issue'] } }
       else
         { error: { message: response.parsed_response, status_code: response.code } }
       end
@@ -73,9 +72,9 @@ module Bot
 
     def params
       {
-        endpoint: "blocks/#{read_response.data["notion_wi"]}/children",
+        endpoint: "blocks/#{read_response.data['notion_wi']}/children",
         secret: process_options[:secret],
-        method: "patch",
+        method: 'patch',
         body:
       }
     end
@@ -85,20 +84,20 @@ module Bot
     end
 
     def description
-      MdToNotion::Parser.markdown_to_notion_blocks(read_response.data["issue"]["body"])
+      MdToNotion::Parser.markdown_to_notion_blocks(read_response.data['issue']['body'])
     end
 
     def issue_reference
       {
-        object: "block",
-        type: "paragraph",
-        paragraph: rich_text("issue", read_response.data["issue"]["html_url"])
+        object: 'block',
+        type: 'paragraph',
+        paragraph: rich_text('issue', read_response.data['issue']['html_url'])
       }
     end
 
     def delete_wi
       options = {
-        page_id: read_response.data["notion_wi"],
+        page_id: read_response.data['notion_wi'],
         secret: process_options[:secret]
       }
 
@@ -109,7 +108,7 @@ module Bot
       relation = users.map { |user| user_id(user) }
 
       options = {
-        page_id: read_response.data["notion_wi"],
+        page_id: read_response.data['notion_wi'],
         secret: process_options[:secret],
         body: { properties: { People: { relation: } }.merge(status) }
       }
@@ -128,21 +127,21 @@ module Bot
     end
 
     def github_usernames
-      read_response.data["issue"]["assignees"].map do |username|
+      read_response.data['issue']['assignees'].map do |username|
         { property: GITHUB_COLUMN, rich_text: { equals: username } }
       end
     end
 
     def user_id(user)
-      relation = user.dig("properties", "People", "relation")
+      relation = user.dig('properties', 'People', 'relation')
 
       relation.nil? ? {} : relation.first
     end
 
     def status
-      return {} unless read_response.data["issue"]["state"] == "closed"
+      return {} unless read_response.data['issue']['state'] == 'closed'
 
-      { Status: { status: { name: "Done" } } }
+      { Status: { status: { name: 'Done' } } }
     end
   end
 end

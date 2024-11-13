@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/openai/run_assistant"
+require 'bas/bot/base'
+require 'bas/utils/openai/run_assistant'
 
 module Bot
   ##
@@ -35,7 +35,7 @@ module Bot
   #   Bot::ReviewMedia.new(options, shared_storage).execute
   #
   class ReviewMedia < Bot::Base
-    DETAIL = "low"
+    DETAIL = 'low'
 
     # process function to execute the OpenaAI utility to process the media reviews
     #
@@ -44,7 +44,7 @@ module Bot
 
       response = Utils::OpenAI::RunAssitant.execute(params)
 
-      if response.code != 200 || (!response["status"].nil? && response["status"] != "completed")
+      if response.code != 200 || (!response['status'].nil? && response['status'] != 'completed')
         return error_response(response)
       end
 
@@ -63,17 +63,17 @@ module Bot
 
     def build_prompt
       case process_options[:media_type]
-      when "images" then images_media
-      when "paragraph" then text_media
+      when 'images' then images_media
+      when 'paragraph' then text_media
       end
     end
 
     def images_media
-      read_response.data["media"].map { |url| { type: "image_url", image_url: { url:, detail: DETAIL } } }
+      read_response.data['media'].map { |url| { type: 'image_url', image_url: { url:, detail: DETAIL } } }
     end
 
     def text_media
-      read_response.data["media"]
+      read_response.data['media']
     end
 
     def success_response(response)
@@ -82,15 +82,15 @@ module Bot
     end
 
     def get_review(response)
-      response.parsed_response["data"].first["content"].first["text"]["value"]
+      response.parsed_response['data'].first['content'].first['text']['value']
     end
 
     def media_hash
       {
-        message_id: read_response.data["message_id"],
-        channel_id: read_response.data["channel_id"],
-        property: read_response.data["property"],
-        author: read_response.data["author"],
+        message_id: read_response.data['message_id'],
+        channel_id: read_response.data['channel_id'],
+        property: read_response.data['property'],
+        author: read_response.data['author'],
         media_type: process_options[:media_type]
       }
     end

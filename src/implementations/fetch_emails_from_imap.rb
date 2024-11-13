@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/imap/request"
+require 'bas/bot/base'
+require 'bas/utils/imap/request'
 
 module Bot
   ##
@@ -52,9 +52,9 @@ module Bot
     private
 
     def query
-      yesterday = (Time.now - (60 * 60 * 24)).strftime("%d-%b-%Y")
+      yesterday = (Time.now - (60 * 60 * 24)).strftime('%d-%b-%Y')
 
-      ["TO", process_options[:search_email], "SINCE", yesterday]
+      ['TO', process_options[:search_email], 'SINCE', yesterday]
     end
 
     def normalize_response(results)
@@ -65,16 +65,16 @@ module Bot
 
         {
           "message_id": value[:message_id],
-          "sender" => extract_sender(message),
-          "date" => message.date,
-          "subject" => message.subject
+          'sender' => extract_sender(message),
+          'date' => message.date,
+          'subject' => message.subject
         }
       end
     end
 
     def extract_sender(value)
-      mailbox = value.sender[0]["mailbox"]
-      host = value.sender[0]["host"]
+      mailbox = value.sender[0]['mailbox']
+      host = value.sender[0]['host']
 
       "#{mailbox}@#{host}"
     end

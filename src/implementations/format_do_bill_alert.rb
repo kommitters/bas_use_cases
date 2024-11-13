@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/write/postgres"
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/write/postgres'
 
 module Bot
   ##
@@ -37,7 +37,7 @@ module Bot
     # Process function to format the notification using a template
     #
     def process
-      return { success: { notification: "" } } if unprocessable_response || !threshold_exceeded
+      return { success: { notification: '' } } if unprocessable_response || !threshold_exceeded
 
       { success: { notification: message } }
     end
@@ -55,11 +55,11 @@ module Bot
     end
 
     def billing
-      read_response.data["billing"]["month_to_date_balance"].to_f
+      read_response.data['billing']['month_to_date_balance'].to_f
     end
 
     def last_billing
-      read_response.data["last_billing"]["month_to_date_balance"].to_f
+      read_response.data['last_billing']['month_to_date_balance'].to_f
     end
 
     def message

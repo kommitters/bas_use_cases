@@ -9,14 +9,14 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "pto",
-  tag: "HumanizeNextWeekPto"
+  db_table: 'pto',
+  tag: 'HumanizeNextWeekPto'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "pto",
-  tag: "NotifyDiscord"
+  db_table: 'pto',
+  tag: 'NotifyDiscord'
 }
 
 options = {

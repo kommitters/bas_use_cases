@@ -8,18 +8,18 @@ require 'bas/shared_storage'
 
 # Configuration
 utc_today = Time.now.utc
-today = Time.at(utc_today, in: "-05:00").strftime("%F").to_s
+today = Time.at(utc_today, in: '-05:00').strftime('%F').to_s
 
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "pto",
-  tag: "FetchPtosFromNotion"
+  db_table: 'pto',
+  tag: 'FetchPtosFromNotion'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "pto",
-  tag: "HumanizePto"
+  db_table: 'pto',
+  tag: 'HumanizePto'
 }
 
 options = {

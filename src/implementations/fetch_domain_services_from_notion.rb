@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/notion/request"
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
 
 module Bot
   ##
@@ -34,7 +34,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        urls_list = normalize_response(response.parsed_response["results"])
+        urls_list = normalize_response(response.parsed_response['results'])
 
         { success: { urls: urls_list } }
       else
@@ -48,7 +48,7 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body: {}
       }
     end
@@ -57,16 +57,16 @@ module Bot
       return [] if results.nil?
 
       results.map do |value|
-        properties = value["properties"]
+        properties = value['properties']
 
         {
-          "url" => extract_rich_text_field_value(properties["domain"])
+          'url' => extract_rich_text_field_value(properties['domain'])
         }
       end
     end
 
     def extract_rich_text_field_value(data)
-      data["rich_text"][0]["plain_text"]
+      data['rich_text'][0]['plain_text']
     end
   end
 end

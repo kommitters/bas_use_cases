@@ -1,26 +1,26 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage'
 
 require_relative '../../implementations/format_birthday'
 require_relative 'config'
-require 'bas/shared_storage'
 
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FetchBirthdaysFromNotion"
+  db_table: 'birthday',
+  tag: 'FetchBirthdaysFromNotion'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FormatBirthdays"
+  db_table: 'birthday',
+  tag: 'FormatBirthdays'
 }
 
 options = {
-  template: "The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:"
+  template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
 }
 
 # Process bot

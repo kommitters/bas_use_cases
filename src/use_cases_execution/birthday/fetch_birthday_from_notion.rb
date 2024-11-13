@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage'
 
 require_relative '../../implementations/fetch_birthday_from_notion'
 require_relative 'config'
-require 'bas/shared_storage'
+
 
 # Configuration
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FetchBirthdaysFromNotion"
+  db_table: 'birthday',
+  tag: 'FetchBirthdaysFromNotion'
 }
 
 options = {
@@ -22,8 +23,8 @@ options = {
 begin
   shared_storage_reader = SharedStorage::Default.new
   shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
-  
-  Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute  
+
+  Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

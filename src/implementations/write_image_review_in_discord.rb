@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require "json"
-
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/write/postgres"
-require "bas/utils/discord/request"
+require 'json'
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/write/postgres'
+require 'bas/utils/discord/request'
 
 module Bot
   ##
@@ -44,9 +43,9 @@ module Bot
       response = Utils::Discord::Request.split_paragraphs(params)
 
       if !response.empty?
-        { success: { message_id: read_response.data["message_id"], property: read_response.data["property"] } }
+        { success: { message_id: read_response.data['message_id'], property: read_response.data['property'] } }
       else
-        { error: { message: "Response is empty" } }
+        { error: { message: 'Response is empty' } }
       end
     end
 
@@ -54,10 +53,10 @@ module Bot
 
     def params
       {
-        body: read_response.data["review"],
+        body: read_response.data['review'],
         secret_token: process_options[:secret_token],
-        message_id: read_response.data["message_id"],
-        channel_id: read_response.data["channel_id"]
+        message_id: read_response.data['message_id'],
+        channel_id: read_response.data['channel_id']
       }
     end
   end

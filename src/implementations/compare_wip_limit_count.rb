@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
+require 'bas/bot/base'
 
 module Bot
   ##
@@ -35,8 +35,8 @@ module Bot
     def process
       return { success: { exceeded_domain_count: {} } } if unprocessable_response
 
-      domains_limits = read_response.data["domains_limits"]
-      domain_wip_count = read_response.data["domain_wip_count"]
+      domains_limits = read_response.data['domains_limits']
+      domain_wip_count = read_response.data['domain_wip_count']
 
       exceeded_domain_count = exceeded_counts(domains_limits, domain_wip_count)
 

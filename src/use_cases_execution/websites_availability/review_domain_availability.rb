@@ -9,20 +9,20 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "FetchDomainServicesFromNotion"
+  db_table: 'web_availability',
+  tag: 'FetchDomainServicesFromNotion'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "ReviewWebsiteAvailability"
+  db_table: 'web_availability',
+  tag: 'ReviewWebsiteAvailability'
 }
 
 options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "ReviewDomainAvailability"
+  db_table: 'web_availability',
+  tag: 'ReviewDomainAvailability'
 }
 
 # Process bot

@@ -8,18 +8,18 @@ require 'bas/shared_storage'
 
 # Configuration
 read_options = {
-    connection: Config::CONNECTION,
-    db_table: "do_billing",
-    tag: "FetchBillingFromDigitalOcean",
-    avoid_process: true,
-    where: "archived=$1 AND tag=$2 ORDER BY inserted_at DESC",
-    params: [false, "FetchBillingFromDigitalOcean"]
-  }
+  connection: Config::CONNECTION,
+  db_table: 'do_billing',
+  tag: 'FetchBillingFromDigitalOcean',
+  avoid_process: true,
+  where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
+  params: [false, 'FetchBillingFromDigitalOcean']
+}
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "do_billing",
-  tag: "FetchBillingFromDigitalOcean"
+  db_table: 'do_billing',
+  tag: 'FetchBillingFromDigitalOcean'
 }
 
 options = {

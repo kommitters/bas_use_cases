@@ -9,19 +9,19 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: "GithubIssueRequest"
+  db_table: 'github_issues',
+  tag: 'GithubIssueRequest'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "github_issues",
-  tag: "VerifyIssueExistanceInNotio"
+  db_table: 'github_issues',
+  tag: 'VerifyIssueExistanceInNotio'
 }
 
 options = {
   database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
-  secret: ENV.fetch('NOTION_SECRET'),
+  secret: ENV.fetch('NOTION_SECRET')
 }
 
 # Process bot

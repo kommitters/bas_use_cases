@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require "date"
-
-require "bas/bot/base"
-require "bas/utils/notion/request"
+require 'date'
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
 
 module Bot
   ##
@@ -36,7 +35,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        ptos_list = normalize_response(response.parsed_response["results"])
+        ptos_list = normalize_response(response.parsed_response['results'])
 
         { success: { ptos: ptos_list } }
       else
@@ -50,18 +49,18 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body: { filter: today_condition }
       }
     end
 
     def today_condition
-      today = Time.now.utc.strftime("%F").to_s
+      today = Time.now.utc.strftime('%F').to_s
 
       {
         "and": [
-          { property: "StartDateTime", date: { on_or_before: today } },
-          { property: "EndDateTime", date: { on_or_after: today } }
+          { property: 'StartDateTime', date: { on_or_before: today } },
+          { property: 'EndDateTime', date: { on_or_after: today } }
         ]
       }
     end
@@ -70,11 +69,11 @@ module Bot
       return [] if results.nil?
 
       results.map do |pto|
-        pto_fields = pto["properties"]
+        pto_fields = pto['properties']
 
-        name = extract_description_field_value(pto_fields["Description"])
-        start_date = extract_date_field_value(pto_fields["StartDateTime"])
-        end_date = extract_date_field_value(pto_fields["EndDateTime"])
+        name = extract_description_field_value(pto_fields['Description'])
+        start_date = extract_date_field_value(pto_fields['StartDateTime'])
+        end_date = extract_date_field_value(pto_fields['EndDateTime'])
 
         description(name, start_date, end_date)
       end
@@ -98,7 +97,7 @@ module Bot
     end
 
     def returns(date)
-      date.include?("T12") ? "#{date} in the afternoon" : next_work_day(date)
+      date.include?('T12') ? "#{date} in the afternoon" : next_work_day(date)
     end
 
     def next_work_day(date)
@@ -110,13 +109,13 @@ module Bot
                    else datetime + 1
                    end
 
-      return_day.strftime("%A %B %d of %Y").to_s
+      return_day.strftime('%A %B %d of %Y').to_s
     end
 
     def extract_description_field_value(data)
-      names = data["title"].map { |name| name["plain_text"] }
+      names = data['title'].map { |name| name['plain_text'] }
 
-      names.join(" ")
+      names.join(' ')
     end
 
     def extract_date_field_value(date)
@@ -127,11 +126,11 @@ module Bot
     end
 
     def extract_start_date(data)
-      data["date"]["start"]
+      data['date']['start']
     end
 
     def extract_end_date(data)
-      data["date"]["end"]
+      data['date']['end']
     end
   end
 end

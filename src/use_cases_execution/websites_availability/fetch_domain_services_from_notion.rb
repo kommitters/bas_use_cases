@@ -9,8 +9,8 @@ require 'bas/shared_storage'
 # Configuration
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "web_availability",
-  tag: "FetchDomainServicesFromNotion"
+  db_table: 'web_availability',
+  tag: 'FetchDomainServicesFromNotion'
 }
 
 options = {
@@ -22,7 +22,7 @@ options = {
 begin
   shared_storage_reader = SharedStorage::Default.new
   shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
-  
+
   Bot::FetchDomainServicesFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)

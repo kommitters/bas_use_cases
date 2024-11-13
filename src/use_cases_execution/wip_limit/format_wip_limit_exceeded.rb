@@ -7,19 +7,19 @@ require_relative 'config'
 require 'bas/shared_storage'
 # Configuration
 read_options = {
-    connection: Config::CONNECTION,
-    db_table: "wip_limits",
-    tag: "CompareWipLimitCount"
+  connection: Config::CONNECTION,
+  db_table: 'wip_limits',
+  tag: 'CompareWipLimitCount'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "wip_limits",
-  tag: "FormatWipLimitExceeded"
+  db_table: 'wip_limits',
+  tag: 'FormatWipLimitExceeded'
 }
 
 options = {
-  template: ":warning: The <domain> WIP limit was exceeded by <exceeded>"
+  template: ':warning: The <domain> WIP limit was exceeded by <exceeded>'
 }
 
 # Process bot

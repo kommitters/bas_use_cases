@@ -8,13 +8,13 @@ require_relative 'config'
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FetchNextWeekBirthdaysFromNotion"
+  db_table: 'birthday',
+  tag: 'FetchNextWeekBirthdaysFromNotion'
 }
 
 options = {
   database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
-  secret: ENV.fetch('NOTION_SECRET'),
+  secret: ENV.fetch('NOTION_SECRET')
 }
 
 # Process bot

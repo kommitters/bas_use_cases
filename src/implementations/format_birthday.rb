@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
+require 'bas/bot/base'
 
 module Bot
   ##
@@ -37,11 +37,11 @@ module Bot
     # Process function to format the notification using a template
     #
     def process
-      return { success: { notification: "" } } if unprocessable_response
+      return { success: { notification: '' } } if unprocessable_response
 
-      birthdays_list = read_response.data["birthdays"]
+      birthdays_list = read_response.data['birthdays']
 
-      notification = birthdays_list.reduce("") do |payload, birthday|
+      notification = birthdays_list.reduce('') do |payload, birthday|
         "#{payload} #{build_template(BIRTHDAY_ATTRIBUTES, birthday)} \n"
       end
 

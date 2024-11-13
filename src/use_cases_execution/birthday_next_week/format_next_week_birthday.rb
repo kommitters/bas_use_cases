@@ -9,18 +9,18 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FetchNextWeekBirthdaysFromNotion"
+  db_table: 'birthday',
+  tag: 'FetchNextWeekBirthdaysFromNotion'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "birthday",
-  tag: "FormatNextWeekBirthdays"
+  db_table: 'birthday',
+  tag: 'FormatNextWeekBirthdays'
 }
 
 options = {
-  template: "The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:"
+  template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
 }
 
 # Process bot

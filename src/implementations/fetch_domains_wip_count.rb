@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/notion/request"
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
 
 module Bot
   ##
@@ -35,7 +35,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        work_items_domains = normalize_response(response.parsed_response["results"])
+        work_items_domains = normalize_response(response.parsed_response['results'])
         domain_wip_count = count_domain_items(work_items_domains)
 
         { success: { domain_wip_count: } }
@@ -50,7 +50,7 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body:
       }
     end
@@ -59,7 +59,7 @@ module Bot
       {
         filter: {
           "and": [
-            { property: "OK", formula: { string: { contains: "✅" } } },
+            { property: 'OK', formula: { string: { contains: '✅' } } },
             { "or": status_conditions }
           ]
         }
@@ -68,8 +68,8 @@ module Bot
 
     def status_conditions
       [
-        { property: "Status", status: { equals: "In Progress" } },
-        { property: "Status", status: { equals: "On Hold" } }
+        { property: 'Status', status: { equals: 'In Progress' } },
+        { property: 'Status', status: { equals: 'On Hold' } }
       ]
     end
 
@@ -77,20 +77,20 @@ module Bot
       return [] if results.nil?
 
       results.map do |pto|
-        work_item_fields = pto["properties"]
+        work_item_fields = pto['properties']
 
         {
-          "domain" => extract_domain_field_value(work_item_fields["Responsible domain"])
+          'domain' => extract_domain_field_value(work_item_fields['Responsible domain'])
         }
       end
     end
 
     def extract_domain_field_value(data)
-      data["select"]["name"]
+      data['select']['name']
     end
 
     def count_domain_items(work_items_list)
-      domain_work_items = work_items_list.group_by { |work_item| work_item["domain"] }
+      domain_work_items = work_items_list.group_by { |work_item| work_item['domain'] }
 
       domain_work_items.transform_values(&:count)
     end

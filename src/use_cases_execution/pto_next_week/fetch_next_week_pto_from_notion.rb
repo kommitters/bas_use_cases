@@ -9,15 +9,15 @@ require_relative 'config'
 # Configuration
 
 options = {
-    database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
-    secret: ENV.fetch('NOTION_SECRET'),
-  }
+  database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET')
+}
 
-  write_options = {
-    connection: Config::CONNECTION,
-    db_table: "pto",
-    tag: "FetchNextWeekPtosFromNotion"
-  }
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: 'pto',
+  tag: 'FetchNextWeekPtosFromNotion'
+}
 
 # Process bot
 begin

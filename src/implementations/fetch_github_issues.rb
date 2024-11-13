@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/utils/github/octokit_client"
-require "bas/write/postgres"
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/utils/github/octokit_client'
+require 'bas/write/postgres'
 
 module Bot
   ##

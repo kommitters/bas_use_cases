@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
+require 'bas/bot/base'
 
 module Bot
   ##
@@ -37,11 +37,11 @@ module Bot
     # Process function to format the notification using a template
     #
     def process
-      return { success: { notification: "" } } if unprocessable_response
+      return { success: { notification: '' } } if unprocessable_response
 
-      exceeded_limits_list = read_response.data["exceeded_domain_count"]
+      exceeded_limits_list = read_response.data['exceeded_domain_count']
 
-      notification = exceeded_limits_list.reduce("") do |payload, exceeded_limit|
+      notification = exceeded_limits_list.reduce('') do |payload, exceeded_limit|
         "#{payload} #{build_template(WIP_LIMIT_ATTRIBUTES, exceeded_limit)} \n"
       end
 

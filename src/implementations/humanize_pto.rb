@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/openai/run_assistant"
+require 'bas/bot/base'
+require 'bas/utils/openai/run_assistant'
 
 module Bot
   ##
@@ -35,16 +35,16 @@ module Bot
   #   Bot::HumanizePto.new(options, shared_storage).execute
   #
   class HumanizePto < Bot::Base
-    DEFAULT_PROMPT = "{data}"
+    DEFAULT_PROMPT = '{data}'
 
     # process function to execute the OpenaAI utility to process the PTO's
     #
     def process
-      return { success: { notification: "" } } if unprocessable_response
+      return { success: { notification: '' } } if unprocessable_response
 
       response = Utils::OpenAI::RunAssitant.execute(params)
 
-      if response.code != 200 || (!response["status"].nil? && response["status"] != "completed")
+      if response.code != 200 || (!response['status'].nil? && response['status'] != 'completed')
         return error_response(response)
       end
 
@@ -55,8 +55,8 @@ module Bot
 
     def conditions
       {
-        where: "archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC",
-        params: [false, read_options[:tag], "unprocessed"]
+        where: 'archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC',
+        params: [false, read_options[:tag], 'unprocessed']
       }
     end
 
@@ -70,15 +70,15 @@ module Bot
 
     def build_prompt
       prompt = process_options[:prompt] || DEFAULT_PROMPT
-      ptos_list = read_response.data["ptos"]
+      ptos_list = read_response.data['ptos']
 
       ptos_list_formatted_string = ptos_list.join("\n")
 
-      prompt.gsub("{data}", ptos_list_formatted_string)
+      prompt.gsub('{data}', ptos_list_formatted_string)
     end
 
     def success_response(response)
-      { success: { notification: response.parsed_response["data"].first["content"].first["text"]["value"] } }
+      { success: { notification: response.parsed_response['data'].first['content'].first['text']['value'] } }
     end
 
     def error_response(response)

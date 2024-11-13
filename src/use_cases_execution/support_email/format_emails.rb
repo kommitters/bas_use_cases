@@ -9,20 +9,20 @@ require 'bas/shared_storage'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: "support_emails",
-  tag: "FetchEmailsFromImap"
+  db_table: 'support_emails',
+  tag: 'FetchEmailsFromImap'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: "support_emails",
-  tag: "FormatEmails"
+  db_table: 'support_emails',
+  tag: 'FormatEmails'
 }
 
 options = {
-  template: "The <sender> has requested support the <date>",
+  template: 'The <sender> has requested support the <date>',
   frequency: 5,
-  timezone: "-05:00"
+  timezone: '-05:00'
 }
 
 # Process bot

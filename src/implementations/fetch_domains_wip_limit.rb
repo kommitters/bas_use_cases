@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/notion/request"
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
 
 module Bot
   ##
@@ -40,7 +40,7 @@ module Bot
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
-        domains_limits = normalize_response(response.parsed_response["results"])
+        domains_limits = normalize_response(response.parsed_response['results'])
 
         wip_limit_data = wip_count.merge({ domains_limits: })
 
@@ -56,7 +56,7 @@ module Bot
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
         secret: process_options[:secret],
-        method: "post",
+        method: 'post',
         body:
       }
     end
@@ -64,7 +64,7 @@ module Bot
     def body
       {
         filter: {
-          property: "WIP + On Hold limit",
+          property: 'WIP + On Hold limit',
           number: { is_not_empty: true }
         }
       }
@@ -74,21 +74,21 @@ module Bot
       return [] if results.nil?
 
       results.reduce({}) do |domains_limits, domain_wip_limit|
-        domain_fields = domain_wip_limit["properties"]
+        domain_fields = domain_wip_limit['properties']
 
-        domain = extract_domain_name_value(domain_fields["Name"])
-        limit = extract_domain_limit_value(domain_fields["WIP + On Hold limit"])
+        domain = extract_domain_name_value(domain_fields['Name'])
+        limit = extract_domain_limit_value(domain_fields['WIP + On Hold limit'])
 
         domains_limits.merge({ domain => limit })
       end
     end
 
     def extract_domain_name_value(data)
-      data["title"].first["plain_text"]
+      data['title'].first['plain_text']
     end
 
     def extract_domain_limit_value(data)
-      data["number"]
+      data['number']
     end
 
     def wip_count

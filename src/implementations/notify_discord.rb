@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bas/bot/base"
-require "bas/utils/discord/integration"
+require 'bas/bot/base'
+require 'bas/utils/discord/integration'
 
 module Bot
   ##
@@ -52,7 +52,7 @@ module Bot
     def params
       {
         name: process_options[:name],
-        notification: read_response.data["notification"],
+        notification: read_response.data['notification'],
         webhook: process_options[:webhook]
       }
     end

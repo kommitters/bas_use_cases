@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require "httparty"
-
-require "bas/bot/base"
-require "bas/read/postgres"
-require "bas/write/postgres"
-require "bas/utils/openai/run_assistant"
+require 'httparty'
+require 'bas/bot/base'
+require 'bas/read/postgres'
+require 'bas/write/postgres'
+require 'bas/utils/openai/run_assistant'
 
 module Bot
   ##
@@ -43,8 +42,8 @@ module Bot
     def process
       return { success: { review: nil } } if unprocessable_response
 
-      read_response.data["urls"].each do |url_obj|
-        url = url_obj["url"]
+      read_response.data['urls'].each do |url_obj|
+        url = url_obj['url']
         response = availability(url)
 
         response.is_a?(Hash) ? write_invalid_response(response, url) : manage_response(response)
@@ -57,8 +56,8 @@ module Bot
 
     def conditions
       {
-        where: "archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC",
-        params: [false, read_options[:tag], "unprocessed"]
+        where: 'archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC',
+        params: [false, read_options[:tag], 'unprocessed']
       }
     end
 
