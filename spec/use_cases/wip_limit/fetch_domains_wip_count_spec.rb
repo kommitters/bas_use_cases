@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/wip_limit/fetch_domains_wip_count'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/fetch_domains_wip_count'
 
 ENV['WIP_COUNT_NOTION_DATABASE_ID'] = 'WIP_COUNT_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
@@ -12,20 +14,36 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::DomainsWipCountFromNotion do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  db_name: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
+
+RSpec.describe Bot::FetchDomainsWipCountsFromNotion do
   before do
-    params = {
-      notion_database_id: ENV.fetch('WIP_COUNT_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('WIP_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'wip_limits',
+      tag: 'FetchDomainsWipCountsFromNotion'
+    }
+    
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'wip_limits',
+      tag: 'FetchDomainsWipLimitFromNotion'
+    }
+    
+    options = {
+      database_id: ENV.fetch('WIP_COUNT_NOTION_DATABASE_ID'),
+      secret: ENV.fetch('NOTION_SECRET')
     }
 
-    @bot = Fetch::DomainsWipCountFromNotion.new(params)
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+  @bot = Bot::FetchDomainsWipCountsFromNotion.new(options, shared_storage)
   end
 
   context '.execute' do

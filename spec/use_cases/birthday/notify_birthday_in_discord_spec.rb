@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/notify_birthday_in_discord'
+require_relative '../../../src/implementations/notify_discord'
+require 'bas/shared_storage/postgres'
 
 ENV['BIRTHDAY_DISCORD_WEBHOOK'] = 'BIRTHDAY_DISCORD_WEBHOOK'
 ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'
@@ -12,20 +13,36 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Notify::BirthdayInDiscord do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
+
+RSpec.describe Bot::NotifyDiscord do
   before do
-    params = {
-      discord_webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK'),
-      discord_bot_name: ENV.fetch('DISCORD_BOT_NAME'),
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'birthday',
+      tag: 'FormatBirthdays'
     }
 
-    @bot = Notify::BirthdayInDiscord.new(params)
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'birthday',
+      tag: 'NotifyDiscord'
+    }
+
+    options = {
+      name: ENV.fetch('DISCORD_BOT_NAME'),
+      webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK')
+    }
+
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    @bot = Bot::NotifyDiscord.new(options, shared_storage)
   end
 
   context '.execute' do

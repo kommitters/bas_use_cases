@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/format_birthday'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/format_birthday'
 
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
@@ -10,18 +12,35 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Format::Birthday do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
+
+RSpec.describe Bot::FormatBirthdays do
   before do
-    params = {
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'birthday',
+      tag: 'FetchBirthdaysFromNotion'
     }
 
-    @bot = Format::Birthday.new(params)
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'birthday',
+      tag: 'FormatBirthdays'
+    }
+
+    options = {
+      template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
+    }
+
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    @bot = Bot::FormatBirthdays.new(options, shared_storage)
   end
 
   context '.execute' do

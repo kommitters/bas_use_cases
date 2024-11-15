@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/pto/fetch_pto_from_notion'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+require_relative '../../../src/implementations/fetch_pto_from_notion'
 
 ENV['PTO_NOTION_DATABASE_ID'] = 'PTO_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
@@ -12,20 +15,31 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::PtoFromNotion do
-  before do
-    params = {
-      notion_database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('PTO_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  db_name: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
 
-    @bot = Fetch::PtoFromNotion.new(params)
+RSpec.describe Bot::FetchPtosFromNotion do
+  before do
+    options = {
+  database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET')
+}
+
+write_options = {
+  connection: CONNECTION,
+  db_table: 'pto',
+  tag: 'FetchPtosFromNotion'
+}
+
+shared_storage_reader = SharedStorage::Default.new
+shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+
+@bot = Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
   end
 
   context '.execute' do

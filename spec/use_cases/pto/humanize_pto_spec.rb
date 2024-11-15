@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/pto/humanize_pto'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/humanize_pto'
 
 ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['PTO_OPENAI_ASSISTANT'] = 'PTO_OPENAI_ASSISTANT'
@@ -12,20 +14,36 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Humanize::Pto do
-  before do
-    params = {
-      openai_secret: ENV.fetch('OPENAI_SECRET'),
-      openai_assistant: ENV.fetch('PTO_OPENAI_ASSISTANT'),
-      table_name: ENV.fetch('PTO_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
+CONNECTION ={
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
 
-    @bot = Humanize::Pto.new(params)
+RSpec.describe Bot::HumanizePto do
+  before do
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'pto',
+      tag: 'FetchPtosFromNotion'
+    }
+    
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'pto',
+      tag: 'HumanizePto'
+    }
+    
+    options = {
+      secret: ENV.fetch('OPENAI_SECRET'),
+      assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
+      prompt: "Today is march 1 and the PTO's are: {data}"
+    }
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    Bot::HumanizePto.new(options, shared_storage).execute
   end
 
   context '.execute' do

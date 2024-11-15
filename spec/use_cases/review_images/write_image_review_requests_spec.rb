@@ -3,11 +3,9 @@
 require 'rspec'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../../src/implementations/verify_issue_existance_in_notion'
+require_relative '../../../src/implementations/write_image_review_in_discord'
 
-ENV['OSPO_MAINTENANCE_NOTION_DATABASE_ID'] = 'OSPO_MAINTENANCE_NOTION_DATABASE_ID'
-ENV['NOTION_SECRET'] = 'NOTION_SECRET'
-ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
+ENV['REVIEW_IMAGES_TABLE'] = 'REVIEW_IMAGES_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
 ENV['POSTGRES_DB'] = 'POSTGRES_DB'
@@ -17,40 +15,40 @@ ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
+  dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
+}
 
-RSpec.describe Bot::VerifyIssueExistanceInNotion do
+RSpec.describe Bot::WriteMediaReviewInDiscord do
   before do
     read_options = {
   connection: CONNECTION,
-  db_table: 'github_issues',
-  tag: 'GithubIssueRequest'
+  db_table: 'review_images',
+  tag: 'ReviewImage'
 }
 
 write_options = {
   connection: CONNECTION,
-  db_table: 'github_issues',
-  tag: 'VerifyIssueExistanceInNotio'
+  db_table: 'review_images',
+  tag: 'WriteMediaReviewInDiscord'
 }
 
 options = {
-  database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
-  secret: ENV.fetch('NOTION_SECRET')
+  secret_token: "Bot #{ENV.fetch('DISCORD_BOT_TOKEN')}"
 }
 
 shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
 
- @bot = Bot::VerifyIssueExistanceInNotion.new(options, shared_storage)
+Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::VerifyIssueExistanceInNotion)
+      bas_bot = instance_double(Bot::WriteMediaReviewRequests)
 
-      allow(Bot::VerifyIssueExistanceInNotion).to receive(:new).and_return(bas_bot)
+      allow(Bot::WriteMediaReviewRequests).to receive(:new).and_return(bas_bot)
+
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

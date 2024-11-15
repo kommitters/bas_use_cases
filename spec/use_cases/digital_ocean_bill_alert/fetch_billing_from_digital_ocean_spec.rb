@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/digital_ocean_bill_alert/fetch_billing_from_digital_ocean'
+require 'bas/shared_storage/postgres'
+require_relative '../../../src/implementations/fetch_billing_from_digital_ocean'
 
 ENV['DIGITAL_OCEAN_SECRET'] = 'DIGITAL_OCEAN_SECRET'
 ENV['DO_TABLE'] = 'DO_TABLE'
@@ -11,19 +12,38 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::BillingFromDigitalOcean do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
+
+RSpec.describe Bot::FetchBillingFromDigitalOcean do
   before do
-    params = {
-      digital_ocean_secret: ENV.fetch('DIGITAL_OCEAN_SECRET'),
-      table_name: ENV.fetch('DO_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'do_billing',
+      tag: 'FetchBillingFromDigitalOcean',
+      avoid_process: true,
+      where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
+      params: [false, 'FetchBillingFromDigitalOcean']
     }
 
-    @bot = Fetch::BillingFromDigitalOcean.new(params)
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'do_billing',
+      tag: 'FetchBillingFromDigitalOcean'
+    }
+
+    options = {
+      secret: ENV.fetch('DIGITAL_OCEAN_SECRET')
+    }
+
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    @bot = Bot::FetchBillingFromDigitalOcean.new(options, shared_storage)
   end
 
   context '.execute' do

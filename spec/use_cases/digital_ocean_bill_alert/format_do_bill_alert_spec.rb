@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/digital_ocean_bill_alert/format_do_bill_alert'
+require_relative '../../../src/implementations/format_do_bill_alert'
+require 'bas/shared_storage/postgres'
 
 ENV['DIGITAL_OCEAN_THRESHOLD'] = 'DIGITAL_OCEAN_THRESHOLD'
 ENV['DO_TABLE'] = 'DO_TABLE'
@@ -11,19 +12,34 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Format::DoBillAlert do
+CONNECTION = {
+  host: ENV['DB_HOST'],
+  port: ENV['DB_PORT'],
+  db_name: ENV['POSTGRES_DB'],
+  user: ENV['POSTGRES_USER'],
+  password: ENV['POSTGRES_PASSWORD']
+}.freeze
+
+RSpec.describe Bot::FormatDoBillAlert do
   before do
-    params = {
-      threshold: ENV.fetch('DIGITAL_OCEAN_THRESHOLD'),
-      table_name: ENV.fetch('DO_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'do_billing',
+      tag: 'FetchBillingFromDigitalOcean'
     }
 
-    @bot = Format::DoBillAlert.new(params)
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'do_billing',
+      tag: 'FormatDoBillAlert'
+    }
+
+    options = {
+      threshold: ENV.fetch('DIGITAL_OCEAN_THRESHOLD').to_f
+    }
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    @bot = Bot::FormatDoBillAlert.new(options, shared_storage).execute
   end
 
   context '.execute' do

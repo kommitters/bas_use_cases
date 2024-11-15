@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/websites_availability/review_domain_availability'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/review_domain_availability'
 
 ENV['WEBSITES_AVAILABILITY_TABLE'] = 'WEBSITES_AVAILABILITY_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
@@ -10,18 +12,37 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Review::DomainAvailability do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
+
+RSpec.describe Bot::ReviewDomainAvailability do
   before do
-    params = {
-      table_name: ENV.fetch('WEBSITES_AVAILABILITY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    read_options = {
+      connection: CONNECTION,
+      db_table: 'web_availability',
+      tag: 'FetchDomainServicesFromNotion'
+    }
+    
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'web_availability',
+      tag: 'ReviewWebsiteAvailability'
+    }
+    
+    options = {
+      connection: CONNECTION,
+      db_table: 'web_availability',
+      tag: 'ReviewDomainAvailability'
     }
 
-    @bot = Review::DomainAvailability.new(params)
+    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    @bot = Bot::ReviewDomainAvailability.new(options, shared_storage)
   end
 
   context '.execute' do

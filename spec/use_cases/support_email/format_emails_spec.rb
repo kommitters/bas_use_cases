@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/support_email/format_emails'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/format_emails'
 
 ENV['SUPPORT_EMAIL_TABLE'] = 'SUPPORT_EMAIL_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
@@ -10,18 +12,29 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Format::EmailsFromImap do
+RSpec.describe Bot::FormatEmails do
   before do
-    params = {
-      table_name: ENV.fetch('SUPPORT_EMAIL_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
+    read_options = {
+  connection: CONNECTION,
+  db_table: 'support_emails',
+  tag: 'FetchEmaisFromImap'
+}
 
-    @bot = Format::EmailsFromImap.new(params)
+write_options = {
+  connection: CONNECTION,
+  db_table: 'support_emails',
+  tag: 'FormatEmails'
+}
+
+options = {
+  template: 'The <sender> has requested support the <date>',
+  frequency: 5,
+  timezone: '-05:00'
+}
+
+shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+ @bot = Bot::FormatEmails.new(options, shared_storage)
   end
 
   context '.execute' do

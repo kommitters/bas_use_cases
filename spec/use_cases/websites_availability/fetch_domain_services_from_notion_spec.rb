@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/websites_availability/fetch_domain_services_from_notion'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+require_relative '../../../src/implementations/fetch_domain_services_from_notion'
 
 ENV['WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'] = 'WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
@@ -12,20 +15,31 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::DomainServicesFromNotion do
-  before do
-    params = {
-      notion_database_id: ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('WEBSITES_AVAILABILITY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  db_name: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}
 
-    @bot = Fetch::DomainServicesFromNotion.new(params)
+RSpec.describe Bot::FetchDomainServicesFromNotion do
+  before do
+    write_options = {
+  connection: CONNECTION,
+  db_table: 'web_availability',
+  tag: 'FetchDomainServicesFromNotion'
+}
+
+options = {
+  database_id: ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'),
+  secret: ENV.fetch('NOTION_SECRET')
+}
+
+shared_storage_reader = SharedStorage::Default.new
+shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+
+@bot = Bot::FetchDomainServicesFromNotion.new(options, shared_storage_reader, shared_storage_writer)
   end
 
   context '.execute' do

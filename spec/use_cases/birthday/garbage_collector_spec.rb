@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/garbage_collector'
+require_relative '../../../src/implementations/garbage_collector'
+require 'bas/shared_storage/postgres'
 
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 ENV['DB_HOST'] = 'DB_HOST'
@@ -10,18 +11,31 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe GarbageCollector::Birthday do
-  before do
-    params = {
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
-    }
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
 
-    @bot = GarbageCollector::Birthday.new(params)
+RSpec.describe Bot::GarbageCollector do
+  before do
+    write_options =
+      {
+        connection: CONNECTION,
+        db_table: 'birthday'
+      }
+
+    options =
+      {
+        connection: CONNECTION,
+        db_table: 'birthday'
+      }
+
+    shared_storage = SharedStorage::Postgres.new({ write_options: })
+
+    @bot = Bot::GarbageCollector.new(options, shared_storage)
   end
 
   context '.execute' do
