@@ -28,7 +28,7 @@ module Bot
   #
   #   Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchNextWeekPtosFromNotion < Bot::Base # rubocop:disable Metrics/ClassLength
+  class FetchNextWeekPtosFromNotion < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
     # Process function to execute the Notion utility to fetch next week PTO's from the notion database
     #
     def process

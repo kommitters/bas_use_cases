@@ -46,7 +46,7 @@ module Bot
   #
   #   Bot::FetchGithubIssues.new(options, shared_storage).execute
   #
-  class FetchGithubIssues < Bot::Base
+  class FetchGithubIssues < Bas::Bot::Base
     ISSUE_PARAMS = %i[id html_url title body labels state created_at updated_at state].freeze
     PER_PAGE = 100
 

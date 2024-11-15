@@ -34,7 +34,7 @@ module Bot
   #
   #   Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
   #
-  class WriteMediaReviewInDiscord < Bot::Base
+  class WriteMediaReviewInDiscord < Bas::Bot::Base
     # process function to execute the Discord utility to send image feedback to a thread of a Discord channel
     #
     def process

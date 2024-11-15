@@ -27,7 +27,7 @@ module Bot
   #
   #   Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchNextWeekBirthdaysFromNotion < Bot::Base
+  class FetchNextWeekBirthdaysFromNotion < Bas::Bot::Base
     DAYS_BEFORE = 7
 
     # Process function to execute the Notion utility to fetch PTO's from the notion database

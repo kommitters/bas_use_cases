@@ -28,7 +28,7 @@ module Bot
   #
   #   Bot::FetchDomainsWipCountsFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchDomainsWipCountsFromNotion < Bot::Base
+  class FetchDomainsWipCountsFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch work item from the notion database
     #
     def process

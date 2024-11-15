@@ -10,7 +10,7 @@ module Bot
   ##
   # The Bot::FetchWebsiteReviewRequest class serves as a bot implementation to fetch
   # web availability request from a postgres database
-  class FetchWebsiteReviewRequest < Bot::Base
+  class FetchWebsiteReviewRequest < Bas::Bot::Base
     def read
       reader = Read::Default.new
 

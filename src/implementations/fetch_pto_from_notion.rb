@@ -28,7 +28,7 @@ module Bot
   #
   #   Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchPtosFromNotion < Bot::Base
+  class FetchPtosFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch PTO's from the notion database
     #
     def process

@@ -33,7 +33,7 @@ module Bot
   #
   #   Bot::FormatDoBillAlert.new(options, shared_storage).execute
   #
-  class FormatDoBillAlert < Bot::Base
+  class FormatDoBillAlert < Bas::Bot::Base
     # Process function to format the notification using a template
     #
     def process

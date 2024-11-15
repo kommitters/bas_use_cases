@@ -34,7 +34,7 @@ module Bot
   #
   #   Bot::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchEmailsFromImap < Bot::Base
+  class FetchEmailsFromImap < Bas::Bot::Base
     # Process function to request email from an imap server using the imap utility
     #
     def process

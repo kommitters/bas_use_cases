@@ -27,7 +27,7 @@ module Bot
   #
   #   Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchBirthdaysFromNotion < Bot::Base
+  class FetchBirthdaysFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch birthdays from a notion database
     #
     def process

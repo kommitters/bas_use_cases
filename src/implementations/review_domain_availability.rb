@@ -36,7 +36,7 @@ module Bot
   #
   #   Bot::ReviewDomainAvailability.new(options, shared_storage).execute
   #
-  class ReviewDomainAvailability < Bot::Base
+  class ReviewDomainAvailability < Bas::Bot::Base
     # process function to make a http request to the domain and check the status
     #
     def process

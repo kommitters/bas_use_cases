@@ -34,7 +34,7 @@ module Bot
   #
   #   Bot::HumanizePto.new(options, shared_storage).execute
   #
-  class HumanizePto < Bot::Base
+  class HumanizePto < Bas::Bot::Base
     DEFAULT_PROMPT = '{data}'
 
     # process function to execute the OpenaAI utility to process the PTO's

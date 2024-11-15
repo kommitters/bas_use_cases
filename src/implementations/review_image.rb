@@ -34,7 +34,7 @@ module Bot
   #
   #   Bot::ReviewMedia.new(options, shared_storage).execute
   #
-  class ReviewMedia < Bot::Base
+  class ReviewMedia < Bas::Bot::Base
     DETAIL = 'low'
 
     # process function to execute the OpenaAI utility to process the media reviews

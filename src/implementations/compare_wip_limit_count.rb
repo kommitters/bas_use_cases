@@ -29,7 +29,7 @@ module Bot
   #
   #  Bot::CompareWipLimitCount.new(options, shared_storage).execute
   #
-  class CompareWipLimitCount < Bot::Base
+  class CompareWipLimitCount < Bas::Bot::Base
     # Process function to compare the domains wip counts and limits
     #
     def process

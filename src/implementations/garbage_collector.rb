@@ -24,7 +24,7 @@ module Bot
   #
   #   Bot::GarbageCollector.new(options, shared_storage).execute
   #
-  class GarbageCollector < Bot::Base
+  class GarbageCollector < Bas::Bot::Base
     SUCCESS_STATUS = 'PGRES_COMMAND_OK'
 
     # Process function to update records in a PostgresDB database table

@@ -31,7 +31,7 @@ module Bot
   #
   #   Bot::FormatBirthdays.new(options, shared_storage).execute
   #
-  class FormatBirthdays < Bot::Base
+  class FormatBirthdays < Bas::Bot::Base
     BIRTHDAY_ATTRIBUTES = %w[name birthday_date].freeze
 
     # Process function to format the notification using a template

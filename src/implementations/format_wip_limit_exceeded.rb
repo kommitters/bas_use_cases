@@ -31,7 +31,7 @@ module Bot
   #
   #   Bot::FormatWipLimitExceeded.new(options, shared_storage).execute
   #
-  class FormatWipLimitExceeded < Bot::Base
+  class FormatWipLimitExceeded < Bas::Bot::Base
     WIP_LIMIT_ATTRIBUTES = %w[domain exceeded].freeze
 
     # Process function to format the notification using a template

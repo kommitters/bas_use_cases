@@ -40,7 +40,7 @@ module Bot
   #
   #   Bot::UpdateWorkItem.new(options, shared_storage).execute
   #
-  class UpdateWorkItem < Bot::Base
+  class UpdateWorkItem < Bas::Bot::Base
     include Utils::Notion::Types
 
     DESCRIPTION = 'Issue Description'

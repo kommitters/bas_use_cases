@@ -32,7 +32,7 @@ module Bot
   #
   #   Bot::NotifyDiscord.new(options, shared_storage).execute
   #
-  class NotifyDiscord < Bot::Base
+  class NotifyDiscord < Bas::Bot::Base
     # process function to execute the Discord utility to send the PTO's notification
     #
     def process

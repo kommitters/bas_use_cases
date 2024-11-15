@@ -33,7 +33,7 @@ module Bot
   #
   #   Bot::FetchDomainsWipLimitFromNotion.new(options, shared_storage).execute
   #
-  class FetchDomainsWipLimitFromNotion < Bot::Base
+  class FetchDomainsWipLimitFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch domain wip limits from the notion database
     #
     def process

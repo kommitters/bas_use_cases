@@ -33,7 +33,7 @@ module Bot
   #
   #   Bot::FormatEmails.new(options, shared_storage).execute
   #
-  class FormatEmails < Bot::Base
+  class FormatEmails < Bas::Bot::Base
     EMAIL_ATTRIBUTES = %w[subject sender date].freeze
     DEFAULT_TIME_ZONE = '+00:00'
 

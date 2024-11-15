@@ -36,7 +36,7 @@ module Bot
   #
   #   Bot::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
   #
-  class VerifyIssueExistanceInNotion < Bot::Base
+  class VerifyIssueExistanceInNotion < Bas::Bot::Base
     NOT_FOUND = 'not found'
     NOTION_PROPERTY = 'Github Issue Id'
 

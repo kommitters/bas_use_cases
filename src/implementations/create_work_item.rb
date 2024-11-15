@@ -36,7 +36,7 @@ module Bot
   #
   #  Bot::CreateWorkItem.new(options, shared_storage).execute
   #
-  class CreateWorkItem < Bot::Base
+  class CreateWorkItem < Bas::Bot::Base
     include Utils::Notion::Types
 
     UPDATE_REQUEST = 'UpdateWorkItemRequest'

@@ -34,7 +34,7 @@ module Bot
   #
   #  Bot::FetchBillingFromDigitalOcean.new(options, shared_storage).execute
   #
-  class FetchBillingFromDigitalOcean < Bot::Base
+  class FetchBillingFromDigitalOcean < Bas::Bot::Base
     # Process function to execute the DigitalOcean utility to fetch bills
     #
     def process
