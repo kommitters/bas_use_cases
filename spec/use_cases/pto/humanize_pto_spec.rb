@@ -14,13 +14,13 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-CONNECTION ={
+CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::HumanizePto do
   before do
@@ -29,19 +29,19 @@ RSpec.describe Bot::HumanizePto do
       db_table: 'pto',
       tag: 'FetchPtosFromNotion'
     }
-    
+
     write_options = {
       connection: CONNECTION,
       db_table: 'pto',
       tag: 'HumanizePto'
     }
-    
+
     options = {
       secret: ENV.fetch('OPENAI_SECRET'),
       assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
       prompt: "Today is march 1 and the PTO's are: {data}"
     }
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     Bot::HumanizePto.new(options, shared_storage).execute
   end

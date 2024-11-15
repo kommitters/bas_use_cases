@@ -16,10 +16,10 @@ ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
+  dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::CreateWorkItem do
   before do
@@ -40,7 +40,7 @@ RSpec.describe Bot::CreateWorkItem do
       secret: ENV.fetch('NOTION_SECRET')
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     @bot = Bot::CreateWorkItem.new(options, shared_storage)
   end

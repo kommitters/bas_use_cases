@@ -14,37 +14,37 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-CONNECTION ={
+CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::ReviewMedia do
   before do
     read_options = {
-  connection: CONNECTION,
-  db_table: 'review_images',
-  tag: 'ReviewMediaRequest'
-}
+      connection: CONNECTION,
+      db_table: 'review_images',
+      tag: 'ReviewMediaRequest'
+    }
 
-write_options = {
-  connection: CONNECTION,
-  db_table: 'review_images',
-  tag: 'ReviewImage'
-}
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'review_images',
+      tag: 'ReviewImage'
+    }
 
-options = {
-  secret: ENV.fetch('OPENAI_SECRET'),
-  assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
-  media_type: 'images'
-}
+    options = {
+      secret: ENV.fetch('OPENAI_SECRET'),
+      assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
+      media_type: 'images'
+    }
 
-shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-Bot::ReviewMedia.new(options, shared_storage)
+    Bot::ReviewMedia.new(options, shared_storage)
   end
 
   context '.execute' do

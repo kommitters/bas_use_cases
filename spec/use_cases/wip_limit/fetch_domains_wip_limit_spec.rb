@@ -8,42 +8,35 @@ require_relative '../../../src/implementations/fetch_domains_wip_limit'
 ENV['WIP_LIMIT_NOTION_DATABASE_ID'] = 'WIP_LIMIT_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['WIP_TABLE'] = 'WIP_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
 
 RSpec.describe Bot::FetchDomainsWipLimitFromNotion do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
+
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'FetchDomainsWipCountsFromNotion'
-    }
-    
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'FetchDomainsWipLimitFromNotion'
-    }
-    
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: {
+                        'domains_limits' => { 'domain1' => 10, 'domain2' => 5 },
+                        'domain_wip_count' => { 'domain1' => 15, 'domain2' => 3 }
+                      }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
+
+    allow(mocked_shared_storage).to receive(:read_response).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }.to_json, inserted_at: Time.now)
+    )
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
     options = {
-      database_id: ENV.fetch('WIP_COUNT_NOTION_DATABASE_ID'),
-      secret: ENV.fetch('NOTION_SECRET')
+      database_id: ENV.fetch('WIP_LIMIT_NOTION_DATABASE_ID', 'test_db_id'),
+      secret: ENV.fetch('NOTION_SECRET', 'test_secret')
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
-
-    @bot = Bot::FetchDomainsWipLimitFromNotion.new(options, shared_storage)
+    @bot = Bot::FetchDomainsWipLimitFromNotion.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
@@ -51,7 +44,7 @@ RSpec.describe Bot::FetchDomainsWipLimitFromNotion do
       bas_bot = instance_double(Bot::FetchDomainsWipLimitFromNotion)
 
       allow(Bot::FetchDomainsWipLimitFromNotion).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

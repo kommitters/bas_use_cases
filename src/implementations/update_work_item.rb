@@ -3,13 +3,11 @@
 require 'json'
 require 'md_to_notion'
 require 'bas/bot/base'
-require 'bas/read/postgres'
 require 'bas/utils/notion/request'
 require 'bas/utils/notion/types'
 require 'bas/utils/notion/delete_page_blocks'
 require 'bas/utils/notion/fetch_database_record'
 require 'bas/utils/notion/update_db_page'
-require 'bas/write/postgres'
 
 module Bot
   ##

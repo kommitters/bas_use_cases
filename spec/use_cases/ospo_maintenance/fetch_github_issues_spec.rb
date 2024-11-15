@@ -18,9 +18,9 @@ ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
+  dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
-password: ENV.fetch('POSTGRES_PASSWORD')
+  password: ENV.fetch('POSTGRES_PASSWORD')
 }.freeze
 
 RSpec.describe Bot::FetchGithubIssues do
@@ -32,13 +32,13 @@ RSpec.describe Bot::FetchGithubIssues do
       where: 'tag=$1 ORDER BY inserted_at DESC',
       params: ['BasGithubIssues']
     }
-    
+
     write_options = {
       connection: CONNECTION,
       db_table: 'github_issues',
       tag: 'BasGithubIssues'
     }
-    
+
     options = {
       private_pem: 'PRIVATE_PEM',
       app_id: '12345',
@@ -54,7 +54,7 @@ RSpec.describe Bot::FetchGithubIssues do
       tag: 'GithubIssueRequest'
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     @bot = Bot::FetchGithubIssues.new(options, shared_storage)
   end

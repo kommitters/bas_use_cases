@@ -27,7 +27,7 @@ module Bot
   #
   #   Bot::FetchDomainServicesFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchDomainServicesFromNotion < Bot::Base
+  class FetchDomainServicesFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch web domains from a notion database
     #
     def process

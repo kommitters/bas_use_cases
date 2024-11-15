@@ -2,41 +2,33 @@
 
 require 'rspec'
 require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/types/read'
 
 require_relative '../../../src/implementations/compare_wip_limit_count'
 
-ENV['WIP_TABLE'] = 'WIP_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
-
 RSpec.describe Bot::CompareWipLimitCount do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
+
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'FetchDomainsWipLimitFromNotion'
-    }
-    
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'CompareWipLimitCount'
-    }
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: {
+                        'domains_limits' => { 'domain1' => 10, 'domain2' => 5 },
+                        'domain_wip_count' => { 'domain1' => 15, 'domain2' => 3 }
+                      }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read_response).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }.to_json, inserted_at: Time.now)
+    )
 
-    @bot = Bot::CompareWipLimitCount.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::CompareWipLimitCount.new({}, mocked_shared_storage)
   end
 
   context '.execute' do

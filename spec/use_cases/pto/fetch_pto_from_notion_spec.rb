@@ -21,25 +21,25 @@ CONNECTION = {
   db_name: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::FetchPtosFromNotion do
   before do
     options = {
-  database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
-  secret: ENV.fetch('NOTION_SECRET')
-}
+      database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
+      secret: ENV.fetch('NOTION_SECRET')
+    }
 
-write_options = {
-  connection: CONNECTION,
-  db_table: 'pto',
-  tag: 'FetchPtosFromNotion'
-}
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'pto',
+      tag: 'FetchPtosFromNotion'
+    }
 
-shared_storage_reader = SharedStorage::Default.new
-shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+    shared_storage_reader = Bas::SharedStorage::Default.new
+    shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
 
-@bot = Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
+    @bot = Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
   end
 
   context '.execute' do

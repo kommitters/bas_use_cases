@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'bas/read/postgres'
-require 'bas/write/postgres'
 
 module Bot
   ##

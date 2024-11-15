@@ -2,8 +2,7 @@
 
 require 'httparty'
 require 'bas/bot/base'
-require 'bas/read/postgres'
-require 'bas/write/postgres'
+require 'bas/shared_storage/postgres'
 require 'bas/utils/openai/run_assistant'
 
 module Bot
@@ -37,6 +36,11 @@ module Bot
   #   Bot::ReviewDomainAvailability.new(options, shared_storage).execute
   #
   class ReviewDomainAvailability < Bas::Bot::Base
+    def initialize(options, shared_storage)
+      super(options, shared_storage)
+      @shared_storage_options = SharedStorage::Postgres.new({ write_options: process_options })
+    end
+
     # process function to make a http request to the domain and check the status
     #
     def process
@@ -54,13 +58,6 @@ module Bot
 
     private
 
-    def conditions
-      {
-        where: 'archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC',
-        params: [false, read_options[:tag], 'unprocessed']
-      }
-    end
-
     def availability(url)
       HTTParty.get(url)
     rescue StandardError => e
@@ -74,7 +71,7 @@ module Bot
     def write_ok_response(response)
       logs = request_log(response)
       write_data = { success: { notification: :ok, logs:, url: response.request.uri } }
-      Write::Postgres.new(process_options, write_data).execute
+      @shared_storage_options.write(write_data)
     end
 
     def write_error_response(response)
@@ -83,13 +80,13 @@ module Bot
 
       write_data = { success: { notification:, logs:, url: response.request.uri } }
 
-      Write::Postgres.new(process_options, write_data).execute
+      @shared_storage_options.write(write_data)
     end
 
     def write_invalid_response(response, url)
       notification = invalid_notifiction(url, response[:error])
       write_data = { success: { notification:, logs: response[:error], url: } }
-      Write::Postgres.new(process_options, write_data).execute
+      @shared_storage_options.write(write_data)
     end
 
     def request_log(response)

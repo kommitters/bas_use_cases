@@ -39,8 +39,8 @@ RSpec.describe Bot::NotifyDiscord do
       name: ENV.fetch('DISCORD_BOT_NAME'),
       webhook: ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK')
     }
-    
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     @bot = Bot::NotifyDiscord.new(options, shared_storage)
   end

@@ -18,7 +18,7 @@ CONNECTION = {
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::ReviewDomainAvailability do
   before do
@@ -27,20 +27,20 @@ RSpec.describe Bot::ReviewDomainAvailability do
       db_table: 'web_availability',
       tag: 'FetchDomainServicesFromNotion'
     }
-    
+
     write_options = {
       connection: CONNECTION,
       db_table: 'web_availability',
       tag: 'ReviewWebsiteAvailability'
     }
-    
+
     options = {
       connection: CONNECTION,
       db_table: 'web_availability',
       tag: 'ReviewDomainAvailability'
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     @bot = Bot::ReviewDomainAvailability.new(options, shared_storage)
   end

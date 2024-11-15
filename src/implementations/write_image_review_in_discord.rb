@@ -2,8 +2,6 @@
 
 require 'json'
 require 'bas/bot/base'
-require 'bas/read/postgres'
-require 'bas/write/postgres'
 require 'bas/utils/discord/request'
 
 module Bot

@@ -25,25 +25,25 @@ CONNECTION = {
 RSpec.describe Bot::VerifyIssueExistanceInNotion do
   before do
     read_options = {
-  connection: CONNECTION,
-  db_table: 'github_issues',
-  tag: 'GithubIssueRequest'
-}
+      connection: CONNECTION,
+      db_table: 'github_issues',
+      tag: 'GithubIssueRequest'
+    }
 
-write_options = {
-  connection: CONNECTION,
-  db_table: 'github_issues',
-  tag: 'VerifyIssueExistanceInNotio'
-}
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'github_issues',
+      tag: 'VerifyIssueExistanceInNotio'
+    }
 
-options = {
-  database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
-  secret: ENV.fetch('NOTION_SECRET')
-}
+    options = {
+      database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
+      secret: ENV.fetch('NOTION_SECRET')
+    }
 
-shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
- @bot = Bot::VerifyIssueExistanceInNotion.new(options, shared_storage)
+    @bot = Bot::VerifyIssueExistanceInNotion.new(options, shared_storage)
   end
 
   context '.execute' do

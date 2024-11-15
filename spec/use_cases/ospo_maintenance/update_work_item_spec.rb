@@ -20,7 +20,7 @@ CONNECTION = {
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::UpdateWorkItem do
   before do
@@ -29,19 +29,19 @@ RSpec.describe Bot::UpdateWorkItem do
       db_table: 'github_issues',
       tag: 'UpdateWorkItemRequest'
     }
-    
+
     write_options = {
       connection: CONNECTION,
       db_table: 'github_issues',
       tag: 'UpdateWorkItem'
     }
-    
+
     options = {
       users_database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
     @bot = Bot::UpdateWorkItem.new(options, shared_storage)
   end

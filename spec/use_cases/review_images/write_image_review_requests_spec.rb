@@ -18,29 +18,29 @@ CONNECTION = {
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::WriteMediaReviewInDiscord do
   before do
     read_options = {
-  connection: CONNECTION,
-  db_table: 'review_images',
-  tag: 'ReviewImage'
-}
+      connection: CONNECTION,
+      db_table: 'review_images',
+      tag: 'ReviewImage'
+    }
 
-write_options = {
-  connection: CONNECTION,
-  db_table: 'review_images',
-  tag: 'WriteMediaReviewInDiscord'
-}
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'review_images',
+      tag: 'WriteMediaReviewInDiscord'
+    }
 
-options = {
-  secret_token: "Bot #{ENV.fetch('DISCORD_BOT_TOKEN')}"
-}
+    options = {
+      secret_token: "Bot #{ENV.fetch('DISCORD_BOT_TOKEN')}"
+    }
 
-shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
+    Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
   end
 
   context '.execute' do

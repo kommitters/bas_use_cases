@@ -2,9 +2,7 @@
 
 require 'telegram/bot'
 require 'bas/bot/base'
-require 'bas/read/postgres'
 require 'bas/utils/postgres/request'
-require 'bas/write/postgres'
 
 module Bot
   ##
@@ -12,11 +10,6 @@ module Bot
   # Telegram chat read from a PostgresDB table.
   #
   class NotifyTelegram < Bot::Base
-    def read
-      reader = Read::Postgres.new(read_options.merge(conditions))
-      reader.execute
-    end
-
     def process
       return { success: {} } if unprocessable_response
 
@@ -25,19 +18,7 @@ module Bot
       { success: {} }
     end
 
-    def write
-      writer = Write::Postgres.new(write_options, process_response)
-      writer.execute
-    end
-
     private
-
-    def conditions
-      {
-        where: 'archived = $1 AND tag = $2 AND stage = $3 ORDER BY inserted_at ASC',
-        params: [false, read_options[:tag], 'unprocessed']
-      }
-    end
 
     def telegram_bot
       bot = Telegram::Bot::Client.new(process_options[:token])

@@ -2,10 +2,8 @@
 
 require 'json'
 require 'bas/bot/base'
-require 'bas/read/postgres'
 require 'bas/utils/notion/request'
 require 'bas/utils/notion/update_db_state'
-require 'bas/write/postgres'
 
 module Bot
   ##

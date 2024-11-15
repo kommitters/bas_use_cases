@@ -15,26 +15,26 @@ ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 RSpec.describe Bot::FormatEmails do
   before do
     read_options = {
-  connection: CONNECTION,
-  db_table: 'support_emails',
-  tag: 'FetchEmaisFromImap'
-}
+      connection: CONNECTION,
+      db_table: 'support_emails',
+      tag: 'FetchEmaisFromImap'
+    }
 
-write_options = {
-  connection: CONNECTION,
-  db_table: 'support_emails',
-  tag: 'FormatEmails'
-}
+    write_options = {
+      connection: CONNECTION,
+      db_table: 'support_emails',
+      tag: 'FormatEmails'
+    }
 
-options = {
-  template: 'The <sender> has requested support the <date>',
-  frequency: 5,
-  timezone: '-05:00'
-}
+    options = {
+      template: 'The <sender> has requested support the <date>',
+      frequency: 5,
+      timezone: '-05:00'
+    }
 
-shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
- @bot = Bot::FormatEmails.new(options, shared_storage)
+    @bot = Bot::FormatEmails.new(options, shared_storage)
   end
 
   context '.execute' do

@@ -6,44 +6,15 @@ require_relative '../../../src/implementations/fetch_billing_from_digital_ocean'
 
 ENV['DIGITAL_OCEAN_SECRET'] = 'DIGITAL_OCEAN_SECRET'
 ENV['DO_TABLE'] = 'DO_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::FetchBillingFromDigitalOcean do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'do_billing',
-      tag: 'FetchBillingFromDigitalOcean',
-      avoid_process: true,
-      where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-      params: [false, 'FetchBillingFromDigitalOcean']
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'do_billing',
-      tag: 'FetchBillingFromDigitalOcean'
-    }
-
     options = {
       secret: ENV.fetch('DIGITAL_OCEAN_SECRET')
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
-
-    @bot = Bot::FetchBillingFromDigitalOcean.new(options, shared_storage)
+    @bot = Bot::FetchBillingFromDigitalOcean.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

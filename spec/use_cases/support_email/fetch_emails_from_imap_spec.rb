@@ -24,8 +24,8 @@ CONNECTION = {
   port: ENV.fetch('DB_PORT'),
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD'),
-}
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
 
 RSpec.describe Bot::FetchEmailsFromImap do
   before do
@@ -34,7 +34,7 @@ RSpec.describe Bot::FetchEmailsFromImap do
       db_table: 'support_emails',
       tag: 'FetchEmailsFromImap'
     }
-    
+
     params = {
       refresh_token: ENV.fetch('REFRESH_TOKEN'),
       client_id: ENV.fetch('CLIENT_ID'),
@@ -47,10 +47,10 @@ RSpec.describe Bot::FetchEmailsFromImap do
       inbox: 'INBOX'
     }
 
-    shared_storage_reader = SharedStorage::Default.new
-  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+    shared_storage_reader = Bas::SharedStorage::Default.new
+    shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
 
-  @bot = Bot::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer)
+    @bot = Bot::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer)
   end
 
   context '.execute' do

@@ -6,41 +6,37 @@ require 'bas/shared_storage/postgres'
 require_relative '../../../src/implementations/format_wip_limit_exceeded'
 
 ENV['WIP_TABLE'] = 'WIP_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
 
 RSpec.describe Bot::FormatWipLimitExceeded do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
+
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'CompareWipLimitCount'
-    }
-    
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'wip_limits',
-      tag: 'FormatWipLimitExceeded'
-    }
-    
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: {
+                        'exceeded_domain_count' => [
+                          { 'domain' => 'domain1', 'exceeded' => 5 },
+                          { 'domain' => 'domain2', 'exceeded' => 3 }
+                        ]
+                      }, inserted_at: Time.now)
+    )
+
+    allow(mocked_shared_storage).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
+
+    allow(mocked_shared_storage).to receive(:read_response).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }.to_json, inserted_at: Time.now)
+    )
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
     options = {
       template: ':warning: The <domain> WIP limit was exceeded by <exceeded>'
     }
 
-    shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
-
-    @bot = Bot::FormatWipLimitExceeded.new(options, shared_storage)
+    @bot = Bot::FormatWipLimitExceeded.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
@@ -48,10 +44,10 @@ RSpec.describe Bot::FormatWipLimitExceeded do
       bas_bot = instance_double(Bot::FormatWipLimitExceeded)
 
       allow(Bot::FormatWipLimitExceeded).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 
-    it 'should execute the bas bot' do
+    it 'should execute the bot and format the notification' do
       expect(@bot.execute).not_to be_nil
     end
   end

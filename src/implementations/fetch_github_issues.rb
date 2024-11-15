@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'bas/read/postgres'
+require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require 'bas/write/postgres'
 
 module Bot
   ##
@@ -106,7 +105,7 @@ module Bot
         }
       }
 
-      Write::Postgres.new(process_options, write_data).execute
+      @shared_storage_options = SharedStorage::Postgres.new({ write_options: process_options }).write(write_data)
     end
   end
 end

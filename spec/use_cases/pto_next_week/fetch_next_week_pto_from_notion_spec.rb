@@ -21,7 +21,7 @@ CONNECTION = {
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 RSpec.describe Bot::FetchNextWeekPtosFromNotion do
   before do
@@ -29,17 +29,17 @@ RSpec.describe Bot::FetchNextWeekPtosFromNotion do
       database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
-    
+
     write_options = {
       connection: CONNECTION,
       db_table: 'pto',
       tag: 'FetchNextWeekPtosFromNotion'
     }
 
-  shared_storage_reader = SharedStorage::Default.new
-  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+    shared_storage_reader = Bas::SharedStorage::Default.new
+    shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
 
-  @bot = Bot::FetchNextWeekPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
+    @bot = Bot::FetchNextWeekPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
   end
 
   context '.execute' do
