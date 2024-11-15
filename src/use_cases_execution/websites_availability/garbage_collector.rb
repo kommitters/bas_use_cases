@@ -2,7 +2,7 @@
 
 require 'logger'
 require 'json'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/garbage_collector'
 require_relative 'config'
@@ -22,7 +22,7 @@ options =
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ write_options: })
 
   Bot::GarbageCollector.new(options, shared_storage).execute
 rescue StandardError => e

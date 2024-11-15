@@ -4,7 +4,7 @@ require 'logger'
 
 require_relative '../../implementations/compare_wip_limit_count'
 require_relative 'config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
@@ -22,7 +22,7 @@ options = {}
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::CompareWipLimitCount.new(options, shared_storage).execute
 rescue StandardError => e

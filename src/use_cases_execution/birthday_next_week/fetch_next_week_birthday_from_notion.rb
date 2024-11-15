@@ -21,8 +21,8 @@ options = {
 
 # Process bot
 begin
-  shared_storage_reader = SharedStorage::Default.new
-  shared_storage_writer = SharedStorage::Postgres.new({ write_options: })
+  shared_storage_reader = Bas::SharedStorage::Default.new
+  shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
 
   Bot::FetchNextWeekBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e

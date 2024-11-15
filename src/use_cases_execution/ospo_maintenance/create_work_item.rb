@@ -4,7 +4,7 @@ require 'logger'
 
 require_relative '../../implementations/create_work_item'
 require_relative 'config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {
@@ -26,7 +26,7 @@ options = {
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::CreateWorkItem.new(options, shared_storage).execute
 rescue StandardError => e

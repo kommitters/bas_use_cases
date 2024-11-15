@@ -4,7 +4,7 @@ require 'logger'
 
 require_relative '../../implementations/format_emails'
 require_relative 'config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {
@@ -27,7 +27,7 @@ options = {
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::FormatEmails.new(options, shared_storage).execute
 rescue StandardError => e

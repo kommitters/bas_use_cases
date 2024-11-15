@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/format_birthday'
 require_relative 'config'
@@ -25,7 +25,7 @@ options = {
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::FormatBirthdays.new(options, shared_storage).execute
 rescue StandardError => e

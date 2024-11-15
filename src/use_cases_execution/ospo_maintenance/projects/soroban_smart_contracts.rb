@@ -4,7 +4,7 @@ require 'logger'
 
 require_relative '../../../implementations/fetch_github_issues'
 require_relative '../config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 repo_tag = 'SorobanSmartContractsGithubIssues'
 # Configuration
@@ -39,7 +39,7 @@ options = {
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::FetchGithubIssues.new(options, shared_storage).execute
 rescue StandardError => e

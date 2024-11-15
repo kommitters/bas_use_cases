@@ -4,7 +4,7 @@ require 'logger'
 
 require_relative '../../implementations/humanize_pto'
 require_relative 'config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 # Configuration
 utc_today = Time.now.utc
@@ -30,7 +30,7 @@ options = {
 
 # Process bot
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::HumanizePto.new(options, shared_storage).execute
 rescue StandardError => e
