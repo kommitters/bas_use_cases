@@ -11,7 +11,6 @@ ENV['DO_TABLE'] = 'DO_TABLE'
 RSpec.describe Bot::NotifyDiscord do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       name: ENV.fetch('DISCORD_BOT_NAME'),
       webhook: ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK')

@@ -25,7 +25,6 @@ CONNECTION = {
 RSpec.describe Bot::FetchGithubIssues do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       private_pem: 'PRIVATE_PEM',
       app_id: '12345',

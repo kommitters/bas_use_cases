@@ -11,7 +11,6 @@ ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
 RSpec.describe Bot::CreateWorkItem do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')

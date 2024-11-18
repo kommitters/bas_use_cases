@@ -28,9 +28,9 @@ RSpec.describe Bot::FormatDoBillAlert do
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FormatDoBillAlert)
+      instance_double(Bot::FormatDoBillAlert)
 
-      allow(@bot).to receive(:process).and_return({ success: { notification: '' }})
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({})
     end
 

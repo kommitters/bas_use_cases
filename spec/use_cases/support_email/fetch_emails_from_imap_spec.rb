@@ -19,9 +19,8 @@ ENV['TOKEN_URI'] = 'TOKEN_URI'
 RSpec.describe Bot::FetchEmailsFromImap do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
-  
-  before do
 
+  before do
     params = {
       refresh_token: ENV.fetch('REFRESH_TOKEN'),
       client_id: ENV.fetch('SUPPORT_EMAIL_CLIENT_ID'),
@@ -34,12 +33,12 @@ RSpec.describe Bot::FetchEmailsFromImap do
       inbox: 'INBOX'
     }
 
-    @bot = Bot::FetchEmailsFromImap.new(params, mocked_shared_storage_reader,mocked_shared_storage_writer)
+    @bot = Bot::FetchEmailsFromImap.new(params, mocked_shared_storage_reader, mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

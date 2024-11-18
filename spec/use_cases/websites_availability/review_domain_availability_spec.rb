@@ -24,7 +24,6 @@ RSpec.describe Bot::ReviewDomainAvailability do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
-
     options = {
       connection: CONNECTION,
       db_table: 'web_availability',
@@ -45,7 +44,7 @@ RSpec.describe Bot::ReviewDomainAvailability do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

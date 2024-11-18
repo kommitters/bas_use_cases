@@ -9,7 +9,6 @@ ENV['WIP_COUNT_NOTION_DATABASE_ID'] = 'WIP_COUNT_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['WIP_TABLE'] = 'WIP_TABLE'
 
-
 RSpec.describe Bot::FetchDomainsWipCountsFromNotion do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 

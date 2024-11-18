@@ -12,7 +12,6 @@ RSpec.describe Bot::WriteMediaReviewInDiscord do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
-
     options = {
       secret_token: "Bot #{ENV.fetch('DISCORD_BOT_TOKEN')}"
     }
@@ -25,13 +24,13 @@ RSpec.describe Bot::WriteMediaReviewInDiscord do
     allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
-    
+
     Bot::WriteMediaReviewInDiscord.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { review: nil } })
+      allow(@bot).to receive(:process).and_return({ success: { review: nil } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

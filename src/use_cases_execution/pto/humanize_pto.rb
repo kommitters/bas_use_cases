@@ -28,7 +28,6 @@ options = {
   prompt: "Today is #{today} and the PTO's are: {data}"
 }
 
-
 # Process bot
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })

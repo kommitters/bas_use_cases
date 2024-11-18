@@ -7,7 +7,6 @@ require 'bas/shared_storage/postgres'
 require_relative '../../implementations/fetch_birthday_from_notion'
 require_relative 'config'
 
-
 # Configuration
 write_options = {
   connection: Config::CONNECTION,

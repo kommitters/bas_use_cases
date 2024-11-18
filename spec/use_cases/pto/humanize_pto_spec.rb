@@ -12,7 +12,6 @@ ENV['BIRTHDAY_TABLE'] = 'PTO_TABLE'
 RSpec.describe Bot::HumanizePto do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       secret: ENV.fetch('OPENAI_SECRET'),
       assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
@@ -33,7 +32,7 @@ RSpec.describe Bot::HumanizePto do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

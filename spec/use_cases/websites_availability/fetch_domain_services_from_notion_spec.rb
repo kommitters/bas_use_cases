@@ -11,17 +11,14 @@ ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['WEBSITES_AVAILABILITY_TABLE'] = 'WEBSITES_AVAILABILITY_TABLE'
 
 RSpec.describe Bot::FetchDomainServicesFromNotion do
-
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
-  
-  before do
 
+  before do
     options = {
       database_id: ENV.fetch('WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
-
 
     allow(mocked_shared_storage_reader).to receive(:read).and_return(
       instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }, inserted_at: Time.now)
@@ -43,7 +40,7 @@ RSpec.describe Bot::FetchDomainServicesFromNotion do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

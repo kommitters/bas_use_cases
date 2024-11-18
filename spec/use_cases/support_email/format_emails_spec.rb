@@ -11,7 +11,6 @@ RSpec.describe Bot::FormatEmails do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
-
     options = {
       template: 'The <sender> has requested support the <date>',
       frequency: 5,
@@ -32,7 +31,7 @@ RSpec.describe Bot::FormatEmails do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

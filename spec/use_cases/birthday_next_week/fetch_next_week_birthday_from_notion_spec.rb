@@ -13,7 +13,6 @@ RSpec.describe Bot::FetchNextWeekBirthdaysFromNotion do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
   before do
-
     options = {
       database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')

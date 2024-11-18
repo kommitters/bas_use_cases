@@ -12,7 +12,6 @@ ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
 RSpec.describe Bot::UpdateWorkItem do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       users_database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
@@ -31,7 +30,7 @@ RSpec.describe Bot::UpdateWorkItem do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({ success: { updated: nil  }  })
+      allow(@bot).to receive(:process).and_return({ success: { updated: nil } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

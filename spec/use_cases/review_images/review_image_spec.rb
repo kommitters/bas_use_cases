@@ -12,7 +12,6 @@ ENV['REVIEW_IMAGES_TABLE'] = 'REVIEW_IMAGES_TABLE'
 RSpec.describe Bot::ReviewMedia do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-
     options = {
       secret: ENV.fetch('OPENAI_SECRET'),
       assistant_id: ENV.fetch('REVIEW_IMAGE_OPENAI_ASSISTANT'),
@@ -33,7 +32,7 @@ RSpec.describe Bot::ReviewMedia do
 
   context '.execute' do
     before do
-      allow(@bot).to receive(:process).and_return({  success: { review: nil } })
+      allow(@bot).to receive(:process).and_return({ success: { review: nil } })
       allow(@bot).to receive(:execute).and_return({ success: true })
     end
 

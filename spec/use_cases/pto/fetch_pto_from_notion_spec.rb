@@ -10,7 +10,6 @@ ENV['PTO_NOTION_DATABASE_ID'] = 'PTO_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['PTO_TABLE'] = 'PTO_TABLE'
 
-
 RSpec.describe Bot::FetchPtosFromNotion do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
@@ -20,7 +19,6 @@ RSpec.describe Bot::FetchPtosFromNotion do
       database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
-
 
     allow(mocked_shared_storage_reader).to receive(:read).and_return(
       instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }, inserted_at: Time.now)
