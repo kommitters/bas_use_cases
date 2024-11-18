@@ -69,11 +69,20 @@ To learn how to modify the cron configuration follow this guide: [Schedule expre
 "0 13,15,19,21 ? * MON-FRI *"
 ```
 
-## Build a new Use Case
+## Build a New Use Case
+
 To add a new use case:
-1. A new folder in the `src/implementations` should be created where the use case bots will be defined.
-2. A new folder in the `src/execution` should be created where the use case executions scripts will be defined for each bot, as also a `schedule.sh` where the cronjobs schedules will be set.
-3. A new table for the shared storage should be defined on the `db/build_shared_storage.sql` file.
+
+1. **Define the Bots**:  
+   - If the required bots are not already defined, create them in the `src/implementations` folder. 
+
+2. **Model the Use Case**:  
+   - In the `src/use_cases_execution` folder, create a new folder for the use case. This folder should:
+     - Call the necessary bots from the `implementations` folder, modeling the use case and its specific parameters. 
+     - Contain a `schedule.sh` script where the cronjob schedules for the bots will be configured.
+
+3. **Update Shared Storage**:  
+   - Define any new tables required for shared storage in the `db/build_shared_storage.sql` file.
 
 To activate the cronjob on the docker container execute the `update_container.sh` script (this is executed each time the container is restarted):
 ```bash
