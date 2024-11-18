@@ -29,7 +29,7 @@ module Bot
   #     timezone: "-05:00"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::FormatEmails.new(options, shared_storage).execute
   #

@@ -30,7 +30,7 @@ module Bot
   #    secret: "notion_secret"
   #  }
   #
-  #  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #  Bot::CreateWorkItem.new(options, shared_storage).execute
   #

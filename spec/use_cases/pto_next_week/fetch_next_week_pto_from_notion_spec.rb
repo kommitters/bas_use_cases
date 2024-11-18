@@ -9,37 +9,35 @@ require_relative '../../../src/implementations/fetch_next_week_pto_from_notion'
 ENV['PTO_NOTION_DATABASE_ID'] = 'PTO_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['PTO_TABLE'] = 'PTO_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::FetchNextWeekPtosFromNotion do
+
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
+  
   before do
     options = {
       database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
 
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'pto',
-      tag: 'FetchNextWeekPtosFromNotion'
-    }
 
-    shared_storage_reader = Bas::SharedStorage::Default.new
-    shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
+    allow(mocked_shared_storage_reader).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }, inserted_at: Time.now)
+    )
 
-    @bot = Bot::FetchNextWeekPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer)
+    allow(mocked_shared_storage_writer).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
+
+    allow(mocked_shared_storage_writer).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_writer).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage_writer).to receive(:set_in_process).and_return(nil)
+
+    allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::FetchNextWeekPtosFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
   end
 
   context '.execute' do

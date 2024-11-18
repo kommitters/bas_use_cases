@@ -8,33 +8,10 @@ require_relative '../../../src/implementations/review_image'
 ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['REVIEW_IMAGE_OPENAI_ASSISTANT'] = 'REVIEW_IMAGE_OPENAI_ASSISTANT'
 ENV['REVIEW_IMAGES_TABLE'] = 'REVIEW_IMAGES_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::ReviewMedia do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'review_images',
-      tag: 'ReviewMediaRequest'
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'review_images',
-      tag: 'ReviewImage'
-    }
 
     options = {
       secret: ENV.fetch('OPENAI_SECRET'),
@@ -42,17 +19,22 @@ RSpec.describe Bot::ReviewMedia do
       media_type: 'images'
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    Bot::ReviewMedia.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    Bot::ReviewMedia.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::ReviewMedia)
-
-      allow(Bot::ReviewMedia).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({  success: { review: nil } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

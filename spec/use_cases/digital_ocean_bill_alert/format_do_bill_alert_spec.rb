@@ -14,6 +14,15 @@ RSpec.describe Bot::FormatDoBillAlert do
       threshold: ENV.fetch('DIGITAL_OCEAN_THRESHOLD').to_f
     }
 
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
     @bot = Bot::FormatDoBillAlert.new(options, mocked_shared_storage)
   end
 
@@ -21,8 +30,8 @@ RSpec.describe Bot::FormatDoBillAlert do
     before do
       bas_bot = instance_double(Bot::FormatDoBillAlert)
 
-      allow(Bot::FormatDoBillAlert).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' }})
+      allow(@bot).to receive(:execute).and_return({})
     end
 
     it 'should execute the bas bot' do

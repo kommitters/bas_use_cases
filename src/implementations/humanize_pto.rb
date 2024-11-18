@@ -30,7 +30,7 @@ module Bot
   #     prompt: "prompt"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::HumanizePto.new(options, shared_storage).execute
   #

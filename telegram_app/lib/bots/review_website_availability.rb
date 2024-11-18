@@ -12,7 +12,7 @@ module Bot
   class ReviewWebsiteAvailability < Bot::Base
     def initialize(options, shared_storage)
       super(options, shared_storage)
-      @shared_storage_options = SharedStorage::Postgres.new({ write_options: process_options })
+      @shared_storage_options = Bas::SharedStorage::Postgres.new({ write_options: process_options })
     end
 
     # process function to make a http request to the domain and check the status

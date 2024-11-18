@@ -27,7 +27,7 @@ module Bot
   #     template: "The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::FormatBirthdays.new(options, shared_storage).execute
   #

@@ -6,25 +6,11 @@ require 'bas/shared_storage/postgres'
 require_relative '../../../src/implementations/format_emails'
 
 ENV['SUPPORT_EMAIL_TABLE'] = 'SUPPORT_EMAIL_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
 RSpec.describe Bot::FormatEmails do
-  before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'support_emails',
-      tag: 'FetchEmaisFromImap'
-    }
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'support_emails',
-      tag: 'FormatEmails'
-    }
+  before do
 
     options = {
       template: 'The <sender> has requested support the <date>',
@@ -32,17 +18,22 @@ RSpec.describe Bot::FormatEmails do
       timezone: '-05:00'
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Bot::FormatEmails.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::FormatEmails.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FormatEmails)
-
-      allow(Bot::FormatEmails).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

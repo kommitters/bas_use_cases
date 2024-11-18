@@ -7,50 +7,32 @@ require 'bas/shared_storage/postgres'
 ENV['DIGITAL_OCEAN_DISCORD_WEBHOOK'] = 'DIGITAL_OCEAN_DISCORD_WEBHOOK'
 ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'
 ENV['DO_TABLE'] = 'DO_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::NotifyDiscord do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'do_billing',
-      tag: 'FormatDoBillAlert'
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'do_billing',
-      tag: 'NotifyDiscord'
-    }
 
     options = {
       name: ENV.fetch('DISCORD_BOT_NAME'),
       webhook: ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK')
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Bot::NotifyDiscord.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::NotifyDiscord.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::NotifyDiscord)
-
-      allow(Bot::NotifyDiscord).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({ success: {} })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

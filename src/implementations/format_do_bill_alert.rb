@@ -27,7 +27,7 @@ module Bot
   #     threshold: 7
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::FormatDoBillAlert.new(options, shared_storage).execute
   #

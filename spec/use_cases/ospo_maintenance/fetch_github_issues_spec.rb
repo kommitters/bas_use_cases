@@ -14,7 +14,6 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-
 CONNECTION = {
   host: ENV.fetch('DB_HOST'),
   port: ENV.fetch('DB_PORT'),
@@ -24,20 +23,8 @@ CONNECTION = {
 }.freeze
 
 RSpec.describe Bot::FetchGithubIssues do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'table',
-      tag: 'BasGithubIssues',
-      where: 'tag=$1 ORDER BY inserted_at DESC',
-      params: ['BasGithubIssues']
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'github_issues',
-      tag: 'BasGithubIssues'
-    }
 
     options = {
       private_pem: 'PRIVATE_PEM',
@@ -54,9 +41,16 @@ RSpec.describe Bot::FetchGithubIssues do
       tag: 'GithubIssueRequest'
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Bot::FetchGithubIssues.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::FetchGithubIssues.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

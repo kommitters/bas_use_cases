@@ -28,7 +28,7 @@ module Bot
   #     secret_token: "discord_secret"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
   #

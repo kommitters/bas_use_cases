@@ -30,7 +30,7 @@ module Bot
   #    secret: "digital_ocean_api_token"
   #  }
   #
-  #  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #  Bot::FetchBillingFromDigitalOcean.new(options, shared_storage).execute
   #

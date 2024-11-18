@@ -41,7 +41,7 @@ module Bot
   #     tag: "GithubIssueRequest"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
   #   Bot::FetchGithubIssues.new(options, shared_storage).execute
   #
@@ -105,7 +105,7 @@ module Bot
         }
       }
 
-      @shared_storage_options = SharedStorage::Postgres.new({ write_options: process_options }).write(write_data)
+      @shared_storage_options = Bas::SharedStorage::Postgres.new({ write_options: process_options }).write(write_data)
     end
   end
 end

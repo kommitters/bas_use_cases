@@ -20,7 +20,7 @@ module Bot
   #     db_table: "review_images"
   #   }
   #
-  #   shared_storage = SharedStorage::Postgres.new({ write_options: })
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ write_options: })
   #
   #   Bot::GarbageCollector.new(options, shared_storage).execute
   #

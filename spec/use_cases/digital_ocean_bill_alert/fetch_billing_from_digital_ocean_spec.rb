@@ -14,6 +14,15 @@ RSpec.describe Bot::FetchBillingFromDigitalOcean do
       secret: ENV.fetch('DIGITAL_OCEAN_SECRET')
     }
 
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
     @bot = Bot::FetchBillingFromDigitalOcean.new(options, mocked_shared_storage)
   end
 

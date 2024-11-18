@@ -2,7 +2,7 @@
 
 require 'logger'
 require_relative '../../../src/implementations/write_image_review_in_discord'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 require_relative 'config'
 
 read_options = {
@@ -22,7 +22,7 @@ options = {
 }
 
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
 rescue StandardError => e

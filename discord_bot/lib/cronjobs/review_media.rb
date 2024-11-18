@@ -3,7 +3,7 @@
 require 'logger'
 require_relative '../../../src/implementations/review_image'
 require_relative 'config'
-require 'bas/shared_storage'
+require 'bas/shared_storage/postgres'
 
 read_options = {
   connection: Config::CONNECTION,
@@ -24,7 +24,7 @@ options = {
 }
 
 begin
-  shared_storage = SharedStorage::Postgres.new({ read_options:, write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Bot::ReviewMedia.new(options, shared_storage).execute
 rescue StandardError => e

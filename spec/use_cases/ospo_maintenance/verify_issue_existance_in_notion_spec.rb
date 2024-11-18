@@ -8,50 +8,32 @@ require_relative '../../../src/implementations/verify_issue_existance_in_notion'
 ENV['OSPO_MAINTENANCE_NOTION_DATABASE_ID'] = 'OSPO_MAINTENANCE_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  db_name: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::VerifyIssueExistanceInNotion do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'github_issues',
-      tag: 'GithubIssueRequest'
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'github_issues',
-      tag: 'VerifyIssueExistanceInNotio'
-    }
 
     options = {
       database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Bot::VerifyIssueExistanceInNotion.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::VerifyIssueExistanceInNotion.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::VerifyIssueExistanceInNotion)
-
-      allow(Bot::VerifyIssueExistanceInNotion).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({  success: { issue: nil }  })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

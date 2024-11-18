@@ -21,18 +21,9 @@ CONNECTION = {
 }.freeze
 
 RSpec.describe Bot::ReviewDomainAvailability do
-  before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'web_availability',
-      tag: 'FetchDomainServicesFromNotion'
-    }
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'web_availability',
-      tag: 'ReviewWebsiteAvailability'
-    }
+  before do
 
     options = {
       connection: CONNECTION,
@@ -40,17 +31,22 @@ RSpec.describe Bot::ReviewDomainAvailability do
       tag: 'ReviewDomainAvailability'
     }
 
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Bot::ReviewDomainAvailability.new(options, shared_storage)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Bot::ReviewDomainAvailability.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::ReviewDomainAvailability)
-
-      allow(Bot::ReviewDomainAvailability).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

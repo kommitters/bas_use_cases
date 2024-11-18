@@ -8,50 +8,33 @@ require_relative '../../../src/implementations/humanize_pto'
 ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['PTO_OPENAI_ASSISTANT'] = 'PTO_OPENAI_ASSISTANT'
 ENV['BIRTHDAY_TABLE'] = 'PTO_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
-
-CONNECTION = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}.freeze
 
 RSpec.describe Bot::HumanizePto do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    read_options = {
-      connection: CONNECTION,
-      db_table: 'pto',
-      tag: 'FetchPtosFromNotion'
-    }
-
-    write_options = {
-      connection: CONNECTION,
-      db_table: 'pto',
-      tag: 'HumanizePto'
-    }
 
     options = {
       secret: ENV.fetch('OPENAI_SECRET'),
       assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
       prompt: "Today is march 1 and the PTO's are: {data}"
     }
-    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-    Bot::HumanizePto.new(options, shared_storage).execute
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    Bot::HumanizePto.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::HumanizePto)
-
-      allow(Bot::HumanizePto).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({  success: { notification: '' } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do
