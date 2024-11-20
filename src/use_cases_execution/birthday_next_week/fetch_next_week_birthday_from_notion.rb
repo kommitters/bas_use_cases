@@ -6,6 +6,7 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/fetch_next_week_birthday_from_notion'
 require_relative 'config'
+
 # Configuration
 
 write_options = {

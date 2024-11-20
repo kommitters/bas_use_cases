@@ -8,17 +8,15 @@ require_relative '../../implementations/garbage_collector'
 require_relative 'config'
 
 # Configuration
-write_options =
-  {
-    connection: Config::CONNECTION,
-    db_table: 'birthday'
-  }
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: 'birthday'
+}
 
-options =
-  {
-    connection: Config::CONNECTION,
-    db_table: 'birthday'
-  }
+options = {
+  connection: Config::CONNECTION,
+  db_table: 'birthday'
+}
 
 # Process bot
 begin

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../../../src/implementations/review_image'
-require_relative 'config'
 require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/review_media'
+require_relative 'config'
 
 read_options = {
   connection: Config::CONNECTION,

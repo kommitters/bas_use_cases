@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
 require 'logger'
-
-require_relative '../../implementations/fetch_domains_wip_limit'
-require_relative 'config'
-require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
+
+require_relative '../../implementations/fetch_domains_wip_count'
+require_relative 'config'
+
 # Configuration
-write_options = {
+read_options = {
   connection: Config::CONNECTION,
   db_table: 'wip_limits',
   tag: 'FetchDomainsWipCountsFromNotion'
+}
+
+write_options = {
+  connection: Config::CONNECTION,
+  db_table: 'wip_limits',
+  tag: 'FetchDomainsWipLimitFromNotion'
 }
 
 options = {
@@ -20,10 +26,9 @@ options = {
 
 # Process bot
 begin
-  shared_storage_reader = Bas::SharedStorage::Default.new
-  shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Bot::FetchDomainsWipCountsFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  Bot::FetchDomainsWipLimitFromNotion.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

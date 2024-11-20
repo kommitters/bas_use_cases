@@ -3,7 +3,7 @@
 require 'rspec'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../../src/implementations/review_image'
+require_relative '../../../src/implementations/review_media'
 
 ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['REVIEW_IMAGE_OPENAI_ASSISTANT'] = 'REVIEW_IMAGE_OPENAI_ASSISTANT'

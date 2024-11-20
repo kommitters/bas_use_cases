@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require 'logger'
-require_relative '../../../src/implementations/write_image_review_in_discord'
 require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/write_image_review_in_discord'
 require_relative 'config'
 
 read_options = {

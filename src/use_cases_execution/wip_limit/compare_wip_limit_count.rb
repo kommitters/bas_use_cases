@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/compare_wip_limit_count'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
+
 # Configuration
 read_options = {
   connection: Config::CONNECTION,

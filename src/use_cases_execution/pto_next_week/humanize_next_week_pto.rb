@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/humanize_pto'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 utc_today = Time.now.utc
@@ -24,7 +24,7 @@ write_options = {
 
 options = {
   secret: ENV.fetch('OPENAI_SECRET'),
-  assistant_id: ENV.fetch('PTO_OPENAI_ASSISTANT'),
+  assistant_id: ENV.fetch('NEXT_WEEK_PTO_OPENAI_ASSISTANT'),
   prompt: "Today is #{today} and the PTO's are: {data}"
 }
 

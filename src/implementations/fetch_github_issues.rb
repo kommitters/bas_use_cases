@@ -105,7 +105,7 @@ module Bot
         }
       }
 
-      @shared_storage_options = Bas::SharedStorage::Postgres.new({ write_options: process_options }).write(write_data)
+      Bas::SharedStorage::Postgres.new({ write_options: process_options }).write(write_data)
     end
   end
 end

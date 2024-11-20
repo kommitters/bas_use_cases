@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/format_do_bill_alert'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {

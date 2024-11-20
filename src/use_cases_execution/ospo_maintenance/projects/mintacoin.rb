@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../../implementations/fetch_github_issues'
 require_relative '../config'
-require 'bas/shared_storage/postgres'
 
 repo_tag = 'MintacoinGithubIssues'
 # Configuration

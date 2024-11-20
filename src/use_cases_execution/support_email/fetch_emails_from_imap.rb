@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/default'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/fetch_emails_from_imap'
 require_relative 'config'
-require 'bas/shared_storage/default'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 

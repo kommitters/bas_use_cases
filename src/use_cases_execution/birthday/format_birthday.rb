@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
+  template: '<name> Wishing you a very happy birthday! Enjoy your special day! :birthday: :gift:'
 }
 
 # Process bot

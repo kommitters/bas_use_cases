@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/notify_discord'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {
@@ -21,7 +21,7 @@ write_options = {
 
 options = {
   name: ENV.fetch('DISCORD_BOT_NAME'),
-  webhook: ENV.fetch('BIRTHDAY_DISCORD_WEBHOOK')
+  webhook: ENV.fetch('NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK')
 }
 
 # Process bot

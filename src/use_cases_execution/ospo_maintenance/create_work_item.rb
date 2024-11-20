@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/create_work_item'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {

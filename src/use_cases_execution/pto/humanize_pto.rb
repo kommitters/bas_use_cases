@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/humanize_pto'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 utc_today = Time.now.utc

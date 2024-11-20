@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'bas/shared_storage/postgres'
 
 require_relative '../../implementations/fetch_billing_from_digital_ocean'
 require_relative 'config'
-require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {
