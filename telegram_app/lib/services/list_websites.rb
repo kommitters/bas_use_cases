@@ -9,7 +9,7 @@ module Services
   #
   class ListWebsites < Services::Base
     def execute
-      user_websites.values.flatten
+      user_websites
     end
 
     private

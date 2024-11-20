@@ -16,14 +16,13 @@ module Services
 
     def website_id
       observed_website = query_item(OBSERVED_WEBSITE_TABLE, WEBSITE_URL, config[:website])
-
-      observed_website.first['id']
+      observed_website.first[:id]
     end
 
     def conversation_id
       chat = query_item(CONVERSATIONS_IDS_TABLE, CONVERSATIONS_IDS_ID, config[:conversation_id])
 
-      chat.first['id']
+      chat.first[:id]
     end
 
     def delete_website(website_id, conversation_id)
