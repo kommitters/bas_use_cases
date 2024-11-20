@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/openai/run_assistant'
 
-module Bot
+module Implementation
   ##
-  # The Bot::ReviewMedia class serves as a bot implementation to read from a postgres
+  # The Implementation::ReviewMedia class serves as a bot implementation to read from a postgres
   # shared storage a images hash with a specific format and create single request
   # on the shared storage to be processed one by one.
   #
@@ -32,7 +32,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::ReviewMedia.new(options, shared_storage).execute
+  #  Implementation::ReviewMedia.new(options, shared_storage).execute
   #
   class ReviewMedia < Bas::Bot::Base
     DETAIL = 'low'

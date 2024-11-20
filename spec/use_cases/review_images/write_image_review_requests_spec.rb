@@ -8,7 +8,7 @@ require_relative '../../../src/implementations/write_image_review_in_discord'
 ENV['REVIEW_IMAGES_TABLE'] = 'REVIEW_IMAGES_TABLE'
 ENV['DISCORD_BOT_TOKEN'] = 'DISCORD_BOT_TOKEN'
 
-RSpec.describe Bot::WriteMediaReviewInDiscord do
+RSpec.describe Implementation::WriteMediaReviewInDiscord do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -25,7 +25,7 @@ RSpec.describe Bot::WriteMediaReviewInDiscord do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    Bot::WriteMediaReviewInDiscord.new(options, mocked_shared_storage)
+    Implementation::WriteMediaReviewInDiscord.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

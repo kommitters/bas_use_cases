@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FormatDoBillAlert class serves as a bot implementation to format DigitalOcean bill
+  # The Implementation::FormatDoBillAlert class serves as a bot implementation to format DigitalOcean bill
   # alerts from a PostgresDB database, format them with a specific template, and write them on a
   # PostgresDB table with a specific format.
   #
@@ -29,7 +29,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FormatDoBillAlert.new(options, shared_storage).execute
+  #  Implementation::FormatDoBillAlert.new(options, shared_storage).execute
   #
   class FormatDoBillAlert < Bas::Bot::Base
     # Process function to format the notification using a template

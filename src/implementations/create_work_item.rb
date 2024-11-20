@@ -5,9 +5,9 @@ require 'bas/bot/base'
 require 'bas/utils/notion/request'
 require 'bas/utils/notion/types'
 
-module Bot
+module Implementation
   ##
-  # The Bot::CreateWorkItem class serves as a bot implementation to create "work items" on a
+  # The Implementation::CreateWorkItem class serves as a bot implementation to create "work items" on a
   # notion database using information of a GitHub issue.
   #
   # <br>
@@ -32,7 +32,7 @@ module Bot
   #
   #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #  Bot::CreateWorkItem.new(options, shared_storage).execute
+  # Implementation::CreateWorkItem.new(options, shared_storage).execute
   #
   class CreateWorkItem < Bas::Bot::Base
     include Utils::Notion::Types

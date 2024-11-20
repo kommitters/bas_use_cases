@@ -5,11 +5,11 @@ require 'httparty'
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 
-module Bot
+module Implementation
   ##
-  # The Bot::ReviewDomainAvailability class serves as a bot implementation to read from a postgres
+  # The Implementation::ReviewDomainAvailability class serves as a bot implementation to read from a postgres
   # shared storage a domain requests and review its availability.
-  class ReviewWebsiteAvailability < Bot::Base
+  class ReviewWebsiteAvailability < Implementation::Base
     def initialize(options, shared_storage)
       super(options, shared_storage)
       @shared_storage_options = Bas::SharedStorage::Postgres.new({ write_options: process_options })

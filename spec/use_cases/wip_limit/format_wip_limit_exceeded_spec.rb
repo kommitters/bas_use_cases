@@ -7,7 +7,7 @@ require_relative '../../../src/implementations/format_wip_limit_exceeded'
 
 ENV['WIP_TABLE'] = 'WIP_TABLE'
 
-RSpec.describe Bot::FormatWipLimitExceeded do
+RSpec.describe Implementation::FormatWipLimitExceeded do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -36,14 +36,14 @@ RSpec.describe Bot::FormatWipLimitExceeded do
       template: ':warning: The <domain> WIP limit was exceeded by <exceeded>'
     }
 
-    @bot = Bot::FormatWipLimitExceeded.new(options, mocked_shared_storage)
+    @bot = Implementation::FormatWipLimitExceeded.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FormatWipLimitExceeded)
+      bas_bot = instance_double(Implementation::FormatWipLimitExceeded)
 
-      allow(Bot::FormatWipLimitExceeded).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FormatWipLimitExceeded).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 

@@ -4,9 +4,9 @@ require 'json'
 require 'bas/bot/base'
 require 'bas/utils/discord/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::WriteMediaReviewInDiscord class serves as a bot implementation to read from a postgres
+  # The Implementation::WriteMediaReviewInDiscord class serves as a bot implementation to read from a postgres
   # shared storage images object blocks and send them to a thread of Discord channel
   #
   # <br>
@@ -30,7 +30,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::WriteMediaReviewInDiscord.new(options, shared_storage).execute
+  #  Implementation::WriteMediaReviewInDiscord.new(options, shared_storage).execute
   #
   class WriteMediaReviewInDiscord < Bas::Bot::Base
     # process function to execute the Discord utility to send image feedback to a thread of a Discord channel

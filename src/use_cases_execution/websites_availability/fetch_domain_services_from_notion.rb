@@ -24,7 +24,7 @@ begin
   shared_storage_reader = Bas::SharedStorage::Default.new
   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
 
-  Bot::FetchDomainServicesFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  Implementation::FetchDomainServicesFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

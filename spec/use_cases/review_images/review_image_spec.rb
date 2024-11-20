@@ -9,7 +9,7 @@ ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['REVIEW_IMAGE_OPENAI_ASSISTANT'] = 'REVIEW_IMAGE_OPENAI_ASSISTANT'
 ENV['REVIEW_IMAGES_TABLE'] = 'REVIEW_IMAGES_TABLE'
 
-RSpec.describe Bot::ReviewMedia do
+RSpec.describe Implementation::ReviewMedia do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -27,7 +27,7 @@ RSpec.describe Bot::ReviewMedia do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    Bot::ReviewMedia.new(options, mocked_shared_storage)
+    Implementation::ReviewMedia.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

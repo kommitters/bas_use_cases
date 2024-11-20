@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FormatEmails class serves as a bot implementation to read emails from a
+  # The Implementation::FormatEmails class serves as a bot implementation to read emails from a
   # PostgresDB database, format them with a specific template, and write them on a PostgresDB
   # table with a specific format.
   #
@@ -31,7 +31,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FormatEmails.new(options, shared_storage).execute
+  #  Implementation::FormatEmails.new(options, shared_storage).execute
   #
   class FormatEmails < Bas::Bot::Base
     EMAIL_ATTRIBUTES = %w[subject sender date].freeze

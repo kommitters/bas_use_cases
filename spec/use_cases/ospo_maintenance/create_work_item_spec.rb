@@ -8,7 +8,7 @@ ENV['OSPO_MAINTENANCE_NOTION_DATABASE_ID'] = 'OSPO_MAINTENANCE_NOTION_DATABASE_I
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
 
-RSpec.describe Bot::CreateWorkItem do
+RSpec.describe Implementation::CreateWorkItem do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -25,7 +25,7 @@ RSpec.describe Bot::CreateWorkItem do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::CreateWorkItem.new(options, mocked_shared_storage)
+    @bot = Implementation::CreateWorkItem.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

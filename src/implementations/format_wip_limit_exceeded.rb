@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FormatWipLimitExceeded class serves as a bot implementation to read exceeded domain wip
+  # The Implementation::FormatWipLimitExceeded class serves as a bot implementation to read exceeded domain wip
   # counts by limits from a PostgresDB database, format them with a specific template, and write them
   # on a PostgresDB table with a specific format.
   #
@@ -29,7 +29,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FormatWipLimitExceeded.new(options, shared_storage).execute
+  #  Implementation::FormatWipLimitExceeded.new(options, shared_storage).execute
   #
   class FormatWipLimitExceeded < Bas::Bot::Base
     WIP_LIMIT_ATTRIBUTES = %w[domain exceeded].freeze

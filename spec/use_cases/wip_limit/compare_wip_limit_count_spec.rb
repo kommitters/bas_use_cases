@@ -6,7 +6,7 @@ require 'bas/shared_storage/types/read'
 
 require_relative '../../../src/implementations/compare_wip_limit_count'
 
-RSpec.describe Bot::CompareWipLimitCount do
+RSpec.describe Implementation::CompareWipLimitCount do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -28,14 +28,14 @@ RSpec.describe Bot::CompareWipLimitCount do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::CompareWipLimitCount.new({}, mocked_shared_storage)
+    @bot = Implementation::CompareWipLimitCount.new({}, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::CompareWipLimitCount)
+      bas_bot = instance_double(Implementation::CompareWipLimitCount)
 
-      allow(Bot::CompareWipLimitCount).to receive(:new).and_return(bas_bot)
+      allow(Implementation::CompareWipLimitCount).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

@@ -4,9 +4,9 @@ require 'json'
 require 'bas/bot/base'
 require 'bas/utils/postgres/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchWebsiteReviewRequest class serves as a bot implementation to fetch
+  # The Implementation::FetchWebsiteReviewRequest class serves as a bot implementation to fetch
   # web availability request from a postgres database
   class FetchWebsiteReviewRequest < Bas::Bot::Base
     def process

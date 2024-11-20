@@ -4,12 +4,12 @@ require 'telegram/bot'
 require 'bas/bot/base'
 require 'bas/utils/postgres/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::NotifyTelegram class serves as a bot implementation to send messages to a
+  # The Implementation::NotifyTelegram class serves as a bot implementation to send messages to a
   # Telegram chat read from a PostgresDB table.
   #
-  class NotifyTelegram < Bot::Base
+  class NotifyTelegram < Implementation::Base
     def process
       return { success: {} } if unprocessable_response
 

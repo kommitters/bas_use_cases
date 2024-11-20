@@ -7,7 +7,7 @@ require_relative '../../../src/implementations/format_birthday'
 
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 
-RSpec.describe Bot::FormatBirthdays do
+RSpec.describe Implementation::FormatBirthdays do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   let(:read_data) { { 'birthdays' => [{ 'name' => 'John Doe', 'birthday_date' => '2024-11-15' }] } }
 
@@ -27,14 +27,14 @@ RSpec.describe Bot::FormatBirthdays do
       template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
     }
 
-    @bot = Bot::FormatBirthdays.new(options, mocked_shared_storage)
+    @bot = Implementation::FormatBirthdays.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FormatBirthdays)
+      bas_bot = instance_double(Implementation::FormatBirthdays)
 
-      allow(Bot::FormatBirthdays).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FormatBirthdays).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return(
         { success: { notification: 'The Birthday of John Doe is today! (2024-11-15) :birthday: :gift:' } }
       )

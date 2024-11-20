@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/openai/run_assistant'
 
-module Bot
+module Implementation
   ##
-  # The Bot::HumanizePto class serves as a bot implementation to read PTO's from a
+  # The Implementation::HumanizePto class serves as a bot implementation to read PTO's from a
   # PostgresDb table, format them using an OpenAI Assistant with the OpenAI API, and
   # write the response as a notification on a PostgresDB table.
   #
@@ -32,7 +32,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::HumanizePto.new(options, shared_storage).execute
+  #  Implementation::HumanizePto.new(options, shared_storage).execute
   #
   class HumanizePto < Bas::Bot::Base
     DEFAULT_PROMPT = '{data}'

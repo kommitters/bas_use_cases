@@ -6,7 +6,7 @@ require 'bas/shared_storage/postgres'
 
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 
-RSpec.describe Bot::FormatBirthdays do
+RSpec.describe Implementation::FormatBirthdays do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   let(:read_data) { { 'birthdays' => [{ 'name' => 'John Doe', 'birthday_date' => '2024-11-15' }] } }
   before do
@@ -22,7 +22,7 @@ RSpec.describe Bot::FormatBirthdays do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FormatBirthdays.new(options, mocked_shared_storage)
+    @bot = Implementation::FormatBirthdays.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

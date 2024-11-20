@@ -41,7 +41,7 @@ options = {
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Bot::FetchGithubIssues.new(options, shared_storage).execute
+  Implementation::FetchGithubIssues.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

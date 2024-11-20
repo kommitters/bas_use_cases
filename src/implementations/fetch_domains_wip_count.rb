@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchDomainsWipCountsFromNotion class serves as a bot implementation to fetch work items
+  # The Implementation::FetchDomainsWipCountsFromNotion class serves as a bot implementation to fetch work items
   # in progress or in hold from a Notion database, count how many are by domain, and write them on a
   # PostgresDB table with a specific format.
   #
@@ -26,7 +26,7 @@ module Bot
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Bot::FetchDomainsWipCountsFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  #  Implementation::FetchDomainsWipCountsFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class FetchDomainsWipCountsFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch work item from the notion database

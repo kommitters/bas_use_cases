@@ -10,7 +10,7 @@ ENV['PTO_NOTION_DATABASE_ID'] = 'PTO_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['PTO_TABLE'] = 'PTO_TABLE'
 
-RSpec.describe Bot::FetchPtosFromNotion do
+RSpec.describe Implementation::FetchPtosFromNotion do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
 
@@ -35,14 +35,14 @@ RSpec.describe Bot::FetchPtosFromNotion do
     allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FetchPtosFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
+    @bot = Implementation::FetchPtosFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchPtosFromNotion)
+      bas_bot = instance_double(Implementation::FetchPtosFromNotion)
 
-      allow(Bot::FetchPtosFromNotion).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchPtosFromNotion).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

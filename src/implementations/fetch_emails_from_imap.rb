@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/imap/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchEmailsFromImap class serves as a bot implementation to fetch emails from a imap server
+  # The Implementation::FetchEmailsFromImap class serves as a bot implementation to fetch emails from a imap server
   # and write them on a PostgresDB table with a specific format.
   #
   # <br>
@@ -32,7 +32,7 @@ module Bot
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Bot::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer).execute
+  #  Implementation::FetchEmailsFromImap.new(params, shared_storage_reader, shared_storage_writer).execute
   #
   class FetchEmailsFromImap < Bas::Bot::Base
     # Process function to request email from an imap server using the imap utility

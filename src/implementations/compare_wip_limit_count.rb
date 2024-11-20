@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::CompareWipLimitCount class serves as a bot implementation to read domains wip limits and
+  # The Implementation::CompareWipLimitCount class serves as a bot implementation to read domains wip limits and
   # counts from a PostgresDB database, compare the values to find exceeded counts, and write them on
   # a PostgresDB table with a specific format.
   #
@@ -27,7 +27,7 @@ module Bot
   #
   #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #  Bot::CompareWipLimitCount.new(options, shared_storage).execute
+  # Implementation::CompareWipLimitCount.new(options, shared_storage).execute
   #
   class CompareWipLimitCount < Bas::Bot::Base
     # Process function to compare the domains wip counts and limits

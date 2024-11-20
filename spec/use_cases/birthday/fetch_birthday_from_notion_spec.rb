@@ -10,7 +10,7 @@ ENV['BIRTHDAY_NOTION_DATABASE_ID'] = 'BIRTHDAY_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 
-RSpec.describe Bot::FetchBirthdaysFromNotion do
+RSpec.describe Implementation::FetchBirthdaysFromNotion do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
 
@@ -35,14 +35,15 @@ RSpec.describe Bot::FetchBirthdaysFromNotion do
     allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FetchBirthdaysFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
+    @bot = Implementation::FetchBirthdaysFromNotion.new(options, mocked_shared_storage_reader,
+                                                        mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchBirthdaysFromNotion)
+      bas_bot = instance_double(Implementation::FetchBirthdaysFromNotion)
 
-      allow(Bot::FetchBirthdaysFromNotion).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchBirthdaysFromNotion).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 

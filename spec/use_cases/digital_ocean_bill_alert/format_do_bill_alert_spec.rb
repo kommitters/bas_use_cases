@@ -7,7 +7,7 @@ require 'bas/shared_storage/postgres'
 ENV['DIGITAL_OCEAN_THRESHOLD'] = 'DIGITAL_OCEAN_THRESHOLD'
 ENV['DO_TABLE'] = 'DO_TABLE'
 
-RSpec.describe Bot::FormatDoBillAlert do
+RSpec.describe Implementation::FormatDoBillAlert do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -23,13 +23,11 @@ RSpec.describe Bot::FormatDoBillAlert do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FormatDoBillAlert.new(options, mocked_shared_storage)
+    @bot = Implementation::FormatDoBillAlert.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      instance_double(Bot::FormatDoBillAlert)
-
       allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
       allow(@bot).to receive(:execute).and_return({})
     end

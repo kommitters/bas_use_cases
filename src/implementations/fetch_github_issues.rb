@@ -4,9 +4,9 @@ require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchGithubIssues class serves as a bot implementation to fetch GitHub issues from a
+  # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch GitHub issues from a
   # repository and write them on a PostgresDB table with a specific format.
   #
   # <br>
@@ -43,7 +43,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FetchGithubIssues.new(options, shared_storage).execute
+  #  Implementation::FetchGithubIssues.new(options, shared_storage).execute
   #
   class FetchGithubIssues < Bas::Bot::Base
     ISSUE_PARAMS = %i[id html_url title body labels state created_at updated_at state].freeze

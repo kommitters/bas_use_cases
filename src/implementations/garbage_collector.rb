@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::GarbageCollector class serves as a bot implementation to archive bot records from a
+  # The Implementation::GarbageCollector class serves as a bot implementation to archive bot records from a
   # PostgresDB database table and write a response on a PostgresDB table with a specific format.
   #
   # <br>
@@ -22,7 +22,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Bot::GarbageCollector.new(options, shared_storage).execute
+  #  Implementation::GarbageCollector.new(options, shared_storage).execute
   #
   class GarbageCollector < Bas::Bot::Base
     SUCCESS_STATUS = 'PGRES_COMMAND_OK'

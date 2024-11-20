@@ -20,7 +20,7 @@ CONNECTION = {
   password: ENV.fetch('POSTGRES_PASSWORD')
 }.freeze
 
-RSpec.describe Bot::ReviewDomainAvailability do
+RSpec.describe Implementation::ReviewDomainAvailability do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -39,7 +39,7 @@ RSpec.describe Bot::ReviewDomainAvailability do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::ReviewDomainAvailability.new(options, mocked_shared_storage)
+    @bot = Implementation::ReviewDomainAvailability.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

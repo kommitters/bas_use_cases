@@ -9,7 +9,7 @@ ENV['OPENAI_SECRET'] = 'OPENAI_SECRET'
 ENV['PTO_OPENAI_ASSISTANT'] = 'PTO_OPENAI_ASSISTANT'
 ENV['BIRTHDAY_TABLE'] = 'PTO_TABLE'
 
-RSpec.describe Bot::HumanizePto do
+RSpec.describe Implementation::HumanizePto do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -27,7 +27,7 @@ RSpec.describe Bot::HumanizePto do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    Bot::HumanizePto.new(options, mocked_shared_storage)
+    Implementation::HumanizePto.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

@@ -22,7 +22,7 @@ CONNECTION = {
   password: ENV.fetch('POSTGRES_PASSWORD')
 }.freeze
 
-RSpec.describe Bot::FetchGithubIssues do
+RSpec.describe Implementation::FetchGithubIssues do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -49,14 +49,14 @@ RSpec.describe Bot::FetchGithubIssues do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FetchGithubIssues.new(options, mocked_shared_storage)
+    @bot = Implementation::FetchGithubIssues.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchGithubIssues)
+      bas_bot = instance_double(Implementation::FetchGithubIssues)
 
-      allow(Bot::FetchGithubIssues).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchGithubIssues).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

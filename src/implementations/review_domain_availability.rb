@@ -5,9 +5,9 @@ require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/openai/run_assistant'
 
-module Bot
+module Implementation
   ##
-  # The Bot::ReviewDomainAvailability class serves as a bot implementation to read from a postgres
+  # The Implementation::ReviewDomainAvailability class serves as a bot implementation to read from a postgres
   # shared storage a domain requests and review its availability.
   #
   # <br>
@@ -33,7 +33,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::ReviewDomainAvailability.new(options, shared_storage).execute
+  #  Implementation::ReviewDomainAvailability.new(options, shared_storage).execute
   #
   class ReviewDomainAvailability < Bas::Bot::Base
     def initialize(options, shared_storage)

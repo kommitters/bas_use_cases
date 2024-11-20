@@ -4,9 +4,9 @@ require 'date'
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchNextWeekPtosFromNotion class serves as a bot implementation to read next week
+  # The Implementation::FetchNextWeekPtosFromNotion class serves as a bot implementation to read next week
   # PTO's from a notion database and write them on a PostgresDB table with a specific format.
   #
   # <br>
@@ -26,7 +26,7 @@ module Bot
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Bot::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  #  Implementation::FetchPtosFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class FetchNextWeekPtosFromNotion < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
     # Process function to execute the Notion utility to fetch next week PTO's from the notion database

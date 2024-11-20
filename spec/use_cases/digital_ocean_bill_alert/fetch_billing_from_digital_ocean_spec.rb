@@ -7,7 +7,7 @@ require_relative '../../../src/implementations/fetch_billing_from_digital_ocean'
 ENV['DIGITAL_OCEAN_SECRET'] = 'DIGITAL_OCEAN_SECRET'
 ENV['DO_TABLE'] = 'DO_TABLE'
 
-RSpec.describe Bot::FetchBillingFromDigitalOcean do
+RSpec.describe Implementation::FetchBillingFromDigitalOcean do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -23,14 +23,14 @@ RSpec.describe Bot::FetchBillingFromDigitalOcean do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FetchBillingFromDigitalOcean.new(options, mocked_shared_storage)
+    @bot = Implementation::FetchBillingFromDigitalOcean.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchBillingFromDigitalOcean)
+      bas_bot = instance_double(Implementation::FetchBillingFromDigitalOcean)
 
-      allow(Bot::FetchBillingFromDigitalOcean).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchBillingFromDigitalOcean).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

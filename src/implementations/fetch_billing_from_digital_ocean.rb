@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/digital_ocean/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchBillingFromDigitalOcean class serves as a bot implementation to read digital
+  # The Implementation::FetchBillingFromDigitalOcean class serves as a bot implementation to read digital
   # ocean current billing using the DigitalOcean API
   #
   # <br>
@@ -32,7 +32,7 @@ module Bot
   #
   #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #  Bot::FetchBillingFromDigitalOcean.new(options, shared_storage).execute
+  # Implementation::FetchBillingFromDigitalOcean.new(options, shared_storage).execute
   #
   class FetchBillingFromDigitalOcean < Bas::Bot::Base
     # Process function to execute the DigitalOcean utility to fetch bills

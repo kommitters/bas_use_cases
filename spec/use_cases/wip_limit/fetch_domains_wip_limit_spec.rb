@@ -9,7 +9,7 @@ ENV['WIP_LIMIT_NOTION_DATABASE_ID'] = 'WIP_LIMIT_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['WIP_TABLE'] = 'WIP_TABLE'
 
-RSpec.describe Bot::FetchDomainsWipLimitFromNotion do
+RSpec.describe Implementation::FetchDomainsWipLimitFromNotion do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -36,14 +36,14 @@ RSpec.describe Bot::FetchDomainsWipLimitFromNotion do
       secret: ENV.fetch('NOTION_SECRET', 'test_secret')
     }
 
-    @bot = Bot::FetchDomainsWipLimitFromNotion.new(options, mocked_shared_storage)
+    @bot = Implementation::FetchDomainsWipLimitFromNotion.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchDomainsWipLimitFromNotion)
+      bas_bot = instance_double(Implementation::FetchDomainsWipLimitFromNotion)
 
-      allow(Bot::FetchDomainsWipLimitFromNotion).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchDomainsWipLimitFromNotion).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 

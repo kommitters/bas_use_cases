@@ -8,7 +8,7 @@ ENV['BIRTHDAY_DISCORD_WEBHOOK'] = 'BIRTHDAY_DISCORD_WEBHOOK'
 ENV['DISCORD_BOT_NAME'] = 'DISCORD_BOT_NAME'
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
 
-RSpec.describe Bot::NotifyDiscord do
+RSpec.describe Implementation::NotifyDiscord do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
@@ -25,7 +25,7 @@ RSpec.describe Bot::NotifyDiscord do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::NotifyDiscord.new(options, mocked_shared_storage)
+    @bot = Implementation::NotifyDiscord.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

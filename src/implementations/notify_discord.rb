@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/discord/integration'
 
-module Bot
+module Implementation
   ##
-  # The Bot::NotifyDiscord class serves as a bot implementation to send messages to a
+  # The Implementation::NotifyDiscord class serves as a bot implementation to send messages to a
   # Discord readed from a PostgresDB table.
   #
   # <br>
@@ -30,7 +30,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::NotifyDiscord.new(options, shared_storage).execute
+  #  Implementation::NotifyDiscord.new(options, shared_storage).execute
   #
   class NotifyDiscord < Bas::Bot::Base
     # process function to execute the Discord utility to send the PTO's notification

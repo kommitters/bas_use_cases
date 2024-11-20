@@ -10,7 +10,7 @@ ENV['WEBSITES_AVAILABILITY_NOTION_DATABASE_ID'] = 'WEBSITES_AVAILABILITY_NOTION_
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['WEBSITES_AVAILABILITY_TABLE'] = 'WEBSITES_AVAILABILITY_TABLE'
 
-RSpec.describe Bot::FetchDomainServicesFromNotion do
+RSpec.describe Implementation::FetchDomainServicesFromNotion do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
 
@@ -35,7 +35,8 @@ RSpec.describe Bot::FetchDomainServicesFromNotion do
     allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FetchDomainServicesFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
+    @bot = Implementation::FetchDomainServicesFromNotion.new(options, mocked_shared_storage_reader,
+                                                             mocked_shared_storage_writer)
   end
 
   context '.execute' do

@@ -5,9 +5,9 @@ require 'bas/bot/base'
 require 'bas/utils/notion/request'
 require 'bas/utils/notion/update_db_state'
 
-module Bot
+module Implementation
   ##
-  # The Bot::VerifyIssueExistanceInNotion class serves as a bot implementation to verify if a
+  # The Implementation::VerifyIssueExistanceInNotion class serves as a bot implementation to verify if a
   # GitHub issue was already created on a notion database base on a column with the issue id.
   #
   # <br>
@@ -32,7 +32,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
+  #  Implementation::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
   #
   class VerifyIssueExistanceInNotion < Bas::Bot::Base
     NOT_FOUND = 'not found'

@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchBirthdaysFromNotion class serves as a bot implementation to read birthdays from a
+  # The Implementation::FetchBirthdaysFromNotion class serves as a bot implementation to read birthdays from a
   # notion database and write them on a PostgresDB table with a specific format.
   #
   # <br>
@@ -25,7 +25,7 @@ module Bot
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Bot::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  #  Implementation::FetchBirthdaysFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class FetchBirthdaysFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch birthdays from a notion database

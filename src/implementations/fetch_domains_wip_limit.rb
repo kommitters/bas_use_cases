@@ -3,9 +3,9 @@
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FetchDomainsWipLimitFromNotion class serves as a bot implementation to fetch domains wip
+  # The Implementation::FetchDomainsWipLimitFromNotion class serves as a bot implementation to fetch domains wip
   # limits from a Notion database, merge them with the count of how many are by domain, and write them
   # on a PostgresDB table with a specific format.
   #
@@ -31,7 +31,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FetchDomainsWipLimitFromNotion.new(options, shared_storage).execute
+  #  Implementation::FetchDomainsWipLimitFromNotion.new(options, shared_storage).execute
   #
   class FetchDomainsWipLimitFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch domain wip limits from the notion database

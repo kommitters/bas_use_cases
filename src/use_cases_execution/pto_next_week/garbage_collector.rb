@@ -22,7 +22,7 @@ options = {
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ write_options: })
 
-  Bot::GarbageCollector.new(options, shared_storage).execute
+  Implementation::GarbageCollector.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

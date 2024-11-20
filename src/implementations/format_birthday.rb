@@ -2,9 +2,9 @@
 
 require 'bas/bot/base'
 
-module Bot
+module Implementation
   ##
-  # The Bot::FormatBirthdays class serves as a bot implementation to read birthdays from a
+  # The Implementation::FormatBirthdays class serves as a bot implementation to read birthdays from a
   # PostgresDB database, format them with a specific template, and write them on a PostgresDB
   # table with a specific format.
   #
@@ -29,7 +29,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::FormatBirthdays.new(options, shared_storage).execute
+  #  Implementation::FormatBirthdays.new(options, shared_storage).execute
   #
   class FormatBirthdays < Bas::Bot::Base
     BIRTHDAY_ATTRIBUTES = %w[name birthday_date].freeze

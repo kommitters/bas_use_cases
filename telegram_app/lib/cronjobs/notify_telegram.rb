@@ -29,7 +29,7 @@ options = {
 }
 
 begin
-  bot = Bot::NotifyTelegram.new(options)
+  bot = Implementation::NotifyTelegram.new(options)
 
   bot.execute
 rescue StandardError => e

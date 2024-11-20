@@ -30,7 +30,7 @@ options = {
 }
 
 begin
-  bot = Bot::ReviewWebsiteAvailability.new(options)
+  bot = Implementation::ReviewWebsiteAvailability.new(options)
 
   bot.execute
 rescue StandardError => e

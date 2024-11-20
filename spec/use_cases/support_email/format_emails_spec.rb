@@ -7,7 +7,7 @@ require_relative '../../../src/implementations/format_emails'
 
 ENV['SUPPORT_EMAIL_TABLE'] = 'SUPPORT_EMAIL_TABLE'
 
-RSpec.describe Bot::FormatEmails do
+RSpec.describe Implementation::FormatEmails do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -26,7 +26,7 @@ RSpec.describe Bot::FormatEmails do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::FormatEmails.new(options, mocked_shared_storage)
+    @bot = Implementation::FormatEmails.new(options, mocked_shared_storage)
   end
 
   context '.execute' do

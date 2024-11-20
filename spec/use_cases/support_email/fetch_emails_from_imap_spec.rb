@@ -16,7 +16,7 @@ ENV['SUPPORT_EMAIL_RECEPTOR'] = 'SUPPORT_EMAIL_RECEPTOR'
 ENV['REFRESH_TOKEN'] = 'REFRESH_TOKEN'
 ENV['TOKEN_URI'] = 'TOKEN_URI'
 
-RSpec.describe Bot::FetchEmailsFromImap do
+RSpec.describe Implementation::FetchEmailsFromImap do
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
 
@@ -33,7 +33,7 @@ RSpec.describe Bot::FetchEmailsFromImap do
       inbox: 'INBOX'
     }
 
-    @bot = Bot::FetchEmailsFromImap.new(params, mocked_shared_storage_reader, mocked_shared_storage_writer)
+    @bot = Implementation::FetchEmailsFromImap.new(params, mocked_shared_storage_reader, mocked_shared_storage_writer)
   end
 
   context '.execute' do

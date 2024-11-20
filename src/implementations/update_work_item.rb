@@ -9,9 +9,9 @@ require 'bas/utils/notion/delete_page_blocks'
 require 'bas/utils/notion/fetch_database_record'
 require 'bas/utils/notion/update_db_page'
 
-module Bot
+module Implementation
   ##
-  # The Bot::UpdateWorkItem class serves as a bot implementation to update "work items" on a
+  # The Implementation::UpdateWorkItem class serves as a bot implementation to update "work items" on a
   # notion database using information of a GitHub issue.
   #
   # <br>
@@ -36,7 +36,7 @@ module Bot
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Bot::UpdateWorkItem.new(options, shared_storage).execute
+  #  Implementation::UpdateWorkItem.new(options, shared_storage).execute
   #
   class UpdateWorkItem < Bas::Bot::Base
     include Utils::Notion::Types

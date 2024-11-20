@@ -5,7 +5,7 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../../src/implementations/garbage_collector'
 
-RSpec.describe Bot::GarbageCollector do
+RSpec.describe Implementation::GarbageCollector do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
 
   before do
@@ -24,7 +24,7 @@ RSpec.describe Bot::GarbageCollector do
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
     allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
 
-    @bot = Bot::GarbageCollector.new(options, mocked_shared_storage)
+    @bot = Implementation::GarbageCollector.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
