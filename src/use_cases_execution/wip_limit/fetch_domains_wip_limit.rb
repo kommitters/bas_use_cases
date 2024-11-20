@@ -3,7 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../implementations/fetch_domains_wip_count'
+require_relative '../../implementations/fetch_domains_wip_limit'
 require_relative 'config'
 
 # Configuration
