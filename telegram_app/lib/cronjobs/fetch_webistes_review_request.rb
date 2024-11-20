@@ -25,7 +25,7 @@ options = {
 }
 
 begin
-  bot = Bot::FetchWebsiteReviewRequest.new(options)
+  bot = Implementation::FetchWebsiteReviewRequest.new(options)
 
   bot.execute
 rescue StandardError => e

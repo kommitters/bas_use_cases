@@ -1,39 +1,50 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday/fetch_birthday_from_notion'
+require_relative '../../../src/implementations/fetch_birthday_from_notion'
+require 'bas/shared_storage/default'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/types/read'
 
 ENV['BIRTHDAY_NOTION_DATABASE_ID'] = 'BIRTHDAY_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::BirthdayFromNotion do
+RSpec.describe Implementation::FetchBirthdaysFromNotion do
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
+
   before do
-    params = {
-      notion_database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    allow(mocked_shared_storage_reader).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }, inserted_at: Time.now)
+    )
+
+    allow(mocked_shared_storage_writer).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
+
+    options = {
+      database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
+      secret: ENV.fetch('NOTION_SECRET')
     }
 
-    @bot = Fetch::BirthdayFromNotion.new(params)
+    allow(mocked_shared_storage_writer).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_writer).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage_writer).to receive(:set_in_process).and_return(nil)
+
+    allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
+
+    @bot = Implementation::FetchBirthdaysFromNotion.new(options, mocked_shared_storage_reader,
+                                                        mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchBirthdaysFromNotion)
+      bas_bot = instance_double(Implementation::FetchBirthdaysFromNotion)
 
-      allow(Bot::FetchBirthdaysFromNotion).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(Implementation::FetchBirthdaysFromNotion).to receive(:new).and_return(bas_bot)
+      allow(bas_bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

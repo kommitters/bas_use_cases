@@ -1,50 +1,45 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/support_email/fetch_emails_from_imap'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+require_relative '../../../src/implementations/fetch_emails_from_imap'
 
 ENV['SUPPORT_EMAIL_TABLE'] = 'SUPPORT_EMAIL_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 ENV['SUPPORT_EMAIL_ACCOUNT'] = 'SUPPORT_EMAIL_ACCOUNT'
 ENV['SUPPORT_EMAIL_REFRESH_TOKEN'] = 'SUPPORT_EMAIL_REFRESH_TOKEN'
 ENV['SUPPORT_EMAIL_CLIENT_ID'] = 'SUPPORT_EMAIL_CLIENT_ID'
 ENV['SUPPORT_EMAIL_CLIENT_SECRET'] = 'SUPPORT_EMAIL_CLIENT_SECRET'
 ENV['SUPPORT_EMAIL_INBOX'] = 'SUPPORT_EMAIL_INBOX'
 ENV['SUPPORT_EMAIL_RECEPTOR'] = 'SUPPORT_EMAIL_RECEPTOR'
+ENV['REFRESH_TOKEN'] = 'REFRESH_TOKEN'
+ENV['TOKEN_URI'] = 'TOKEN_URI'
 
-RSpec.describe Fetch::EmailsFromImap do
+RSpec.describe Implementation::FetchEmailsFromImap do
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
+
   before do
     params = {
-      table_name: ENV.fetch('SUPPORT_EMAIL_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD'),
-      email_account: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),
-      email_refresh_token: ENV.fetch('SUPPORT_EMAIL_REFRESH_TOKEN'),
-      email_client_id: ENV.fetch('SUPPORT_EMAIL_CLIENT_ID'),
-      email_client_secret: ENV.fetch('SUPPORT_EMAIL_CLIENT_SECRET'),
-      email_inbox: ENV.fetch('SUPPORT_EMAIL_INBOX'),
-      email_receptor: ENV.fetch('SUPPORT_EMAIL_RECEPTOR'),
-      email_token_uri: 'https://oauth2.googleapis.com/token',
+      refresh_token: ENV.fetch('REFRESH_TOKEN'),
+      client_id: ENV.fetch('SUPPORT_EMAIL_CLIENT_ID'),
+      client_secret: ENV.fetch('SUPPORT_EMAIL_CLIENT_SECRET'),
+      token_uri: ENV.fetch('TOKEN_URI'),
+      email_domain: 'imap.gmail.com',
       email_port: 993,
-      email_domain: 'imap.gmail.com'
+      user_email: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),
+      search_email: ENV.fetch('SUPPORT_EMAIL_RECEPTOR'),
+      inbox: 'INBOX'
     }
 
-    @bot = Fetch::EmailsFromImap.new(params)
+    @bot = Implementation::FetchEmailsFromImap.new(params, mocked_shared_storage_reader, mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchEmailsFromImap)
-
-      allow(Bot::FetchEmailsFromImap).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:process).and_return({ success: { notification: '' } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

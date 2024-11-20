@@ -1,37 +1,35 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/birthday_next_week/format_next_week_birthday'
+require_relative '../../../src/implementations/format_birthday'
+require 'bas/shared_storage/postgres'
 
 ENV['BIRTHDAY_TABLE'] = 'BIRTHDAY_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Format::NextWeekBirthday do
+RSpec.describe Implementation::FormatBirthdays do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:read_data) { { 'birthdays' => [{ 'name' => 'John Doe', 'birthday_date' => '2024-11-15' }] } }
   before do
-    params = {
-      notion_database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('BIRTHDAY_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    options = {
+      template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
     }
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: read_data, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
 
-    @bot = Format::NextWeekBirthday.new(params)
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Implementation::FormatBirthdays.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FormatBirthdays)
-
-      allow(Bot::FormatBirthdays).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({})
+      allow(@bot).to receive(:execute).and_return(
+        { success: { notification: 'The Birthday of John Doe is today! (2024-11-15) :birthday: :gift:' } }
+      )
     end
 
     it 'should execute the bas bot' do

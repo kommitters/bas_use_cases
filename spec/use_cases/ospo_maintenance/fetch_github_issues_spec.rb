@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/ospo_maintenance/fetch_github_issues'
+require 'bas/shared_storage/postgres'
+
+require_relative '../../../src/implementations/fetch_github_issues'
 
 ENV['OSPO_MAINTENANCE_SECRET'] = 'OSPO_MAINTENANCE_SECRET'
 ENV['OSPO_MAINTENANCE_APP_ID'] = 'OSPO_MAINTENANCE_APP_ID'
@@ -12,33 +14,49 @@ ENV['POSTGRES_DB'] = 'POSTGRES_DB'
 ENV['POSTGRES_USER'] = 'POSTGRES_USER'
 ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::GithubIssues do
+CONNECTION = {
+  host: ENV.fetch('DB_HOST'),
+  port: ENV.fetch('DB_PORT'),
+  dbname: ENV.fetch('POSTGRES_DB'),
+  user: ENV.fetch('POSTGRES_USER'),
+  password: ENV.fetch('POSTGRES_PASSWORD')
+}.freeze
+
+RSpec.describe Implementation::FetchGithubIssues do
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
-    params = {
-      tag: 'GithubIssues',
-      repo: 'org/repo',
-      organization: 'org',
-      domain: 'domain',
+    options = {
+      private_pem: 'PRIVATE_PEM',
+      app_id: '12345',
+      repo: 'kommitters/bas',
+      filters: { state: 'all' },
+      organization: 'kommitters',
+      domain: 'kommitters',
+      status: 'Backlog',
       work_item_type: 'activity',
-      type_id: '123456789',
-      private_pem: 'OSPO_MAINTENANCE_SECRET',
-      app_id: ENV.fetch('OSPO_MAINTENANCE_APP_ID'),
-      table_name: ENV.fetch('OSPO_MAINTENANCE_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+      type_id: 'ecc3b2bcc3c941d29e3499721c063dd6',
+      connection: CONNECTION,
+      db_table: 'github_issues',
+      tag: 'GithubIssueRequest'
     }
 
-    @bot = Fetch::GithubIssues.new(params)
+    allow(mocked_shared_storage).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, data: { key: 'value' }, inserted_at: Time.now)
+    )
+    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
+
+    allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage).to receive(:set_in_process).and_return(nil)
+
+    @bot = Implementation::FetchGithubIssues.new(options, mocked_shared_storage)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchGithubIssues)
+      bas_bot = instance_double(Implementation::FetchGithubIssues)
 
-      allow(Bot::FetchGithubIssues).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchGithubIssues).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 

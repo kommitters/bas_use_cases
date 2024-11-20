@@ -1,38 +1,49 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../../../src/use_cases/pto_next_week/fetch_next_week_pto_from_notion'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+require_relative '../../../src/implementations/fetch_next_week_pto_from_notion'
 
 ENV['PTO_NOTION_DATABASE_ID'] = 'PTO_NOTION_DATABASE_ID'
 ENV['NOTION_SECRET'] = 'NOTION_SECRET'
 ENV['PTO_TABLE'] = 'PTO_TABLE'
-ENV['DB_HOST'] = 'DB_HOST'
-ENV['DB_PORT'] = 'DB_PORT'
-ENV['POSTGRES_DB'] = 'POSTGRES_DB'
-ENV['POSTGRES_USER'] = 'POSTGRES_USER'
-ENV['POSTGRES_PASSWORD'] = 'POSTGRES_PASSWORD'
 
-RSpec.describe Fetch::NextWeekPtoFromNotion do
+RSpec.describe Implementation::FetchNextWeekPtosFromNotion do
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
+
   before do
-    params = {
-      notion_database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
-      notion_secret: ENV.fetch('NOTION_SECRET'),
-      table_name: ENV.fetch('PTO_TABLE'),
-      db_host: ENV.fetch('DB_HOST'),
-      db_port: ENV.fetch('DB_PORT'),
-      db_name: ENV.fetch('POSTGRES_DB'),
-      db_user: ENV.fetch('POSTGRES_USER'),
-      db_password: ENV.fetch('POSTGRES_PASSWORD')
+    options = {
+      database_id: ENV.fetch('PTO_NOTION_DATABASE_ID'),
+      secret: ENV.fetch('NOTION_SECRET')
     }
 
-    @bot = Fetch::NextWeekPtoFromNotion.new(params)
+    allow(mocked_shared_storage_reader).to receive(:read).and_return(
+      instance_double(Bas::SharedStorage::Types::Read, id: 1, data: { key: 'value' }, inserted_at: Time.now)
+    )
+
+    allow(mocked_shared_storage_writer).to receive(:write).and_return(
+      [{ 'status' => 'success', 'id' => 1 }]
+    )
+
+    allow(mocked_shared_storage_writer).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_writer).to receive(:update_stage).and_return(true)
+    allow(mocked_shared_storage_writer).to receive(:set_in_process).and_return(nil)
+
+    allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
+    allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
+
+    @bot = Implementation::FetchNextWeekPtosFromNotion.new(options, mocked_shared_storage_reader,
+                                                           mocked_shared_storage_writer)
   end
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Bot::FetchNextWeekPtosFromNotion)
+      bas_bot = instance_double(Implementation::FetchNextWeekPtosFromNotion)
 
-      allow(Bot::FetchNextWeekPtosFromNotion).to receive(:new).and_return(bas_bot)
+      allow(Implementation::FetchNextWeekPtosFromNotion).to receive(:new).and_return(bas_bot)
       allow(bas_bot).to receive(:execute).and_return({})
     end
 
