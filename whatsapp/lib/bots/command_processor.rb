@@ -3,43 +3,26 @@
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'httparty'
-require_relative '../../../telegram_app/lib/services/add_website'
-require_relative '../../../telegram_app/lib/services/list_websites'
-require_relative '../../../telegram_app/lib/services/remove_website'
+
+require_relative '../../../src/services/add_website'
+require_relative '../../../src/services/list_websites'
+require_relative '../../../src/services/remove_website'
+
 module Bas
   module Bot
     class CommandProcessor < Bas::Bot::Base
+      TOKEN = ENV.fetch('WHATSAPP_TOKEN')
+
       def process
         conversation_id = read_response.data['conversation_id']
         body = read_response.data['message']
         options = process_options
-        token = ENV.fetch('WHATSAPP_TOKEN')
+
         case body
-        when '/add'
-          puts 'Response: Waiting for URL'
-          puts response(token, conversation_id, 'Please send the URL of the website you want to monitor')
-          {
-            success: {
-              status: 200
-          }}
-        when '/remove'
-          websites = list_websites(options, conversation_id)
-          puts response(token, conversation_id, 'Please send the number of the website you want to remove')
-          {
-            success: {
-              status: 200
-          }}
-        when '/list'
-          puts 'Received /list command'
-          request = list_websites(options, conversation_id)
-          puts "Your websites are: #{request}"
-          {
-            success: {
-              status: 200
-          }}
-        else
-          unprocessable_response(body, conversation_id, options)
-        end
+        when '/add' then add
+        when '/remove' then remove
+        when '/list' then list
+        else unprocessable_response
       end
 
       private
@@ -67,7 +50,45 @@ module Bas
       
         response.body  # Retorna la respuesta completa
       end
-      def unprocessable_response(body, conversation_id, options)
+
+      def add
+        conversation_id = read_response.data['conversation_id']
+        puts 'Response: Waiting for URL'
+        puts response(TOKEN, conversation_id, 'Please send the URL of the website you want to monitor')
+        {
+          success: {
+            status: 200
+        }}
+      end
+
+      def remove
+        conversation_id = read_response.data['conversation_id']
+        options = process_options
+
+        puts response(TOKEN, conversation_id, 'Please send the number of the website you want to remove')
+        {
+          success: {
+            status: 200
+        }}
+      end
+
+      def list
+        conversation_id = read_response.data['conversation_id']
+        options = process_options
+        puts 'Received /list command'
+        request = list_websites(options, conversation_id)
+        puts "Your websites are: #{request}"
+        {
+          success: {
+            status: 200
+        }}
+      end
+
+      def unprocessable_response
+        conversation_id = read_response.data['conversation_id']
+        body = read_response.data['message']
+        options = process_options
+
         # Check if the body is a string that can be converted to an integer
         if body.to_i.to_s == body
           delete_website(body, conversation_id, options)
@@ -85,6 +106,7 @@ module Bas
             status: 200
         }}
       end
+
       
       def valid_url?(message)
         message.match?(%r{\Ahttp(s)?://\S+\.\S+}) ? message : "https://#{message}"

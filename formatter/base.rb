@@ -1,4 +1,4 @@
-module Formatters
+module Formatter
   class Base
     attr_reader :data
 
@@ -6,13 +6,15 @@ module Formatters
       @data = {}
     end
 
+    def process
+      raise NotImplementedError, "#{self.class} must implement the #process method"
+    end
+
+    protected
+
     def format(data)
       raise ArgumentError, 'Data must be a Hash' unless data.is_a?(Hash)
       @data = data
-    end
-
-    def process
-      raise NotImplementedError, "#{self.class} must implement the #process method"
     end
   end
 end

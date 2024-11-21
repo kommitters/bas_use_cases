@@ -1,13 +1,23 @@
 # frozen_string_literal: true
 
 require 'bas/shared_storage/postgres'
-require_relative '../../formatters/whatsapp_formatter'
 require 'sinatra'
 require 'json'
 require 'dotenv/load'
 
+require_relative '../../formatters/whatsapp_formatter'
+
 set :server, :puma
 TOKEN = ENV.fetch('WHATSAPP_WEBHOOK_TOKEN')
+
+write_options = {
+  connection: connection,
+  db_table: 'api_data',
+  tag: 'FetchFromAPI'
+}
+
+base_formatter = Formatters::WhatsAppFormatter.new
+shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
 
 get '/webhook' do
   challenge = params['hub.challenge']
@@ -30,15 +40,9 @@ post '/webhook' do
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }
-  write_options = {
-    connection: connection,
-    db_table: 'api_data',
-    tag: 'FetchFromAPI'
-  }
+
   begin
-    base_formatter = Formatters::WhatsAppFormatter.new
     data = base_formatter.process(data)
-    shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
     shared_storage.write(success: data)
   rescue StandardError => e
     logger.error "Failed to process message: #{e.message}"

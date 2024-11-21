@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'services/list_websites'
-require_relative 'services/remove_website'
-require_relative 'services/add_website'
+require_relative '../../src/services/list_websites'
+require_relative '../../src/services/remove_website'
+require_relative '../../src/services/add_website'
 # rubocop:disable Metrics/ClassLength
 
 module Bots
