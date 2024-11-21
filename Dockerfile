@@ -9,6 +9,7 @@ ENV BUNDLE_GITHUB__COM=${BUNDLE_GITHUB__COM}
 
 # Install cron
 RUN apt-get update && apt-get install -y cron build-essential libffi-dev
+RUN gem install sinatra rackup puma
 
 # We prepare the app directory for the project base
 WORKDIR /app

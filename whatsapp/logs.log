@@ -1,0 +1,147 @@
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'
+/app/lib/bots/review_website_availability.rb:12:in `<module:Implementation>': uninitialized constant Implementation::Base (NameError)
+
+  class ReviewWebsiteAvailability < Implementation::Base
+                                                  ^^^^^^
+	from /app/lib/bots/review_website_availability.rb:8:in `<main>'
+/app/lib/bots/command_processor.rb:7:in `require_relative': cannot load such file -- /src/services/add_website (LoadError)
+	from /app/lib/bots/command_processor.rb:7:in `<main>'

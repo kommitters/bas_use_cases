@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../bots/command_processor'
+require_relative '../bots/fetch_webistes_review_request'
 require 'bas/shared_storage/postgres'
 require 'dotenv/load'
 
@@ -12,16 +12,10 @@ connection = {
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
-read_options = {
-  connection:,
-  db_table: 'observed_websites_availability',
-  tag: 'WhatsappWebhook'
-}
-
 write_options = {
   connection:,
   db_table: 'observed_websites_availability',
-  tag: 'CommandProcessor'
+  tag: 'FetchWebsiteReviewRequest'
 }
 
 options = {
@@ -32,6 +26,6 @@ options = {
   password: ENV.fetch('POSTGRES_PASSWORD')
 }
 
-shared_storage = Bas::SharedStorage::Postgres.new(read_options: read_options, write_options: write_options)
-bot = Bas::Bot::CommandProcessor.new(options, shared_storage)
+shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
+bot = Bas::Bot::FetchWebsiteReviewRequest.new(options, shared_storage)
 bot.execute

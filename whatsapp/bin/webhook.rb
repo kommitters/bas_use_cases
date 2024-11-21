@@ -3,20 +3,26 @@
 require 'bas/shared_storage/postgres'
 require 'sinatra'
 require 'json'
-require 'dotenv/load'
+# require 'dotenv/load'
 
-require_relative '../../formatters/whatsapp_formatter'
+require_relative '../formatter/whatsapp'
 
 set :server, :puma
 TOKEN = ENV.fetch('WHATSAPP_WEBHOOK_TOKEN')
 
 write_options = {
-  connection: connection,
-  db_table: 'api_data',
-  tag: 'FetchFromAPI'
+  connection: {
+    host: ENV.fetch('DB_HOST'),
+    port: ENV.fetch('DB_PORT'),
+    dbname: ENV.fetch('POSTGRES_DB'),
+    user: ENV.fetch('POSTGRES_USER'),
+    password: ENV.fetch('POSTGRES_PASSWORD')
+  },
+  db_table: 'observed_websites_availability',
+  tag: 'WhatsappWebhook'
 }
 
-base_formatter = Formatters::WhatsAppFormatter.new
+base_formatter = Formatter::WhatsApp.new
 shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
 
 get '/webhook' do
@@ -33,13 +39,6 @@ end
 post '/webhook' do
   request_body = request.body.read
   data = JSON.parse(request_body)
-  connection = {
-    host: ENV.fetch('DB_HOST'),
-    port: ENV.fetch('DB_PORT'),
-    dbname: ENV.fetch('POSTGRES_DB'),
-    user: ENV.fetch('POSTGRES_USER'),
-    password: ENV.fetch('POSTGRES_PASSWORD')
-  }
 
   begin
     data = base_formatter.process(data)

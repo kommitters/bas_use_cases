@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../bots/command_processor'
+require_relative '../bots/notify_whatsapp'
 require 'bas/shared_storage/postgres'
 require 'dotenv/load'
 
@@ -15,13 +15,13 @@ connection = {
 read_options = {
   connection:,
   db_table: 'observed_websites_availability',
-  tag: 'WhatsappWebhook'
+  tag: 'ReviewWebsiteAvailability'
 }
 
 write_options = {
   connection:,
   db_table: 'observed_websites_availability',
-  tag: 'CommandProcessor'
+  tag: 'NotifyWhatsapp'
 }
 
 options = {
@@ -33,5 +33,5 @@ options = {
 }
 
 shared_storage = Bas::SharedStorage::Postgres.new(read_options: read_options, write_options: write_options)
-bot = Bas::Bot::CommandProcessor.new(options, shared_storage)
+bot = Bas::Bot::NotifyWhatsapp.new(options, shared_storage)
 bot.execute

@@ -24,7 +24,8 @@ module Bas
           when '/remove' then remove
           when '/list' then list
           else unprocessable_response
-        rescue
+          end
+        rescue StandardError
           { error: { status: 422 } }
         end
 
@@ -38,18 +39,18 @@ module Bas
           'https://graph.facebook.com/v17.0/393901540484202/messages',
           headers: get_headers,
           body: {
-            messaging_product: "whatsapp",
-            recipient_type: "individual",
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
             to: "+#{conversation_id}",
-            type: "text",
+            type: 'text',
             text: {
               preview_url: true,
               body: message_body
             }
           }.to_json
         )
-      
-        response.body  # Retorna la respuesta completa
+
+        response.body # Retorna la respuesta completa
       end
 
       def add
@@ -70,7 +71,9 @@ module Bas
 
         response = list_websites(options, conversation_id)
 
-        message_body = "Your websites are:\n#{response.each_with_index.map { |w, index| "#{index + 1}. #{w[:url]}" }.join("\n")}"
+        message_body = "Your websites are:\n#{response.each_with_index.map do |w, index|
+          "#{index + 1}. #{w[:url]}"
+        end.join("\n")}"
 
         response(conversation_id, message_body)
       end
@@ -91,8 +94,8 @@ module Bas
 
       def get_headers
         {
-          "Content-Type" => "application/json",
-          "Authorization" => "Bearer #{TOKEN}"
+          'Content-Type' => 'application/json',
+          'Authorization' => "Bearer #{TOKEN}"
         }
       end
 
