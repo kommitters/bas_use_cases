@@ -1,10 +1,3 @@
-GIT
-  remote: https://github.com/kommitters/conversational-bots.git
-  revision: 7b0b65db7ac7605010c1acbc94a6671b119ce308
-  branch: main
-  specs:
-    conversational_bots (0.1.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -54,6 +47,7 @@ GEM
     discordrb-webhooks (3.5.0)
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
+    dotenv (3.1.4)
     drb (2.2.1)
     dry-core (1.0.2)
       concurrent-ruby (~> 1.0)
@@ -86,6 +80,7 @@ GEM
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
     ffi (1.17.0-x64-mingw-ucrt)
+    ffi (1.17.0-x86-mingw32)
     ffi (1.17.0-x86_64-linux-gnu)
     gems (1.3.0)
     gmail_xoauth (0.4.3)
@@ -176,6 +171,7 @@ GEM
       racc
     pg (1.5.9)
     pg (1.5.9-x64-mingw-ucrt)
+    pg (1.5.9-x86-mingw32)
     public_suffix (6.0.1)
     racc (1.8.1)
     rainbow (3.1.1)
@@ -185,6 +181,12 @@ GEM
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
     rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x86-mingw32)
+      ffi (~> 1.9)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -249,23 +251,14 @@ GEM
     zeitwerk (2.7.1)
 
 PLATFORMS
-  aarch64-linux-gnu
-  aarch64-linux-musl
-  arm-linux-gnu
-  arm-linux-musl
-  arm64-darwin
-  ruby
   x64-mingw-ucrt
-  x86-linux-gnu
-  x86-linux-musl
-  x86_64-darwin
+  x86-mingw32
   x86_64-linux-gnu
-  x86_64-linux-musl
 
 DEPENDENCIES
   bas (~> 1.6)
-  conversational_bots!
   discordrb
+  dotenv
   httparty
   md_to_notion (~> 0.1.4)
   rspec
@@ -273,7 +266,7 @@ DEPENDENCIES
   telegram-bot-ruby (~> 1.0)
 
 RUBY VERSION
-   ruby 3.3.3p89
+   ruby 3.3.6p108
 
 BUNDLED WITH
    2.5.18
