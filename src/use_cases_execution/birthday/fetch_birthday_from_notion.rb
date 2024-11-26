@@ -3,6 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
+require 'dotenv/load'
 
 require_relative '../../implementations/fetch_birthday_from_notion'
 require_relative 'config'
@@ -13,6 +14,7 @@ write_options = {
   db_table: 'birthday',
   tag: 'FetchBirthdaysFromNotion'
 }
+
 
 options = {
   database_id: ENV.fetch('BIRTHDAY_NOTION_DATABASE_ID'),

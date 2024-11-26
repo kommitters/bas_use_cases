@@ -31,7 +31,7 @@ module Bot
     #
     def process
       response = Utils::Postgres::Request.execute(params)
-
+      
       if response.res_status == SUCCESS_STATUS
         { success: { archived: true } }
       else

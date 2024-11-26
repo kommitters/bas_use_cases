@@ -31,4 +31,5 @@ begin
   Bot::NotifyDiscord.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info(e.backtrace.join("\n"))
 end
