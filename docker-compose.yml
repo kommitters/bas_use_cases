@@ -40,62 +40,21 @@ services:
         limits:
           memory: 150M
 
-  # bas_cronjobs:
-  #   container_name: bas_cronjobs
-  #   restart: always
-  #   <<: *default-build
-  #   volumes:
-  #     - cronjobs:/app
-  #   depends_on:
-  #     - bas_db
-  #   networks:
-  #     - bas_network
-  #   command: ["bash", "/app/scripts/update_container.sh"]
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 500M
-
-  # discord-bot:
-  #   container_name: discord_bot
-  #   restart: always
-  #   <<: *default-build
-  #   volumes:
-  #     - .env:/app/.env
-  #     - ./Gemfile:/app/Gemfile
-  #     - ./Gemfile.lock:/app/Gemfile.lock
-  #     - ./discord_bot:/app
-  #   depends_on:
-  #     - bas_db
-  #     - bas_cronjobs
-  #   networks:
-  #     - bas_network
-  #   command: ["bash", "/app/scripts/update_container.sh"]
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 100M
-
-  # telegram-bot:
-  #   container_name: telegram_bot
-  #   restart: always
-  #   <<: *default-build
-  #   volumes:
-  #     - .env:/app/.env
-  #     - ./telegram_app:/app
-  #     - ./Gemfile:/app/Gemfile
-  #     - ./Gemfile.lock:/app/Gemfile.lock
-  #     - ./src/lib/services:/app/services
-  #   depends_on:
-  #     - bas_db
-  #     - bas_cronjobs
-  #   networks:
-  #     - bas_network
-  #   command: ["bash", "/app/scripts/update_container.sh"]
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 100M
+  bas_cronjobs:
+    container_name: bas_cronjobs
+    restart: always
+    <<: *default-build
+    volumes:
+      - cronjobs:/app
+    depends_on:
+      - bas_db
+    networks:
+      - bas_network
+    command: ["bash", "/app/scripts/update_container.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 500M
 
   whatsapp-bot:
     container_name: whatsapp_bot
