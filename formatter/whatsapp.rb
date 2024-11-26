@@ -1,6 +1,12 @@
+# frozen_string_literal: true
+
 require_relative 'base'
 
 module Formatter
+  ##
+  # The Formatter::Whatsapp module receives a whatsapp API response and format it
+  # on a common data structure to be used by the chat-bots.
+  #
   class WhatsApp < Base
     def process(data)
       @data = data
