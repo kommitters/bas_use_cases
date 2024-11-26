@@ -9,7 +9,7 @@ module Implementation
   ##
   # The Implementation::ReviewDomainAvailability class serves as a bot implementation to read from a postgres
   # shared storage a domain requests and review its availability.
-  class ReviewWebsiteAvailability < Implementation::Base
+  class ReviewWebsiteAvailability < Bas::Bot::Base
     def initialize(options, shared_storage)
       super(options, shared_storage)
       @shared_storage_options = Bas::SharedStorage::Postgres.new({ write_options: process_options })
@@ -65,7 +65,6 @@ module Implementation
 
     def request_log(response)
       {
-        body: response.body.inspect,
         headers: response.headers.inspect,
         request: response.request.inspect,
         response: response.response.inspect

@@ -85,6 +85,7 @@ services:
   #     - ./telegram_app:/app
   #     - ./Gemfile:/app/Gemfile
   #     - ./Gemfile.lock:/app/Gemfile.lock
+  #     - ./src/lib/services:/app/services
   #   depends_on:
   #     - bas_db
   #     - bas_cronjobs
@@ -106,10 +107,15 @@ services:
       - ./Gemfile:/app/Gemfile
       - ./Gemfile.lock:/app/Gemfile.lock
       - ./formatter:/app/formatter
+      - ./src/lib/services:/app/services
     depends_on:
       - bas_db
     networks:
       - bas_network
+    ports:
+      - 4567:4567
+    env_file:
+      - .env
     command: ["bash", "/app/scripts/update_container.sh"]
     deploy:
       resources:

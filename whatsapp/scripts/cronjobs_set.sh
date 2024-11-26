@@ -31,10 +31,10 @@ do
     echo "$ENV_VAR" >> $TEMP_CRONTAB
 done
 
-echo "*/1 * * * * /usr/local/bin/ruby /app/lib/bots/fetch_webistes_review_request.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-echo "*/1 * * * * /usr/local/bin/ruby /app/lib/bots/review_website_availability.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-echo "*/1 * * * * /usr/local/bin/ruby /app/lib/bots/notify_whatsapp.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-echo "*/1 * * * * /usr/local/bin/ruby /app/lib/bots/command_processor.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/fetch_webistes_review_request.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/review_website_availability.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/notify_whatsapp.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/command_processor.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 
 # Install the new crontab
 crontab $TEMP_CRONTAB

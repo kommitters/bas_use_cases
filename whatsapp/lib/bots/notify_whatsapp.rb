@@ -33,15 +33,16 @@ module Implementation
   #  Implementation::NotifyDiscord.new(options, shared_storage).execute
   #
   class NotifyWhatsapp < Bas::Bot::Base
+    TOKEN = ENV.fetch('WHATSAPP_TOKEN')
+    META_API_URL = 'https://graph.facebook.com/v21.0/418771694660258/messages'
+
     # process function to execute the Discord utility to send the PTO's notification
     #
     def process
       return { success: {} } if unprocessable_response
 
-      body = response
-
       website_users.each do |conversation_id|
-        send_notification(conversation_id, read_response.data['notification'])
+        send_response(conversation_id, read_response.data['notification'])
       end
 
       { success: {} }
@@ -49,26 +50,35 @@ module Implementation
 
     private
 
-    def send_notification(conversation_id, body)
-      HTTParty.post(
-        'https://graph.facebook.com/v17.0/393901540484202/messages',
-        headers: get_headers,
-        body: {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: "+#{conversation_id}",
-          type: "text",
-          text: {
-            preview_url: true,
-            body: body
-          }
-        }.to_json
-      )
+    def send_response(conversation_id, message_body)
+      body = build_body(conversation_id, message_body)
+
+      HTTParty.post(META_API_URL, headers:, body:)
+    end
+
+    def headers
+      {
+        'Content-Type' => 'application/json',
+        'Authorization' => "Bearer #{TOKEN}"
+      }
+    end
+
+    def build_body(conversation_id, message)
+      {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: "+#{conversation_id}",
+        type: 'text',
+        text: {
+          preview_url: true,
+          body: message
+        }
+      }.to_json
     end
 
     def website_users
       requests = Utils::Postgres::Request.execute(params)
-      requests.values.flatten
+      requests.first.nil? ? [] : requests.map { |user| user[:conversation_id] }
     end
 
     def params

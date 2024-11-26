@@ -2,7 +2,6 @@
 
 require_relative '../bots/review_website_availability'
 require 'bas/shared_storage/postgres'
-require 'dotenv/load'
 
 connection = {
   host: ENV.fetch('DB_HOST'),
@@ -25,13 +24,11 @@ write_options = {
 }
 
 options = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
+  connection:,
+  db_table: 'observed_websites_availability',
+  tag: 'ReviewWebsiteResult'
 }
 
 shared_storage = Bas::SharedStorage::Postgres.new(read_options: read_options, write_options: write_options)
-bot = Bas::Bot::ReviewWebsiteAvailability.new(options, shared_storage)
+bot = Implementation::ReviewWebsiteAvailability.new(options, shared_storage)
 bot.execute

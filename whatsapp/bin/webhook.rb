@@ -3,13 +3,17 @@
 require 'bas/shared_storage/postgres'
 require 'sinatra'
 require 'json'
-# require 'dotenv/load'
 
 require_relative '../formatter/whatsapp'
 
+# SINATRA CONFIG
 set :server, :puma
+set :bind, '0.0.0.0'
+set :environment, :development
+
 TOKEN = ENV.fetch('WHATSAPP_WEBHOOK_TOKEN')
 
+# SERVICES
 write_options = {
   connection: {
     host: ENV.fetch('DB_HOST'),
@@ -25,9 +29,11 @@ write_options = {
 base_formatter = Formatter::WhatsApp.new
 shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
 
+# SINATRA ENDPOINTS
 get '/webhook' do
   challenge = params['hub.challenge']
   verification_token = params['hub.verify_token']
+
   if verification_token == TOKEN
     status 200
     body challenge
@@ -48,5 +54,6 @@ post '/webhook' do
     status 500
     body 'Internal Server Error'
   end
+
   status 200
 end

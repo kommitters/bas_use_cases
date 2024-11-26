@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative '../bots/fetch_webistes_review_request'
+require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
-require 'dotenv/load'
 
 connection = {
   host: ENV.fetch('DB_HOST'),
@@ -19,13 +19,10 @@ write_options = {
 }
 
 options = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
+  connection:
 }
 
-shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
-bot = Bas::Bot::FetchWebsiteReviewRequest.new(options, shared_storage)
+shared_storage_reader = Bas::SharedStorage::Default.new
+shared_storage_writter = Bas::SharedStorage::Postgres.new(write_options: write_options)
+bot = Implementation::FetchWebsiteReviewRequest.new(options, shared_storage_reader, shared_storage_writter)
 bot.execute

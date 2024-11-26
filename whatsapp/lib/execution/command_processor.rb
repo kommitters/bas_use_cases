@@ -2,7 +2,6 @@
 
 require_relative '../bots/command_processor'
 require 'bas/shared_storage/postgres'
-require 'dotenv/load'
 
 connection = {
   host: ENV.fetch('DB_HOST'),
@@ -25,13 +24,9 @@ write_options = {
 }
 
 options = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
+  connection:
 }
 
 shared_storage = Bas::SharedStorage::Postgres.new(read_options: read_options, write_options: write_options)
-bot = Bas::Bot::CommandProcessor.new(options, shared_storage)
+bot = Implementation::CommandProcessor.new(options, shared_storage)
 bot.execute
