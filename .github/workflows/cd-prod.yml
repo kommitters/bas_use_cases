@@ -63,10 +63,9 @@ jobs:
         echo -e 'OSPO_MAINTENANCE_APP_ID=${{secrets.OSPO_MAINTENANCE_APP_ID}}' >> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_DATABASE_ID}}' >> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID}}' >> .env
-        echo -e 'REVIEW_IMAGES_TABLE=${{secrets.REVIEW_IMAGES_TABLE}}' >> .env
-        echo -e 'DISCORD_BOT_TOKEN=${{secrets.DISCORD_BOT_TOKEN}}' >> .env
-        echo -e 'DISCORD_CLIENT_ID=${{secrets.DISCORD_CLIENT_ID}}' >> .env
-        echo -e 'TELEGRAM_BOT_TOKEN=${{secrets.TELEGRAM_BOT_TOKEN}}' >> .env
+        echo -e 'REVIEW_IMAGES_TABLE=${{secrets.REVIEW_IMAGES_TABLE}}' >> .
+        echo -e 'WHATSAPP_WEBHOOK_TOKEN=${{secrets.WHATSAPP_WEBHOOK_TOKEN}}' >> .env
+        echo -e 'WHATSAPP_TOKEN=${{secrets.WHATSAPP_TOKEN}}' >> .env
 
     - name: compress project
       run: zip -r bas_scripts.zip .
