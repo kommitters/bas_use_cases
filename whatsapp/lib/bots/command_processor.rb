@@ -10,7 +10,9 @@ require_relative '../../services/remove_website'
 
 module Implementation
   ##
-  # Module to
+  # The Implementation::CommandProcessor module is a bot implemented with the BAS gem
+  # to process messages or command send by a user through a chat bot.
+  #
   class CommandProcessor < Bas::Bot::Base
     TOKEN = ENV.fetch('WHATSAPP_TOKEN')
     META_API_URL = 'https://graph.facebook.com/v21.0/418771694660258/messages'
