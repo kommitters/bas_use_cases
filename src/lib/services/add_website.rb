@@ -24,7 +24,7 @@ module Services
 
       website = query_item(OBSERVED_WEBSITE_TABLE, WEBSITE_URL, config[:url])
 
-      website.values.first.first
+      website.first[:id]
     end
 
     def process_chat
@@ -32,13 +32,12 @@ module Services
 
       conversation = query_item(CONVERSATIONS_IDS_TABLE, CONVERSATIONS_IDS_ID, config[:conversation_id])
 
-      conversation[0]['id']
+      conversation.first[:id]
     end
 
     def insert_relation(observed_website_id, conversation_id)
       query = "INSERT INTO #{RELATION_TABLE}
               (observed_website_id, conversation_id) VALUES (#{observed_website_id}, #{conversation_id});"
-
       execute_query(query)
     end
   end

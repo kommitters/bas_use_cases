@@ -29,6 +29,7 @@ module Services
 
     def insert_item(table, attribute, value)
       query = "INSERT INTO #{table} (#{attribute}) VALUES ('#{value}') ON CONFLICT (#{attribute}) DO NOTHING RETURNING id;" # rubocop:disable Layout/LineLength
+
       execute_query(query)
     end
 
@@ -37,7 +38,6 @@ module Services
         connection: config[:connection],
         query:
       }
-
       Utils::Postgres::Request.execute(params)
     end
   end

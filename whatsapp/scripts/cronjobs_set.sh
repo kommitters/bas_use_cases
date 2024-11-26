@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Absolute path to the directory containing the use cases execution
-SCRIPTS_DIR="/app/lib/cronjobs"
+SCRIPTS_DIR="/app/src/execution"
 RUBY_PATH="/usr/local/bundle"
 
 # Environment variables
@@ -17,14 +17,9 @@ ENV_VARS=(
     "POSTGRES_DB=$POSTGRES_DB"
     "POSTGRES_USER=$POSTGRES_USER"
     "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
-    "REVIEW_IMAGES_TABLE=$REVIEW_IMAGES_TABLE"
 
-    # DISCORD BOT
-    "DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN"
-
-    #OPENAI
-    "REVIEW_IMAGE_OPENAI_ASSISTANT=$REVIEW_IMAGE_OPENAI_ASSISTANT"
-    "OPENAI_SECRET=$OPENAI_SECRET"
+    # WEBISTE AVAILABILITY
+    "WHATSAPP_TOKEN=$WHATSAPP_TOKEN"
 )
 
 # Temporary file to store the new crontab
@@ -33,14 +28,13 @@ TEMP_CRONTAB=$(mktemp)
 # Add environment variables to the crontab file
 for ENV_VAR in "${ENV_VARS[@]}"
 do
-  echo "$ENV_VAR" >> $TEMP_CRONTAB
+    echo "$ENV_VAR" >> $TEMP_CRONTAB
 done
 
-# cat $TEMP_CRONTAB
-echo $TEMP_CRONTAB
-echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/review_media.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-echo "* * * * * /usr/local/bin/ruby /app/lib/cronjobs/write_media_review_in_discord.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
-
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/fetch_webistes_review_request.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/review_website_availability.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/notify_whatsapp.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
+echo "*/1 * * * * /usr/local/bin/ruby /app/lib/execution/command_processor.rb >> /app/logs.log 2>&1" >> $TEMP_CRONTAB
 
 # Install the new crontab
 crontab $TEMP_CRONTAB

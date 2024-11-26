@@ -56,40 +56,25 @@ services:
         limits:
           memory: 500M
 
-  discord-bot:
-    container_name: discord_bot
+  whatsapp-bot:
+    container_name: whatsapp_bot
     restart: always
     <<: *default-build
     volumes:
       - .env:/app/.env
+      - ./whatsapp:/app
       - ./Gemfile:/app/Gemfile
       - ./Gemfile.lock:/app/Gemfile.lock
-      - ./discord_bot:/app
+      - ./formatter:/app/formatter
+      - ./src/lib/services:/app/services
     depends_on:
       - bas_db
-      - bas_cronjobs
     networks:
       - bas_network
-    command: ["bash", "/app/scripts/update_container.sh"]
-    deploy:
-      resources:
-        limits:
-          memory: 100M
-
-  telegram-bot:
-    container_name: telegram_bot
-    restart: always
-    <<: *default-build
-    volumes:
-      - .env:/app/.env
-      - ./telegram_app:/app
-      - ./Gemfile:/app/Gemfile
-      - ./Gemfile.lock:/app/Gemfile.lock
-    depends_on:
-      - bas_db
-      - bas_cronjobs
-    networks:
-      - bas_network
+    ports:
+      - 4567:4567
+    env_file:
+      - .env
     command: ["bash", "/app/scripts/update_container.sh"]
     deploy:
       resources:

@@ -11,7 +11,7 @@ module Implementation
   class FetchWebsiteReviewRequest < Bas::Bot::Base
     def process
       requests = Utils::Postgres::Request.execute(params)
-      urls = normalize_response(requests.values)
+      urls = normalize_response(requests)
 
       { success: { urls: } }
     end
@@ -28,7 +28,7 @@ module Implementation
     def normalize_response(requests)
       requests.map do |request|
         {
-          url: request.first
+          url: request[:url]
         }
       end
     end

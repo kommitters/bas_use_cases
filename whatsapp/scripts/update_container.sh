@@ -13,8 +13,8 @@ export GEM_HOME="/usr/local/bundle"
 export GEM_PATH="/usr/local/bundle"
 
 # ACTIVATE BOT
-echo "Starting telegram bot"
-ruby /app/bin/web_availability.rb &
+echo "Starting whatsapp webhook"
+ruby /app/bin/webhook.rb &
 
 # UPDATE CRONJOBS
 echo "Starting cronjobs"

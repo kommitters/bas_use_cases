@@ -17,4 +17,4 @@ gem 'md_to_notion', '~> 0.1.4'
 
 gem 'httparty'
 
-gem 'conversational_bots', git: 'https://github.com/kommitters/conversational-bots.git', branch: 'main'
+gem 'sinatra', '~> 4.1', '>= 4.1.1'
