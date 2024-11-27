@@ -21,7 +21,7 @@ module Implementation
     def params
       {
         connection: process_options[:connection],
-        query: 'SELECT url FROM observed_websites WHERE url IS NOT NULL;'
+        query:
       }
     end
 
@@ -31,6 +31,13 @@ module Implementation
           url: request[:url]
         }
       end
+    end
+
+    def query
+      "SELECT url
+       FROM observed_websites AS ow INNER JOIN observed_websites_conversations AS owc ON ow.id = owc.observed_website_id
+       WHERE url IS NOT NULL;
+      "
     end
   end
 end

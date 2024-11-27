@@ -16,11 +16,16 @@ module Implementation
   class CommandProcessor < Bas::Bot::Base
     TOKEN = ENV.fetch('WHATSAPP_TOKEN')
     META_API_URL = 'https://graph.facebook.com/v21.0/418771694660258/messages'
+    MAX_WEBSITES = 2
 
     def process
-      { success: { result: process_message } }
-    rescue StandardError => e
-      { error: { message: e.message } }
+      return { success: {} } if unprocessable_response
+
+      begin
+        { success: { result: process_message } }
+      rescue StandardError => e
+        { error: { message: e.message } }
+      end
     end
 
     private
@@ -30,7 +35,7 @@ module Implementation
       when '/add' then add
       when '/remove' then remove
       when '/list' then list
-      else unprocessable_response
+      else unknown_command
       end
     end
 
@@ -40,23 +45,27 @@ module Implementation
 
     def remove
       send_response('Please send the number of the website you want to remove')
+      list
     end
 
     def list
       websites = list_websites.each_with_index.map { |website, index| "- #{index + 1}. #{website[:url]}" }.join("\n")
 
-      message_body = "Your websites are:\n#{websites}"
+      message_body = websites.empty? ? 'You don\'t have associated websites' : "Your websites are:\n#{websites}"
 
       send_response(message_body)
     end
 
-    def unprocessable_response
+    def unknown_command
       user_message = read_response.data['message']
 
       if user_message.match?('\A\d+\z')
         delete_website(user_message)
       else
         url = user_message.match?(%r{\Ahttp(s)?://\S+\.\S+}) ? user_message : "https://#{user_message}"
+
+        return send_response('Unprocessable message') unless valid_website?(url)
+        return send_response('You exceeded max number of websites') if list_websites.size > MAX_WEBSITES
 
         add_website(url)
       end
@@ -88,9 +97,15 @@ module Implementation
       }.to_json
     end
 
+    def valid_website?(url)
+      HTTParty.get(url).code == 200
+    rescue StandardError
+      false
+    end
+
     def add_website(url)
       config = {
-        connection: process_options,
+        connection: process_options[:connection],
         conversation_id: read_response.data['conversation_id'],
         url: url
       }
@@ -100,7 +115,7 @@ module Implementation
 
     def list_websites
       config = {
-        connection: process_options,
+        connection: process_options[:connection],
         conversation_id: read_response.data['conversation_id']
       }
 
@@ -111,7 +126,7 @@ module Implementation
       website = list_websites[index.to_i - 1][:url]
 
       config = {
-        connection: process_options,
+        connection: process_options[:connection],
         website: website,
         conversation_id: read_response.data['conversation_id']
       }
