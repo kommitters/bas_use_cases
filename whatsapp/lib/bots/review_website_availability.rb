@@ -52,7 +52,7 @@ module Implementation
       notification = notification(response)
       logs = request_log(response)
 
-      write_data = { success: { notification:, logs:, url: response.request.uri } }
+      write_data = { success: { notification:, url: response.request.uri }.merge(logs) }
 
       @shared_storage_options.write(write_data)
     end

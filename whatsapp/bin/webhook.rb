@@ -48,7 +48,7 @@ post '/webhook' do
 
   begin
     data = base_formatter.process(data)
-    shared_storage.write(success: data)
+    shared_storage.write(success: data) unless data[:conversation_id].nil?
   rescue StandardError => e
     logger.error "Failed to process message: #{e.message}"
     status 500
