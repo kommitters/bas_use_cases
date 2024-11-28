@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Absolute path to the directory containing the use cases execution
 SCRIPTS_DIR="/app/src/execution"
 RUBY_PATH="/usr/local/bundle"

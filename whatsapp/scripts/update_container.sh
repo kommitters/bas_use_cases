@@ -1,5 +1,3 @@
-#!/bin/bash
-
 ENV_FILE="/app/.env"
 
 echo "Starting update container script"

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 ENV_FILE="/app/.env"
 
 # Load the environment variables from the .env file
@@ -14,4 +12,4 @@ export GEM_PATH="/usr/local/bundle"
 ruby /app/scripts/update_database.rb
 
 # UPDATE CRONJOBS
-bash /app/scripts/activate_cronjobs.sh
+ruby /app/src/use_cases_execution/orchestrator.rb
