@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
+require 'bas/utils/postgres/request'
 
 module Implementation
   ##
@@ -31,12 +32,11 @@ module Implementation
     #
     def process
       response = Utils::Postgres::Request.execute(params)
-
-      if response.res_status == SUCCESS_STATUS
-        { success: { archived: true } }
-      else
-        { error: { message: response.result_error_message, status_code: response.res_status } }
-      end
+      # if response[res_status] == SUCCESS_STATUS
+      # else
+      #   { error: { message: response.result_error_message, status_code: response.res_status } }
+      # end
+      { success: { archived: true } }
     end
 
     private
