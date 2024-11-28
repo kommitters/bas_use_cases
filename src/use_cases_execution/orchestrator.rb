@@ -1,12 +1,22 @@
-require 'parallel'
+require_relative 'paths'
 
-base_path = File.expand_path('src')
+# Path to the folder where the bot is located
+path = File.expand_path(File.dirname(__FILE__))
 
-#obtain all the files in the src folder that are schedulers
-schedulers = Dir.glob("#{base_path}/**/schedule.rb")
+#Take the schedule from the Config module
+schedule = Paths::SCHEDULE
 
-#run each scheduler in parallel
-Parallel.each(schedulers, in_threads: schedulers.length) do |scheduler|
-  puts "Running #{scheduler}"
-  system("ruby #{scheduler}")
+last_executions = Hash.new(0.0)
+
+loop do 
+  current_time = Time.now.to_f * 1000
+
+  schedule.each do |script|
+    if current_time - last_executions[script[:path]] >= script[:interval]
+      system("ruby #{File.join(path, script[:path])}")
+      last_executions[script[:path]] = current_time
+    end
+  end
+
+  sleep 0.01
 end
