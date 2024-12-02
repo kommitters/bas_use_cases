@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-=begin
-  INSTRUCTIONS:
-
-  This file is used to store the configuration of the birthday use case.
-  It contains the connection information to the database and the schedule of the bot.
-  The schedule configuration has two fields: path and interval.
-  The path is the path to the script that will be executed
-  The interval is the time in milliseconds that the script will be executed
-=end
+#   INSTRUCTIONS:
+#
+#   This file is used to store the configuration of the birthday use case.
+#   It contains the connection information to the database and the schedule of the bot.
+#   The schedule configuration has two fields: path and interval.
+#   The path is the path to the script that will be executed
+#   The interval is the time in milliseconds that the script will be executed
 
 require 'dotenv/load'
 
-module Config
+module PtoConfig
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -22,9 +20,9 @@ module Config
   }.freeze
 
   SCHEDULE = [
-    { path: "/fetch_pto_from_notion.rb", interval: 1000 },
-    { path: "/humanize_pto.rb", interval: 1000},
-    { path: "/garbage_collector.rb", interval: 1000},
-    { path: "/notify_pto_in_discord.rb", interval: 1000}
+    { path: '/pto/fetch_pto_from_notion.rb', time: ['13:10:00'] },
+    { path: '/pto/humanize_pto.rb', time: ['13:20:00'] },
+    { path: '/pto/garbage_collector.rb', time: ['13:30:00'] },
+    { path: '/pto/notify_pto_in_discord.rb', time: ['13:40:00'] }
   ].freeze
 end

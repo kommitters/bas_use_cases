@@ -10,13 +10,13 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: Config::CONNECTION,
+  connection: BirthdayNextWeekConfig::CONNECTION,
   db_table: 'birthday',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: Config::CONNECTION,
+  connection: BirthdayNextWeekConfig::CONNECTION,
   db_table: 'birthday'
 }
 

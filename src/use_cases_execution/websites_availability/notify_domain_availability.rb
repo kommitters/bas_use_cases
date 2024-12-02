@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'ReviewDomainAvailability'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'NotifyDiscord'
 }

@@ -10,16 +10,16 @@ require_relative 'config'
 # Configuration
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: SupportEmailConfig::CONNECTION,
   db_table: 'support_emails',
   tag: 'FetchEmailsFromImap'
 }
 
 params = {
-  refresh_token: Config::REFRESH_TOKEN,
-  client_id: Config::CLIENT_ID,
-  client_secret: Config::CLIENT_SECRET,
-  token_uri: Config::TOKEN_URI,
+  refresh_token: SupportEmailConfig::REFRESH_TOKEN,
+  client_id: SupportEmailConfig::CLIENT_ID,
+  client_secret: SupportEmailConfig::CLIENT_SECRET,
+  token_uri: SupportEmailConfig::TOKEN_URI,
   email_domain: 'imap.gmail.com',
   email_port: 993,
   user_email: ENV.fetch('SUPPORT_EMAIL_ACCOUNT'),

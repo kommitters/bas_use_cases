@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-=begin
-  INSTRUCTIONS:
-
-  This file is used to store the configuration of the birthday use case.
-  It contains the connection information to the database and the schedule of the bot.
-  The schedule configuration has two fields: path and interval.
-  The path is the path to the script that will be executed
-  The interval is the time in milliseconds that the script will be executed
-=end
+#   INSTRUCTIONS:
+#
+#   This file is used to store the configuration of the birthday use case.
+#   It contains the connection information to the database and the schedule of the bot.
+#   The schedule configuration has two fields: path and interval.
+#   The path is the path to the script that will be executed
+#   The interval is the time in milliseconds that the script will be executed
 
 require 'dotenv/load'
 
-module Config
+module WebsitesAvailabilityConfig
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -22,9 +20,9 @@ module Config
   }.freeze
 
   SCHEDULE = [
-    { path: "/fetch_domain_services_from_notion.rb", interval: 1000 },
-    { path: "/notify_domain_availability.rb", interval: 1000},
-    { path: "/garbage_collector.rb", interval: 1000},
-    { path: "/review_domain_availability.rb", interval: 1000}
+    { path: '/websites_availability/fetch_domain_services_from_notion.rb', interval: 600_000 },
+    { path: '/websites_availability/notify_domain_availability.rb', interval: 60_000 },
+    { path: '/websites_availability/garbage_collector.rb', time: ['00:00:00'] },
+    { path: '/websites_availability/review_domain_availability.rb', interval: 60_000 }
   ].freeze
 end

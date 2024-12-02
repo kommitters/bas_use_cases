@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: SupportEmailConfig::CONNECTION,
   db_table: 'support_emails',
   tag: 'FetchEmailsFromImap'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: SupportEmailConfig::CONNECTION,
   db_table: 'support_emails',
   tag: 'FormatEmails'
 }

@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
-=begin
-  INSTRUCTIONS:
-
-  This file is used to store the configuration of the birthday use case.
-  It contains the connection information to the database and the schedule of the bot.
-  The schedule configuration has two fields: path and interval.
-  The path is the path to the script that will be executed
-  The interval is the time in milliseconds that the script will be executed
-=end
+#   INSTRUCTIONS:
+#
+#   This file is used to store the configuration of the birthday use case.
+#   It contains the connection information to the database and the schedule of the bot.
+#   The schedule configuration has two fields: path and interval.
+#   The path is the path to the script that will be executed
+#   The interval is the time in milliseconds that the script will be executed
 
 require 'dotenv/load'
 
-module Config
-  #PRIVATE_PEM = File.read('/app/github_private_key.pem')
+module OspoMaintenance
+  # PRIVATE_PEM = File.read('/app/github_private_key.pem')
   APP_ID = ENV.fetch('OSPO_MAINTENANCE_APP_ID')
   ORGANIZATION = 'kommitters'
   DOMAIN = 'kommit.engineering'
@@ -28,8 +26,8 @@ module Config
   }.freeze
 
   SCHEDULE = [
-    { path: "/create_work_item.rb", interval: 1000 },
-    { path: "/update_work_item.rb", interval: 1000},
-    { path: "/verify_issue_existance_in_notion.rb", interval: 1000},
+    { path: '/ospo_maintenance/create_work_item.rb', interval: 600_000 },
+    { path: '/ospo_maintenance/update_work_item.rb', interval: 600_000 },
+    { path: '/ospo_maintenance/verify_issue_existance_in_notion.rb', interval: 600_000 }
   ].freeze
 end

@@ -8,14 +8,14 @@ require_relative '../../implementations/verify_issue_existance_in_notion'
 require_relative 'config'
 
 # Configuration
-read_options = {
-  connection: Config::CONNECTION,
+{
+  connection: OspoMaintenance::CONNECTION,
   db_table: 'github_issues',
   tag: 'GithubIssueRequest'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: OspoMaintenance::CONNECTION,
   db_table: 'github_issues',
   tag: 'VerifyIssueExistanceInNotio'
 }

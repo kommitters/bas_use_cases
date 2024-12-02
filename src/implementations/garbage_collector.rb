@@ -31,7 +31,7 @@ module Implementation
     # Process function to update records in a PostgresDB database table
     #
     def process
-      response = Utils::Postgres::Request.execute(params)
+      Utils::Postgres::Request.execute(params)
       # if response[res_status] == SUCCESS_STATUS
       # else
       #   { error: { message: response.result_error_message, status_code: response.res_status } }

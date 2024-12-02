@@ -8,19 +8,19 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'FetchDomainServicesFromNotion'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'ReviewWebsiteAvailability'
 }
 
 options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'ReviewDomainAvailability'
 }

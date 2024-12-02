@@ -9,13 +9,13 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: Config::CONNECTION,
+  connection: WebsitesAvailabilityConfig::CONNECTION,
   db_table: 'web_availability'
 }
 

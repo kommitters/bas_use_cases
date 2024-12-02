@@ -15,7 +15,7 @@ options = {
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: PtoNextWeekConfig::CONNECTION,
   db_table: 'pto',
   tag: 'FetchNextWeekPtosFromNotion'
 }

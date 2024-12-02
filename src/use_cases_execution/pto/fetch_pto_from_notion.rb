@@ -15,7 +15,7 @@ options = {
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: PtoConfig::CONNECTION,
   db_table: 'pto',
   tag: 'FetchPtosFromNotion'
 }

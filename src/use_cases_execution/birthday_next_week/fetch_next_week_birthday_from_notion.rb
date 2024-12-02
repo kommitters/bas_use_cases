@@ -10,7 +10,7 @@ require_relative 'config'
 # Configuration
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: BirthdayNextWeekConfig::CONNECTION,
   db_table: 'birthday',
   tag: 'FetchNextWeekBirthdaysFromNotion'
 }

@@ -8,13 +8,13 @@ require 'bas/shared_storage/postgres'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: WipLimitConfig::CONNECTION,
   db_table: 'wip_limits',
   tag: 'FormatWipLimitExceeded'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: WipLimitConfig::CONNECTION,
   db_table: 'wip_limits',
   tag: 'NotifyDiscord'
 }

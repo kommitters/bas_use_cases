@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: WipLimitConfig::CONNECTION,
   db_table: 'wip_limits',
   tag: 'FetchDomainsWipCountsFromNotion'
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: WipLimitConfig::CONNECTION,
   db_table: 'wip_limits',
   tag: 'FetchDomainsWipLimitFromNotion'
 }
