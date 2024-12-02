@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module OspoMaintenance
+module OspoMaintenanceConfig
   # PRIVATE_PEM = File.read('/app/github_private_key.pem')
   APP_ID = ENV.fetch('OSPO_MAINTENANCE_APP_ID')
   ORGANIZATION = 'kommitters'

@@ -9,13 +9,13 @@ require_relative 'config'
 
 # Configuration
 {
-  connection: OspoMaintenance::CONNECTION,
+  connection: OspoMaintenanceConfig::CONNECTION,
   db_table: 'github_issues',
   tag: 'GithubIssueRequest'
 }
 
 write_options = {
-  connection: OspoMaintenance::CONNECTION,
+  connection: OspoMaintenanceConfig::CONNECTION,
   db_table: 'github_issues',
   tag: 'VerifyIssueExistanceInNotio'
 }

@@ -5,6 +5,8 @@ ruby '3.3.3'
 
 gem 'rspec'
 
+gem 'sorted_set'
+
 gem 'bas', '~> 1.6'
 
 gem 'discordrb'
