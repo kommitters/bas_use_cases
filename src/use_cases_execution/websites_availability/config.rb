@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module WebsitesAvailabilityConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module WebsitesAvailabilityConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/websites_availability/fetch_domain_services_from_notion.rb', interval: 600_000 },
-    { path: '/websites_availability/notify_domain_availability.rb', interval: 60_000 },
-    { path: '/websites_availability/garbage_collector.rb', time: ['00:00:00'] },
-    { path: '/websites_availability/review_domain_availability.rb', interval: 60_000 }
-  ].freeze
 end

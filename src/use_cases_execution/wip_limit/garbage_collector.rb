@@ -10,12 +10,12 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: WipLimitConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'wip_limits'
 }
 
 options = {
-  connection: WipLimitConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'wip_limits'
 }
 

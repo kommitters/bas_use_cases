@@ -4,7 +4,7 @@ require 'rspec'
 require 'fileutils'
 require_relative '../../src/use_cases_execution/orchestrator'
 
-RSpec.describe OrchestratorWithSchedules::Orchestrator do
+RSpec.describe ScheduleOrchestrator::Orchestrator do
   let(:schedules) do
     [
       { path: '/websites_availability/fetch_domain_services_from_notion.rb', interval: 600_000 },
@@ -19,11 +19,7 @@ RSpec.describe OrchestratorWithSchedules::Orchestrator do
 
   before do
     allow_any_instance_of(Object).to receive(:system).and_return(true)
-
     FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
-
-    OrchestratorWithSchedules::Paths::SCHEDULES.clear
-    OrchestratorWithSchedules::Paths::SCHEDULES.concat(schedules)
   end
 
   after do
@@ -34,7 +30,7 @@ RSpec.describe OrchestratorWithSchedules::Orchestrator do
     it 'executes scripts with intervals' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 12, 40, 0))
 
-      orchestrator = OrchestratorWithSchedules::Orchestrator.new(base_path)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
 
       schedules.each do |script|
         if script[:interval]
@@ -50,7 +46,7 @@ RSpec.describe OrchestratorWithSchedules::Orchestrator do
     it 'executes scripts at a specific time' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 0, 0, 0))
 
-      orchestrator = OrchestratorWithSchedules::Orchestrator.new(base_path)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
 
       expect_any_instance_of(Object).to receive(:system).with(
         "ruby #{File.join(base_path, '/websites_availability/garbage_collector.rb')}"
@@ -63,7 +59,7 @@ RSpec.describe OrchestratorWithSchedules::Orchestrator do
     it 'executes scripts with specific time and day' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 12, 40, 0))
 
-      orchestrator = OrchestratorWithSchedules::Orchestrator.new(base_path)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
 
       expect_any_instance_of(Object).to receive(:system).with(
         "ruby #{File.join(base_path, '/pto_next_week/fetch_next_week_pto_from_notion.rb')}"

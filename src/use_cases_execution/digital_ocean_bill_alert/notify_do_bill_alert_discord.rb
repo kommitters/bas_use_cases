@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing',
   tag: 'FormatDoBillAlert'
 }
 
 write_options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing',
   tag: 'NotifyDiscord'
 }

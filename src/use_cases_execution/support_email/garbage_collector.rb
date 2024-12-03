@@ -10,13 +10,13 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: SupportEmailConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'support_emails',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: SupportEmailConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'support_emails'
 }
 

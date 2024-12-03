@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: WipLimitConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'wip_limits',
   tag: 'CompareWipLimitCount'
 }
 
 write_options = {
-  connection: WipLimitConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'wip_limits',
   tag: 'FormatWipLimitExceeded'
 }

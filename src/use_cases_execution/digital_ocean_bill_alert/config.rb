@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module DigitalOceanBillAlertConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module DigitalOceanBillAlertConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb', interval: 300_000 },
-    { path: '/digital_ocean_bill_alert/format_do_bill_alert.rb', interval: 300_000 },
-    { path: '/digital_ocean_bill_alert/garbage_collector.rb', interval: 300_000 },
-    { path: '/digital_ocean_bill_alert/notify_do_bill_alert_discord.rb', interval: 300_000 }
-  ].freeze
 end

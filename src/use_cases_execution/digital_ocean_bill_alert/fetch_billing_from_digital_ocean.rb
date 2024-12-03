@@ -8,7 +8,7 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing',
   tag: 'FetchBillingFromDigitalOcean',
   avoid_process: true,
@@ -17,7 +17,7 @@ read_options = {
 }
 
 write_options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing',
   tag: 'FetchBillingFromDigitalOcean'
 }

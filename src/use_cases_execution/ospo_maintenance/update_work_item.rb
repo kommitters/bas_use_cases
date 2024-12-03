@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: OspoMaintenanceConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'github_issues',
   tag: 'UpdateWorkItemRequest'
 }
 
 write_options = {
-  connection: OspoMaintenanceConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'github_issues',
   tag: 'UpdateWorkItem'
 }

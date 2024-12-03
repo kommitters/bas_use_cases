@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module OspoMaintenanceConfig
+module Config
   # PRIVATE_PEM = File.read('/app/github_private_key.pem')
   APP_ID = ENV.fetch('OSPO_MAINTENANCE_APP_ID')
   ORGANIZATION = 'kommitters'
@@ -24,10 +24,4 @@ module OspoMaintenanceConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/ospo_maintenance/create_work_item.rb', interval: 600_000 },
-    { path: '/ospo_maintenance/update_work_item.rb', interval: 600_000 },
-    { path: '/ospo_maintenance/verify_issue_existance_in_notion.rb', interval: 600_000 }
-  ].freeze
 end

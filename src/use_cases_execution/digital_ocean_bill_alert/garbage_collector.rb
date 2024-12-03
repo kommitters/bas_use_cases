@@ -10,13 +10,13 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: DigitalOceanBillAlertConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'do_billing'
 }
 

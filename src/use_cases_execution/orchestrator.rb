@@ -1,41 +1,14 @@
 # frozen_string_literal: true
 
-require_relative './birthday/config'
-require_relative './birthday_next_week/config'
-require_relative './digital_ocean_bill_alert/config'
-require_relative './ospo_maintenance/config'
-require_relative './pto/config'
-require_relative './pto_next_week/config'
-require_relative './support_email/config'
-require_relative './websites_availability/config'
-require_relative './wip_limit/config'
+require_relative './schedules'
 
-module OrchestratorWithSchedules
-  # This module is responsible for loading all the schedules from the use cases
-  # and storing them in a constant
-  # Also, the orchestrator will use this constant to execute the scripts
-  # based on the schedule
-  # The schedules are stored in the SCHEDULES constant
-
-  module Paths
-    SCHEDULES = []
-
-    def self.load_schedules
-      Object.constants.each do |const_name|
-        const = Object.const_get(const_name)
-        next unless const.is_a?(Module) && const.constants.include?(:SCHEDULE) && !SCHEDULES.any? do |job|
-          job[:module] == const_name
-        end
-
-        SCHEDULES.concat(const::SCHEDULE.map { |job| job.merge(module: const_name) })
-      end
-    end
-  end
-
-  Paths.load_schedules
-
+module ScheduleOrchestrator
+  # Orchestrator class is responsible for running scheduled scripts based on the defined schedules.
+  # It will check the current time and execute the scripts that match the time and day.
+  # It will also execute scripts based on the defined interval.
+  # The schedules are defined in the UseCasesExecution::Schedules module.
   class Orchestrator
-    def initialize(base_path = __dir__, schedules = Paths::SCHEDULES)
+    def initialize(base_path = __dir__, schedules = UseCasesExecution::Schedules.schedules)
       @last_executions = Hash.new(0.0)
       @path = base_path
       @schedules = schedules
@@ -43,30 +16,82 @@ module OrchestratorWithSchedules
 
     def run
       loop do
-        actual_time = Time.new
-        current_time = actual_time.to_f * 1000
-        time = actual_time.strftime('%H:%M:%S')
-        day = actual_time.strftime('%A')
+        current_time = current_time_in_milliseconds
+        time = current_time_formatted
+        day = current_day_formatted
 
-        @schedules.each do |script|
-          if script[:interval] && (current_time - @last_executions[script[:path]] >= script[:interval])
-            puts "Executing #{script[:path]} at #{time}"
-            system("ruby #{File.join(@path, script[:path])}")
-            @last_executions[script[:path]] = current_time
-          elsif (script[:time] && script[:day]) && (script[:time].include?(time) && script[:day].include?(day))
-            puts "Executing #{script[:path]} at #{time}"
-            system("ruby #{File.join(@path, script[:path])}")
-          elsif script[:time] && script[:time].include?(time)
-            puts "Executing #{script[:path]} at #{time}"
-            system("ruby #{File.join(@path, script[:path])}")
-          end
-        end
+        process_schedules(current_time, time, day)
 
         sleep 0.01
       end
     end
+
+    private
+
+    def interval?(script)
+      script[:interval]
+    end
+
+    def time?(script)
+      script[:time]
+    end
+
+    def day?(script)
+      script[:day]
+    end
+
+    def current_time_in_milliseconds
+      Time.new.to_f * 1000
+    end
+
+    def current_time_formatted
+      Time.new.strftime('%H:%M:%S')
+    end
+
+    def current_day_formatted
+      Time.new.strftime('%A')
+    end
+
+    def process_schedules(current_time, time, day)
+      @schedules.each do |script|
+        execute(script, time) if should_execute_script?(current_time, time, day, script)
+      end
+    end
+
+    def should_execute_script?(current_time, time, day, script)
+      (interval?(script) &&
+        should_execute_interval?(current_time, script)) ||
+        (time?(script) &&
+         day?(script) &&
+        should_execute_time?(time, script) &&
+        should_execute_day?(day, script)) ||
+        (time?(script) && should_execute_time?(time, script))
+    end
+
+    def update_last_execution(current_time, script)
+      @last_executions[script[:path]] = current_time if interval?(script)
+    end
+
+    def should_execute_interval?(current_time, script)
+      is_interval_script = current_time - @last_executions[script[:path]] >= script[:interval]
+      update_last_execution(current_time, script) if is_interval_script
+      is_interval_script
+    end
+
+    def should_execute_time?(time, script)
+      script[:time].include?(time)
+    end
+
+    def should_execute_day?(day, script)
+      script[:day].include?(day)
+    end
+
+    def execute(script, time)
+      puts "Executing #{script[:path]} at #{time}"
+      system("ruby #{File.join(@path, script[:path])}")
+    end
   end
 end
 
-orchestrator = OrchestratorWithSchedules::Orchestrator.new
+orchestrator = ScheduleOrchestrator::Orchestrator.new
 orchestrator.run

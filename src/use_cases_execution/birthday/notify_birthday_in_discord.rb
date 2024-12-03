@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: BirthdayConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'birthday',
   tag: 'FormatBirthdays'
 }
 
 write_options = {
-  connection: BirthdayConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'birthday',
   tag: 'NotifyDiscord'
 }

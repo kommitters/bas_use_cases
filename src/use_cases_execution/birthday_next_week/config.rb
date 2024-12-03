@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module BirthdayNextWeekConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module BirthdayNextWeekConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/birthday_next_week/fetch_next_week_birthday_from_notion.rb', time: ['01:00:00'] },
-    { path: '/birthday_next_week/format_next_week_birthday.rb', time: ['01:10:00'] },
-    { path: '/birthday_next_week/garbage_collector.rb', time: ['13:00:00'] },
-    { path: '/birthday_next_week/notify_next_week_birthday_in_discord.rb', time: ['13:10:00'] }
-  ].freeze
 end

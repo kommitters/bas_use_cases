@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module BirthdayConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module BirthdayConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/birthday/fetch_birthday_from_notion.rb', time: ['01:00:00'] },
-    { path: '/birthday/format_birthday.rb', time: ['01:10:00'] },
-    { path: '/birthday/garbage_collector.rb', time: ['13:00:00'] },
-    { path: '/birthday/notify_birthday_in_discord.rb', time: ['13:10:00'] }
-  ].freeze
 end

@@ -9,13 +9,13 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: PtoConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: PtoConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto'
 }
 

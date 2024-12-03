@@ -8,13 +8,13 @@ require_relative 'config'
 
 # Configuration
 read_options = {
-  connection: PtoNextWeekConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto',
   tag: 'HumanizeNextWeekPto'
 }
 
 write_options = {
-  connection: PtoNextWeekConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto',
   tag: 'NotifyDiscord'
 }

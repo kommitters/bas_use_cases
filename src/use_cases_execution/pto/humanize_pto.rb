@@ -11,13 +11,13 @@ utc_today = Time.now.utc
 today = Time.at(utc_today, in: '-05:00').strftime('%F').to_s
 
 read_options = {
-  connection: PtoConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto',
   tag: 'FetchPtosFromNotion'
 }
 
 write_options = {
-  connection: PtoConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'pto',
   tag: 'HumanizePto'
 }

@@ -9,7 +9,7 @@ require_relative 'config'
 
 # Configuration
 write_options = {
-  connection: WebsitesAvailabilityConfig::CONNECTION,
+  connection: Config::CONNECTION,
   db_table: 'web_availability',
   tag: 'FetchDomainServicesFromNotion'
 }

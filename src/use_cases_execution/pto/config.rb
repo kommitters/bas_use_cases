@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module PtoConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module PtoConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/pto/fetch_pto_from_notion.rb', time: ['13:10:00'] },
-    { path: '/pto/humanize_pto.rb', time: ['13:20:00'] },
-    { path: '/pto/garbage_collector.rb', time: ['13:30:00'] },
-    { path: '/pto/notify_pto_in_discord.rb', time: ['13:40:00'] }
-  ].freeze
 end

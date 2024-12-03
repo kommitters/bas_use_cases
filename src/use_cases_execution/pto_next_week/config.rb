@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module PtoNextWeekConfig
+module Config
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
@@ -18,11 +18,4 @@ module PtoNextWeekConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/pto_next_week/fetch_next_week_pto_from_notion.rb', time: ['12:40:00'], day: ['Thursday'] },
-    { path: '/pto_next_week/humanize_next_week_pto.rb', time: ['12:50:00'], day: ['Thursday'] },
-    { path: '/pto_next_week/notify_next_week_pto_in_discord.rb', time: ['13:00:00'], day: ['Thursday'] },
-    { path: '/pto_next_week/garbage_collector.rb', time: ['13:10:00'], day: ['Thursday'] }
-  ].freeze
 end

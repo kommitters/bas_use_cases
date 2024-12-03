@@ -10,7 +10,7 @@
 
 require 'dotenv/load'
 
-module SupportEmailConfig
+module Config
   REFRESH_TOKEN = ENV.fetch('SUPPORT_EMAIL_REFRESH_TOKEN')
   CLIENT_ID = ENV.fetch('SUPPORT_EMAIL_CLIENT_ID')
   CLIENT_SECRET = ENV.fetch('SUPPORT_EMAIL_CLIENT_SECRET')
@@ -23,11 +23,4 @@ module SupportEmailConfig
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  SCHEDULE = [
-    { path: '/support_email/fetch_emails_from_imap.rb', time: ['12:40:00', '14:40:00', '18:40:00', '20:40:00'] },
-    { path: '/support_email/format_emails.rb', time: ['12:50:00', '14:50:00', '18:50:00', '20:50:00'] },
-    { path: '/support_email/garbage_collector.rb', time: ['21:10:00'] },
-    { path: '/support_email/notify_support_emails.rb', time: ['13:00:00', '15:00:00', '19:00:00', '21:00:00'] }
-  ].freeze
 end
