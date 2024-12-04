@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'pg'
+require 'dotenv/load'
 
 connection = {
   host: ENV.fetch('DB_HOST'),

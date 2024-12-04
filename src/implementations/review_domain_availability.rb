@@ -70,7 +70,7 @@ module Implementation
 
     def write_ok_response(response)
       logs = request_log(response)
-      write_data = { success: { notification: :ok, logs:, url: response.request.uri } }
+      write_data = { success: { notification: nil, logs:, url: response.request.uri } }
       @shared_storage_options.write(write_data)
     end
 

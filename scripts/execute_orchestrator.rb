@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './orchestrator'
+require_relative '../src/use_cases_execution/orchestrator'
 
 ##
 # Main entry point for the orchestrator.

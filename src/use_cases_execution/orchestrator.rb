@@ -8,10 +8,9 @@ module ScheduleOrchestrator
   # It will also execute scripts based on the defined interval.
   # The schedules are defined in the UseCasesExecution::Schedules module.
   class Orchestrator
-    def initialize(base_path = __dir__, schedules = UseCasesExecution::Schedules.schedules)
+    def initialize
       @last_executions = Hash.new(0.0)
-      @path = base_path
-      @schedules = schedules
+      @schedules = UseCasesExecution::Schedules.schedules
     end
 
     def run
@@ -23,6 +22,7 @@ module ScheduleOrchestrator
           execute_day(script) if day?(script) && time?(script)
           execute_time(script) if time?(script) && !day?(script)
         end
+
         sleep 0.01
       end
     end
@@ -30,24 +30,25 @@ module ScheduleOrchestrator
     private
 
     def execute_interval(script)
-      ms_time = time_in_milliseconds(@actual_time)
-      return unless ms_time - @last_executions[script[:path]] >= script[:interval]
+      return unless time_in_milliseconds - @last_executions[script[:path]] >= script[:interval]
 
       execute(script)
-      @last_executions[script[:path]] = ms_time
+
+      @last_executions[script[:path]] = time_in_milliseconds
     end
 
     def execute_day(script)
-      time = current_time(@actual_time)
-      day = current_day(@actual_time)
-      return unless script[:day].include?(day) && script[:time].include?(time)
+      return unless script[:day].include?(current_day) && script[:time].include?(current_time)
 
-      execute(script)
+      execute(script) unless @last_executions[script[:path]].eql?(current_time)
+
+      @last_executions[script[:path]] = current_time
     end
 
     def execute_time(script)
-      time = current_time(@actual_time)
-      execute(script) if script[:time].include?(time)
+      execute(script) if script[:time].include?(current_time) && !@last_executions[script[:path]].eql?(current_time)
+
+      @last_executions[script[:path]] = current_time
     end
 
     def interval?(script)
@@ -62,21 +63,22 @@ module ScheduleOrchestrator
       script[:day]
     end
 
-    def time_in_milliseconds(time)
-      time.to_f * 1000
+    def time_in_milliseconds
+      @actual_time.to_f * 1000
     end
 
-    def current_time(actual_time)
-      actual_time.strftime('%H:%M:%S')
+    def current_time
+      @actual_time.strftime('%H:%M:%S')
     end
 
-    def current_day(actual_time)
-      actual_time.strftime('%A')
+    def current_day
+      @actual_time.strftime('%A')
     end
 
     def execute(script)
-      puts "Executing #{script[:path]} at #{current_time(@actual_time)}"
-      system("ruby #{File.join(@path, script[:path])}")
+      puts "Executing #{script[:path]} at #{current_time}"
+
+      system("ruby #{File.join(__dir__, script[:path])}")
     end
   end
 end

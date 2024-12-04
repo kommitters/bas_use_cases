@@ -14,44 +14,45 @@ module UseCasesExecution
     end
 
     BIRTHDAY_SCHEDULES = [
-      { path: '/birthday/fetch_birthday_from_notion.rb', time: ['01:00:00'] },
-      { path: '/birthday/format_birthday.rb', time: ['01:10:00'] },
-      { path: '/birthday/garbage_collector.rb', time: ['13:00:00'] },
-      { path: '/birthday/notify_birthday_in_discord.rb', time: ['13:10:00'] }
+      { path: '/birthday/fetch_birthday_from_notion.rb', time: ['12:40:00'] },
+      { path: '/birthday/format_birthday.rb', time: ['12:50:00'] },
+      { path: '/birthday/notify_birthday_in_discord.rb', time: ['13:00:00'] },
+      { path: '/birthday/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
     BIRTHDAY_NEXT_WEEK_SCHEDULES = [
-      { path: '/birthday_next_week/fetch_next_week_birthday_from_notion.rb', time: ['01:00:00'] },
-      { path: '/birthday_next_week/format_next_week_birthday.rb', time: ['01:10:00'] },
-      { path: '/birthday_next_week/garbage_collector.rb', time: ['13:00:00'] },
-      { path: '/birthday_next_week/notify_next_week_birthday_in_discord.rb', time: ['13:10:00'] }
+      { path: '/birthday_next_week/fetch_next_week_birthday_from_notion.rb', time: ['12:40:00'] },
+      { path: '/birthday_next_week/format_next_week_birthday.rb', time: ['12:50:00'] },
+      { path: '/birthday_next_week/notify_next_week_birthday_in_discord.rb', time: ['13:00:00'] },
+      { path: '/birthday_next_week/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
     DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
-      { path: '/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb', interval: 300_000 },
-      { path: '/digital_ocean_bill_alert/format_do_bill_alert.rb', interval: 300_000 },
-      { path: '/digital_ocean_bill_alert/garbage_collector.rb', interval: 300_000 },
-      { path: '/digital_ocean_bill_alert/notify_do_bill_alert_discord.rb', interval: 300_000 }
+      { path: '/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb', interval: 10_000 },
+      { path: '/digital_ocean_bill_alert/format_do_bill_alert.rb', interval: 10_000 },
+      { path: '/digital_ocean_bill_alert/notify_do_bill_alert_discord.rb', interval: 10_000 },
+      { path: '/digital_ocean_bill_alert/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
     OSPO_MAINTENANCE_SCHEDULES = [
-      { path: '/ospo_maintenance/create_work_item.rb', interval: 600_000 },
-      { path: '/ospo_maintenance/update_work_item.rb', interval: 600_000 },
-      { path: '/ospo_maintenance/verify_issue_existance_in_notion.rb', interval: 600_000 }
+      { path: '/ospo_maintenance/projects/bas.rb', interval: 60_000 },
+      { path: '/ospo_maintenance/verify_issue_existance_in_notion.rb', interval: 60_000 },
+      { path: '/ospo_maintenance/create_work_item.rb', interval: 60_000 },
+      { path: '/ospo_maintenance/update_work_item.rb', interval: 60_000 }
     ].freeze
 
     PTO_SCHEDULES = [
       { path: '/pto/fetch_pto_from_notion.rb', time: ['13:10:00'] },
       { path: '/pto/humanize_pto.rb', time: ['13:20:00'] },
-      { path: '/pto/garbage_collector.rb', time: ['13:30:00'] },
-      { path: '/pto/notify_pto_in_discord.rb', time: ['13:40:00'] }
+      { path: '/pto/notify_pto_in_discord.rb', time: ['13:30:00'] },
+      { path: '/pto/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
     PTO_NEXT_WEEK_SCHEDULES = [
       { path: '/pto_next_week/fetch_next_week_pto_from_notion.rb', time: ['12:40:00'], day: ['Thursday'] },
       { path: '/pto_next_week/humanize_next_week_pto.rb', time: ['12:50:00'], day: ['Thursday'] },
       { path: '/pto_next_week/notify_next_week_pto_in_discord.rb', time: ['13:00:00'], day: ['Thursday'] },
-      { path: '/pto_next_week/garbage_collector.rb', time: ['13:10:00'], day: ['Thursday'] }
+      { path: '/pto_next_week/garbage_collector.rb', time: ['00:00:00'], day: ['Thursday'] }
     ].freeze
 
     SUPPORT_EMAIL_SCHEDULES = [
@@ -62,10 +63,10 @@ module UseCasesExecution
     ].freeze
 
     WEBSITES_AVAILABILITY_SCHEDULES = [
-      { path: '/websites_availability/fetch_domain_services_from_notion.rb', interval: 600_000 },
-      { path: '/websites_availability/notify_domain_availability.rb', interval: 60_000 },
-      { path: '/websites_availability/garbage_collector.rb', time: ['00:00:00'] },
-      { path: '/websites_availability/review_domain_availability.rb', interval: 60_000 }
+      { path: '/websites_availability/fetch_domain_services_from_notion.rb', interval: 60_000 },
+      { path: '/websites_availability/review_domain_availability.rb', interval: 5_000 },
+      { path: '/websites_availability/notify_domain_availability.rb', interval: 5_000 },
+      { path: '/websites_availability/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
     WIP_LIMIT_SCHEDULES = [

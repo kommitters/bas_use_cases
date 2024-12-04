@@ -9,7 +9,7 @@
 require 'dotenv/load'
 
 module Config
-  # PRIVATE_PEM = File.read('/app/github_private_key.pem')
+  PRIVATE_PEM = File.read('/app/github_private_key.pem')
   APP_ID = ENV.fetch('OSPO_MAINTENANCE_APP_ID')
   ORGANIZATION = 'kommitters'
   DOMAIN = 'kommit.engineering'
