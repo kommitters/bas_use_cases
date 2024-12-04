@@ -20,8 +20,6 @@ write_options = {
   tag: 'FetchPtosFromNotion'
 }
 
-puts write_options, options
-
 # Process bot
 begin
   shared_storage_reader = Bas::SharedStorage::Default.new

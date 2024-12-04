@@ -2,13 +2,12 @@
 
 require 'logger'
 require 'bas/shared_storage/postgres'
-require 'bas/shared_storage/default'
 
 require_relative '../../implementations/verify_issue_existance_in_notion'
 require_relative 'config'
 
 # Configuration
-{
+read_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
   tag: 'GithubIssueRequest'
@@ -17,7 +16,7 @@ require_relative 'config'
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'VerifyIssueExistanceInNotio'
+  tag: 'VerifyIssueExistanceInNotion'
 }
 
 options = {
@@ -27,10 +26,9 @@ options = {
 
 # Process bot
 begin
-  shared_storage_reader = Bas::SharedStorage::Default.new
-  shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::VerifyIssueExistanceInNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  Implementation::VerifyIssueExistanceInNotion.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

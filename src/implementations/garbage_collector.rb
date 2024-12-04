@@ -32,10 +32,6 @@ module Implementation
     #
     def process
       Utils::Postgres::Request.execute(params)
-      # if response[res_status] == SUCCESS_STATUS
-      # else
-      #   { error: { message: response.result_error_message, status_code: response.res_status } }
-      # end
       { success: { archived: true } }
     end
 

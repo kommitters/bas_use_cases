@@ -15,15 +15,11 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
     ]
   end
 
-  let(:base_path) { File.join(__dir__, 'mock_scripts') }
+  let(:base_path) { File.join(__dir__, '') }
 
   before do
     allow_any_instance_of(Object).to receive(:system).and_return(true)
     FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
-  end
-
-  after do
-    FileUtils.rm_rf(base_path)
   end
 
   describe '#run' do

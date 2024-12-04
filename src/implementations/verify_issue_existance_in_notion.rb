@@ -22,7 +22,7 @@ module Implementation
   #   write_options = {
   #     connection:,
   #     db_table: "github_issues",
-  #     tag: "VerifyIssueExistanceInNotio"
+  #     tag: "VerifyIssueExistanceInNotion"
   #   }
   #
   #   options = {
@@ -92,7 +92,7 @@ module Implementation
     def tag
       issue = process_response[:success]
 
-      return write_options[:tag] if issue.nil? || issue[:notion_wi].nil?
+      return @shared_storage_writer.write_options[:tag] if issue.nil? || issue[:notion_wi].nil?
 
       issue[:notion_wi].eql?(NOT_FOUND) ? 'CreateWorkItemRequest' : 'UpdateWorkItemRequest'
     end

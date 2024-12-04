@@ -5,7 +5,7 @@ ruby '3.3.3'
 
 gem 'rspec'
 
-gem 'sorted_set'
+gem 'dotenv'
 
 gem 'bas', '~> 1.6'
 
@@ -18,7 +18,5 @@ gem 'rubocop'
 gem 'md_to_notion', '~> 0.1.4'
 
 gem 'httparty'
-
-gem 'dotenv'
 
 gem 'sinatra', '~> 4.1', '>= 4.1.1'

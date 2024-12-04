@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-#   INSTRUCTIONS:
+##
+# This file is used to store the configuration of the support_email use case.
+# It contains the connection information to the database where the support_email data is stored.
+# The connection information is stored in the CONNECTION constant.
 #
-#   This file is used to store the configuration of the birthday use case.
-#   It contains the connection information to the database and the schedule of the bot.
-#   The schedule configuration has two fields: path and interval.
-#   The path is the path to the script that will be executed
-#   The interval is the time in milliseconds that the script will be executed
 
 require 'dotenv/load'
 

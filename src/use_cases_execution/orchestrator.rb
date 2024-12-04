@@ -16,17 +16,39 @@ module ScheduleOrchestrator
 
     def run
       loop do
-        current_time = current_time_in_milliseconds
-        time = current_time_formatted
-        day = current_day_formatted
+        @actual_time = Time.new
 
-        process_schedules(current_time, time, day)
-
+        @schedules.each do |script|
+          execute_interval(script) if interval?(script)
+          execute_day(script) if day?(script) && time?(script)
+          execute_time(script) if time?(script) && !day?(script)
+        end
         sleep 0.01
       end
     end
 
     private
+
+    def execute_interval(script)
+      ms_time = time_in_milliseconds(@actual_time)
+      return unless ms_time - @last_executions[script[:path]] >= script[:interval]
+
+      execute(script)
+      @last_executions[script[:path]] = ms_time
+    end
+
+    def execute_day(script)
+      time = current_time(@actual_time)
+      day = current_day(@actual_time)
+      return unless script[:day].include?(day) && script[:time].include?(time)
+
+      execute(script)
+    end
+
+    def execute_time(script)
+      time = current_time(@actual_time)
+      execute(script) if script[:time].include?(time)
+    end
 
     def interval?(script)
       script[:interval]
@@ -40,58 +62,21 @@ module ScheduleOrchestrator
       script[:day]
     end
 
-    def current_time_in_milliseconds
-      Time.new.to_f * 1000
+    def time_in_milliseconds(time)
+      time.to_f * 1000
     end
 
-    def current_time_formatted
-      Time.new.strftime('%H:%M:%S')
+    def current_time(actual_time)
+      actual_time.strftime('%H:%M:%S')
     end
 
-    def current_day_formatted
-      Time.new.strftime('%A')
+    def current_day(actual_time)
+      actual_time.strftime('%A')
     end
 
-    def process_schedules(current_time, time, day)
-      @schedules.each do |script|
-        execute(script, time) if should_execute_script?(current_time, time, day, script)
-      end
-    end
-
-    def should_execute_script?(current_time, time, day, script)
-      (interval?(script) &&
-        should_execute_interval?(current_time, script)) ||
-        (time?(script) &&
-         day?(script) &&
-        should_execute_time?(time, script) &&
-        should_execute_day?(day, script)) ||
-        (time?(script) && should_execute_time?(time, script))
-    end
-
-    def update_last_execution(current_time, script)
-      @last_executions[script[:path]] = current_time if interval?(script)
-    end
-
-    def should_execute_interval?(current_time, script)
-      is_interval_script = current_time - @last_executions[script[:path]] >= script[:interval]
-      update_last_execution(current_time, script) if is_interval_script
-      is_interval_script
-    end
-
-    def should_execute_time?(time, script)
-      script[:time].include?(time)
-    end
-
-    def should_execute_day?(day, script)
-      script[:day].include?(day)
-    end
-
-    def execute(script, time)
-      puts "Executing #{script[:path]} at #{time}"
+    def execute(script)
+      puts "Executing #{script[:path]} at #{current_time(@actual_time)}"
       system("ruby #{File.join(@path, script[:path])}")
     end
   end
 end
-
-orchestrator = ScheduleOrchestrator::Orchestrator.new
-orchestrator.run

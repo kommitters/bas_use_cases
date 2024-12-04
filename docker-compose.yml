@@ -59,27 +59,28 @@ services:
       resources:
         limits:
           memory: 500M
-  # whatsapp-bot:
-  #   container_name: whatsapp_bot
-  #   restart: always
-  #   <<: *default-build
-  #   volumes:
-  #     - .env:/app/.env
-  #     - ./whatsapp:/app
-  #     - ./Gemfile:/app/Gemfile
-  #     - ./Gemfile.lock:/app/Gemfile.lock
-  #     - ./formatter:/app/formatter
-  #     - ./src/lib/services:/app/services
-  #   depends_on:
-  #     - bas_db
-  #   networks:
-  #     - bas_network
-  #   ports:
-  #     - 4567:4567
-  #   env_file:
-  #     - .env
-  #   command: [ "bash", "/app/scripts/update_container.sh" ]
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 100M
+
+  whatsapp-bot:
+    container_name: whatsapp_bot
+    restart: always
+    <<: *default-build
+    volumes:
+      - .env:/app/.env
+      - ./whatsapp:/app
+      - ./Gemfile:/app/Gemfile
+      - ./Gemfile.lock:/app/Gemfile.lock
+      - ./formatter:/app/formatter
+      - ./src/lib/services:/app/services
+    depends_on:
+      - bas_db
+    networks:
+      - bas_network
+    ports:
+      - 4567:4567
+    env_file:
+      - .env
+    command: [ "bash", "/app/scripts/update_container.sh" ]
+    deploy:
+      resources:
+        limits:
+          memory: 100M

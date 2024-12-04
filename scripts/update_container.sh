@@ -12,4 +12,4 @@ export GEM_PATH="/usr/local/bundle"
 ruby /app/scripts/update_database.rb
 
 # UPDATE CRONJOBS
-ruby /app/src/use_cases_execution/orchestrator.rb
+ruby /app/src/use_cases_execution/execute_orchestrator.rb
