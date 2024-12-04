@@ -6,7 +6,6 @@
 # The connection information is stored in the CONNECTION constant.
 #
 
-
 require 'dotenv/load'
 
 module Config
