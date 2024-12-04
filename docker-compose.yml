@@ -37,12 +37,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 150M
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+          memory: 200M
 
   bas_cronjobs:
     container_name: bas_cronjobs
@@ -58,7 +53,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500M
+          memory: 100M
 
   whatsapp-bot:
     container_name: whatsapp_bot
@@ -69,8 +64,6 @@ services:
       - ./whatsapp:/app
       - ./Gemfile:/app/Gemfile
       - ./Gemfile.lock:/app/Gemfile.lock
-      - ./formatter:/app/formatter
-      - ./src/lib/services:/app/services
     depends_on:
       - bas_db
     networks:
