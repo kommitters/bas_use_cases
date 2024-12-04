@@ -15,23 +15,21 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
     ]
   end
 
-  let(:base_path) { File.join(__dir__, '') }
-
   before do
+    allow(UseCasesExecution::Schedules).to receive(:schedules).and_return(schedules)
     allow_any_instance_of(Object).to receive(:system).and_return(true)
-    FileUtils.mkdir_p(base_path) unless Dir.exist?(base_path)
   end
 
   describe '#run' do
     it 'executes scripts with intervals' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 12, 40, 0))
 
-      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new
 
       schedules.each do |script|
         if script[:interval]
           orchestrator.instance_variable_get(:@last_executions)[script[:path]] = 0
-          expect_any_instance_of(Object).to receive(:system).with("ruby #{File.join(base_path, script[:path])}")
+          expect_any_instance_of(Object).to receive(:system).with(a_string_including(script[:path]))
         end
       end
 
@@ -42,10 +40,10 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
     it 'executes scripts at a specific time' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 0, 0, 0))
 
-      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new
 
       expect_any_instance_of(Object).to receive(:system).with(
-        "ruby #{File.join(base_path, '/websites_availability/garbage_collector.rb')}"
+        a_string_including('/websites_availability/garbage_collector.rb')
       )
 
       allow(orchestrator).to receive(:loop).and_yield
@@ -55,10 +53,10 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
     it 'executes scripts with specific time and day' do
       allow(Time).to receive(:new).and_return(Time.local(2024, 12, 2, 12, 40, 0))
 
-      orchestrator = ScheduleOrchestrator::Orchestrator.new(base_path, schedules)
+      orchestrator = ScheduleOrchestrator::Orchestrator.new
 
       expect_any_instance_of(Object).to receive(:system).with(
-        "ruby #{File.join(base_path, '/pto_next_week/fetch_next_week_pto_from_notion.rb')}"
+        a_string_including('/pto_next_week/fetch_next_week_pto_from_notion.rb')
       )
 
       allow(orchestrator).to receive(:loop).and_yield
