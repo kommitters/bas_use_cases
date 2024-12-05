@@ -15,9 +15,8 @@ networks:
     driver: bridge
     name: bas_network
 
-x-common:
-  &default-build
-  build: 
+x-common: &default-build
+  build:
     context: .
     args:
       BUNDLE_GITHUB__COM: "${REPO_GITHUB_TOKEN}:x-oauth-basic"
@@ -38,7 +37,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 150M
+          memory: 200M
 
   bas_cronjobs:
     container_name: bas_cronjobs
@@ -50,11 +49,11 @@ services:
       - bas_db
     networks:
       - bas_network
-    command: ["bash", "/app/scripts/update_container.sh"]
+    command: [ "bash", "/app/scripts/update_container.sh" ]
     deploy:
       resources:
         limits:
-          memory: 500M
+          memory: 100M
 
   whatsapp-bot:
     container_name: whatsapp_bot
@@ -65,8 +64,6 @@ services:
       - ./whatsapp:/app
       - ./Gemfile:/app/Gemfile
       - ./Gemfile.lock:/app/Gemfile.lock
-      - ./formatter:/app/formatter
-      - ./src/lib/services:/app/services
     depends_on:
       - bas_db
     networks:
@@ -75,7 +72,7 @@ services:
       - 4567:4567
     env_file:
       - .env
-    command: ["bash", "/app/scripts/update_container.sh"]
+    command: [ "bash", "/app/scripts/update_container.sh" ]
     deploy:
       resources:
         limits:

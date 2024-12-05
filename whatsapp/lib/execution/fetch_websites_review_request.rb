@@ -1,25 +1,18 @@
 # frozen_string_literal: true
 
-require_relative '../bots/fetch_webistes_review_request'
+require_relative '../bots/fetch_websites_review_request'
+require_relative 'config'
 require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
 
-connection = {
-  host: ENV.fetch('DB_HOST'),
-  port: ENV.fetch('DB_PORT'),
-  dbname: ENV.fetch('POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD')
-}
-
 write_options = {
-  connection:,
+  connection: Config::CONNECTION,
   db_table: 'observed_websites_availability',
   tag: 'FetchWebsiteReviewRequest'
 }
 
 options = {
-  connection:
+  connection: Config::CONNECTION
 }
 
 shared_storage_reader = Bas::SharedStorage::Default.new

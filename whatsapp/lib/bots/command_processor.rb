@@ -4,9 +4,9 @@ require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'httparty'
 
-require_relative '../../services/add_website'
-require_relative '../../services/list_websites'
-require_relative '../../services/remove_website'
+require_relative '../services/add_website'
+require_relative '../services/list_websites'
+require_relative '../services/remove_website'
 
 module Implementation
   ##

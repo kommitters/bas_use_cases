@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+##
+# This file is used to store the configuration of the support_email use case.
+# It contains the connection information to the database where the support_email data is stored.
+# The connection information is stored in the CONNECTION constant.
+#
+
+require 'dotenv/load'
+
 module Config
   REFRESH_TOKEN = ENV.fetch('SUPPORT_EMAIL_REFRESH_TOKEN')
   CLIENT_ID = ENV.fetch('SUPPORT_EMAIL_CLIENT_ID')

@@ -36,7 +36,7 @@ module Implementation
     TOKEN = ENV.fetch('WHATSAPP_TOKEN')
     META_API_URL = 'https://graph.facebook.com/v21.0/418771694660258/messages'
 
-    # process function to execute the Discord utility to send the PTO's notification
+    # process function to execute the Whatsapp API to send the notification
     #
     def process
       return { success: {} } if unprocessable_response

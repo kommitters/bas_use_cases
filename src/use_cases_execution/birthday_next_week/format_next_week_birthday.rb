@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  template: 'The Birthday of <name> is today! (<birthday_date>) :birthday: :gift:'
+  template: 'The Birthday of <name> will be next week! (<birthday_date>) :birthday: :gift:'
 }
 
 # Process bot
