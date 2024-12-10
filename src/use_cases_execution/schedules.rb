@@ -78,5 +78,10 @@ module UseCasesExecution
       { path: '/wip_limit/notify_domains_wip_limit_exceeded.rb',
         time: ['13:00:00', '15:00:00', '19:00:00', '21:00:00'] }
     ].freeze
+
+    SAVE_BACKUP = [
+      { path: '/save_backup/save_backup_in_r2.rb', interval: 60 * 60 * 24 },
+      { path: '/save_backup/delete_older_backup_in_r2.rb', interval: 60 * 60 * 24 }
+    ].freeze
   end
 end

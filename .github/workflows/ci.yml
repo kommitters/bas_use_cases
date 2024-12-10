@@ -97,6 +97,12 @@ jobs:
         echo -e 'REVIEW_IMAGES_TABLE=${{secrets.REVIEW_IMAGES_TABLE}}' >> .env
         echo -e 'WHATSAPP_WEBHOOK_TOKEN=${{secrets.WHATSAPP_WEBHOOK_TOKEN_STG}}' >> .env
         echo -e 'WHATSAPP_TOKEN=${{secrets.WHATSAPP_TOKEN_STG}}' >> .env
+        echo -e 'R2_ACCESS_KEY_ID=${{secrets.R2_ACCESS_KEY_ID_STG}}' >> .env
+        echo -e 'R2_SECRET_ACCESS_KEY=${{secrets.R2_SECRET_ACCESS_KEY_STG}}' >> .env
+        echo -e 'R2_ENDPOINT=${{secrets.R2_ENDPOINT_STG}}' >> .env
+        echo -e 'R2_REGION=${{secrets.R2_REGION_STG}}' >> .env
+        echo -e 'R2_BUCKET_NAME=${{secrets.R2_BUCKET_NAME_STG}}' >> .env
+        echo -e 'BACKUPS_LIMIT=${{secrets.BACKUPS_LIMIT_STG}}' >> .env
 
     - name: compress project
       run: zip -r bas_scripts.zip .
