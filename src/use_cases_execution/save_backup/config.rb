@@ -25,4 +25,6 @@ module Config
     region: ENV.fetch('R2_REGION'),
     bucket_name: ENV.fetch('R2_BUCKET_NAME')
   }.freeze
+
+  BACKUPS_LIMIT = ENV.fetch('BACKUPS_LIMIT')
 end
