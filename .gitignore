@@ -15,6 +15,7 @@ package-lock.json
 /discord_bot/vendor
 telegram_app/Gemfile
 telegram_app/Gemfile.lock
+backup/*
 
 # Used by dotenv library to load environment variables.
 # .env

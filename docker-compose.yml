@@ -18,8 +18,6 @@ networks:
 x-common: &default-build
   build:
     context: .
-    args:
-      BUNDLE_GITHUB__COM: "${REPO_GITHUB_TOKEN}:x-oauth-basic"
 
 services:
   bas_db:
