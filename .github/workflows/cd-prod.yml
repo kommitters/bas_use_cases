@@ -97,4 +97,4 @@ jobs:
           unzip -o bas_scripts.zip
           docker-compose stop
           docker-compose down
-          docker-compose up --build -d
+          docker-compose up -d
