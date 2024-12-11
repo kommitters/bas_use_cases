@@ -80,8 +80,8 @@ module UseCasesExecution
     ].freeze
 
     SAVE_BACKUP = [
-      { path: '/save_backup/save_backup_in_r2.rb', interval: 60 * 60 * 24 },
-      { path: '/save_backup/delete_older_backup_in_r2.rb', interval: 60 * 60 * 24 }
+      { path: '/save_backup/save_backup_in_r2.rb', time: ['00:00:00'] },
+      { path: '/save_backup/delete_older_backup_in_r2.rb', time: ['00:10:00'] }
     ].freeze
   end
 end
