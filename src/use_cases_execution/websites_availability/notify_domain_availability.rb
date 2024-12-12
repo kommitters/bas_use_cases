@@ -21,7 +21,8 @@ write_options = {
 
 options = {
   name: ENV.fetch('DISCORD_BOT_NAME'),
-  webhook: ENV.fetch('WEBSITES_AVAILABILITY_DISCORD_WEBHOOK')
+  webhook: ENV.fetch('WEBSITES_AVAILABILITY_DISCORD_WEBHOOK'),
+  avoid_empty_data: true
 }
 
 # Process bot
