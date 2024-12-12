@@ -68,7 +68,7 @@ module ScheduleOrchestrator
     end
 
     def current_time
-      @actual_time.strftime('%H:%M:%S')
+      @actual_time.strftime('%H:%M')
     end
 
     def current_day

@@ -17,7 +17,8 @@ write_options = {
 }
 
 options = {
-  connection: Config::CONNECTION
+  connection: Config::CONNECTION,
+  avoid_empty_data: true
 }
 
 shared_storage = Bas::SharedStorage::Postgres.new(read_options: read_options, write_options: write_options)

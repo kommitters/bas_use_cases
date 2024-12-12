@@ -21,7 +21,8 @@ write_options = {
 
 options = {
   name: ENV.fetch('DISCORD_BOT_NAME'),
-  webhook: ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK')
+  webhook: ENV.fetch('DIGITAL_OCEAN_DISCORD_WEBHOOK'),
+  avoid_empty_data: true
 }
 
 # Process bot

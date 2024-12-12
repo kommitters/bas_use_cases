@@ -34,13 +34,6 @@ module UseCasesExecution
       { path: '/digital_ocean_bill_alert/garbage_collector.rb', time: ['00:00:00'] }
     ].freeze
 
-    OSPO_MAINTENANCE_SCHEDULES = [
-      { path: '/ospo_maintenance/projects/bas.rb', interval: 60_000 },
-      { path: '/ospo_maintenance/verify_issue_existance_in_notion.rb', interval: 60_000 },
-      { path: '/ospo_maintenance/create_work_item.rb', interval: 60_000 },
-      { path: '/ospo_maintenance/update_work_item.rb', interval: 60_000 }
-    ].freeze
-
     PTO_SCHEDULES = [
       { path: '/pto/fetch_pto_from_notion.rb', time: ['13:10:00'] },
       { path: '/pto/humanize_pto.rb', time: ['13:20:00'] },
@@ -80,8 +73,8 @@ module UseCasesExecution
     ].freeze
 
     SAVE_BACKUP = [
-      { path: '/save_backup/save_backup_in_r2.rb', time: ['00:00:00'] },
-      { path: '/save_backup/delete_older_backup_in_r2.rb', time: ['00:10:00'] }
+      { path: '/save_backup/save_backup_in_r2.rb', time: ['00:00'] },
+      { path: '/save_backup/delete_older_backup_in_r2.rb', time: ['00:10'] }
     ].freeze
   end
 end

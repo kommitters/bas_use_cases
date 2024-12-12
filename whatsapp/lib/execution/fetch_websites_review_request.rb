@@ -16,6 +16,7 @@ options = {
 }
 
 shared_storage_reader = Bas::SharedStorage::Default.new
-shared_storage_writter = Bas::SharedStorage::Postgres.new(write_options: write_options)
-bot = Implementation::FetchWebsiteReviewRequest.new(options, shared_storage_reader, shared_storage_writter)
+shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+
+bot = Implementation::FetchWebsiteReviewRequest.new(options, shared_storage_reader, shared_storage_writer)
 bot.execute

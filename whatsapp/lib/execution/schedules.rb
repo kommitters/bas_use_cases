@@ -15,9 +15,9 @@ module Whatsapp
 
     SCHEDULES = [
       { path: '/command_processor.rb', interval: 1_000 },
-      { path: '/fetch_websites_review_request.rb', interval: 15_000 },
-      { path: '/review_website_availability.rb', interval: 2_000 },
-      { path: '/notify_whatsapp.rb', interval: 2_000 }
+      { path: '/fetch_websites_review_request.rb', interval: 60_000 },
+      { path: '/review_website_availability.rb', interval: 60_000 },
+      { path: '/notify_whatsapp.rb', interval: 5_000 }
     ].freeze
   end
 end
