@@ -25,7 +25,6 @@ jobs:
 
     - name: Add Secrets into yml file
       run: |
-        echo -e 'REPO_GITHUB_TOKEN=${{secrets.REPO_GITHUB_TOKEN}}' >> .env
         echo -e 'DB_HOST=${{secrets.DB_HOST}}' >> .env
         echo -e 'DB_PORT=${{secrets.DB_PORT}}' >> .env
         echo -e 'POSTGRES_DB=${{secrets.POSTGRES_DB}}' >> .env
@@ -41,7 +40,6 @@ jobs:
         echo -e 'PTO_OPENAI_ASSISTANT=${{secrets.PTO_OPENAI_ASSISTANT}}' >> .env
         echo -e 'PTO_DISCORD_WEBHOOK=${{secrets.PTO_DISCORD_WEBHOOK}}' >> .env
         echo -e 'NEXT_WEEK_PTO_OPENAI_ASSISTANT=${{secrets.NEXT_WEEK_PTO_OPENAI_ASSISTANT}}' >> .env
-        echo -e 'NEXT_WEEK_PTO_DISCORD_WEBHOOK=${{secrets.NEXT_WEEK_PTO_DISCORD_WEBHOOK}}' >> .env
         echo -e 'WIP_COUNT_NOTION_DATABASE_ID=${{secrets.WIP_COUNT_NOTION_DATABASE_ID}}' >> .env
         echo -e 'WIP_LIMIT_NOTION_DATABASE_ID=${{secrets.WIP_LIMIT_NOTION_DATABASE_ID}}' >> .env
         echo -e 'WIP_LIMIT_DISCORD_WEBHOOK=${{secrets.WIP_LIMIT_DISCORD_WEBHOOK}}' >> .env
@@ -53,7 +51,6 @@ jobs:
         echo -e 'SUPPORT_EMAIL_RECEPTOR=${{secrets.SUPPORT_EMAIL_RECEPTOR}}' >> .env
         echo -e 'SUPPORT_EMAIL_DISCORD_WEBHOOK=${{secrets.SUPPORT_EMAIL_DISCORD_WEBHOOK}}' >> .env
         echo -e 'REVIEW_IMAGE_OPENAI_ASSISTANT=${{secrets.REVIEW_IMAGE_OPENAI_ASSISTANT}}'>> .env
-        echo -e 'REVIEW_TEXT_OPENAI_ASSISTANT='${REVIEW_TEXT_OPENAI_ASSISTANT}>> .env
         echo -e 'DIGITAL_OCEAN_SECRET=${{secrets.DIGITAL_OCEAN_SECRET}}' >> .env
         echo -e 'DIGITAL_OCEAN_THRESHOLD=${{secrets.DIGITAL_OCEAN_THRESHOLD}}' >> .env
         echo -e 'DIGITAL_OCEAN_DISCORD_WEBHOOK=${{secrets.DIGITAL_OCEAN_DISCORD_WEBHOOK}}' >> .env

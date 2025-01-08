@@ -1,8 +1,6 @@
 # version: '3'
 
 volumes:
-  pgdata:
-    driver: local
   cronjobs:
     driver: local
     driver_opts:
@@ -10,43 +8,17 @@ volumes:
       o: bind
       device: .
 
-networks:
-  bas_network:
-    driver: bridge
-    name: bas_network
-
 x-common: &default-build
   build:
     context: .
 
 services:
-  bas_db:
-    image: postgres:13-alpine
-    container_name: bas_db
-    restart: unless-stopped
-    networks:
-      - bas_network
-    ports:
-      - 8001:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    env_file:
-      - .env
-    deploy:
-      resources:
-        limits:
-          memory: 200M
-
   bas_cronjobs:
     container_name: bas_cronjobs
     restart: always
     <<: *default-build
     volumes:
       - cronjobs:/app
-    depends_on:
-      - bas_db
-    networks:
-      - bas_network
     command: [ "bash", "/app/scripts/update_container.sh" ]
     deploy:
       resources:
@@ -62,10 +34,6 @@ services:
       - ./whatsapp:/app
       - ./Gemfile:/app/Gemfile
       - ./Gemfile.lock:/app/Gemfile.lock
-    depends_on:
-      - bas_db
-    networks:
-      - bas_network
     ports:
       - 4567:4567
     env_file:
