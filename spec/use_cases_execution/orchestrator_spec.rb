@@ -43,7 +43,7 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
       orchestrator = ScheduleOrchestrator::Orchestrator.new
 
       expect_any_instance_of(Object).to receive(:system).with(
-        a_string_including('/websites_availability/garbage_collector.rb')
+        a_string_including('/websites_availability/fetch_domain_services_from_notion.rb')
       )
 
       allow(orchestrator).to receive(:loop).and_yield
@@ -56,7 +56,7 @@ RSpec.describe ScheduleOrchestrator::Orchestrator do
       orchestrator = ScheduleOrchestrator::Orchestrator.new
 
       expect_any_instance_of(Object).to receive(:system).with(
-        a_string_including('/pto_next_week/fetch_next_week_pto_from_notion.rb')
+        a_string_including('/websites_availability/fetch_domain_services_from_notion.rb')
       )
 
       allow(orchestrator).to receive(:loop).and_yield
