@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 (09.01.2025)
+- [Use cases migration](https://github.com/kommitters/bas_use_cases/pull/46)
+- [Wpp interface](https://github.com/kommitters/bas_use_cases/pull/47)
+- [Avoid unprocessable messages and improve bot message response](https://github.com/kommitters/bas_use_cases/pull/49)
+- [Programmed executor](https://github.com/kommitters/bas_use_cases/pull/51)
+- [Add save backup in s3 implementation](https://github.com/kommitters/bas_use_cases/pulls?q=is%3Apr+is%3Aclosed)
+- [Update bas gem to version 1.6.2](https://github.com/kommitters/bas_use_cases/pull/53)
+- [Remove bas_db container](https://github.com/kommitters/bas_use_cases/pull/54)
+
 ## 1.0.2 (05.11.2024)
 - Integrate conversational bots private gem
 
