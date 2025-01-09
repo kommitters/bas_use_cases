@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1 (09.01.2025)
+- [Remove unnecessary env variables](https://github.com/kommitters/bas_use_cases/pull/56)
+
 ## 1.1.0 (09.01.2025)
 - [Use cases migration](https://github.com/kommitters/bas_use_cases/pull/46)
 - [Wpp interface](https://github.com/kommitters/bas_use_cases/pull/47)
