@@ -92,7 +92,6 @@ jobs:
         echo -e 'OSPO_MAINTENANCE_APP_ID=${{secrets.OSPO_MAINTENANCE_APP_ID_STG}}' >> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_DATABASE_ID_STG}}' >> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID_STG}}' >> .env
-        echo -e 'REVIEW_IMAGES_TABLE=${{secrets.REVIEW_IMAGES_TABLE}}' >> .env
         echo -e 'WHATSAPP_WEBHOOK_TOKEN=${{secrets.WHATSAPP_WEBHOOK_TOKEN_STG}}' >> .env
         echo -e 'WHATSAPP_TOKEN=${{secrets.WHATSAPP_TOKEN_STG}}' >> .env
         echo -e 'R2_ACCESS_KEY_ID=${{secrets.R2_ACCESS_KEY_ID_STG}}' >> .env
