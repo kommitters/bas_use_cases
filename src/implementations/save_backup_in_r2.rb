@@ -56,7 +56,7 @@ module Implementation
       db_name = process_options[:connection][:dbname]
       password = process_options[:connection][:password]
 
-      "PGPASSWORD='#{password}' pg_dump -U #{db_user} -h #{db_host} -p #{db_port} #{db_name} > #{output_file}"
+      "PGPASSWORD='#{password}' pg_dump -U #{db_user} -h #{db_host} -p #{db_port} #{db_name} | gzip > #{output_file}"
     end
 
     def output_file

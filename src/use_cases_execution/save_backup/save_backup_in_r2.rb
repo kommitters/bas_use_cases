@@ -11,7 +11,7 @@ require_relative 'config'
 
 options = {
   connection: Config::CONNECTION,
-  output_file: '/app/backup/bas_backup.sql',
+  output_file: '/app/backup/bas_backup.sql.gz',
   access_key_id: Config::R2_CONFIG[:access_key_id],
   secret_access_key: Config::R2_CONFIG[:secret_access_key],
   endpoint: Config::R2_CONFIG[:endpoint],
