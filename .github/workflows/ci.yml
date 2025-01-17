@@ -121,8 +121,10 @@ jobs:
         username: root
         key: ${{ secrets.DO_SSH_KEY_STG }}
         script: |
+          docker stop $(docker ps -q)
+          docker-compose -f /root/bas_db/docker-compose.yml up -d
           cd /root/app
           unzip -o bas_scripts.zip
           docker-compose stop
           docker-compose down
-          docker-compose up -d
+          docker-compose up -d bas_cronjobs
