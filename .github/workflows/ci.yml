@@ -86,8 +86,6 @@ jobs:
         echo -e 'DIGITAL_OCEAN_SECRET=${{secrets.DIGITAL_OCEAN_SECRET}}' >> .env
         echo -e 'DIGITAL_OCEAN_THRESHOLD=${{secrets.DIGITAL_OCEAN_THRESHOLD}}' >> .env
         echo -e 'DIGITAL_OCEAN_DISCORD_WEBHOOK=${{secrets.DIGITAL_OCEAN_DISCORD_WEBHOOK_STG}}' >> .env
-        echo -e 'WEBSITES_AVAILABILITY_NOTION_DATABASE_ID=${{secrets.WEBSITES_AVAILABILITY_NOTION_DATABASE_ID}}' >> .env
-        echo -e 'WEBSITES_AVAILABILITY_DISCORD_WEBHOOK=${{secrets.WEBSITES_AVAILABILITY_DISCORD_WEBHOOK_STG}}' >> .env
         echo -e 'OSPO_MAINTENANCE_SECRET=${{secrets.OSPO_MAINTENANCE_SECRET_STG}}' >> .env
         echo -e 'OSPO_MAINTENANCE_APP_ID=${{secrets.OSPO_MAINTENANCE_APP_ID_STG}}' >> .env
         echo -e 'OSPO_MAINTENANCE_NOTION_DATABASE_ID=${{secrets.OSPO_MAINTENANCE_NOTION_DATABASE_ID_STG}}' >> .env
@@ -121,8 +119,10 @@ jobs:
         username: root
         key: ${{ secrets.DO_SSH_KEY_STG }}
         script: |
+          docker stop $(docker ps -q)
+          docker-compose -f /root/bas_db/docker-compose.yml up -d
           cd /root/app
           unzip -o bas_scripts.zip
           docker-compose stop
           docker-compose down
-          docker-compose up -d
+          docker-compose up -d bas_cronjobs
