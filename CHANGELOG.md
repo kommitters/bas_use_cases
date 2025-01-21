@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0 (21.01.2025)
+- [Remove website availability use case](https://github.com/kommitters/bas_use_cases/pull/58)
+
 ## 1.1.1 (09.01.2025)
 - [Remove unnecessary env variables](https://github.com/kommitters/bas_use_cases/pull/56)
 
