@@ -16,6 +16,10 @@ module UseCasesExecution
     path_to_repo = '../../../../../../../../../'
     scripts_path = "#{path_to_repo}src/use_cases_execution"
 
+    OSPO_MAINTENANCE = [
+      { path: "#{scripts_path}/ospo_maintenance/execute_ospo.rb", time: ['06:45', '12:45', '18:45', '00:45'] }
+    ].freeze
+
     BIRTHDAY_SCHEDULES = [
       { path: "#{scripts_path}/birthday/fetch_birthday_from_notion.rb", time: ['12:40'] },
       { path: "#{scripts_path}/birthday/format_birthday.rb", time: ['12:50'] },

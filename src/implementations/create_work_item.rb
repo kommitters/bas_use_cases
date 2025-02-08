@@ -4,6 +4,7 @@ require 'json'
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 require 'bas/utils/notion/types'
+require 'logger'
 
 module Implementation
   ##
@@ -39,63 +40,116 @@ module Implementation
 
     UPDATE_REQUEST = 'UpdateWorkItemRequest'
     STATUS = 'Backlog'
+    LOGGER = Logger.new($stdout)
 
     # process function to execute the Notion utility to create work items on a notion
     # database
     #
     def process
-      return { success: { created: nil } } if unprocessable_response
+      return { success: { created: nil } } if unprocessable_response?
 
-      response = Utils::Notion::Request.execute(params)
+      data = read_response.data || {}
+      issues = Array(data['issues'] || [data['issue']].compact)
+      LOGGER.info("Total issues received: #{issues.size}")
 
-      if response.code == 200
-        { success: { issue: read_response.data['issue'], notion_wi: response['id'] } }
-      else
-        { error: { message: response.parsed_response, status_code: response.code } }
-      end
+      results = issues.map { |issue| process_issue(issue) }
+      { success: { issues: results } }
+    rescue StandardError => e
+      LOGGER.error("An unexpected error occurred: #{e.message}")
+      { error: { message: e.message, backtrace: e.backtrace } }
     end
 
-    # write function to execute the PostgresDB write component
-    #
     def write
       @shared_storage_writer.write_options = @shared_storage_writer.write_options.merge({ tag: })
-
       @shared_storage_writer.write(process_response)
     end
 
     private
 
-    def params
+    def process_issue(issue)
+      response = Utils::Notion::Request.execute(params(issue))
+
+      if response.code == 200
+        { issue: issue, notion_wi: response['id'] }
+      else
+        { issue: issue, error: { message: response.parsed_response, status_code: response.code } }
+      end
+    ensure
+      sleep(2)
+    end
+
+    def unprocessable_response?
+      read_response.data.nil?
+    end
+
+    def params(issue)
       {
         endpoint: 'pages',
         secret: process_options[:secret],
         method: 'post',
-        body:
+        body: body(issue)
       }
     end
 
-    def body
+    def body(issue)
       {
         parent: { database_id: process_options[:database_id] },
-        properties:
+        properties: properties(issue),
+        children: clean_body(issue)
       }
     end
 
-    def properties # rubocop:disable Metrics/AbcSize
+    def properties(issue)
       {
-        "Responsible domain": select(read_response.data['domain']),
-        "Github Issue Id": rich_text(read_response.data['issue']['id'].to_s),
-        "Status": status(STATUS),
-        "Detail": title(read_response.data['issue']['title'])
-      }.merge(work_item_type)
+        "Responsible domain": responsible_domain(issue),
+        "Github Issue Id": github_issue_id(issue),
+        "Status": status,
+        "Detail": detail(issue)
+      }.merge(work_item_type(issue))
     end
 
-    def work_item_type
-      case read_response.data['work_item_type']
-      when 'activity' then { "Activity": relation(read_response.data['type_id']) }
-      when 'project' then { "Project": relation(read_response.data['type_id']) }
+    def work_item_type(issue)
+      case issue['work_item_type']
+      when 'activity' then { "Activity": relation(issue['type_id']) }
+      when 'project' then { "Project": relation(issue['type_id']) }
       else {}
       end
+    end
+
+    def responsible_domain(issue)
+      { select: { name: issue['domain'] || 'kommit.engineering' } }
+    end
+
+    def github_issue_id(issue)
+      { rich_text: [{ text: { content: issue['id'].to_s } }] }
+    end
+
+    def status
+      { status: { name: STATUS } }
+    end
+
+    def detail(issue)
+      { title: [{ text: { content: clean_title(issue) } }] }
+    end
+
+    def clean_title(issue)
+      issue['title'].to_s.gsub(/#+\s*/, '').strip
+    end
+
+    def clean_body(issue)
+      return [] unless issue['body']
+
+      text = clean_text(issue['body'])
+      [{ type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: text } }] } }]
+    end
+
+    def clean_text(text)
+      text.gsub(/^#+\s*|\n#+\s*/, '')
+          .gsub(/\*\*(.*?)\*\*|_(.*?)_|`(.*?)`/, '\1\2\3')
+          .gsub(/```.*?```/m, '')
+          .gsub(/^>\s*/, '')
+          .gsub(/\n{3,}/, "\n\n")
+          .strip
     end
 
     def tag
