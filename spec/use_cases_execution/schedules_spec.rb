@@ -26,7 +26,7 @@ RSpec.describe UseCasesExecution::Schedules do
       allow(UseCasesExecution::Schedules).to receive(:constants)
         .and_return(%i[BIRTHDAY_SCHEDULES BIRTHDAY_NEXT_WEEK_SCHEDULES])
 
-      expect(UseCasesExecution::Schedules.schedules).to eq(birthday_schedule + birthday_next_week_schedule)
+      expect(UseCasesExecution::Schedules.load).to eq(birthday_schedule + birthday_next_week_schedule)
     end
   end
 end
