@@ -5,15 +5,15 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../../src/implementations/update_work_item'
 
-ENV['OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID'] = 'OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID'
-ENV['NOTION_SECRET'] = 'NOTION_SECRET'
-ENV['OSPO_MAINTENANCE_TABLE'] = 'OSPO_MAINTENANCE_TABLE'
+ENV['OSPO_MAINTENANCE_NOTION_DATABASE_ID'] = '12345678-abcdef-9012-3456-abcdef123456'
+ENV['NOTION_SECRET'] = 'secret_abcdefghijklmnopqrstuvwxzy1234567890'
+ENV['OSPO_MAINTENANCE_TABLE'] = 'ospo_maintenance_records'
 
 RSpec.describe Implementation::UpdateWorkItem do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
   before do
     options = {
-      users_database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_USERS_DATABASE_ID'),
+      users_database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID'),
       secret: ENV.fetch('NOTION_SECRET')
     }
     allow(mocked_shared_storage).to receive(:read).and_return(

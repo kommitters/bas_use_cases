@@ -41,6 +41,7 @@ module Implementation
     # process function to execute the Notion utility to verify GitHub issues existance
     # on a notion database
     #
+
     def process
       return { success: { issue: nil } } if unprocessable_response
 
@@ -48,11 +49,12 @@ module Implementation
 
       if response.code == 200
         result = response.parsed_response['results'].first
-
         { success: read_response.data.merge({ notion_wi: notion_wi_id(result) }) }
       else
         { error: { message: response.parsed_response, status_code: response.code } }
       end
+    rescue StandardError => e
+      { error: { message: e.message, status_code: 500 } }
     end
 
     # write function to execute the PostgresDB write component
