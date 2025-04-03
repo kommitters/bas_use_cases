@@ -19,7 +19,7 @@ services:
     <<: *default-build
     volumes:
       - cronjobs:/app
-    command: [ "bash", "/app/scripts/update_container.sh" ]
+    command: ["bash", "/app/scripts/update_container.sh"]
     deploy:
       resources:
         limits:
@@ -38,7 +38,7 @@ services:
       - 4567:4567
     env_file:
       - .env
-    command: [ "bash", "/app/scripts/update_container.sh" ]
+    command: ["bash", "/app/scripts/update_container.sh"]
     deploy:
       resources:
         limits:
