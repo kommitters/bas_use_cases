@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 (03.04.2025)
+- [refactor: remove orchestrator](https://github.com/kommitters/bas_use_cases/pull/60)
+- [Fix pto and do issues](https://github.com/kommitters/bas_use_cases/pull/62)
+
 ## 1.2.0 (21.01.2025)
 - [Remove website availability use case](https://github.com/kommitters/bas_use_cases/pull/58)
 
