@@ -42,10 +42,10 @@ module UseCasesExecution
     ].freeze
 
     PTO_NEXT_WEEK_SCHEDULES = [
-      { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_notion.rb", time: ['15:25'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/humanize_next_week_pto.rb", time: ['15:26'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/notify_next_week_pto_in_discord.rb", time: ['15:27'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/garbage_collector.rb", time: ['00:00'], day: ['Thursday'] }
+      { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_notion.rb", time: ['12:40'], day: ['Thursday'] },
+      { path: "#{__dir__}/pto_next_week/humanize_next_week_pto.rb", time: ['12:50'], day: ['Thursday'] },
+      { path: "#{__dir__}/pto_next_week/notify_next_week_pto_in_discord.rb", time: ['13:00'], day: ['Thursday'] },
+      { path: "#{__dir__}/pto_next_week/garbage_collector.rb", time: ['23:00'], day: ['Thursday'] }
     ].freeze
 
     SUPPORT_EMAIL_SCHEDULES = [

@@ -43,7 +43,7 @@ module Implementation
     private
 
     def threshold_exceeded
-      return false if billing.zero?
+      return false if billing.zero? || (last_billing.zero? && account_balance.eql?(billing))
 
       usage > process_options[:threshold]
     end
@@ -58,6 +58,10 @@ module Implementation
 
     def last_billing
       read_response.data['last_billing']['month_to_date_balance'].to_f
+    end
+
+    def account_balance
+      read_response.data['billing']['account_balance'].to_f
     end
 
     def message
