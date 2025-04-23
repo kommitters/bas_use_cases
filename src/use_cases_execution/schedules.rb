@@ -69,5 +69,10 @@ module UseCasesExecution
       { path: "#{__dir__}/save_backup/save_backup_in_r2.rb", time: ['00:00'] },
       { path: "#{__dir__}/save_backup/delete_older_backup_in_r2.rb", time: ['00:20'] }
     ].freeze
+
+    MISSING_WORK_LOGS_SCHEDULES = [
+      { path: "#{__dir__}/missing_work_logs/fetch_people_with_missing_logs.rb", time: ['13:20'] },
+      { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", time: ['13:30'] }
+    ].freeze
   end
 end
