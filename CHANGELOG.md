@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0 (24.04.2025)
+- [Add missing work logs notify automation](https://github.com/kommitters/bas_use_cases/pull/64)
+- [Update missing work log notify](https://github.com/kommitters/bas_use_cases/pull/65)
+- [Add missing environment variable for the discord bot and update bot](https://github.com/kommitters/bas_use_cases/pull/66)
+
 ## 1.3.0 (03.04.2025)
 - [refactor: remove orchestrator](https://github.com/kommitters/bas_use_cases/pull/60)
 - [Fix pto and do issues](https://github.com/kommitters/bas_use_cases/pull/62)
