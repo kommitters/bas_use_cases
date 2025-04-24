@@ -72,7 +72,7 @@ module UseCasesExecution
 
     MISSING_WORK_LOGS_SCHEDULES = [
       { path: "#{__dir__}/missing_work_logs/fetch_people_with_missing_logs.rb", time: ['13:20'] },
-      { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", time: ['13:30'] },
+      { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", interval: 300_000 },
       { path: "#{__dir__}/missing_work_logs/garbage_collector.rb", time: ['14:00'] }
     ].freeze
   end

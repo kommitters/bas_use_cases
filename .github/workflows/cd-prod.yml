@@ -66,6 +66,7 @@ jobs:
         echo -e 'R2_REGION=${{secrets.R2_REGION}}' >> .env
         echo -e 'R2_BUCKET_NAME=${{secrets.R2_BUCKET_NAME}}' >> .env
         echo -e 'BACKUPS_LIMIT=${{secrets.BACKUPS_LIMIT}}' >> .env
+        echo -e 'DISCORD_BOT_TOKEN=${{secrets.DISCORD_BOT_TOKEN}}' >> .env
         echo -e 'WORK_LOGS_URL=${{secrets.WORK_LOGS_URL}}' >> .env
         echo -e 'WORK_LOGS_API_SECRET=${{secrets.WORK_LOGS_API_SECRET}}' >> .env
         echo -e 'ADMIN_DM_ID=${{secrets.ADMIN_DM_ID}}' >> .env
