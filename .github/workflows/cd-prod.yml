@@ -66,6 +66,12 @@ jobs:
         echo -e 'R2_REGION=${{secrets.R2_REGION}}' >> .env
         echo -e 'R2_BUCKET_NAME=${{secrets.R2_BUCKET_NAME}}' >> .env
         echo -e 'BACKUPS_LIMIT=${{secrets.BACKUPS_LIMIT}}' >> .env
+        echo -e 'WORK_LOGS_URL=${{secrets.WORK_LOGS_URL}}' >> .env
+        echo -e 'WORK_LOGS_API_SECRET=${{secrets.WORK_LOGS_API_SECRET}}' >> .env
+        echo -e 'ADMIN_DM_ID=${{secrets.ADMIN_DM_ID}}' >> .env
+        echo -e 'OPS_DM_ID=${{secrets.OPS_DM_ID}}' >> .env
+        echo -e 'ENGINEERING_DM_ID=${{secrets.ENGINEERING_DM_ID}}' >> .env
+        echo -e 'BIZDEV_DM_ID=${{secrets.BIZDEV_DM_ID}}' >> .env
 
     - name: compress project
       run: zip -r bas_scripts.zip .

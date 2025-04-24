@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
+require 'bas/shared_storage/postgres'
 require 'date'
 require 'httparty'
 
@@ -36,7 +37,9 @@ module Implementation
       response = fetch_last_work_logs
 
       if response.code == 200
-        { success: { notification: normalize_response(response.parsed_response['data']) } }
+        create_notifications(response.parsed_response['data'])
+
+        { success: '' }
       else
         { error: { message: response.parsed_response, status_code: response.code } }
       end
@@ -49,25 +52,49 @@ module Implementation
                    headers: { 'Authorization' => "Bearer #{process_options[:secret]}" })
     end
 
-    def normalize_response(response)
-      missing_logs_list = missing_logs(response).map { |log| "- #{log['name']} (#{last_recorded(log)})" }
+    def create_notifications(response)
+      with_missing_logs(response).group_by { |person| person['domain'] }.map do |domain, people|
+        notification = format_notification(domain, people)
 
-      ":warning::alarm_clock: People with missing Work Logs in the last #{process_options[:days]} "\
-      "days and the last time they added a log:\n\n#{missing_logs_list.join("\n")}\n\n" \
+        create_notification(domain, notification)
+      end
     end
 
-    def missing_logs(logs)
-      logs.filter do |log|
-        date = DateTime.parse(log['last_recorded'])
+    def with_missing_logs(people)
+      people.filter do |person|
+        date = DateTime.parse(person['last_recorded'])
 
         date < Date.today - process_options[:days] && date > Date.today - 60
       end
+    end
+
+    def format_notification(domain, people)
+      people = people.map { |person| "- #{person['name']} (#{last_recorded(person)})" }
+
+      ":warning::alarm_clock: Hello director of **#{domain}**,\nThis is a notification regarding team members with"\
+      "missing work-logs in the past #{process_options[:days]} days along with the date of their most recent entry:"\
+      " \n\n#{people.join("\n")}\n\n" \
     end
 
     def last_recorded(log)
       date = DateTime.parse(log['last_recorded'])
 
       date.strftime('%d/%m/%Y')
+    end
+
+    def create_notification(domain, notification)
+      write_data = { success: { notification:, dm_id: directors_dms(domain) } }
+
+      shared_storage_writer.write(write_data)
+    end
+
+    def directors_dms(domain)
+      case domain
+      when /kommit\.admin/ then process_options[:admin_dm_id]
+      when /kommit\.ops/ then process_options[:ops_dm_id]
+      when /kommit\.engineering/ then process_options[:engineering_dm_id]
+      when /kommit\.bizdev/ then process_options[:bizdev_dm_id]
+      end
     end
   end
 end
