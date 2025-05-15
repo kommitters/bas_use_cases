@@ -5,6 +5,31 @@ require 'bas/utils/notion/request'
 
 module Implementation
   ##
+  # The Implementation::SearchUsersInApollo class serves as a bot implementation to fetch "networks"
+  # pages without emails from notion
+  #
+  # <br>
+  # <b>Example</b>
+  #
+  #   read_options = {
+  #     connection:,
+  #     db_table: "apollo_sync",
+  #     tag: "FetchNetworksEmaillessFromNotion"
+  #   }
+  #
+  #   write_options = {
+  #     connection:,
+  #     db_table: "apollo_sync",
+  #     tag: "SearchUsersInApollo"
+  #   }
+  #
+  #   options = {
+  #     apollo_token: "apollo_token"
+  #   }
+  #
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+  #
+  #  Implementation::SearchUsersInApollo.new(options, shared_storage).execute
   #
   class SearchUsersInApollo < Bas::Bot::Base
     URL = 'https://api.apollo.io/api/v1/people/match'

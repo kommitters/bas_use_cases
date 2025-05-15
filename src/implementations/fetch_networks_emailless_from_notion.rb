@@ -5,6 +5,26 @@ require 'bas/utils/notion/request'
 
 module Implementation
   ##
+  # The Implementation::FetchNetworksEmaillessFromNotion class serves as a bot implementation to fetch "networks"
+  # pages without emails from notion
+  #
+  # <br>
+  # <b>Example</b>
+  #
+  #   write_options = {
+  #     connection:,
+  #     db_table: "apollo_sync",
+  #     tag: "FetchNetworksEmaillessFromNotion"
+  #   }
+  #
+  #   options = {
+  #     database_id: "database_id"
+  #     secret: "notion_secret"
+  #   }
+  #
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+  #
+  #  Implementation::FetchNetworksEmaillessFromNotion.new(options, shared_storage).execute
   #
   class FetchNetworksEmaillessFromNotion < Bas::Bot::Base
     def process

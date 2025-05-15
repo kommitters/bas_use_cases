@@ -264,3 +264,4 @@ CREATE TABLE IF NOT EXISTS apollo_sync (
         time zone DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
 );
+
