@@ -5,7 +5,7 @@ require 'bas/utils/notion/request'
 
 module Implementation
   ##
-  # The Implementation::FetchReposFromNotion class serves as a bot implementation to read OSS projects
+  # The Implementation::FetchRepositoriesFromNotion class serves as a bot implementation to read OSS project
   # repositories from a notion database and write them on a PostgresDB table with a specific format.
   #
   # <br>
@@ -14,7 +14,7 @@ module Implementation
   #   write_options = {
   #     connection:,
   #     db_table: "repos_score",
-  #     tag: "FetchReposFromNotion"
+  #     tag: "FetchRepositoriesFromNotion"
   #   }
   #
   #   options = {
@@ -25,13 +25,14 @@ module Implementation
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #  Implementation::FetchReposFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
+  #  Implementation::FetchRepositoriesFromNotion.new(options, shared_storage_reader, shared_storage_writer).execute
   #
-  class FetchReposFromNotion < Bas::Bot::Base
+  class FetchRepositoriesFromNotion < Bas::Bot::Base
     # Process function to execute the Notion utility to fetch OSS projects info from a notion database
     #
     def process
       response = Utils::Notion::Request.execute(params)
+      
       if response.code == 200
         repos_list = normalize_response(response.parsed_response['results'])
         { success: { repos: repos_list } }

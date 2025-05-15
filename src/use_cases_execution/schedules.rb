@@ -83,7 +83,7 @@ module UseCasesExecution
     ].freeze
 
     OSS_SCORE_SCHEDULES = [
-      { path: "#{__dir__}/oss_score/fetch_repos_from_notion.rb", time: ['17:40'], day: ['Friday'] },
+      { path: "#{__dir__}/oss_score/fetch_repositories_from_notion.rb", time: ['17:40'], day: ['Friday'] },
       { path: "#{__dir__}/oss_score/fetch_scores_from_github.rb", time: ['17:50'], day: ['Friday'] },
       { path: "#{__dir__}/oss_score/update_scores_in_notion.rb", time: ['18:00'], day: ['Friday'] }
     ].freeze

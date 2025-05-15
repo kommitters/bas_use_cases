@@ -10,7 +10,7 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'repos_score',
-  tag: 'FetchReposFromNotion'
+  tag: 'FetchRepositoriesFromNotion'
 }
 
 write_options = {

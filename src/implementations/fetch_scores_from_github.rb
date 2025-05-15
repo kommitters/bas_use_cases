@@ -7,8 +7,8 @@ require 'bas/bot/base'
 
 module Implementation
   ##
-  # The Implementation::FetchScoresFromGithub class serves as a bot implementation to read repos from a
-  # PostgresDB table, get the score from Github API and write them on a PostgresDB table.
+  # The Implementation::FetchScoresFromGithub class serves as a bot implementation to read repositories
+  # from a PostgresDB table, get the score from Github API and write them on a PostgresDB table.
   #
   # <br>
   # <b>Example</b>
