@@ -80,6 +80,6 @@ module UseCasesExecution
       { path: "#{__dir__}/networks_sync/fetch_networks_emailless_from_notion.rb", day: 'Friday', time: ['02:00'] },
       { path: "#{__dir__}/networks_sync/search_users_in_apollo.rb", day: 'Friday', time: ['03:00'] },
       { path: "#{__dir__}/networks_sync/update_networks.rb", day: 'Friday', time: ['04:00'] }
-    ]
+    ].freeze
   end
 end
