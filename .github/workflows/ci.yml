@@ -105,6 +105,7 @@ jobs:
         echo -e 'OPS_DM_ID=${{secrets.OPS_DM_ID_STG}}' >> .env
         echo -e 'ENGINEERING_DM_ID=${{secrets.ENGINEERING_DM_ID_STG}}' >> .env
         echo -e 'BIZDEV_DM_ID=${{secrets.BIZDEV_DM_ID_STG}}' >> .env
+        echo -e 'APOLLO_TOKEN=${{secrets.APOLLO_TOKEN}}' >> .env
 
     - name: compress project
       run: zip -r bas_scripts.zip .

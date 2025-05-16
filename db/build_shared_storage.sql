@@ -185,9 +185,12 @@ CREATE TABLE IF NOT EXISTS conversations (
 );
 
 CREATE TABLE IF NOT EXISTS observed_websites_conversations (
-    observed_website_id INT REFERENCES observed_websites(id) ON DELETE CASCADE,
-    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
-    PRIMARY KEY (observed_website_id, conversation_id)
+    observed_website_id INT REFERENCES observed_websites (id) ON DELETE CASCADE,
+    conversation_id INT REFERENCES conversations (id) ON DELETE CASCADE,
+    PRIMARY KEY (
+        observed_website_id,
+        conversation_id
+    )
 );
 
 CREATE TABLE IF NOT EXISTS observed_websites_availability (
@@ -243,3 +246,22 @@ CREATE TABLE IF NOT EXISTS missing_work_logs (
         time zone DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS apollo_sync (
+    id SERIAL NOT NULL,
+    "data" jsonb,
+    tag varchar(255),
+    archived boolean,
+    stage varchar(255),
+    status varchar(255),
+    error_message jsonb,
+    version varchar(255),
+    inserted_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp
+    with
+        time zone DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+);
+
