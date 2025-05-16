@@ -105,7 +105,7 @@ module Implementation
 
         value = issue_data["value"]
         unless value.is_a?(Numeric)
-          puts "⚠️ Invalid value for '#{key}', using 0"
+          puts "Invalid value for '#{key}', using 0"
           value = 0
         end
 
