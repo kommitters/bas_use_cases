@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.0 (15.05.2025)
+- [Add bots to update networks without emails](https://github.com/kommitters/bas_use_cases/pull/71)
+
 ## 1.4.0 (24.04.2025)
 - [Add missing work logs notify automation](https://github.com/kommitters/bas_use_cases/pull/64)
 - [Update missing work log notify](https://github.com/kommitters/bas_use_cases/pull/65)
