@@ -75,5 +75,10 @@ module UseCasesExecution
       { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", interval: 300_000 },
       { path: "#{__dir__}/missing_work_logs/garbage_collector.rb", time: ['14:00'] }
     ].freeze
+
+    STAGING_CLOSED_ISSUES_SCHEDULES = [
+      { path: "#{__dir__}/closed_issues/fetch_github_issues.rb", time: ['12:00'], day: ['Friday'] },
+      { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", time: ['12:10'], day: ['Friday'] },
+    ].freeze
   end
 end
