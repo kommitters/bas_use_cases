@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '3.3.3'
+ruby '3.3.8'
 
 gem 'rspec'
 
@@ -38,3 +38,7 @@ gem 'net-smtp', '~> 0.4.0.1'
 gem 'octokit', '~> 8.1.0'
 
 gem 'openssl', '~> 3.2'
+
+gem 'pg', '~> 1.4'
+
+gem 'notion-ruby-client'
