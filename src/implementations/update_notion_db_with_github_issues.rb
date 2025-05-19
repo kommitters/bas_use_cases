@@ -48,10 +48,6 @@ module Implementation
 
       # Get month from the data
       target_month = data["month"]
-      unless target_month.is_a?(String) && !target_month.strip.empty?
-        puts "'month' is missing or invalid"
-        return { error: "'month' field missing or invalid" }
-      end
 
       # Search for the page in Notion database
       pages = Utils::Notion::Request.execute({
