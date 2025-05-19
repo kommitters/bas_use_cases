@@ -15,9 +15,6 @@ write_options = {
 }
 
 options = {  
-  db_table: 'github_issues',   
-  tag: 'GithubIssueRequest',
-  connection: Config.pg_connection
 }
 
 # Process bot
