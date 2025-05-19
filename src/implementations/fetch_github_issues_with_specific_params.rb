@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 require 'httparty'
-require 'bas/shared_storage/postgres'
 require 'date'
 require 'bas/bot/base'
 
 module Implementation
-  ##
+##
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch issues from
   # the GitHub API and process them.
   #
@@ -18,13 +17,13 @@ module Implementation
   #   db_table: 'github_issues',
   #   tag: 'GithubIssueRequest'
   #  }
-  
+
   #
   #   options = {
-  #     connection: Config::CONNECTION,
-  #     db_table: 'github_issues',
-  #     tag: 'FetchGithubIssues'
   #   }
+  #
+  #   shared_storage_reader = Bas::SharedStorage::Default.new
+  #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
   #   Implementation::FetchGithubIssues.new(options, shared_storage_reader, shared_storage_writer).execute
   #
