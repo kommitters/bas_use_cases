@@ -40,11 +40,11 @@ module Implementation
   class UpdateNotionDBWithGithubIssues < Bas::Bot::Base
     def process
       # Get the Notion database ID and secret from the process options
-      database_id = @process_options[:notion_database_id]
-      secret = @process_options[:notion_secret]
+      database_id = process_options[:notion_database_id]
+      secret = process_options[:notion_secret]
 
       # Get data from the read response with the information to update Notion DB
-      data = @read_response.data
+      data = read_response.data
 
       # Get month from the data
       target_month = data["month"]
