@@ -32,7 +32,7 @@ module Implementation
     #
     def process
       response = Utils::Notion::Request.execute(params)
-      
+
       if response.code == 200
         repos_list = normalize_response(response.parsed_response['results'])
         { success: { repos: repos_list } }

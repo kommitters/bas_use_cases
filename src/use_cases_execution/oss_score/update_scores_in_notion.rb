@@ -6,7 +6,6 @@ require 'bas/shared_storage/postgres'
 require_relative '../../implementations/update_scores_in_notion'
 require_relative 'config'
 
-
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'repos_score',

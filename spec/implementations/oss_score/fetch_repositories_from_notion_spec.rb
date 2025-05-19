@@ -32,9 +32,10 @@ RSpec.describe Implementation::FetchRepositoriesFromNotion do
     allow(mocked_shared_storage_reader).to receive(:set_processed)
     allow(mocked_shared_storage_reader).to receive(:set_in_process)
 
-    @bot = Implementation::FetchRepositoriesFromNotion.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
+    @bot = Implementation::FetchRepositoriesFromNotion.new(options, mocked_shared_storage_reader,
+                                                           mocked_shared_storage_writer)
   end
-  
+
   context '.execute' do
     before do
       bas_bot = instance_double(Implementation::FetchRepositoriesFromNotion)

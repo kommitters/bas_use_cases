@@ -13,7 +13,7 @@ RSpec.describe Implementation::UpdateScoresInNotion do
     {
       'scores' => [
         { 'page_id' => 'abcd-1234', 'score' => 8.5 },
-        { 'page_id' => nil, 'score' => 7.3 }, 
+        { 'page_id' => nil, 'score' => 7.3 },
         { 'page_id' => 'wxyz-5678', 'score' => nil }
       ]
     }
