@@ -12,6 +12,12 @@ module Implementation
   # <br>
   # <b>Example</b>
   #
+  #   read_options = {
+  #     connection:,
+  #     db_table: "repos_score",
+  #     tag: "FetchScoresFromGithub"
+  #   }
+  #
   #   write_options = {
   #     connection:,
   #     db_table: "repos_score",
@@ -19,7 +25,7 @@ module Implementation
   #   }
   #
   #   options = {
-  #     secret: ENV.fetch('NOTION_SECRET')
+  #     secret: "notion_secret"
   #   }
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })

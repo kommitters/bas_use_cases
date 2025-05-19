@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'json'
+require 'httparty'
 require 'uri'
 require 'bas/bot/base'
 
@@ -13,6 +12,12 @@ module Implementation
   # <br>
   # <b>Example</b>
   #
+  #   read_options = {
+  #     connection:,
+  #     db_table: "repos_score",
+  #     tag: "FetchRepositoriesFromNotion"
+  #   }
+  #
   #   write_options = {
   #     connection:,
   #     db_table: "repos_score",
@@ -20,7 +25,7 @@ module Implementation
   #   }
   #
   #   options = {
-  #     api_url: ENV.fetch('API_SECURITY_SCORECARDS_URL')
+  #     api_url: "https://api.securityscorecards.dev/projects/github.com/kommitters"
   #   }
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
@@ -45,8 +50,8 @@ module Implementation
     def fetch_scores(repos_list)
       repos_data = get_repo_info(repos_list)
       repos_data.map do |info|
-        uri = URI("#{process_options[:api_url]}/#{info[:name]}")
-        response = Net::HTTP.get_response(uri)
+        url = "#{process_options[:api_url]}/#{info[:name]}"
+        response = HTTParty.get(url)
 
         {
           page_id: info[:page_id],
@@ -67,9 +72,10 @@ module Implementation
 
     def normalize_response(responses)
       responses.map do |entry|
-        next unless entry[:response].is_a?(Net::HTTPSuccess)
+        response = entry[:response]
+        next unless response.success?
 
-        body = JSON.parse(entry[:response].body)
+        body = response.parsed_response
 
         {
           page_id: entry[:page_id],
