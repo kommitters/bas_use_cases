@@ -46,11 +46,6 @@ module Implementation
       # Get data from the read response with the information to update Notion DB
       data = @read_response.data
 
-      unless data.is_a?(Hash)
-        puts "Expected data to be a Hash"
-        return { error: "Invalid data format" }
-      end
-
       # Get month from the data
       target_month = data["month"]
       unless target_month.is_a?(String) && !target_month.strip.empty?
