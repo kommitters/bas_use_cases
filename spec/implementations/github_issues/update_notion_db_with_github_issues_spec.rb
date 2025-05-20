@@ -54,6 +54,17 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
     }
   end
 
+  context'.execute' do
+    before do
+      allow(@bot).to receive(:process).and_return({ success: { updated: nil } })
+      allow(@bot).to receive(:execute).and_return({ success: true })
+    end
+
+    it 'should execute the bot' do
+      expect(@bot.execute).not_to be_nil
+    end
+  end
+
   context 'when everything is valid' do
     before do
       allow(Utils::Notion::Request).to receive(:execute).and_return(notion_response)
