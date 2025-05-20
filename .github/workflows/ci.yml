@@ -63,6 +63,7 @@ jobs:
           echo -e 'POSTGRES_USER=${{secrets.POSTGRES_USER}}' >> .env
           echo -e 'POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}' >> .env
           echo -e 'DISCORD_BOT_NAME=NoahSTG' >> .env
+          echo -e 'GITHUB_TOKEN=${{secrets.GITHUB_TOKEN}}'
           echo -e 'NOTION_SECRET=${{secrets.NOTION_SECRET}}' >> .env
           echo -e 'BIRTHDAY_NOTION_DATABASE_ID=${{secrets.BIRTHDAY_NOTION_DATABASE_ID_STG}}' >> .env
           echo -e 'BIRTHDAY_DISCORD_WEBHOOK=${{secrets.BIRTHDAY_DISCORD_WEBHOOK_STG}}' >> .env
