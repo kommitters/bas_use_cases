@@ -60,7 +60,7 @@ module Implementation
                 secret: secret,
                 method: 'post',
                 body: {}
-              })
+                                              })
 
       results = pages['results']
       return nil unless results
@@ -103,10 +103,10 @@ module Implementation
       puts "Updating page with: #{body.inspect}"
 
       response = Utils::Notion::UpdateDatabasePage.new({
-                    page_id: page_id,
-                    secret: secret,
-                    body: body
-                  }).execute
+                   page_id: page_id,
+                   secret: secret,
+                   body: body
+                                                        }).execute
 
       if response.code == 200
         puts "Page updated successfully for month '#{target_month}'"
