@@ -5,7 +5,7 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../../src/implementations/fetch_github_issues_with_specific_params'
 
-ENV['GITHUB_TOKEN'] ='GITHUB_TOKEN'
+ENV['GITHUB_TOKEN'] = 'GITHUB_TOKEN'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
 ENV['POSTGRES_DB'] = 'POSTGRES_DB'
