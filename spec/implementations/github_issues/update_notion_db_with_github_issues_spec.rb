@@ -20,10 +20,10 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   let(:valid_data) do
     {
-      "month" => "May",
-      "closed_issues" => { "value" => 0 },
-      "opened_issues" => { "value" => 2 },
-      "previous_open_issues" => { "value" => 31 }
+      'month' => 'May',
+      'closed_issues' => { 'value' => 0 },
+      'opened_issues' => { 'value' => 2 },
+      'previous_open_issues' => { 'value' => 31 }
     }
   end
 
@@ -41,12 +41,12 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   let(:notion_response) do
     {
-      "results" => [
+      'results' => [
         {
-          "id" => "page_id_123",
-          "properties" => {
-            "Month" => {
-              "title" => [{ "plain_text" => "May" }]
+          'id' => 'page_id_123',
+          'properties' => {
+            'Month' => {
+              'title' => [{ 'plain_text' => 'May' }]
             }
           }
         }
@@ -54,7 +54,7 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
     }
   end
 
-  context'.execute' do
+  context '.execute' do
     before do
       allow(@bot).to receive(:process).and_return({ success: { updated: nil } })
       allow(@bot).to receive(:execute).and_return({ success: true })
@@ -89,7 +89,9 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   context "when 'month' is missing or invalid" do
     before do
-      allow(mocked_shared_storage).to receive(:read).and_return(double(data: valid_data.merge("month" => nil), inserted_at: Time.now))
+      allow(mocked_shared_storage).to receive(:read)
+        .and_return(double(data: valid_data.merge('month' => nil),
+                             inserted_at: Time.now))
     end
 
     it 'returns an error' do
@@ -99,7 +101,7 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   context 'when Notion response has no results' do
     before do
-      allow(Utils::Notion::Request).to receive(:execute).and_return({ "results" => [] })
+      allow(Utils::Notion::Request).to receive(:execute).and_return({ 'results' => [] })
     end
 
     it 'returns an error' do
@@ -110,22 +112,24 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
   context 'when issue values are not numeric' do
     let(:invalid_data) do
       {
-        "month" => "May",
-        "closed_issues" => { "value" => "x" },
-        "opened_issues" => { "value" => nil },
-        "previous_open_issues" => { "value" => "abc" }
+        'month' => 'May',
+        'closed_issues' => { 'value' => 'x' },
+        'opened_issues' => { 'value' => nil },
+        'previous_open_issues' => { 'value' => 'abc' }
       }
     end
-  end 
+  end
 
   context 'when all metric keys are missing' do
     before do
-      allow(mocked_shared_storage).to receive(:read).and_return(double(data: { "month" => "May" }, inserted_at: Time.now))
+      allow(mocked_shared_storage).to receive(:read).and_return(double(data: 
+                                                                        { 'month' => 'May' }, inserted_at: Time.now
+                                                                      ))
     end
 
     it 'returns an error' do
-      allow(@bot).to receive(:process).and_return({ error: "No valid issue data found to update" })
-      expect(@bot.process[:error]).to eq("No valid issue data found to update")
+      allow(@bot).to receive(:process).and_return({ error: 'No valid issue data found to update' })
+      expect(@bot.process[:error]).to eq('No valid issue data found to update')
     end
   end
 
@@ -133,12 +137,12 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
     before do
       allow(Utils::Notion::Request).to receive(:execute).and_return(notion_response)
       allow_any_instance_of(Utils::Notion::UpdateDatabasePage).to receive(:execute).and_return(
-        double(code: 500, body: "Internal Server Error")
+        double(code: 500, body: 'Internal Server Error')
       )
     end
 
     it 'returns an error with status and body' do
-      allow(@bot).to receive(:process).and_return({ error: "Failed to update Notion page", status: 500 })
+      allow(@bot).to receive(:process).and_return({ error: 'Failed to update Notion page', status: 500 })
     end
   end
 end

@@ -5,7 +5,7 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../../src/implementations/fetch_github_issues_with_specific_params'
 
-ENV['GITHUB_TOKEN']='GITHUB_TOKEN'
+ENV['GITHUB_TOKEN'] ='GITHUB_TOKEN'
 ENV['DB_HOST'] = 'DB_HOST'
 ENV['DB_PORT'] = 'DB_PORT'
 ENV['POSTGRES_DB'] = 'POSTGRES_DB'
@@ -18,13 +18,13 @@ CONNECTION = {
   dbname: ENV.fetch('POSTGRES_DB'),
   user: ENV.fetch('POSTGRES_USER'),
   password: ENV.fetch('POSTGRES_PASSWORD')
-}
+}.freeze
 
 BASE_URL = 'https://api.github.com/search/issues'
 
 RSpec.describe Implementation::FetchGithubIssues do
   let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
-  before do 
+  before do
     options = {
       connection: CONNECTION,
       db_table: 'github_issues',
