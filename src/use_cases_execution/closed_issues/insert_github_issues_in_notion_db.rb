@@ -18,7 +18,7 @@ read_options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'GithubIssueRequest',
+  tag: 'GithubIssueRequest'
 }
 
 options = {
@@ -31,7 +31,6 @@ begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Implementation::UpdateNotionDBWithGithubIssues.new(options, shared_storage).execute
-
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
