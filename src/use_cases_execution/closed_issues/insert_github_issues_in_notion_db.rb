@@ -22,8 +22,8 @@ write_options = {
 }
 
 options = {
-  notion_database_id: Config.notion_database_id,
-  notion_secret: Config.notion_secret,
+  notion_database_id: Config::NOTION_CLOSED_ISSUES_DATABASE_ID,
+  notion_secret: Config::NOTION_SECRET,
   tag: 'GithubIssueRequest'
 }
 
