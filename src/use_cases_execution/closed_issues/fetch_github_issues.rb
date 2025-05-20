@@ -14,8 +14,7 @@ write_options = {
   tag: 'GithubIssueRequest'
 }
 
-options = {  
-}
+options = {}
 
 # Process bot
 begin
