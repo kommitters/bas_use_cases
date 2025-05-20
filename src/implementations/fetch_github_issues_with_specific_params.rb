@@ -5,7 +5,7 @@ require 'date'
 require 'bas/bot/base'
 
 module Implementation
-#
+ #
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch issues from
   # the GitHub API and process them.
   #
@@ -26,7 +26,7 @@ module Implementation
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
   #   Implementation::FetchGithubIssues.new(options, shared_storage_reader, shared_storage_writer).execute
-  #
+ #
   class FetchGithubIssues < Bas::Bot::Base
     BASE_URL = 'https://api.github.com/search/issues'
 
@@ -78,7 +78,7 @@ module Implementation
     end
 
     # Normalizes the metrics for the return
-    def normalize_metrics(period, closed_issues, 
+    def normalize_metrics(period, closed_issues,
                           opened_issues, previous_open_issues)
       {
         month: period[:start_date].strftime('%B'),
