@@ -39,17 +39,22 @@ module Implementation
   #
   class UpdateNotionDBWithGithubIssues < Bas::Bot::Base
     def process
-      # Get the Notion database ID and secret from the process options
       database_id = process_options[:notion_database_id]
       secret = process_options[:notion_secret]
-
-      # Get data from the read response with the information to update Notion DB
       data = read_response.data
-
-      # Get month from the data
       target_month = data["month"]
 
-      # Search for the page in Notion database
+      page = find_notion_page(database_id, secret, target_month)
+      return { error: "Notion page for '#{target_month}' not found" } unless page
+
+      body = build_update_body(data)
+
+      update_page(page["id"], secret, body, target_month)
+    end
+
+    private
+
+    def find_notion_page(database_id, secret, target_month)
       pages = Utils::Notion::Request.execute({
         endpoint: "databases/#{database_id}/query",
         secret: secret,
@@ -58,34 +63,22 @@ module Implementation
       })
 
       results = pages["results"]
-      if results.nil?
-        puts "No results found in Notion response"
-        return { error: "No results found in Notion response" }
-      end
+      return nil unless results
 
-      page = results.find do |p|
+      results.find do |p|
         title = p.dig("properties", "Month", "title")
-        title && title[0] && title[0]["plain_text"] == target_month
+        title&.first&.dig("plain_text") == target_month
       end
+    end
 
-      unless page
-        puts "No Notion page found for month '#{target_month}'"
-        return { error: "Notion page for '#{target_month}' not found" }
-      end
-
-      # Build the body for the Notion update request
-      body = {
-        properties: {}
-      }
-
-      # Map keys from Notion database
+    def build_update_body(data)
+      body = { properties: {} }
       notion_fields = {
         "closed_issues" => "Closed Tickets",
         "opened_issues" => "Opened Issues",
         "previous_open_issues" => "Previous open issues"
       }
 
-      # Iterate over the keys and map them to Notion properties
       notion_fields.each do |key, notion_property_name|
         issue_data = data[key]
 
@@ -103,16 +96,14 @@ module Implementation
         body[:properties][notion_property_name] = { number: value }
       end
 
-      if body[:properties].empty?
-        puts "No valid issue data found to update"
-        return { error: "No valid issue data found to update" }
-      end
+      body
+    end
 
+    def update_page(page_id, secret, body, target_month)
       puts "Updating page with: #{body.inspect}"
 
-      # Update the Notion page with the new data
       response = Utils::Notion::UpdateDatabasePage.new({
-        page_id: page["id"],
+        page_id: page_id,
         secret: secret,
         body: body
       }).execute
