@@ -90,8 +90,7 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
   context "when 'month' is missing or invalid" do
     before do
       allow(mocked_shared_storage).to receive(:read)
-        .and_return(double(data: valid_data.merge('month' => nil),
-                             inserted_at: Time.now))
+        .and_return(double(data: valid_data.merge('month' => nil), inserted_at: Time.now))
     end
 
     it 'returns an error' do
@@ -122,9 +121,9 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   context 'when all metric keys are missing' do
     before do
-      allow(mocked_shared_storage).to receive(:read).and_return(double(data: 
+      allow(mocked_shared_storage).to receive(:read).and_return(double(data:
                                                                         { 'month' => 'May' }, inserted_at: Time.now
-                                                                      ))
+     ))
     end
 
     it 'returns an error' do
