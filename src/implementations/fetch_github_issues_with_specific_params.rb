@@ -5,7 +5,7 @@ require 'date'
 require 'bas/bot/base'
 
 module Implementation
-##
+#
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch issues from
   # the GitHub API and process them.
   #
@@ -78,7 +78,8 @@ module Implementation
     end
 
     # Normalizes the metrics for the return
-    def normalize_metrics(period, closed_issues, opened_issues, previous_open_issues)
+    def normalize_metrics(period, closed_issues, 
+                          opened_issues, previous_open_issues)
       {
         month: period[:start_date].strftime('%B'),
         year: period[:start_date].year,
