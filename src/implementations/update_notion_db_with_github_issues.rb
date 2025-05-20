@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "date"
-require "bas/bot/base"
-require "bas/utils/notion/request"
-require "bas/utils/notion/update_db_page"
+require 'date'
+require 'bas/bot/base'
+require 'bas/utils/notion/request'
+require 'bas/utils/notion/update_db_page'
 
 module Implementation
   ##
@@ -42,41 +42,41 @@ module Implementation
       database_id = process_options[:notion_database_id]
       secret = process_options[:notion_secret]
       data = read_response.data
-      target_month = data["month"]
+      target_month = data['month']
 
       page = find_notion_page(database_id, secret, target_month)
       return { error: "Notion page for '#{target_month}' not found" } unless page
 
       body = build_update_body(data)
 
-      update_page(page["id"], secret, body, target_month)
+      update_page(page['id'], secret, body, target_month)
     end
 
     private
 
     def find_notion_page(database_id, secret, target_month)
       pages = Utils::Notion::Request.execute({
-        endpoint: "databases/#{database_id}/query",
-        secret: secret,
-        method: "post",
-        body: {}
-      })
+                endpoint: "databases/#{database_id}/query",
+                secret: secret,
+                method: 'post',
+                body: {}
+              })
 
-      results = pages["results"]
+      results = pages['results']
       return nil unless results
 
       results.find do |p|
-        title = p.dig("properties", "Month", "title")
-        title&.first&.dig("plain_text") == target_month
+        title = p.dig('properties', 'Month', 'title')
+        title&.first&.dig('plain_text') == target_month
       end
     end
 
     def build_update_body(data)
       body = { properties: {} }
       notion_fields = {
-        "closed_issues" => "Closed Tickets",
-        "opened_issues" => "Opened Issues",
-        "previous_open_issues" => "Previous open issues"
+        'closed_issues' => 'Closed Tickets',
+        'opened_issues' => 'Opened Issues',
+        'previous_open_issues' => 'Previous open issues'
       }
 
       notion_fields.each do |key, notion_property_name|
@@ -87,7 +87,7 @@ module Implementation
           next
         end
 
-        value = issue_data["value"]
+        value = issue_data['value']
         unless value.is_a?(Numeric)
           puts "Invalid value for '#{key}', using 0"
           value = 0
@@ -103,17 +103,17 @@ module Implementation
       puts "Updating page with: #{body.inspect}"
 
       response = Utils::Notion::UpdateDatabasePage.new({
-        page_id: page_id,
-        secret: secret,
-        body: body
-      }).execute
+                    page_id: page_id,
+                    secret: secret,
+                    body: body
+                  }).execute
 
       if response.code == 200
         puts "Page updated successfully for month '#{target_month}'"
         { success: true }
       else
         puts "Error updating Notion: #{response.body}"
-        { error: "Failed to update Notion page", status: response.code }
+        { error: 'Failed to update Notion page', status: response.code }
       end
     end
   end
