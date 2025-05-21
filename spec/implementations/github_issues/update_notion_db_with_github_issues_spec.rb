@@ -121,9 +121,8 @@ RSpec.describe Implementation::UpdateNotionDBWithGithubIssues do
 
   context 'when all metric keys are missing' do
     before do
-      allow(mocked_shared_storage).to receive(:read).and_return(double(data:
-                                                                        { 'month' => 'May' }, inserted_at: Time.now
-     ))
+      params = double(data: { 'month' => 'May' }, inserted_at: Time.now)
+      allow(mocked_shared_storage).to receive(:read).and_return(params)
     end
 
     it 'returns an error' do
