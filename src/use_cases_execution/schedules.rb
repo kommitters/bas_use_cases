@@ -82,7 +82,7 @@ module UseCasesExecution
       { path: "#{__dir__}/networks_sync/update_networks.rb", day: 'Friday', time: ['04:00'] }
     ].freeze
 
-    STAGING_CLOSED_ISSUES_SCHEDULES = [
+    OSPO_CLOSED_ISSUES_KPI_SCHEDULES = [
       { path: "#{__dir__}/closed_issues/fetch_github_issues.rb", time: ['12:00'], day: ['Friday'] },
       { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", time: ['12:10'], day: ['Friday'] }
     ].freeze
