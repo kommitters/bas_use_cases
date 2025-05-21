@@ -6,7 +6,7 @@ require_relative '../utils/send_message_webhook_workspace'
 module Implementation
   ##
   # The Implementation::NotifyWorkspace class serves as a bot implementation to send messages to a
-  # Google Chat workspace readed from a PostgresDB table.
+  # Google Chat workspace read from a PostgresDB table.
   #
   # <br>
   # <b>Example</b>
