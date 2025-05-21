@@ -48,66 +48,79 @@ module Implementation
       return { error: "Notion page for '#{target_month}' not found" } unless page
 
       body = build_update_body(data)
-
       update_page(page['id'], secret, body, target_month)
     end
 
     private
 
     def find_notion_page(database_id, secret, target_month)
-      pages = Utils::Notion::Request.execute({
-                endpoint: "databases/#{database_id}/query",
-                secret: secret,
-                method: 'post',
-                body: {}
-                                              })
-
+      pages = query_notion_database(database_id, secret)
       results = pages['results']
       return nil unless results
 
-      results.find do |p|
-        title = p.dig('properties', 'Month', 'title')
-        title&.first&.dig('plain_text') == target_month
-      end
+      results.find { |p| page_matches_month?(p, target_month) }
+    end
+
+    def query_notion_database(database_id, secret)
+      Utils::Notion::Request.execute(
+        {
+          endpoint: "databases/#{database_id}/query",
+          secret: secret,
+          method: 'post',
+          body: {}
+        }
+      )
+    end
+
+    def page_matches_month?(page, target_month)
+      title = page.dig('properties', 'Month', 'title')
+      title&.first&.dig('plain_text') == target_month
     end
 
     def build_update_body(data)
       body = { properties: {} }
-      notion_fields = {
+      fields_map.each do |key, notion_property_name|
+        value = normalize_value(data[key], key)
+        body[:properties][notion_property_name] = { number: value }
+      end
+      body
+    end
+
+    def fields_map
+      {
         'closed_issues' => 'Closed Tickets',
         'opened_issues' => 'Opened Issues',
         'previous_open_issues' => 'Previous open issues'
       }
+    end
 
-      notion_fields.each do |key, notion_property_name|
-        issue_data = data[key]
-
-        unless issue_data.is_a?(Hash)
-          puts "Missing values for '#{key}'"
-          next
-        end
-
-        value = issue_data['value']
-        unless value.is_a?(Numeric)
-          puts "Invalid value for '#{key}', using 0"
-          value = 0
-        end
-
-        body[:properties][notion_property_name] = { number: value }
+    def normalize_value(issue_data, key)
+      unless issue_data.is_a?(Hash)
+        puts "Missing values for '#{key}'"
+        return 0
       end
 
-      body
+      value = issue_data['value']
+      return value if value.is_a?(Numeric)
+
+      puts "Invalid value for '#{key}', using 0"
+      0
     end
 
     def update_page(page_id, secret, body, target_month)
       puts "Updating page with: #{body.inspect}"
+      response = Utils::Notion::UpdateDatabasePage.new(
+        {
+          page_id: page_id,
+          secret: secret,
+          body: body
+        }
+      ).execute
 
-      response = Utils::Notion::UpdateDatabasePage.new({
-                   page_id: page_id,
-                   secret: secret,
-                   body: body
-                                                        }).execute
+      handle_response(response, target_month)
+    end
 
+    def handle_response(response, target_month)
       if response.code == 200
         puts "Page updated successfully for month '#{target_month}'"
         { success: true }
