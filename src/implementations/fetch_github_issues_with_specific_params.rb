@@ -5,7 +5,7 @@ require 'date'
 require 'bas/bot/base'
 
 module Implementation
- #
+  #
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch issues from
   # the GitHub API and process them.
   #
@@ -25,8 +25,8 @@ module Implementation
   #   shared_storage_reader = Bas::SharedStorage::Default.new
   #   shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
   #
-  #   Implementation::FetchGithubIssues.new(options, shared_storage_reader, shared_storage_writer).execute
- #
+  # Implementation::FetchGithubIssues.new(options, shared_storage_reader, shared_storage_writer).execute
+  #
   class FetchGithubIssues < Bas::Bot::Base
     BASE_URL = 'https://api.github.com/search/issues'
 
@@ -78,24 +78,18 @@ module Implementation
     end
 
     # Normalizes the metrics for the return
-    def normalize_metrics(period, closed_issues,
-                          opened_issues, previous_open_issues)
+    def normalize_metrics(period, closed_issues, opened_issues, previous_open_issues)
       {
         month: period[:start_date].strftime('%B'),
         year: period[:start_date].year,
-        closed_issues: {
-          name: '# Closed Tickets',
-          value: closed_issues
-        },
-        opened_issues: {
-          name: '# Opened Issues',
-          value: opened_issues
-        },
-        previous_open_issues: {
-          name: 'Previous Open Issues',
-          value: previous_open_issues
-        }
+        closed_issues: build_metric('# Closed Tickets', closed_issues),
+        opened_issues: build_metric('# Opened Issues', opened_issues),
+        previous_open_issues: build_metric('Previous Open Issues', previous_open_issues)
       }
+    end
+
+    def build_metric(name, value)
+      { name:, value: }
     end
 
     # Fetches the count of issues from GitHub
@@ -113,7 +107,7 @@ module Implementation
     def headers
       {
         'User-Agent' => 'RubyBot',
-        'Authorization' => "Bearer #{ENV['GITHUB_TOKEN']}",
+        'Authorization' => "Bearer #{ENV.fetch('GITHUB_TOKEN')}",
         'Accept' => 'application/vnd.github+json'
       }
     end
