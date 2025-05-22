@@ -5,6 +5,31 @@ require 'bas/utils/notion/request'
 
 module Implementation
   ##
+  # The Implementation::UpdateBrevoContacts class serves as a bot implementation to update "networks" on a
+  # notion database using information of apollo
+  #
+  # <br>
+  # <b>Example</b>
+  #
+  #   read_options = {
+  #     connection:,
+  #     db_table: "apollo_sync",
+  #     tag: "FetchNetworksFromNotion"
+  #   }
+  #
+  #   write_options = {
+  #     connection:,
+  #     db_table: "apollo_sync",
+  #     tag: "UpdateBrevoContacts"
+  #   }
+  #
+  #   options = {
+  #     secret: "notion_secret"
+  #   }
+  #
+  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+  #
+  #  Implementation::UpdateBrevoContacts.new(options, shared_storage).execute
   #
   class UpdateBrevoContacts < Bas::Bot::Base
     BREVO_API_URL = 'https://api.brevo.com/v3'
