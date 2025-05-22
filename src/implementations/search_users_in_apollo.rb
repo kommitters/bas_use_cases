@@ -32,10 +32,11 @@ module Implementation
   #  Implementation::SearchUsersInApollo.new(options, shared_storage).execute
   #
   class SearchUsersInApollo < Bas::Bot::Base
-    URL = 'https://api.apollo.io/api/v1/people/match'
+    URL = 'https://api.apollo.io/api/v1/people/bulk_match'
+    BATCH_SIZE = 10
 
     def process
-      response = apollo_fetch_emails.compact
+      response = apollo_fetch_emails.reject { |network| network['email'].nil? }
 
       if response.empty?
         { error: { message: 'no emails was found' } }
@@ -47,17 +48,20 @@ module Implementation
     private
 
     def apollo_fetch_emails
-      read_response.data['networks_list'].map do |network|
-        email = fetch_single_email(network['linkedin_url'])
+      read_response.data['networks_list'].each_slice(BATCH_SIZE).flat_map do |networks|
+        linkedin_urls = networks.map { |network| { linkedin_url: network['linkedin_url'] } }
 
-        email.nil? ? nil : network.merge({ 'email': email })
+        emails = fetch_networks_email(linkedin_urls)
+
+        networks.zip(emails).map { |network, email| network.merge(email) }
       end
     end
 
-    def fetch_single_email(linkedin_url)
-      response = HTTParty.get(URL, headers:, query: { linkedin_url: linkedin_url })
+    def fetch_networks_email(linkedin_urls)
+      response = HTTParty.post(URL, headers:, query: { reveal_personal_emails: true },
+                                    body: { details: linkedin_urls }.to_json)
 
-      response.code == 200 ? response.parsed_response['person']['email'] : nil
+      response.code == 200 ? response.parsed_response['matches'].map { |match| { email: match['email'] } } : []
     end
 
     def headers
