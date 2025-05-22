@@ -65,6 +65,7 @@ jobs:
           echo -e 'DISCORD_BOT_NAME=NoahSTG' >> .env
           echo -e 'GITHUB_TOKEN=${{secrets.GITHUB_TOKEN}}'
           echo -e 'NOTION_SECRET=${{secrets.NOTION_SECRET}}' >> .env
+          echo -e 'OSS_NOTION_DATABASE_ID=${{secrets.OSS_NOTION_DATABASE_ID_STG}}' >> .env
           echo -e 'BIRTHDAY_NOTION_DATABASE_ID=${{secrets.BIRTHDAY_NOTION_DATABASE_ID_STG}}' >> .env
           echo -e 'BIRTHDAY_DISCORD_WEBHOOK=${{secrets.BIRTHDAY_DISCORD_WEBHOOK_STG}}' >> .env
           echo -e 'NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK=${{secrets.NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK_STG}}' >> .env
@@ -108,6 +109,7 @@ jobs:
           echo -e 'BIZDEV_DM_ID=${{secrets.BIZDEV_DM_ID_STG}}' >> .env
           echo -e 'APOLLO_TOKEN=${{secrets.APOLLO_TOKEN}}' >> .env
           echo -e 'NOTION_CLOSED_ISSUES_DATABASE_ID=${{secrets.NOTION_CLOSED_ISSUES_DATABASE_ID_STG}}' >> .env
+          echo -e 'API_SECURITY_SCORECARDS_URL=${{secrets.API_SECURITY_SCORECARDS_URL_STG}}' >> .env
 
       - name: compress project
         run: zip -r bas_scripts.zip .
