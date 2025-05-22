@@ -110,6 +110,8 @@ jobs:
           echo -e 'API_SECURITY_SCORECARDS_URL=${{secrets.API_SECURITY_SCORECARDS_URL_STG}}' >> .env
           echo -e 'NOTION_EXPIRED_PROJECTS_DATABASE_ID=${{secrets.NOTION_EXPIRED_PROJECTS_DATABASE_ID}}' >> .env
           echo -e 'EXPIRED_PROJECTS_DISCORD_WEBHOOK=${{secrets.EXPIRED_PROJECTS_DISCORD_WEBHOOK}}' >> .env
+          echo -e 'GOOGLE_CHAT_WEBHOOK_PTO=${{secrets.GOOGLE_CHAT_WEBHOOK_STG}}' >> .env
+          echo -e 'GOOGLE_CHAT_WEBHOOK_BIRTHDAY=${{secrets.GOOGLE_CHAT_WEBHOOK_STG}}' >> .env
 
       - name: compress project
         run: zip -r bas_scripts.zip .
