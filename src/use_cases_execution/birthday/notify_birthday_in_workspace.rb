@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  webhook: ENV.fetch('GOOGLE_CHAT_WEBHOOK')
+  webhook: ENV.fetch('GOOGLE_CHAT_WEBHOOK_BIRTHDAY')
 }
 
 # Process bot
