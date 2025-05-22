@@ -6,7 +6,7 @@ require 'bas/utils/notion/request'
 module Implementation
   ##
   # The Implementation::FetchNewNetworksFromApollo class serves as a bot implementation to fetch "networks"
-  # pages without emails from notion
+  # from apollo.
   #
   # <br>
   # <b>Example</b>
