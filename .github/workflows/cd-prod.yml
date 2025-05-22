@@ -32,6 +32,7 @@ jobs:
         echo -e 'POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}' >> .env
         echo -e 'DISCORD_BOT_NAME=${{secrets.DISCORD_BOT_NAME}}' >> .env
         echo -e 'NOTION_SECRET=${{secrets.NOTION_SECRET}}' >> .env
+        echo -e 'OSS_NOTION_DATABASE_ID=${{secrets.OSS_NOTION_DATABASE_ID}}' >> .env
         echo -e 'BIRTHDAY_NOTION_DATABASE_ID=${{secrets.BIRTHDAY_NOTION_DATABASE_ID}}' >> .env
         echo -e 'BIRTHDAY_DISCORD_WEBHOOK=${{secrets.BIRTHDAY_DISCORD_WEBHOOK}}' >> .env
         echo -e 'NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK=${{secrets.NEXT_WEEK_BIRTHDAY_DISCORD_WEBHOOK}}' >> .env
@@ -74,6 +75,7 @@ jobs:
         echo -e 'ENGINEERING_DM_ID=${{secrets.ENGINEERING_DM_ID}}' >> .env
         echo -e 'BIZDEV_DM_ID=${{secrets.BIZDEV_DM_ID}}' >> .env
         echo -e 'APOLLO_TOKEN=${{secrets.APOLLO_TOKEN}}' >> .env
+        echo -e 'API_SECURITY_SCORECARDS_URL=${{secrets.API_SECURITY_SCORECARDS_URL}}' >> .env
 
     - name: compress project
       run: zip -r bas_scripts.zip .
