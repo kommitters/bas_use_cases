@@ -53,13 +53,6 @@ module Implementation
 
     private
 
-    def conditions
-      {
-        where: 'archived=$1 AND tag=$2 AND stage=$3 ORDER BY inserted_at ASC',
-        params: [false, read_options[:tag], 'unprocessed']
-      }
-    end
-
     def params
       {
         assistant_id: process_options[:assistant_id],
@@ -78,7 +71,11 @@ module Implementation
     end
 
     def success_response(response)
-      { success: { notification: response.parsed_response['data'].first['content'].first['text']['value'] } }
+      format = response.parsed_response['data'].first['content'].first['text']['value']
+
+      format = format.gsub('**', '*') if process_options[:humanize_pto_workspace]
+
+      { success: { notification: format } }
     end
 
     def error_response(response)
