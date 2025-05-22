@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'bas/utils/notion/request'
+require 'bas/utils/notion/update_db_page'
 
 module Implementation
   ##
@@ -36,7 +36,7 @@ module Implementation
       return { success: { updated: nil } } if unprocessable_response
 
       begin
-        read_response.data['networks_list'].each { |network| update_email(network['email']) }
+        read_response.data['networks_list'].each { |network| update_email(network) }
 
         { success: { message: 'emails updated' } }
       rescue StandardError => e
@@ -46,11 +46,13 @@ module Implementation
 
     private
 
-    def update_email(email)
+    def update_email(network)
+      return unless network['email']
+
       options = {
-        page_id: read_response.data['id'],
+        page_id: network['id'],
         secret: process_options[:secret],
-        body: { properties: { Email: email, 'Email unavailable?' => false } }
+        body: { properties: { Email: network['email'], 'Email unavailable?' => false } }
       }
 
       Utils::Notion::UpdateDatabasePage.new(options).execute

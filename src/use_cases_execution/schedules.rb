@@ -92,7 +92,11 @@ module UseCasesExecution
     APOLLO_SYNC_SCHEDULE = [
       { path: "#{__dir__}/networks_sync/fetch_networks_emailless_from_notion.rb", day: 'Friday', time: ['02:00'] },
       { path: "#{__dir__}/networks_sync/search_users_in_apollo.rb", day: 'Friday', time: ['03:00'] },
-      { path: "#{__dir__}/networks_sync/update_networks.rb", day: 'Friday', time: ['04:00'] }
+      { path: "#{__dir__}/networks_sync/update_networks.rb", day: 'Friday', time: ['04:00'] },
+      { path: "#{__dir__}/networks_sync/fetch_new_networks_from_apollo.rb", day: 'Sunday', time: ['10:00'] },
+      { path: "#{__dir__}/networks_sync/update_new_networks_in_notion.rb", day: 'Sunday', time: ['10:20'] },
+      { path: "#{__dir__}/sync_brevo/fetch_networks_from_notion.rb", day: 'Sunday', time: ['11:00'] },
+      { path: "#{__dir__}/sync_brevo/update_brevo_contacts.rb", day: 'Sunday', time: ['11:20'] }
     ].freeze
 
     OSS_SCORE_SCHEDULES = [
