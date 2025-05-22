@@ -3,7 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../implementations/notify_discord'
+require_relative '../../implementations/notify_worklog_in_discord_dm'
 require_relative 'config'
 
 # Configuration
@@ -16,19 +16,19 @@ read_options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'worklog',
-  tag: 'NotifyDiscord'
+  tag: 'NotifyWorklogInDiscordDm'
 }
 
 options = {
-  name: ENV.fetch('DISCORD_BOT_NAME'),
-  webhook: ENV.fetch('WORKLOG_DISCORD_WEBHOOK')
+  token: ENV.fetch('DISCORD_BOT_TOKEN'),
+  discord_user_id: ENV.fetch('DISCORD_USER_ID')
 }
 
 # Process bot
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::NotifyDiscord.new(options, shared_storage).execute
+  Implementation::NotifyWorklogInDiscordDm.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

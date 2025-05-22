@@ -35,7 +35,7 @@ module Implementation
   #  Implementation::FormatWorklogs.new(options, shared_storage).execute
   #
   class FormatWorklogs < Bas::Bot::Base
-    WORKLOG_ITEM_ATTRIBUTES = %w[hours activity].freeze
+    WORKLOG_ITEM_ATTRIBUTES = %w[hours detail].freeze
 
     # Process function to format the notification using a template
     #
@@ -62,7 +62,7 @@ module Implementation
 
       items = worklogs.map do |worklog|
         item_data = worklog.dup
-        item_data['activity'] = worklog['activity'] || process_options[:no_activity_message]
+        item_data['detail'] = worklog['detail'] || process_options[:no_detail_message]
         build_template(WORKLOG_ITEM_ATTRIBUTES, item_data, process_options[:worklog_item_template])
       end.join("\n")
 

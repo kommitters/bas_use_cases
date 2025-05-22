@@ -18,14 +18,16 @@ RSpec.describe Implementation::FormatWorklogs do
             'hours' => 2,
             'activity' => 'Retrospective Meeting',
             'worklog_date' => '2025-05-22',
-            'worklog_title' => nil
+            'worklog_title' => nil,
+            'detail' => 'Add feature a to the project'
           },
           {
             'type' => 'Dev',
             'hours' => 3,
             'activity' => 'Research Fund Opportunities',
             'worklog_date' => '2025-05-22',
-            'worklog_title' => nil
+            'worklog_title' => nil,
+            'detail' => 'Add feature z to the project'
           }
         ],
         'Juan Camilo Muñoz Valencia' => [
@@ -34,14 +36,16 @@ RSpec.describe Implementation::FormatWorklogs do
             'hours' => 3,
             'activity' => 'Research Fund Opportunities',
             'worklog_date' => '2025-05-22',
-            'worklog_title' => nil
+            'worklog_title' => nil,
+            'detail' => 'Add feature y to the project'
           },
           {
             'type' => 'Dev',
             'hours' => 3,
             'activity' => 'Research Fund Opportunities',
             'worklog_date' => '2025-05-22',
-            'worklog_title' => nil
+            'worklog_title' => nil,
+            'detail' => 'Add feature x to the project'
           }
         ]
       }
@@ -61,8 +65,8 @@ RSpec.describe Implementation::FormatWorklogs do
 
     options = {
       person_section_template: '**<person_name>**',
-      worklog_item_template: '- <hours>h: <activity>',
-      no_activity_message: 'Sin actividad especificada'
+      worklog_item_template: '- <hours>h: <detail>',
+      no_activity_message: 'Sin detalle especificado'
     }
 
     @bot = Implementation::FormatWorklogs.new(options, mocked_shared_storage)
@@ -78,12 +82,12 @@ RSpec.describe Implementation::FormatWorklogs do
           success: {
             notification: <<~NOTIFICATION.strip
               **Lorenzo Zuluaga**
-              - 2h: Retrospective Meeting
-              - 3h: Research Fund Opportunities
+              - 2h: Add feature a to the project
+              - 3h: Add feature z to the project
 
               **Juan Camilo Muñoz Valencia**
-              - 3h: Research Fund Opportunities
-              - 3h: Research Fund Opportunities
+              - 3h: Add feature y to the project
+              - 3h: Add feature x to the project
             NOTIFICATION
           }
         }

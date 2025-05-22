@@ -21,8 +21,8 @@ write_options = {
 
 options = {
   person_section_template: '**<person_name>**',
-  worklog_item_template: '- <hours>h: <activity>',
-  no_activity_message: 'Sin actividad especificada'
+  worklog_item_template: '- <hours>h: <detail>',
+  no_detail_message: 'Sin detalle especificado'
 }
 
 # Process bot

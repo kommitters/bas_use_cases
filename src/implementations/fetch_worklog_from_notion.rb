@@ -32,7 +32,6 @@ module Implementation
     #
     def process
       response = Utils::Notion::Request.execute(params)
-
       if response.code == 200
         worklogs_list = normalize_response(response.parsed_response['results'])
         grouped_worklogs = group_worklogs_by_person(worklogs_list)
@@ -83,13 +82,15 @@ module Implementation
 
     def map_notion_properties_to_worklog(notion_result)
       properties = notion_result['properties']
+
       {
 
         'activity' => extract_select_field_value(properties['Activity']),
         'person_name' => extract_people_field_value(properties['Person']),
         'worklog_date' => extract_date_field_value(properties['Date']),
         'hours' => extract_number_field_value(properties['Hours']),
-        'type' => extract_select_field_value(properties['Category'])
+        'type' => extract_select_field_value(properties['Category']),
+        'detail' => extract_rich_text(properties['Detail'])
       }
     end
 
@@ -106,17 +107,22 @@ module Implementation
         'worklog_title' => worklog['worklog_title'],
         'worklog_date' => worklog['worklog_date'],
         'hours' => worklog['hours'],
-        'type' => worklog['type']
+        'type' => worklog['type'],
+        'detail' => worklog['detail']
       }
     end
 
     # Helper methods for extracting values from Notion properties
-    def extract_title_field_value(data)
-      data['title'][0]['plain_text'] if data && data['title'] && data['title'][0]
+    def extract_rich_text(data)
+      if data && data['title'] && !data['title'].empty?
+        data['title'][0]['plain_text']
+      elsif data && data['rich_text'] && !data['rich_text'].empty?
+        data['rich_text'][0]['plain_text']
+      end
     end
 
-    def extract_rich_text_field_value(data)
-      data['rich_text'][0]['plain_text'] if data && data['rich_text'] && data['rich_text'][0]
+    def extract_title_field_value(data)
+      data['title'][0]['plain_text'] if data && data['title'] && data['title'][0]
     end
 
     def extract_date_field_value(data)
