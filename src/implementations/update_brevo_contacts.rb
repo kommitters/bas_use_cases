@@ -6,7 +6,7 @@ require 'bas/utils/notion/request'
 module Implementation
   ##
   # The Implementation::UpdateBrevoContacts class serves as a bot implementation to update "networks" on a
-  # notion database using information of apollo
+  # notion database using information from apollo
   #
   # <br>
   # <b>Example</b>
