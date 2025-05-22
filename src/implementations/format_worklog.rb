@@ -44,7 +44,7 @@ module Implementation
 
       grouped_worklogs = read_response.data['worklogs'] || {}
 
-      return { success: { notification: 'No se encontraron worklogs en día de hoy.' } } if grouped_worklogs.empty?
+      return { success: { notification: 'No se encontraron worklogs en el día de hoy.' } } if grouped_worklogs.empty?
 
       notification = grouped_worklogs.map do |person, worklogs|
         build_person_section(person, worklogs)
