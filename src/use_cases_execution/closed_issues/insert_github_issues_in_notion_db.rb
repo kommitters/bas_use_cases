@@ -10,9 +10,7 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'GithubIssueRequest',
-  where: 'tag=$1 ORDER BY inserted_at DESC LIMIT 1',
-  params: ['GithubIssueRequest']
+  tag: 'GithubIssueRequest'
 }
 
 write_options = {

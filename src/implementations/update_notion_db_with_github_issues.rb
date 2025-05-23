@@ -17,8 +17,6 @@ module Implementation
   #     connection: Config::CONNECTION,
   #     db_table: "github_issues",
   #     tag: 'GithubIssueRequest',
-  #     where: "tag=$1 ORDER BY inserted_at DESC LIMIT 1",
-  #     params: ['GithubIssueRequest']
   #   }
   #
   #   write_options = {
@@ -39,33 +37,27 @@ module Implementation
   #
   class UpdateNotionDBWithGithubIssues < Bas::Bot::Base
     def process
-      database_id = process_options[:notion_database_id]
-      secret = process_options[:notion_secret]
-      data = read_response.data
-      target_month = data['month']
+      page = find_notion_page
 
-      page = find_notion_page(database_id, secret, target_month)
-      return { error: "Notion page for '#{target_month}' not found" } unless page
-
-      body = build_update_body(data)
-      update_page(page['id'], secret, body, target_month)
+      body = build_update_body
+      update_page(page['id'], body)
     end
 
     private
 
-    def find_notion_page(database_id, secret, target_month)
-      pages = query_notion_database(database_id, secret)
+    def find_notion_page
+      pages = query_notion_database
       results = pages['results']
       return nil unless results
 
-      results.find { |p| page_matches_month?(p, target_month) }
+      results.find { |p| page_matches_month?(p, read_response.data['month']) }
     end
 
-    def query_notion_database(database_id, secret)
+    def query_notion_database
       Utils::Notion::Request.execute(
         {
-          endpoint: "databases/#{database_id}/query",
-          secret: secret,
+          endpoint: "databases/#{process_options[:notion_database_id]}/query",
+          secret: process_options[:notion_secret],
           method: 'post',
           body: {}
         }
@@ -77,10 +69,10 @@ module Implementation
       title&.first&.dig('plain_text') == target_month
     end
 
-    def build_update_body(data)
+    def build_update_body
       body = { properties: {} }
       fields_map.each do |key, notion_property_name|
-        value = normalize_value(data[key], key)
+        value = normalize_value(read_response.data[key], key)
         body[:properties][notion_property_name] = { number: value }
       end
       body
@@ -107,22 +99,22 @@ module Implementation
       0
     end
 
-    def update_page(page_id, secret, body, target_month)
+    def update_page(page_id, body)
       puts "Updating page with: #{body.inspect}"
       response = Utils::Notion::UpdateDatabasePage.new(
         {
           page_id: page_id,
-          secret: secret,
+          secret: process_options[:notion_secret],
           body: body
         }
       ).execute
 
-      handle_response(response, target_month)
+      handle_response(response)
     end
 
-    def handle_response(response, target_month)
+    def handle_response(response)
       if response.code == 200
-        puts "Page updated successfully for month '#{target_month}'"
+        puts "Page updated successfully for month '#{read_response.data['month']}'"
         { success: true }
       else
         puts "Error updating Notion: #{response.body}"
