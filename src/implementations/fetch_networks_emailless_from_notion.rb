@@ -32,6 +32,7 @@ module Implementation
 
       if response.code == 200
         networks_list = normalize_response(response.parsed_response['results'])
+        networks_list += fetch_all_networks(response) if response.parsed_response['has_more']
 
         { success: { networks_list: } }
       else
@@ -41,6 +42,19 @@ module Implementation
 
     private
 
+    def fetch_all_networks(response)
+      networks_list = []
+
+      loop do
+        break unless response['has_more']
+
+        response = Utils::Notion::Request.execute(next_cursor_params(response['next_cursor']))
+        networks_list += normalize_response(response.parsed_response['results']) if response.code == 200
+      end
+
+      networks_list
+    end
+
     def params
       {
         endpoint: "databases/#{process_options[:database_id]}/query",
@@ -48,6 +62,12 @@ module Implementation
         method: 'post',
         body:
       }
+    end
+
+    def next_cursor_params(next_cursor)
+      next_cursor_body = body.merge({ start_cursor: next_cursor })
+
+      params.merge(body: next_cursor_body)
     end
 
     def body
