@@ -57,7 +57,7 @@ jobs:
 
       - name: Add Secrets into yml file
         run: |
-          base64 -d ${{secrets.STG_SECRETS_B64}} > .env
+          echo ${{secrets.STG_SECRETS_B64}} | base64 --decode > .env
 
       - name: compress project
         run: zip -r bas_scripts.zip .
