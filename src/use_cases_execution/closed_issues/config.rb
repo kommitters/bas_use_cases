@@ -19,7 +19,6 @@ module Config
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
 
-  TEMPLATE = '⚠️ The project **“<name>”** (ID: <id>) has passed its deadline: **<project_expiration_date>**, ' \
-             'but its status is still **In progress**. ' \
-             '*Please check its progress as soon as possible.*'
+  NOTION_CLOSED_ISSUES_DATABASE_ID = ENV.fetch('NOTION_CLOSED_ISSUES_DATABASE_ID')
+  NOTION_SECRET = ENV.fetch('NOTION_SECRET')
 end

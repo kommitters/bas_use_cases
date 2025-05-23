@@ -105,6 +105,11 @@ module UseCasesExecution
       { path: "#{__dir__}/oss_score/update_scores_in_notion.rb", time: ['18:00'], day: ['Friday'] }
     ].freeze
 
+    OSPO_CLOSED_ISSUES_KPI_SCHEDULES = [
+      { path: "#{__dir__}/closed_issues/fetch_github_issues.rb", time: ['12:00'], day: ['Friday'] },
+      { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", time: ['12:10'], day: ['Friday'] }
+    ].freeze
+
     EXPIRED_PROJECTS_SCHEDULES = [
       { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
       { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
