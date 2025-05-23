@@ -37,7 +37,7 @@ module Implementation
 
         { success: { networks: } }
       else
-        { error: { message: 'no emails was found' } }
+        { error: { message: response.parsed_response, status_code: response.code } }
       end
     end
 
@@ -55,9 +55,8 @@ module Implementation
         person_locations: ['USA'],
         person_seniorities: %w[founder vp],
         organization_num_employees_ranges: %w[101-200 201-500],
-        q_keywords: ['financial services', 'biotechnology', 'research', 'real estate', 'logistic & supply chain'],
         per_page: BATCH_SIZE
-      }.to_json
+      }
     end
 
     def headers

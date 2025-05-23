@@ -22,7 +22,7 @@ write_options = {
 
 options = {
   secret: Config::NOTION_SECRET,
-  database_id: Config::NOTION_DATABASE_ID
+  database_id: Config::NETWORK_NOTION_DATABASE_ID
 }
 
 # Process bot
