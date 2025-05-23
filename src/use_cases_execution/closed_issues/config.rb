@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
-<<<<<<<< HEAD:src/use_cases_execution/closed_issues/config.rb
 # closed_issues/config.rb
-========
+
 ##
 # This file is used to store the configuration of the expired projects use case.
 # It contains the connection information to the database where the expired projects data is stored.
 # The connection information is stored in the CONNECTION constant.
 #
->>>>>>>> 0b2bcd259bd2678dd1e2c625d60a34cc0a0fd999:src/use_cases_execution/expired_projects/config.rb
 
 require 'dotenv/load'
 
@@ -21,13 +19,6 @@ module Config
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
 
-<<<<<<<< HEAD:src/use_cases_execution/closed_issues/config.rb
   NOTION_CLOSED_ISSUES_DATABASE_ID = ENV.fetch('NOTION_CLOSED_ISSUES_DATABASE_ID')
-
   NOTION_SECRET = ENV.fetch('NOTION_SECRET')
-========
-  TEMPLATE = '⚠️ The project **“<name>”** (ID: <id>) has passed its deadline: **<project_expiration_date>**, ' \
-             'but its status is still **In progress**. ' \
-             '*Please check its progress as soon as possible.*'
->>>>>>>> 0b2bcd259bd2678dd1e2c625d60a34cc0a0fd999:src/use_cases_execution/expired_projects/config.rb
 end
