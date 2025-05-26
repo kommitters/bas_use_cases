@@ -61,7 +61,10 @@ module Implementation
       response = HTTParty.post(URL, headers:, query: { reveal_personal_emails: true },
                                     body: { details: linkedin_urls }.to_json)
 
-      response.code == 200 ? response.parsed_response['matches'].map { |match| { email: match['email'] } } : []
+      return [] unless response.code == 200
+      return [] if response.parsed_response['matches'].nil?
+
+      response.parsed_response['matches'].map { |match| match.nil? ? {} : { email: match['email'] } }
     end
 
     def headers
