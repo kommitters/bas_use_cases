@@ -37,9 +37,9 @@ module Implementation
       return { success: { updated: nil } } if unprocessable_response
 
       begin
-        read_response.data['networks'].each { |network| create_network(network) }
+        results = read_response.data['networks'].map { |network| create_network(network) }
 
-        { success: { message: 'emails updated' } }
+        { success: { results: } }
       rescue StandardError => e
         { error: { message: e.message } }
       end
@@ -48,9 +48,14 @@ module Implementation
     private
 
     def create_network(network)
+      exist = verify_network_exists(network)
+      return { linkedin_url: network['linkedin_url'] } if exist
+
       properties = format_network(network)
 
-      Utils::Notion::Request.execute(params(properties))
+      result = Utils::Notion::Request.execute(params(properties))
+
+      { code: result.code, message: result.parsed_response }
     end
 
     def params(properties)
@@ -71,13 +76,35 @@ module Implementation
 
     def format_network(network)
       {
-        "Status": network['status'], "Name": network['name'],
-        "Connection Source": network['connection_source'],
-        "Linkedin": network['linkedin'], "Role": network['role'],
-        "Country": network['country'],
-        "Qualification": network['qualification'],
-        "Email": network['email'], "Email Unavailable": true
+        "Status": { status: { name: 'Identified' } },
+        "Name": { title: [{ text: { content: network['name'] } }] },
+        "Connection Source": { select: { name: network['connection_source'] } },
+        "LinkedIn": { url: network['linkedin_url'] }, "Role": { multi_select: [{ name: network['role'] }] },
+        "Country": { multi_select: [{ name: network['country'] }] },
+        "Email": { email: network['email'] },
+        "Email unavailable?": { checkbox: false },
+        "Industry (Networking)": { multi_select: [{ name: network['industry'] }] }
       }
+    end
+
+    def verify_network_exists(network)
+      params = verify_exist_params(network)
+      response = Utils::Notion::Request.execute(params)
+
+      response.parsed_response['results'].any?
+    end
+
+    def verify_exist_params(network)
+      {
+        endpoint: "databases/#{process_options[:database_id]}/query",
+        secret: process_options[:secret],
+        method: 'post',
+        body: exist_body(network)
+      }
+    end
+
+    def exist_body(network)
+      { filter: { property: 'LinkedIn', url: { equals: network['linkedin_url'] } } }
     end
   end
 end

@@ -73,7 +73,8 @@ module Implementation
           connection_source: 'Contact Research',
           linkedin_url: person['linkedin_url'],
           role: extract_role(person), country: person['country'],
-          qualifications: person['qualifications']
+          qualifications: person['qualifications'],
+          industry: person.dig('organization', 'organization')
         }
       end
     end
