@@ -27,12 +27,13 @@ module Implementation
   #  Implementation::FetchNetworksEmaillessFromNotion.new(options, shared_storage).execute
   #
   class FetchNetworksEmaillessFromNotion < Bas::Bot::Base
+    MAX_RESULTS = 20
+
     def process
       response = Utils::Notion::Request.execute(params)
 
       if response.code == 200
         networks_list = normalize_response(response.parsed_response['results'])
-        networks_list += fetch_all_networks(response) if response.parsed_response['has_more']
 
         { success: { networks_list: } }
       else
@@ -41,19 +42,6 @@ module Implementation
     end
 
     private
-
-    def fetch_all_networks(response)
-      networks_list = []
-
-      loop do
-        break unless response['has_more']
-
-        response = Utils::Notion::Request.execute(next_cursor_params(response['next_cursor']))
-        networks_list += normalize_response(response.parsed_response['results']) if response.code == 200
-      end
-
-      networks_list
-    end
 
     def params
       {
@@ -71,7 +59,8 @@ module Implementation
     end
 
     def body
-      { filter: { property: 'Email', email: { is_empty: true } } }
+      { page_size: MAX_RESULTS, filter: { and: [{ property: 'Email', email: { is_empty: true } },
+                                                { property: 'Email unavailable?', checkbox: { equals: false } }] } }
     end
 
     def normalize_response(networks)
