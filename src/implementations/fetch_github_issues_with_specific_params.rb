@@ -107,7 +107,6 @@ module Implementation
     def headers
       {
         'User-Agent' => 'RubyBot',
-        'Authorization' => "Bearer #{ENV.fetch('GITHUB_TOKEN')}",
         'Accept' => 'application/vnd.github+json'
       }
     end
