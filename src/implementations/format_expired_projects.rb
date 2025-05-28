@@ -41,7 +41,7 @@ module Implementation
 
       total_projects = projects_list.size
 
-      header = "📋 **Expired Projects (#{total_projects} total)**\n\n"
+      header = "📋 *Expired Projects (#{total_projects} total)*\n\n"
 
       notification = projects_list.reduce(header) do |payload, project|
         "#{payload} #{build_template(PROJECT_ATTRIBUTES, project)}\n\n"
