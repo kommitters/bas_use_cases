@@ -3,7 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../implementations/notify_discord'
+require_relative '../../implementations/notify_workspace'
 require_relative 'config'
 
 # Configuration
@@ -16,18 +16,17 @@ read_options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'expired_projects',
-  tag: 'NotifyDiscord'
+  tag: 'NotifyWorkspace'
 }
 
 options = {
-  name: ENV.fetch('DISCORD_BOT_NAME'),
-  webhook: ENV.fetch('EXPIRED_PROJECTS_DISCORD_WEBHOOK')
+  webhook: ENV.fetch('EXPIRED_PROJECTS_WORKSPACE_WEBHOOK')
 }
 
 # Process bot
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
-  Implementation::NotifyDiscord.new(options, shared_storage).execute
+  Implementation::NotifyWorkspace.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

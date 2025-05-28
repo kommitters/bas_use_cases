@@ -113,7 +113,7 @@ module UseCasesExecution
     EXPIRED_PROJECTS_SCHEDULES = [
       { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
       { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
-      { path: "#{__dir__}/expired_projects/notify_expired_projects_in_discord.rb", time: ['13:00'] }
+      { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] }
     ].freeze
   end
 end
