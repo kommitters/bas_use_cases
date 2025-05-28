@@ -82,9 +82,82 @@ To add a new use case:
      - Contain a `schedule.sh` script where the cronjob schedules for the bots will be configured.
 
 3. **Update Shared Storage**:  
-   - Define any new tables required for shared storage in the `db/build_shared_storage.sql` file.
+   - Define any new tables required for shared storage using migrations.
 
 To activate the cronjob on the docker container execute the `update_container.sh` script (this is executed each time the container is restarted):
 ```bash
 docker exec bas_cronjobs bash /app/scripts/update_container.sh
 ```
+
+---
+
+## Database Migrations
+
+The project uses a migration system based on [Sequel](https://sequel.jeremyevans.net/) and Rake to manage database schema changes.
+
+### How It Works
+
+- There is a dedicated migration file for each table in `db/migrations/`.
+- Migrations are versioned and can be applied or rolled back, providing version control for your database schema.
+- You can safely add, modify, or remove tables and columns over time.
+
+### How to Generate a Migration
+
+To generate a migration file for a new table, run:
+
+```bash
+rake -f scripts/update_database.rb db:generate_migration[create_table_name]
+```
+
+For example, for the `birthday` table:
+
+```bash
+rake -f scripts/update_database.rb db:generate_migration[create_birthday]
+```
+
+This will generate a file in `db/migrations/` that you can edit to define your table structure.
+
+### How to Apply Migrations
+
+To apply all pending migrations to the database:
+
+```bash
+rake -f scripts/update_database.rb db:migrate
+```
+
+### How to Roll Back the Last Migration
+
+To undo the last applied migration:
+
+```bash
+rake -f scripts/update_database.rb db:rollback
+```
+
+### Migration File Example
+
+```ruby
+Sequel.migration do
+  up do
+    create_table?(:birthday) do
+      primary_key :id
+      column :data, :jsonb
+      String :tag, size: 255
+      TrueClass :archived
+      String :stage, size: 255
+      String :status, size: 255
+      column :error_message, :jsonb
+      String :version, size: 255
+      DateTime :inserted_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
+    end
+  end
+
+  down do
+    drop_table?(:birthday)
+  end
+end
+```
+
+You should create a similar migration for each table you need (see the `db/migrations/` folder).
+
+---
