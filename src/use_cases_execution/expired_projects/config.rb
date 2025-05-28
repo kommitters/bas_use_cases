@@ -19,7 +19,7 @@ module Config
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
 
-  TEMPLATE = '⚠️ The project **“<name>”** (ID: <id>) has passed its deadline: **<project_expiration_date>**, ' \
-             'but its status is still **In progress**. ' \
+  TEMPLATE = '⚠️ The project *“<name>”* (ID: <id>) has passed its deadline: *<project_expiration_date>*, ' \
+             'but its status is still *In progress*. ' \
              '*Please check its progress as soon as possible.*'
 end
