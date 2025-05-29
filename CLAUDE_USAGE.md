@@ -68,16 +68,32 @@ The `CLAUDE.md` file in the repository root contains instructions that Claude fo
 To create a new use case, craft a prompt specifying the data source, data output, formatting, and any other relevant instructions. Then paste your prompt in interactive mode or pass it as a `-p` argument:
 
 ```bash
-claude -p "YOUR PROMPT" --allowedTools Read Edit Write Bash Glob LS
+claude -p "YOUR PROMPT" --allowedTools Read Edit Write "Bash(git*)" Glob LS
+
+# or
+
+echo "LONG_PROMPT" | claude --allowedTools Read Edit Write "Bash(git*)" Glob LS -p
 ```
 
-### Example Prompt Structure:
+> [!NOTE]
+> The command can take some minutes to complete
+
+### Suggested prompt structure:
 ```
 Create a new use case named [lowercase_name] that:
 - Fetches data from [SOURCE]
 - Formats it as [FORMAT]
 - Sends notifications to [DESTINATION]
 - Runs [SCHEDULE]
+```
+
+Complete prompt example:
+```
+Create a use case to fetch and notify about Colombian holidays for the current month of the previous year using a Holiday API.
+1. API Request: Fetch data from https://holidayapi.com/v1/holidays?key=HOLIDAYS_API_KEY with parameters country=CO, month=[current_month], year=[current_year - 1]. The API key HOLIDAYS_API_KEY should be read from an environment variable.
+2. Data Extraction: From the JSON response, extract the 'name' and 'observed' (date in format YYYY-MM-DD) fields from each item in the 'holidays' array.
+3. Notification Formatting: Create a notification string using the template: "This month holidays are: [day of observed month] [month of observed]: [name], ...". List all holidays found.
+4. Google Chat Notification: Send a JSON payload {'text': '[formatted_notification]'} to the Google Chat webhook URL defined in the environment variable GOOGLE_CHAT_WEBHOOK.
 ```
 
 ## Troubleshooting

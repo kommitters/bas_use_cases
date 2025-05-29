@@ -23,7 +23,7 @@ Most use cases follow this pattern:
 All use cases use `Bas::SharedStorage` with PostgreSQL as the coordination layer:
 - Each pipeline step reads from and writes to the database with specific tags
 - Tags track processing stages: `FetchX`, `FormatX`, `NotifyX`, `GarbageCollector`
-- Steps execute in sequence based on the scheduling system using `src/use_cases_execution/schedules.rb`
+- Steps are executed in sequence based on the scheduling system using `src/use_cases_execution/schedules.rb`
 
 ### Scheduling System
 The orchestrator (`scripts/execute_orchestrator.rb`) loads schedules from `schedules.rb` and executes them using the BAS framework. Schedules support:
@@ -54,6 +54,7 @@ When the user asks to implement a new use case, follow these rules:
 #### Technical Constraints
 - Use HTTParty for HTTP requests
 - This is not a Rails project - use explicit imports for modules (e.g., `Date`, `DateTime`)
+- Reuse existing code when possible
 - Follow Ruby conventions and best practices
 
 #### Before Starting
@@ -68,6 +69,8 @@ Follow this process to add a new use case:
 3. Add schedule constants to `schedules.rb`
 4. Update database schema in `db/build_shared_storage.sql` if needed
 5. Write comprehensive tests in `spec/implementations/[name]/`
+6. Create atomic git commits for the files created in each steps following the best practices (short, descriptive, etc.)
+   Prefix the commits you create with the `[Claude]` tag
 
 ### Executing Individual Files
 Prefix `bundle exec` to any `ruby` command to ensure execution within the project's context:
