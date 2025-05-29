@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.6.0 (29.05.2025)
+- [feat: Checking closed GitHub issues and storing data in Notion DB](https://github.com/kommitters/bas_use_cases/pull/73)
+- [feat: Feature to send messages to Google Workspace](https://github.com/kommitters/bas_use_cases/pull/76)
+- [feat: Expired projects automatitation](https://github.com/kommitters/bas_use_cases/pull/77)
+- [Add variables for workspace](https://github.com/kommitters/bas_use_cases/pulls?q=is%3Apr+is%3Aclosed)
+- [Solve #68 - Add marketing networks automations](https://github.com/kommitters/bas_use_cases/pull/79)
+- [Add adjustment for improving secrets management](https://github.com/kommitters/bas_use_cases/pull/81)
+- [Update marketing automation schedules and fix apollo issues](https://github.com/kommitters/bas_use_cases/pull/83)
+- [Add marketing feedback improves](https://github.com/kommitters/bas_use_cases/pull/84)
+- [feat: Refactor expired projects to notify workspace](https://github.com/kommitters/bas_use_cases/pull/85)
+- [Notify expired projects workspace](https://github.com/kommitters/bas_use_cases/pull/87)
+- [refactor: Remove header parameter for github authentication token](https://github.com/kommitters/bas_use_cases/pull/88)
+- [Implement migration system to the project](https://github.com/kommitters/bas_use_cases/pull/90)
+
 ## 1.5.0 (15.05.2025)
 - [Add bots to update networks without emails](https://github.com/kommitters/bas_use_cases/pull/71)
 
