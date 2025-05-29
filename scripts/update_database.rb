@@ -20,7 +20,7 @@ Sequel.extension :migration
 
 def migrate_database
   puts 'Migrating the database...'
-  Sequel::Migrator.run(DB, File.expand_path('../db/migrations', __dir__))
+  Sequel::Migrator.run(DB, File.expand_path('../db/migrations', __dir__), table: :bas_use_cases_schema_migrations)
   puts 'Database migration complete.'
 end
 
@@ -39,7 +39,7 @@ def rollback_database
 end
 
 def fetch_applied_migrations
-  DB[:schema_migrations].select_order_map(:filename).sort
+  DB[:bas_use_cases_schema_migrations].select_order_map(:filename).sort
 end
 
 def calculate_target_migration(applied_migrations)
@@ -51,7 +51,8 @@ def calculate_target_migration(applied_migrations)
 end
 
 def run_rollback(target_migration, last_migration)
-  Sequel::Migrator.run(DB, File.expand_path('../db/migrations', __dir__), target: target_migration)
+  Sequel::Migrator.run(DB, File.expand_path('../db/migrations', __dir__), target: target_migration,
+                                                                          table: :bas_use_cases_schema_migrations)
   puts "Rollback complete. Rolled back from #{last_migration} to #{target_migration}."
 end
 

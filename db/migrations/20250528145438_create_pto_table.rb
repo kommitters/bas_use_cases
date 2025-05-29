@@ -17,6 +17,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:pto)
+    drop_table?(:pto)
   end
 end
