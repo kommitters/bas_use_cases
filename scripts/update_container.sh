@@ -1,7 +1,6 @@
-
 # UPDATE DATABASE
 echo "UPDATE DATABASE"
-ruby /app/scripts/update_database.rb
+rake -f /app/scripts/update_database.rb db:migrate
 echo "DATABASE UPDATED"
 
 # UPDATE CRONJOBS
