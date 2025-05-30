@@ -161,3 +161,7 @@ end
 You should create a similar migration for each table you need (see the `db/migrations/` folder).
 
 ---
+
+### Using Claude Code
+
+Claude Code can be used to implement new use cases, just follow the instructions on `CLAUDE_USAGE.md`
