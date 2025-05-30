@@ -107,6 +107,8 @@ GEM
     google-api-client (0.53.0)
       google-apis-core (~> 0.1)
       google-apis-generator (~> 0.1)
+    google-apis-chat_v1 (0.122.0)
+      google-apis-core (>= 0.15.0, < 2.a)
     google-apis-core (0.16.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 1.9)
@@ -196,6 +198,7 @@ GEM
     pg (1.5.9)
     pg (1.5.9-x64-mingw-ucrt)
     pg (1.5.9-x86-mingw32)
+    pg (1.5.9-x64-mingw-ucrt)
     public_suffix (6.0.1)
     racc (1.8.1)
     rack (3.1.8)
@@ -316,6 +319,8 @@ DEPENDENCIES
   faraday-retry
   gmail_xoauth (~> 0.4.1)
   google-api-client (~> 0.53)
+  google-apis-chat_v1
+  googleauth
   httparty
   jwt (~> 2.8.1)
   md_to_notion (~> 0.1.4)

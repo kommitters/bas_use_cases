@@ -42,3 +42,7 @@ gem 'openssl', '~> 3.2'
 gem 'sequel', '~> 5.92.0'
 
 gem 'rake', '~> 13.1.0'
+
+gem 'googleauth'
+
+gem 'google-apis-chat_v1'

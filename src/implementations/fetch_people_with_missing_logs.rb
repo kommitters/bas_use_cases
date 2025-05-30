@@ -39,7 +39,7 @@ module Implementation
       if response.code == 200
         create_notifications(response.parsed_response['data'])
 
-        { success: '' }
+        { success: {} }
       else
         { error: { message: response.parsed_response, status_code: response.code } }
       end
@@ -71,7 +71,7 @@ module Implementation
     def format_notification(domain, people)
       people = people.map { |person| "- #{person['name']} (#{last_recorded(person)})" }
 
-      ":warning::alarm_clock: Hello director of **#{domain}**,\nThis is a notification regarding team members with"\
+      "⚠️⏰ Hello director of *#{domain}*,\nThis is a notification regarding team members with "\
       "missing work-logs in the past #{process_options[:days]} days along with the date of their most recent entry:"\
       " \n\n#{people.join("\n")}\n\n" \
     end
