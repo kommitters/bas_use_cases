@@ -19,9 +19,7 @@ write_options = {
   tag: 'NotifyWorkspaceDm'
 }
 
-options = {
-  
-}
+options = {}
 
 # Process bot
 begin

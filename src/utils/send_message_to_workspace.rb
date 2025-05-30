@@ -11,7 +11,7 @@ module Utils
     # using google chat API
     #
     class SendMessageToWorkspace
-    Chat = Google::Apis::ChatV1
+      Chat = Google::Apis::ChatV1
 
       def initialize(space_id:, credentials_path: 'src/utils/credentials.json', debug: false)
         @space = "spaces/#{space_id}"
@@ -25,14 +25,13 @@ module Utils
       end
 
       def send_text_message(text)
-
         message = Chat::Message.new(text: text)
 
         begin
-          result = @chat_service.create_space_message(@space, message)
-        rescue => e
+          @chat_service.create_space_message(@space, message)
+        rescue StandardError => e
           puts "❌ Error sending message: #{e.message}"
-        raise
+          raise
         end
       end
 
@@ -49,7 +48,7 @@ module Utils
       def setup_chat_service
         @chat_service = Chat::HangoutsChatService.new
         @chat_service.authorization = @authorization
-       end
+      end
     end
   end
 end

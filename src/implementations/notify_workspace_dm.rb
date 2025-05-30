@@ -24,7 +24,7 @@ module Implementation
   #   }
   #
   #   options = {
-  #     
+  #
   #   }
   #
   #  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
@@ -36,7 +36,7 @@ module Implementation
     #
     def process
       return { success: {} } if unprocessable_response
-      
+
       space_id = read_response.data['dm_id']
 
       message = read_response.data['notification']
@@ -44,9 +44,9 @@ module Implementation
       begin
         sender = Utils::GoogleChat::SendMessageToWorkspace.new(space_id: space_id)
         sender.send_text_message(message)
-      
+
         { success: {} }
-      rescue => e
+      rescue StandardError => e
         { error: { message: e.message, status_code: e.status_code || 500 } }
       end
     end
