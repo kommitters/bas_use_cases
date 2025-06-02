@@ -107,6 +107,8 @@ GEM
     google-api-client (0.53.0)
       google-apis-core (~> 0.1)
       google-apis-generator (~> 0.1)
+    google-apis-chat_v1 (0.122.0)
+      google-apis-core (>= 0.15.0, < 2.a)
     google-apis-core (0.16.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 1.9)
@@ -194,6 +196,9 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
+    pg (1.5.9-x64-mingw-ucrt)
+    pg (1.5.9-x86-mingw32)
+    pg (1.5.9-x64-mingw-ucrt)
     public_suffix (6.0.1)
     racc (1.8.1)
     rack (3.1.8)
@@ -204,6 +209,7 @@ GEM
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rainbow (3.1.1)
+    rake (13.1.0)
     regexp_parser (2.9.2)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -252,6 +258,8 @@ GEM
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
     securerandom (0.4.1)
+    sequel (5.92.0)
+      bigdecimal
     signet (0.19.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -311,6 +319,8 @@ DEPENDENCIES
   faraday-retry
   gmail_xoauth (~> 0.4.1)
   google-api-client (~> 0.53)
+  google-apis-chat_v1
+  googleauth
   httparty
   jwt (~> 2.8.1)
   md_to_notion (~> 0.1.4)
@@ -318,8 +328,10 @@ DEPENDENCIES
   net-smtp (~> 0.4.0.1)
   octokit (~> 8.1.0)
   openssl (~> 3.2)
+  rake (~> 13.1.0)
   rspec
   rubocop
+  sequel (~> 5.92.0)
   sinatra (~> 4.1, >= 4.1.1)
   telegram-bot-ruby (~> 1.0)
 
