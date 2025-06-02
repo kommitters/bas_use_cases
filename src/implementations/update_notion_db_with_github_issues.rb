@@ -50,7 +50,14 @@ module Implementation
       results = pages['results']
       return nil unless results
 
-      results.find { |p| page_matches_month?(p, read_response.data['month']) }
+      month_abbr = parse_month
+
+      results.find { |p| page_matches_month?(p, month_abbr) }
+    end
+
+    def parse_month
+      month = read_response.data['month']
+      Date.parse("1 #{month}").strftime('%b')
     end
 
     def query_notion_database
