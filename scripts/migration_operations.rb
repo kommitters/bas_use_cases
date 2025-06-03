@@ -4,12 +4,12 @@ require 'sequel'
 require 'fileutils'
 
 ##
-# Database Migrations Manager
+# Database Migration Operations Manager
 #
 # A reusable class for managing Sequel database migrations across multiple databases.
 # This class encapsulates all migration operations including running migrations,
 # rolling back changes, and generating new migration files.
-class Migrations
+class MigrationOperations
   Sequel.extension :migration
 
   def initialize(config, migration_table, migration_dir)

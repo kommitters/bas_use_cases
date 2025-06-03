@@ -4,7 +4,7 @@
 require 'rake'
 require 'dotenv/load'
 
-require_relative 'migrations'
+require_relative 'migration_operations'
 
 shared_storage_config = {
   adapter: 'postgres',
@@ -24,8 +24,8 @@ warehouse_config = {
   port: ENV.fetch('DB_PORT')
 }
 
-SHARED_STORAGE_DB = Migrations.new(shared_storage_config, :bas_use_cases_schema_migrations, '../db/migrations')
-WAREHOUSE_DB = Migrations.new(warehouse_config, :bas_warehouse_schema_migrations, '../db/warehouse_migrations')
+SHARED_STORAGE_DB = MigrationOperations.new(shared_storage_config, :bas_use_cases_schema_migrations, '../db/migrations')
+WAREHOUSE_DB = MigrationOperations.new(warehouse_config, :bas_warehouse_schema_migrations, '../db/warehouse_migrations')
 
 namespace :shared_storage do
   desc 'Migrate the database'
