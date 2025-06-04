@@ -46,3 +46,9 @@ gem 'rake', '~> 13.1.0'
 gem 'googleauth'
 
 gem 'google-apis-chat_v1'
+
+gem 'webrick'
+
+gem 'launchy'
+
+gem 'google-apis-admin_directory_v1'
