@@ -92,49 +92,56 @@ docker exec bas_cronjobs bash /app/scripts/update_container.sh
 ---
 
 ## Database Migrations
-
 The project uses a migration system based on [Sequel](https://sequel.jeremyevans.net/) and Rake to manage database schema changes.
 
 ### How It Works
-
-- There is a dedicated migration file for each table in `db/migrations/`.
+- There is a dedicated migration file for each table: use `db/migrations/` for shared storage tables and `db/warehouse_migrations/` for warehouse tables.
 - Migrations are versioned and can be applied or rolled back, providing version control for your database schema.
 - You can safely add, modify, or remove tables and columns over time.
 
 ### How to Generate a Migration
-
 To generate a migration file for a new table, run:
 
 ```bash
-rake -f scripts/update_database.rb db:generate_migration[create_table_name]
+# SHARED STORAGE
+rake -f scripts/update_database.rb shared_storage:generate_migration[create_table_name]
+
+# WAREHOUSE
+rake -f scripts/update_database.rb warehouse:generate_migration[create_table_name]
 ```
 
-For example, for the `birthday` table:
+For example, for the shared storage `birthday` table:
 
 ```bash
-rake -f scripts/update_database.rb db:generate_migration[create_birthday]
+# SHARED STORAGE
+rake -f scripts/update_database.rb shared_storage:generate_migration[create_birthday]
 ```
 
-This will generate a file in `db/migrations/` that you can edit to define your table structure.
+This will generate a file in the migrations folder `db/migrations/` that you can edit to define your table structure.
 
 ### How to Apply Migrations
-
 To apply all pending migrations to the database:
 
 ```bash
-rake -f scripts/update_database.rb db:migrate
+# SHARED STORAGE
+rake -f scripts/update_database.rb shared_storage:migrate
+
+# WAREHOUSE
+rake -f scripts/update_database.rb warehouse:migrate
 ```
 
 ### How to Roll Back the Last Migration
-
 To undo the last applied migration:
 
 ```bash
-rake -f scripts/update_database.rb db:rollback
+# SHARED STORAGE
+rake -f scripts/update_database.rb shared_storage:rollback
+
+# WAREHOUSE
+rake -f scripts/update_database.rb warehouse:rollback
 ```
 
 ### Migration File Example
-
 ```ruby
 Sequel.migration do
   up do
@@ -158,7 +165,7 @@ Sequel.migration do
 end
 ```
 
-You should create a similar migration for each table you need (see the `db/migrations/` folder).
+You should create a similar migration for each table you need (see the migrations folders).
 
 ---
 
