@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.0 (05.06.25)
+- [feat: Notify missing worklogs in workspace](https://github.com/kommitters/bas_use_cases/pull/94)
+- [Refactor update notion db](https://github.com/kommitters/bas_use_cases/pull/95)
+- [Add Warehouse Migrations Config](https://github.com/kommitters/bas_use_cases/issues/96)
+- [Update bot to follow rubocop 1.76.0 rules](https://github.com/kommitters/bas_use_cases/pull/103)
+
 ## 1.6.0 (29.05.2025)
 - [feat: Checking closed GitHub issues and storing data in Notion DB](https://github.com/kommitters/bas_use_cases/pull/73)
 - [feat: Feature to send messages to Google Workspace](https://github.com/kommitters/bas_use_cases/pull/76)
