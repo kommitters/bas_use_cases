@@ -1,6 +1,6 @@
 # Changelog
 
-# 1.7.0 (05.06.25)
+## 1.7.0 (05.06.25)
 - [feat: Notify missing worklogs in workspace](https://github.com/kommitters/bas_use_cases/pull/94)
 - [Refactor update notion db](https://github.com/kommitters/bas_use_cases/pull/95)
 - [Add Warehouse Migrations Config](https://github.com/kommitters/bas_use_cases/issues/96)
