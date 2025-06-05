@@ -11,14 +11,22 @@ module Services
   class Activity < Services::Base
     TABLE = :activity
 
-    # Inserts a new activity record.
+    # @raise [StandardError] If the insert operation fails
     def insert(params)
       transaction { insert_item(TABLE, params) }
     rescue StandardError => e
       handle_error(e)
     end
 
-    # Updates an activity by ID; params must include :id and fields to update.
+    ##
+    # Updates an existing activity record identified by its ID.
+    #
+    # The `params` hash must include the `:id` (or `'id'`) key specifying the activity to update, along with any fields to be changed.
+    #
+    # @param params [Hash] Hash containing the activity ID and fields to update.
+    # @return [void]
+    # @raise [ArgumentError] If the `:id` key is missing from `params`.
+    # @raise [StandardError] If a database or transaction error occurs.
     def update(params)
       id = params.delete(:id) || params.delete('id')
       raise ArgumentError, 'Activity id is required to update' unless id
@@ -28,26 +36,38 @@ module Services
       handle_error(e)
     end
 
-    # Deletes an activity by ID.
+    # @raise [StandardError] If an error occurs during deletion, it is logged and re-raised.
     def delete(id)
       transaction { delete_item(TABLE, id) }
     rescue StandardError => e
       handle_error(e)
     end
 
-    # Finds an activity by ID.
+    ##
+    # Retrieves a single activity record by its unique ID.
+    #
+    # @param id [Integer] The unique identifier of the activity to retrieve.
+    # @return [Hash, nil] The activity record if found, or nil if no matching record exists.
     def find(id)
       find_item(TABLE, id)
     end
 
-    # Queries activities by conditions.
+    ##
+    # Retrieves activity records matching the specified conditions.
+    #
+    # @param conditions [Hash] Optional filters to apply to the query.
+    # @return [Array<Hash>] List of activity records matching the conditions.
     def query(conditions = {})
       query_item(TABLE, conditions)
     end
 
     private
 
-    # Handles and logs errors, then re-raises them.
+    ##
+    # Logs the error details and re-raises the exception.
+    #
+    # @param error [Exception] The exception to handle and re-raise.
+    # @raise [Exception] Always re-raises the provided exception.
     def handle_error(error)
       puts "[Activity Service ERROR] #{error.class}: #{error.message}"
       raise error

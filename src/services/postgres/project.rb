@@ -11,14 +11,14 @@ module Services
   class Project < Services::Base
     TABLE = :project
 
-    # Inserts a new project record.
+    # @raise [StandardError] Re-raises any error encountered during insertion after logging
     def insert(params)
       transaction { insert_item(TABLE, params) }
     rescue StandardError => e
       handle_error(e)
     end
 
-    # Updates a project by ID
+    # @raise [StandardError] If an error occurs during the update process
     def update(params)
       id = params.delete(:id) || params.delete('id')
       raise ArgumentError, 'Project id is required to update' unless id
@@ -28,26 +28,35 @@ module Services
       handle_error(e)
     end
 
-    # Deletes a project by ID.
+    # @raise [StandardError] Re-raises any error encountered during deletion after logging.
     def delete(id)
       transaction { delete_item(TABLE, id) }
     rescue StandardError => e
       handle_error(e)
     end
 
-    # Finds a project by ID.
+    ##
+    # Retrieves a project record by its unique identifier.
+    #
+    # @param id [Integer] The unique ID of the project to retrieve.
+    # @return [Hash, nil] The project record if found, or nil if not found.
     def find(id)
       find_item(TABLE, id)
     end
 
-    # Queries projects by conditions.
+    ##
+    # Retrieves project records matching the specified conditions.
+    #
+    # @param conditions [Hash] Optional filters to apply to the project query.
+    # @return [Array<Hash>] List of project records matching the conditions.
+    #
     def query(conditions = {})
       query_item(TABLE, conditions)
     end
 
     private
 
-    # Handles and logs errors, then re-raises them.
+    # @raise [Exception] Always re-raises the provided error.
     def handle_error(error)
       puts "[Project Service ERROR] #{error.class}: #{error.message}"
       raise error
