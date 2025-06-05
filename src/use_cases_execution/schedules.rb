@@ -115,5 +115,12 @@ module UseCasesExecution
       { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
       { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] }
     ].freeze
+
+    GITHUB_NOTION_ISSUES_SYNC_SCHEDULES = [
+      { path: "#{__dir__}/github_notion_issues_sync/fetch_github_issues.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/github_notion_issues_sync/format_github_issues.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/github_notion_issues_sync/notify_github_issues.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/github_notion_issues_sync/garbage_collector.rb", time: ['00:00'] }
+    ].freeze
   end
 end

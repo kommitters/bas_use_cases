@@ -57,6 +57,8 @@ module Implementation
       {
         title: [
           {
+            id: "title",
+            type: "text",
             text: {
               content: title || 'No title specified'
             }
@@ -74,10 +76,12 @@ module Implementation
     end
 
     def format_body(issue)
+      return []
       return [] if issue.nil?
 
       [
         {
+          object: 'block',
           type: 'link_preview',
           link_preview: {
             url: issue['html_url']

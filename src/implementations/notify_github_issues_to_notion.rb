@@ -42,6 +42,7 @@ module Implementation
       results = send_issues_to_notion(formatted_issues)
       { success: { created_pages: results.count, results: results } }
     rescue StandardError => e
+      puts e
       { error: { message: e.message } }
     end
 
@@ -64,6 +65,8 @@ module Implementation
 
     def create_notion_page(issue)
       body = build_notion_payload(issue)
+      puts "BODY SENT:"
+      puts body.to_json
 
       HTTParty.post(NOTION_API_URL, headers: notion_headers, body: body.to_json)
     end
