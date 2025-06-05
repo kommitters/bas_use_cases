@@ -59,7 +59,7 @@ module Implementation
     end
 
     def last_billing
-      read_response.data.nil? ? nil : read_response.data['billing']
+      read_response.data['billing'] unless read_response.data.nil?
     end
   end
 end
