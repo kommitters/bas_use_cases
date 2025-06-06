@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  database_id: ENV.fetch('WIP_COUNT_NOTION_DATABASE_ID'),
+  database_id: ENV.fetch('WIP_LIMIT_NOTION_DATABASE_ID'),
   secret: ENV.fetch('NOTION_SECRET')
 }
 

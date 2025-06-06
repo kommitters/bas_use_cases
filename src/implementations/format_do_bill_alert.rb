@@ -68,10 +68,10 @@ module Implementation
       balance = billing
       threshold = process_options[:threshold]
 
-      ":warning: The **DigitalOcean** daily usage was exceeded. \n
-      -Current balance: #{balance}\n
-      -Threshold: #{threshold}\n
-      -Current daily usage: #{usage.round(3)}"
+      "⚠️ The *DigitalOcean* daily usage was exceeded. \n
+      - Current balance: #{balance}\n
+      - Threshold: #{threshold}\n
+      - Current daily usage: #{usage.round(3)}"
     end
   end
 end

@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  template: ':warning: The <domain> WIP limit was exceeded by <exceeded>'
+  template: '⚠️ The <domain> WIP limit was exceeded by <exceeded>'
 }
 
 # Process bot

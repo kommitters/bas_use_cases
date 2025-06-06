@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  template: 'The <sender> has requested support the <date>',
+  template: '📩 <sender> has requested support the <date>',
   frequency: 5,
   timezone: '-05:00'
 }
