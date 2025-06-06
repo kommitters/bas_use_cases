@@ -34,8 +34,7 @@ module Implementation
       github_issues = read_response.data
       return { error: { message: 'No GitHub issues data found' } } unless github_issues.is_a?(Array)
 
-      formatted_issues = format_for_notion(github_issues)
-      { success: formatted_issues }
+      { success: format_for_notion(github_issues) }
     rescue StandardError => e
       { error: { message: e.message } }
     end
@@ -45,58 +44,91 @@ module Implementation
     def format_for_notion(issues)
       issues.map do |issue|
         {
-          'Name': format_title(issue['title']),
+          'Detail' => format_title(issue['title']),
           'Tags' => format_labels(issue['labels']),
-          'children' => format_body(issue),
-          'Github issue id' => issue['number']
+          'Github issue id' => format_issue_id(issue['number']),
+          'children' => format_body(issue)
         }
       end
     end
 
     def format_title(title)
       {
+        type: 'title',
         title: [
           {
-            id: "title",
-            type: "text",
-            text: {
-              content: title || 'No title specified'
-            }
+            type: 'text',
+            text: { content: title || 'No title specified' }
           }
         ]
       }
     end
 
     def format_labels(labels)
-      return { type: 'multi_select', multi_select: [] } unless labels.is_a?(Array)
+      return { multi_select: [] } unless labels.is_a?(Array)
 
       {
-        type: 'multi_select', multi_select: labels.map { |label| { name: label['name'] } }
+        multi_select: labels.map { |label| { name: label['name'] } }
+      }
+    end
+
+    def format_issue_id(issue_id)
+      {
+        rich_text: [
+          {
+            type: 'text',
+            text: {
+              content: issue_id.to_s
+            }
+          }
+        ]
       }
     end
 
     def format_body(issue)
-      return []
       return [] if issue.nil?
 
       [
-        {
-          object: 'block',
-          type: 'link_preview',
-          link_preview: {
-            url: issue['html_url']
-          }
-        },
-        {
-          object: 'block',
-          type: 'paragraph',
-          paragraph: {
-            rich_text: [
-              { type: 'text', text: { content: issue['body'].strip } }
-            ]
-          }
-        }
+        format_issue_link(issue),
+        format_body_title,
+        format_issue_body(issue['body'])
       ]
+    end
+
+    def format_issue_link(issue)
+      {
+        object: 'block',
+        type: 'file',
+        file: {
+          type: 'external',
+          external: { url: issue['html_url'] },
+          name: "Check issue ##{issue['number']} on Github"
+        }
+      }
+    end
+
+    def format_body_title
+      {
+        type: 'heading_1',
+        heading_1: { # rubocop:disable Naming/VariableNumber
+          rich_text: [{
+            type: 'text',
+            text: { content: 'Issue description' }
+          }]
+        }
+      }
+    end
+
+    def format_issue_body(issue_body)
+      {
+        object: 'block',
+        type: 'paragraph',
+        paragraph: {
+          rich_text: [
+            { type: 'text', text: { content: issue_body.strip[0..1999] } }
+          ]
+        }
+      }
     end
   end
 end

@@ -47,13 +47,7 @@ module Implementation
 
     def extract_issue_data(issues)
       issues.map do |issue|
-        issue.to_h.slice(
-          :html_url,
-          :number,
-          :title,
-          :labels,
-          :body
-        )
+        issue.to_h.slice(:html_url, :number, :title, :labels, :body)
       end
     end
   end
