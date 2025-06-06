@@ -5,7 +5,7 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/project'
 
-RSpec.describe Services::Project do
+RSpec.describe Services::Postgres::Project do
   # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
   let(:config) do
@@ -18,19 +18,19 @@ RSpec.describe Services::Project do
 
   # Create the table structure before each test (so 'db' from let is available)
   before(:each) do
-    db.drop_table?(:project)
-    db.create_table(:project) do
+    db.drop_table?(:projects)
+    db.create_table(:projects) do
       primary_key :id
       String :external_project_id, null: false
       String :name, null: false
       String :type, size: 100, null: false
-      String :weekly_scope_id
-      String :domain_id
+      String :external_weekly_scope_id
+      String :external_domain_id
       DateTime :created_at
       DateTime :updated_at
     end
     # Inject the in-memory DB connection into the service
-    allow_any_instance_of(Services::Base).to receive(:establish_connection).and_return(db)
+    allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
   describe '#insert' do
@@ -51,7 +51,7 @@ RSpec.describe Services::Project do
   describe '#update' do
     it 'updates a project by ID' do
       id = service.insert(external_project_id: 'ext-p-2', name: 'To Update', type: 'external')
-      service.update(id: id, name: 'Updated Project')
+      service.update(id, { name: 'Updated Project' })
       updated = service.find(id)
       expect(updated[:name]).to eq('Updated Project')
       expect(updated[:type]).to eq('external')
