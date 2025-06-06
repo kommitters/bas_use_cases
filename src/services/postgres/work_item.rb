@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'sequel'
 require_relative 'base'
 
 module Services

@@ -5,7 +5,7 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/activity'
 
-RSpec.describe Services::Activity do
+RSpec.describe Services::Postgres::Activity do
   # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
   let(:config) do
@@ -18,17 +18,17 @@ RSpec.describe Services::Activity do
 
   # Create the table structure before each test
   before(:each) do
-    db.drop_table?(:activity)
-    db.create_table(:activity) do
+    db.drop_table?(:activities)
+    db.create_table(:activities) do
       primary_key :id
       String :external_activity_id, null: false
       String :name, null: false
-      String :domain_id
+      String :external_domain_id
       DateTime :created_at
       DateTime :updated_at
     end
     # Inject the in-memory DB connection into the service
-    allow_any_instance_of(Services::Base).to receive(:establish_connection).and_return(db)
+    allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
   describe '#insert' do
@@ -47,7 +47,7 @@ RSpec.describe Services::Activity do
   describe '#update' do
     it 'updates an activity by ID' do
       id = service.insert(external_activity_id: 'ext-a-2', name: 'To Update')
-      service.update(id: id, name: 'Updated Activity')
+      service.update(id, { name: 'Updated Activity' })
       updated = service.find(id)
       expect(updated[:name]).to eq('Updated Activity')
       expect(updated[:external_activity_id]).to eq('ext-a-2')

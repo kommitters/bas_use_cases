@@ -5,8 +5,7 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/work_item'
 
-RSpec.describe Services::WorkItem do
-  # Use an in-memory SQLite database for testing
+RSpec.describe Services::Postgres::WorkItem do
   let(:db) { Sequel.sqlite }
   let(:config) do
     {
@@ -16,10 +15,19 @@ RSpec.describe Services::WorkItem do
   end
   let(:service) { described_class.new(config) }
 
-  # Create the table structure before each test
   before(:each) do
-    db.drop_table?(:work_item)
-    db.create_table(:work_item) do
+    db.drop_table?(:work_items)
+    db.drop_table?(:activities)
+    db.drop_table?(:projects)
+    db.create_table(:activities) do
+      primary_key :id
+      String :external_activity_id, null: false
+    end
+    db.create_table(:projects) do
+      primary_key :id
+      String :external_project_id, null: false
+    end
+    db.create_table(:work_items) do
       primary_key :id
       String :external_work_item_id, null: false
       Integer :project_id
@@ -28,13 +36,15 @@ RSpec.describe Services::WorkItem do
       String :external_domain_id
       String :external_weekly_scope_id
       String :work_item_status, size: 50, null: false
-      DateTime :work_item_completetion_date
+      DateTime :work_item_completion_date
       DateTime :created_at
       DateTime :updated_at
     end
-    # Inject the in-memory DB connection into the service
-    allow_any_instance_of(Services::Base).to receive(:establish_connection).and_return(db)
+    allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
+
+  let!(:activity) { db[:activities].insert(external_activity_id: 'EXT-ACT-1') }
+  let!(:project) { db[:projects].insert(external_project_id: 'EXT-PROJ-1') }
 
   describe '#insert' do
     it 'creates a new work item and returns its ID' do
@@ -49,17 +59,51 @@ RSpec.describe Services::WorkItem do
     end
   end
 
+  describe '#insert with external keys' do
+    it 'resolves external_activity_id and sets activity_id' do
+      params = {
+        external_work_item_id: 'wi-1',
+        work_item_status: 'open',
+        external_activity_id: 'EXT-ACT-1'
+      }
+      id = service.insert(params)
+      work_item = service.find(id)
+      expect(work_item[:activity_id]).to eq(activity)
+    end
+
+    it 'resolves external_project_id and sets project_id' do
+      params = {
+        external_work_item_id: 'wi-2',
+        work_item_status: 'open',
+        external_project_id: 'EXT-PROJ-1'
+      }
+      id = service.insert(params)
+      work_item = service.find(id)
+      expect(work_item[:project_id]).to eq(project)
+    end
+
+    it 'raises error for unknown external_activity_id' do
+      expect do
+        service.insert(
+          external_work_item_id: 'wi-3',
+          work_item_status: 'open',
+          external_activity_id: 'NOT-FOUND'
+        )
+      end.to raise_error(/activities not found/)
+    end
+  end
+
   describe '#update' do
     it 'updates a work item by ID' do
       id = service.insert(external_work_item_id: 'ext-wi-2', work_item_status: 'open')
-      service.update(id: id, work_item_status: 'closed')
+      service.update(id, { work_item_status: 'closed' })
       updated = service.find(id)
       expect(updated[:work_item_status]).to eq('closed')
       expect(updated[:external_work_item_id]).to eq('ext-wi-2')
     end
 
     it 'raises error if no ID is provided' do
-      expect { service.update(work_item_status: 'no-id') }.to raise_error(ArgumentError)
+      expect { service.update(nil, { work_item_status: 'no-id' }) }.to raise_error(ArgumentError)
     end
   end
 
