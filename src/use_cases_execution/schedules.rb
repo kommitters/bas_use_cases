@@ -14,9 +14,6 @@ module UseCasesExecution
     end
 
     BIRTHDAY_SCHEDULES = [
-      { path: "#{__dir__}/birthday/fetch_birthday_from_notion.rb", time: ['12:40'] },
-      { path: "#{__dir__}/birthday/format_birthday.rb", time: ['12:50'] },
-      { path: "#{__dir__}/birthday/notify_birthday_in_discord.rb", time: ['13:00'] },
       { path: "#{__dir__}/birthday/fetch_birthday_from_notion_for_workspace.rb", time: ['12:45'] },
       { path: "#{__dir__}/birthday/format_birthday_workspace.rb", time: ['12:55'] },
       { path: "#{__dir__}/birthday/notify_birthday_in_workspace.rb", time: ['13:05'] },
@@ -24,9 +21,6 @@ module UseCasesExecution
     ].freeze
 
     BIRTHDAY_NEXT_WEEK_SCHEDULES = [
-      { path: "#{__dir__}/birthday_next_week/fetch_next_week_birthday_from_notion.rb", time: ['12:40'] },
-      { path: "#{__dir__}/birthday_next_week/format_next_week_birthday.rb", time: ['12:50'] },
-      { path: "#{__dir__}/birthday_next_week/notify_next_week_birthday_in_discord.rb", time: ['13:00'] },
       { path: "#{__dir__}/birthday_next_week/fetch_next_week_birthday_from_notion_for_workspace.rb", time: ['12:45'] },
       { path: "#{__dir__}/birthday_next_week/format_next_week_birthday_workspace.rb", time: ['12:55'] },
       { path: "#{__dir__}/birthday_next_week/notify_next_week_birthday_in_workspace.rb", time: ['13:05'] },
@@ -36,14 +30,11 @@ module UseCasesExecution
     DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
       { path: "#{__dir__}/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb", interval: 10_000 },
       { path: "#{__dir__}/digital_ocean_bill_alert/format_do_bill_alert.rb", interval: 10_000 },
-      { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_discord.rb", interval: 10_000 },
+      { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_workspace.rb", interval: 10_000 },
       { path: "#{__dir__}/digital_ocean_bill_alert/garbage_collector.rb", time: ['00:00'] }
     ].freeze
 
     PTO_SCHEDULES = [
-      { path: "#{__dir__}/pto/fetch_pto_from_notion.rb", time: ['13:10'] },
-      { path: "#{__dir__}/pto/humanize_pto.rb", time: ['13:20'] },
-      { path: "#{__dir__}/pto/notify_pto_in_discord.rb", time: ['13:30'] },
       { path: "#{__dir__}/pto/fetch_pto_from_notion_for_workspace.rb", time: ['13:15'] },
       { path: "#{__dir__}/pto/humanize_pto_workspace.rb", time: ['13:25'] },
       { path: "#{__dir__}/pto/notify_pto_in_workspace.rb", time: ['13:35'] },
@@ -51,13 +42,10 @@ module UseCasesExecution
     ].freeze
 
     PTO_NEXT_WEEK_SCHEDULES = [
-      { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_notion.rb", time: ['12:40'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/humanize_next_week_pto.rb", time: ['12:50'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/notify_next_week_pto_in_discord.rb", time: ['13:00'], day: ['Thursday'] },
       { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_notion_for_workspace.rb",
         time: ['12:45'], day: ['Thursday'] },
       { path: "#{__dir__}/pto_next_week/humanize_next_week_pto_workspace.rb", time: ['12:55'], day: ['Thursday'] },
-      { path: "#{__dir__}/pto_next_week/notify_next_week_pto_in_workspace.rb", time: ['13:05'], day: ['Thursday'] },
+      { path: "#{__dir__}/pto_next_week/notify_pto_next_week_in_workspace.rb", time: ['13:05'], day: ['Thursday'] },
       { path: "#{__dir__}/pto_next_week/garbage_collector.rb", time: ['23:00'], day: ['Thursday'] }
     ].freeze
 
