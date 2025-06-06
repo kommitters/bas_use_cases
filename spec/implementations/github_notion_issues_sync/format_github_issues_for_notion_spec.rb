@@ -27,7 +27,18 @@ RSpec.describe Implementation::FormatGithubIssuesForNotion do
       instance_double(Bas::SharedStorage::Types::Read, data: read_data)
     )
     allow(mocked_shared_storage).to receive(:write).and_return(
-      { 'status' => 'success', 'id' => 1 }
+      { success: [{
+        'Detail' => { type: 'title',
+                      title: [
+                        {
+                          type: 'text',
+                          text: { content: 'Sample issue' }
+                        }
+                      ] },
+        'Tags' => [],
+        'Github issue id' => {},
+        'children' => []
+      }] }
     )
 
     allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
@@ -83,7 +94,7 @@ RSpec.describe Implementation::FormatGithubIssuesForNotion do
                 },
                 {
                   type: 'heading_1',
-                  heading_1: {
+                  heading_1: { # rubocop:disable Naming/VariableNumber
                     rich_text: [{
                       type: 'text',
                       text: { content: 'Issue description' }
@@ -107,7 +118,11 @@ RSpec.describe Implementation::FormatGithubIssuesForNotion do
     end
 
     it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      result = @bot.execute
+      expect(result).not_to be_nil
+      expect(result[:success]).to be_an(Array)
+      expect(result[:success].first).to have_key('Detail')
+      expect(result[:success].first).to have_key('Tags')
     end
   end
 end

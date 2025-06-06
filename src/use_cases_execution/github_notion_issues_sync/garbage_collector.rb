@@ -3,7 +3,6 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-require_relative '../../implementations/github_notion_sync_garbage_collector'
 
 require_relative '../../implementations/garbage_collector'
 require_relative 'config'

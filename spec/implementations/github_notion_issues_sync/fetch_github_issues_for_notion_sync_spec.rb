@@ -22,7 +22,7 @@ RSpec.describe Implementation::FetchGithubIssuesForNotionSync do
     )
 
     allow(mocked_shared_storage_writer).to receive(:write).and_return(
-      [{ 'status' => 'success', 'id' => 1 }]
+      { success: [{ html_url: 'www.sample.com', title: 'Test issue' }] }
     )
 
     allow(mocked_shared_storage_writer).to receive(:set_processed).and_return(nil)
@@ -45,7 +45,11 @@ RSpec.describe Implementation::FetchGithubIssuesForNotionSync do
     end
 
     it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      result = @bot.execute
+      expect(result).not_to be_nil
+      expect(result[:success]).to be_an(Array)
+      expect(result[:success].first).to have_key(:html_url)
+      expect(result[:success].first).to have_key(:title)
     end
   end
 end

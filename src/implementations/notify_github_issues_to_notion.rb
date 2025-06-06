@@ -48,18 +48,17 @@ module Implementation
     private
 
     def send_issues_to_notion(issues)
-      results = []
-
-      issues.each do |issue|
+      issues.map do |issue|
         response = create_notion_page(issue)
-        results << {
-          issue_number: issue[:number],
-          status: response.code,
-          response_body: response.parsed_response
+
+        unless response.success?
+          Logger.new($stdout).info("Failed to create Notion page: #{response.code} - #{response.body}")
+        end
+
+        {
+          issue_number: issue[:number], status: response.code, response_body: response.parsed_response
         }
       end
-
-      results
     end
 
     def create_notion_page(issue)
@@ -68,10 +67,12 @@ module Implementation
     end
 
     def build_notion_payload(issue_data)
+      raise ArgumentError, "Expected Hash, got #{issue_data.class}" unless issue_data.is_a?(Hash)
+
       {
         parent: { database_id: process_options[:notion_database_id] },
         properties: issue_data.except('children'),
-        children: issue_data['children']
+        children: issue_data['children'] || []
       }
     end
 
@@ -79,7 +80,7 @@ module Implementation
       {
         'Authorization' => "Bearer #{process_options[:notion_secret]}",
         'Content-Type' => 'application/json',
-        'Notion-Version' => '2022-06-28'
+        'Notion-Version' => Config::NOTION_API_VERSION
       }
     end
   end

@@ -19,7 +19,7 @@ RSpec.describe Implementation::NotifyGithubIssuesToNotion do
       instance_double(Bas::SharedStorage::Types::Read, data: [{ number: 123, title: 'Test Issue' }],
                                                        inserted_at: Time.now)
     )
-    allow(mocked_shared_storage).to receive(:write).and_return({ 'status' => 'success' })
+    allow(mocked_shared_storage).to receive(:write).and_return({ success: true })
 
     allow(mocked_shared_storage).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage).to receive(:update_stage).and_return(true)
@@ -31,11 +31,13 @@ RSpec.describe Implementation::NotifyGithubIssuesToNotion do
   context '.execute' do
     before do
       allow(@bot).to receive(:process).and_return({ success: {} })
-      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      result = @bot.execute
+      expect(result).to eq({ success: true })
+      expect(mocked_shared_storage).to have_received(:read)
+      expect(mocked_shared_storage).to have_received(:write)
     end
   end
 end

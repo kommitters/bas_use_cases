@@ -6,7 +6,7 @@ Sequel.migration do
       primary_key :id
       column :data, :jsonb
       String :tag, size: 255
-      TrueClass :archived
+      TrueClass :archived, default: false, null: false
       String :stage, size: 255
       String :status, size: 255
       column :error_message, :jsonb

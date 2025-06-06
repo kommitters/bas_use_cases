@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'byebug'
 
 module Implementation
   ##
@@ -120,12 +119,14 @@ module Implementation
     end
 
     def format_issue_body(issue_body)
+      content = issue_body&.strip || 'No description provided'
+
       {
         object: 'block',
         type: 'paragraph',
         paragraph: {
           rich_text: [
-            { type: 'text', text: { content: issue_body.strip[0..1999] } }
+            { type: 'text', text: { content: content[0..1999] } }
           ]
         }
       }
