@@ -30,6 +30,13 @@ module Implementation
   # Implementation::FetchGithubIssuesForNotionSync.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class FetchGithubIssuesForNotionSync < Bas::Bot::Base
+    ##
+    # Fetches issues from a GitHub repository and prepares them for Notion synchronization.
+    #
+    # Uses the provided repository identifier and GitHub API token to retrieve issues via the Octokit client.
+    # Returns a hash containing either the extracted issue data or an error message if fetching fails.
+    #
+    # @return [Hash] A hash with either a `:success` key containing an array of issue data, or an `:error` key with a message.
     def process
       issues = octokit_client.issues(process_options[:repo_identifier])
       return { error: { message: 'Failed to fetch issues from GitHub' } } if issues.nil?
@@ -41,10 +48,15 @@ module Implementation
 
     private
 
+    ##
+    # Initializes and returns an Octokit client using the provided GitHub API token.
+    #
+    # @return [Octokit::Client] Configured client for GitHub API access
     def octokit_client
       Octokit::Client.new(access_token: process_options[:github_api_token])
     end
 
+    # @return [Array<Hash>] Array of hashes containing only the :html_url, :number, :title, :labels, and :body fields for each issue
     def extract_issue_data(issues)
       issues.map do |issue|
         issue.to_h.slice(:html_url, :number, :title, :labels, :body)
