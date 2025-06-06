@@ -87,11 +87,7 @@ module Implementation
     def format_body(issue)
       return [] if issue.nil?
 
-      [
-        format_issue_link(issue),
-        format_body_title,
-        format_issue_body(issue['body'])
-      ]
+      [format_issue_link(issue)]
     end
 
     def format_issue_link(issue)
@@ -102,32 +98,6 @@ module Implementation
           type: 'external',
           external: { url: issue['html_url'] },
           name: "Check issue ##{issue['number']} on Github"
-        }
-      }
-    end
-
-    def format_body_title
-      {
-        type: 'heading_1',
-        heading_1: { # rubocop:disable Naming/VariableNumber
-          rich_text: [{
-            type: 'text',
-            text: { content: 'Issue description' }
-          }]
-        }
-      }
-    end
-
-    def format_issue_body(issue_body)
-      content = issue_body&.strip || 'No description provided'
-
-      {
-        object: 'block',
-        type: 'paragraph',
-        paragraph: {
-          rich_text: [
-            { type: 'text', text: { content: content[0..1999] } }
-          ]
         }
       }
     end

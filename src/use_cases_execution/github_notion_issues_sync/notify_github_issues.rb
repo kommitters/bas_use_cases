@@ -20,7 +20,7 @@ write_options = {
 }
 
 options = {
-  notion_database_id: Config::NOTION_DATABASE_ID,
+  notion_database_id: Config::WORKITEMS_NOTION_DATABASE_ID,
   notion_secret: Config::NOTION_SECRET
 }
 

@@ -21,7 +21,7 @@ module Implementation
   #
   #   options = {
   #     repo_identifier: 'owner/repo',
-  #     github_api_token: 'github_token'
+  #     GITHUB_TOKEN: 'github_token'
   #   }
   #
   #   shared_storage_reader = Bas::SharedStorage::Default.new
@@ -42,7 +42,7 @@ module Implementation
     private
 
     def octokit_client
-      Octokit::Client.new(access_token: process_options[:github_api_token])
+      Octokit::Client.new(access_token: process_options[:GITHUB_TOKEN])
     end
 
     def extract_issue_data(issues)

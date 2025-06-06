@@ -5,7 +5,7 @@ require_relative '../../../src/implementations/fetch_github_issues_for_notion_sy
 require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
 
-ENV['GITHUB_API_TOKEN'] = 'GITHUB_API_TOKEN'
+ENV['GITHUB_TOKEN'] = 'GITHUB_TOKEN'
 ENV['REPO_IDENTIFIER'] = 'owner/repo'
 
 RSpec.describe Implementation::FetchGithubIssuesForNotionSync do
@@ -14,7 +14,7 @@ RSpec.describe Implementation::FetchGithubIssuesForNotionSync do
   before do
     options = {
       repo_identifier: ENV.fetch('REPO_IDENTIFIER'),
-      github_api_token: ENV.fetch('GITHUB_API_TOKEN')
+      GITHUB_TOKEN: ENV.fetch('GITHUB_TOKEN')
     }
 
     allow(mocked_shared_storage_reader).to receive(:read).and_return(

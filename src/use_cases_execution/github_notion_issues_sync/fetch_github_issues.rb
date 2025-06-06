@@ -16,7 +16,7 @@ write_options = {
 
 options = {
   repo_identifier: Config::REPO_IDENTIFIER,
-  github_api_token: Config::GITHUB_API_TOKEN
+  github_api_token: Config::GITHUB_TOKEN
 }
 
 # Process bot
