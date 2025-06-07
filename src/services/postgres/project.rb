@@ -11,7 +11,7 @@ module Services
     class Project < Services::Postgres::Base
       TABLE = :projects
 
-      # Inserts a new project record.
+      # Insert a new project record.
       def insert(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
