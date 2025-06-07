@@ -1,3 +1,7 @@
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*" # This will exclude all files in the spec directory
+
+Metrics/ModuleLength:
+  Exclude:
+    - "src/use_cases_execution/schedules.rb"
