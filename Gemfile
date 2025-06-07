@@ -46,3 +46,7 @@ gem 'rake', '~> 13.1.0'
 gem 'googleauth'
 
 gem 'google-apis-chat_v1'
+
+group :test do
+  gem 'sqlite3'
+end
