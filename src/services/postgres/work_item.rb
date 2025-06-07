@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'activity'
+require_relative 'project'
 
 module Services
   module Postgres
@@ -11,24 +13,10 @@ module Services
     class WorkItem < Services::Postgres::Base
       TABLE = :work_items
 
-      # Mapping of external IDs to internal IDs for relations.
-      RELATIONS = {
-        external_activity_id: {
-          table: :activities,
-          id_field: :activity_id,
-          external_field: :external_activity_id
-        },
-        external_project_id: {
-          table: :projects,
-          id_field: :project_id,
-          external_field: :external_project_id
-        }
-        # Here you can add more relations as needed
-      }.freeze
-
       def insert(params)
         params = params.dup
-        resolve_foreign_keys(params)
+        assign_activity_id(params)
+        assign_project_id(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -38,7 +26,8 @@ module Services
         raise ArgumentError, 'Work item id is required to update' unless id
 
         params = params.dup
-        resolve_foreign_keys(params)
+        assign_activity_id(params)
+        assign_project_id(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
@@ -62,27 +51,34 @@ module Services
         handle_error(e)
       end
 
-      private
+      def project_id(id)
+        return nil unless id
 
-      # Resolves foreign keys in the params hash by querying the related tables.
-      def resolve_foreign_keys(params)
-        RELATIONS.each do |external_key, relation|
-          next unless params[external_key]
-
-          record = query_item(
-            relation[:table],
-            relation[:external_field] => params[external_key]
-          ).first
-
-          raise_relation_not_found(relation[:table], external_key, params[external_key]) if record.nil?
-
-          params[relation[:id_field]] = record[:id]
-          params.delete(external_key)
-        end
+        Project.new(db).query(external_project_id: id).first
       end
 
-      def raise_relation_not_found(table, external_key, value)
-        raise "#{table} not found for #{external_key}: #{value}"
+      def activity_id(id)
+        return nil unless id
+
+        Activity.new(db).query(external_activity_id: id).first
+      end
+
+      private
+
+      def assign_activity_id(params)
+        return unless params[:external_activity_id]
+
+        activity = activity_id(params[:external_activity_id])
+        params[:activity_id] = activity[:id] if activity
+        params.delete(:external_activity_id)
+      end
+
+      def assign_project_id(params)
+        return unless params[:external_project_id]
+
+        project = project_id(params[:external_project_id])
+        params[:project_id] = project[:id] if project
+        params.delete(:external_project_id)
       end
 
       def handle_error(error)

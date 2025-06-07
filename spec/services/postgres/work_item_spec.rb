@@ -60,7 +60,7 @@ RSpec.describe Services::Postgres::WorkItem do
   end
 
   describe '#insert with external keys' do
-    it 'resolves external_activity_id and sets activity_id' do
+    it 'resolves external_activity_id and assign activity_id' do
       params = {
         external_work_item_id: 'wi-1',
         work_item_status: 'open',
@@ -71,7 +71,7 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(work_item[:activity_id]).to eq(activity)
     end
 
-    it 'resolves external_project_id and sets project_id' do
+    it 'resolves external_project_id and assign project_id' do
       params = {
         external_work_item_id: 'wi-2',
         work_item_status: 'open',
@@ -82,14 +82,26 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(work_item[:project_id]).to eq(project)
     end
 
-    it 'raises error for unknown external_activity_id' do
-      expect do
-        service.insert(
-          external_work_item_id: 'wi-3',
-          work_item_status: 'open',
-          external_activity_id: 'NOT-FOUND'
-        )
-      end.to raise_error(/activities not found/)
+    it 'assigns nil to project_id if no external_project_id is provided' do
+      params = {
+        external_work_item_id: 'wi-3',
+        work_item_status: 'open',
+        external_activity_id: 'EXT-ACT-1'
+      }
+      id = service.insert(params)
+      work_item = service.find(id)
+      expect(work_item[:project_id]).to be_nil
+    end
+
+    it 'assigns nil to activity_id if no external_activity_id is provided' do
+      params = {
+        external_work_item_id: 'wi-4',
+        work_item_status: 'open',
+        external_project_id: 'EXT-PROJ-1'
+      }
+      id = service.insert(params)
+      work_item = service.find(id)
+      expect(work_item[:activity_id]).to be_nil
     end
   end
 
