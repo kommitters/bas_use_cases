@@ -66,18 +66,22 @@ module Services
       private
 
       def assign_activity_id(params)
-        return unless params[:external_activity_id]
+        return unless params.key?(:external_activity_id)
 
-        activity = activity_id(params[:external_activity_id])
-        params[:activity_id] = activity[:id] if activity
+        if params[:external_activity_id]
+          activity = activity_id(params[:external_activity_id])
+          params[:activity_id] = activity[:id] if activity
+        end
         params.delete(:external_activity_id)
       end
 
       def assign_project_id(params)
-        return unless params[:external_project_id]
+        return unless params.key?(:external_project_id)
 
-        project = project_id(params[:external_project_id])
-        params[:project_id] = project[:id] if project
+        if params[:external_project_id]
+          project = project_id(params[:external_project_id])
+          params[:project_id] = project[:id] if project
+        end
         params.delete(:external_project_id)
       end
 

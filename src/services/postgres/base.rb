@@ -13,9 +13,14 @@ module Services
     class Base
       attr_reader :config, :db
 
-      def initialize(config)
-        @config = config
-        @db = establish_connection
+      def initialize(config_or_db)
+        if config_or_db.is_a?(Sequel::Database)
+          @db = config_or_db
+          @config = nil
+        else
+          @config = config_or_db
+          @db = establish_connection
+        end
       end
 
       private
