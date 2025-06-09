@@ -2,6 +2,7 @@
 
 require 'logger'
 require 'bas/shared_storage/postgres'
+require 'dotenv/load'
 
 require_relative '../../implementations/notify_workspace_dm'
 require_relative 'config'
@@ -19,7 +20,9 @@ write_options = {
   tag: 'NotifyWorkspaceDm'
 }
 
-options = {}
+options = {
+  credentials: ENV['SERVICE_ACCOUNT_CREDENTIALS_JSON']
+}
 
 # Process bot
 begin
