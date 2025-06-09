@@ -14,6 +14,8 @@ module Utils
       Chat = Google::Apis::ChatV1
 
       def initialize(space_id:, service_account_credentials:, debug: false)
+        raise ArgumentError, 'service_account_credentials is required' if service_account_credentials.nil?
+
         @space = "spaces/#{space_id}"
         @service_account_credentials = service_account_credentials
         @scopes = ['https://www.googleapis.com/auth/chat.bot']
