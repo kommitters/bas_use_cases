@@ -24,6 +24,4 @@ module Config
   OPS_DM_ID = ENV.fetch('OPS_DM_ID')
   ENGINEERING_DM_ID = ENV.fetch('ENGINEERING_DM_ID')
   BIZDEV_DM_ID = ENV.fetch('BIZDEV_DM_ID')
-
-  DISCORD_BOT_TOKEN = ENV.fetch('DISCORD_BOT_TOKEN')
 end

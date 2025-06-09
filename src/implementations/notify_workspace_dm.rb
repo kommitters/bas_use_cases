@@ -41,14 +41,22 @@ module Implementation
 
       message = read_response.data['notification']
 
-      begin
-        sender = Utils::GoogleChat::SendMessageToWorkspace.new(space_id: space_id)
-        sender.send_text_message(message)
+      send_notification(space_id, message)
+    end
 
-        { success: {} }
-      rescue StandardError => e
-        { error: { message: e.message, status_code: e.status_code || 500 } }
-      end
+    private
+
+    def send_notification(space_id, message)
+      sender = Utils::GoogleChat::SendMessageToWorkspace.new(
+        space_id: space_id,
+        service_account_credentials: process_options[:credentials]
+      )
+
+      sender.send_text_message(message)
+
+      { success: {} }
+    rescue StandardError => e
+      { error: { message: e.message } }
     end
   end
 end
