@@ -36,10 +36,11 @@ module Implementation
     NOTION_API_URL = 'https://api.notion.com/v1/pages'
 
     def process
-      formatted_issues = read_response.data
-      return { error: { message: 'No formatted issues data found' } } unless formatted_issues.is_a?(Array)
+      data = read_response.data
+      return { error: { message: 'No formatted issue data found' } } unless data.is_a?(Hash)
+      return { error: { message: 'Empty issue hash received' } } if data.nil? || data.empty?
 
-      results = send_issues_to_notion(formatted_issues)
+      results = send_issue_to_notion(data)
       { success: { created_pages: results.count, results: results } }
     rescue StandardError => e
       { error: { message: e.message } }
@@ -47,18 +48,16 @@ module Implementation
 
     private
 
-    def send_issues_to_notion(issues)
-      issues.map do |issue|
-        response = create_notion_page(issue)
+    def send_issue_to_notion(issue)
+      response = create_notion_page(issue)
 
-        unless response.success?
-          Logger.new($stdout).info("Failed to create Notion page: #{response.code} - #{response.body}")
-        end
-
-        {
-          issue_number: issue[:number], status: response.code, response_body: response.parsed_response
-        }
+      unless response.success?
+        Logger.new($stdout).info("Failed to create Notion page: #{response.code} - #{response.body}")
       end
+
+      {
+        issue_number: issue[:number], status: response.code, response_body: response.parsed_response
+      }
     end
 
     def create_notion_page(issue)
