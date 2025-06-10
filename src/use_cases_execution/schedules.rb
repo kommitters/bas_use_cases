@@ -112,6 +112,8 @@ module UseCasesExecution
 
     OSPO_PROJECT_ISSUES = [
       { path: "#{__dir__}/ospo_maintenance/projects/bas", time: ['08:00', '11:00', '14:00', '17:00', '20:00'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/bas_use_cases",
+        time: ['08:01', '11:01', '14:01', '17:01', '20:01'] },
       { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_dapp", time: ['18:00'] },
       { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_prototype", time: ['18:01'] },
       { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_smart_contracts", time: ['18:02'] },
