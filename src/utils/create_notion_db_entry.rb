@@ -34,7 +34,7 @@ module Utils
 
         {
           parent: { database_id: @database_id },
-          properties: @issue_data.except('children'),
+          properties: @issue_data.reject { |k, _| k == 'children' },
           children: @issue_data['children'] || []
         }
       end

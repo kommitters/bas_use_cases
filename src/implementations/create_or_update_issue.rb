@@ -65,18 +65,12 @@ module Implementation
       response = fetch_record
 
       if response.is_a?(Array) && !response.empty?
-        update_response = update_record(response.first['id']) if response.first['id'].is_a?(String)
-        return "cannot_update_error_#{update_response.code}".to_sym if update_response.code != 200
+        return :not_updated unless response.first['id'].is_a?(String)
 
-        return :updated
+        update_record(response.first['id'])
       end
 
-      create_response = Utils::Notion::CreateNotionDbEntry.new(
-        process_options[:secret], process_options[:database_id], read_response.data['notion_object']
-      ).execute
-      return "cannot_create_error_#{update_response.code}".to_sym if create_response.code != 200
-
-      :created
+      create_record
     end
 
     def fetch_record
@@ -98,7 +92,21 @@ module Implementation
         body: { properties: read_response.data['notion_object'].except('children', NOTION_PROPERTY) }
       }
 
-      Utils::Notion::UpdateDatabasePage.new(options).execute
+      update_response = Utils::Notion::UpdateDatabasePage.new(options).execute
+
+      return "cannot_update_error_#{update_response&.code || 'unknown'}".to_sym if update_response&.code != 200
+
+      :updated
+    end
+
+    def create_record
+      create_response = Utils::Notion::CreateNotionDbEntry.new(
+        process_options[:secret], process_options[:database_id], read_response.data['notion_object']
+      ).execute
+
+      return "cannot_create_error_#{create_response.code}".to_sym if create_response.code != 200
+
+      :created
     end
   end
 end
