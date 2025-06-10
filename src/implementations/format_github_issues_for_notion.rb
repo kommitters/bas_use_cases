@@ -13,7 +13,8 @@ module Implementation
   #   read_options = {
   #     connection: Config::CONNECTION,
   #     db_table: "github_issues",
-  #     tag: 'FetchGithubIssues',
+  #     where: "stage='unprocessed' AND tag=$1 ORDER BY inserted_at DESC",
+  #     params: ['GithubIssueRequest']
   #   }
   #
   #   write_options = {

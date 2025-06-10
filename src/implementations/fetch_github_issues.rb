@@ -3,7 +3,7 @@
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require 'byebug'
+
 module Implementation
   ##
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch GitHub issues from a

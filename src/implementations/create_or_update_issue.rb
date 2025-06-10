@@ -21,13 +21,14 @@ module Implementation
   #   read_options = {
   #     connection:,
   #     db_table: "github_issues",
-  #     tag: "UpdateWorkItemRequest"
+  #     where: "stage='unprocessed' AND tag=$1 ORDER BY inserted_at DESC",
+  #     params: ['FormatGithubIssues']
   #   }
   #
   #   write_options = {
   #     connection:,
   #     db_table: "github_issues",
-  #     tag: "UpdateWorkItem"
+  #     tag: "CreateOrUpdateIssueInNotion"
   #   }
   #
   #   options = {
@@ -37,7 +38,7 @@ module Implementation
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #  Implementation::UpdateWorkItem.new(options, shared_storage).execute
+  #  Implementation::CreateOrUpdateIssue.new(options, shared_storage).execute
   #
   class CreateOrUpdateIssue < Bas::Bot::Base
     NOTION_PROPERTY = 'Github issue id'
@@ -64,19 +65,18 @@ module Implementation
       response = fetch_record
 
       if response.is_a?(Array) && !response.empty?
-        page_id = response.first['id']
-        update_response = update_record(page_id) if page_id.is_a?(String)
+        update_response = update_record(response.first['id']) if response.first['id'].is_a?(String)
         return "cannot_update_error_#{update_response.code}".to_sym if update_response.code != 200
 
-        :updated
-      else
-        create_response = Utils::Notion::CreateNotionDbEntry.new(
-          process_options[:secret], process_options[:database_id], read_response.data['notion_object']
-        ).execute
-        return "cannot_create_error_#{update_response.code}".to_sym if create_response.code != 200
-
-        :created
+        return :updated
       end
+
+      create_response = Utils::Notion::CreateNotionDbEntry.new(
+        process_options[:secret], process_options[:database_id], read_response.data['notion_object']
+      ).execute
+      return "cannot_create_error_#{update_response.code}".to_sym if create_response.code != 200
+
+      :created
     end
 
     def fetch_record
