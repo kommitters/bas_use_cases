@@ -6,26 +6,25 @@ require 'bas/shared_storage/postgres'
 require_relative '../../../implementations/fetch_github_issues'
 require_relative '../config'
 
-repo_tag = 'MtkAutomationGithubIssues'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: repo_tag,
+  tag: 'BasUseCasesGithubIssues',
   where: 'tag=$1 ORDER BY inserted_at DESC',
-  params: [repo_tag]
+  params: ['BasUseCasesGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: repo_tag
+  tag: 'BasUseCasesGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
-  repo: 'kommitters/mtk-automation',
+  repo: 'kommitters/bas_use_cases',
   filters: { state: 'open' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,

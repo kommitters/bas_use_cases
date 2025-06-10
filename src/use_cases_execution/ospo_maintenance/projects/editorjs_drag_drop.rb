@@ -10,22 +10,22 @@ require_relative '../config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'EditroJsDragDropGithubIssues',
+  tag: 'EditorJsDragDropGithubIssues',
   where: 'tag=$1 ORDER BY inserted_at DESC',
-  params: ['EditroJsDragDropGithubIssues']
+  params: ['EditorJsDragDropGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'EditroJsDragDropGithubIssues'
+  tag: 'EditorJsDragDropGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/editorjs-drag-drop',
-  filters: { state: 'all' },
+  filters: { state: 'open' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
   status: 'Backlog',

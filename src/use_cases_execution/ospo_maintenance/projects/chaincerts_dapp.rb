@@ -25,7 +25,7 @@ options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/chaincerts-dapp',
-  filters: { state: 'all' },
+  filters: { state: 'open' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
   status: 'Backlog',

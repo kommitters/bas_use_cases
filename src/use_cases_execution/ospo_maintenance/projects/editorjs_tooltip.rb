@@ -10,22 +10,22 @@ require_relative '../config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'EditroJsTooltipGithubIssues',
+  tag: 'EditorJsTooltipGithubIssues',
   where: 'tag=$1 ORDER BY inserted_at DESC',
-  params: ['EditroJsTooltipGithubIssues']
+  params: ['EditorJsTooltipGithubIssues']
 }
 
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'EditroJsTooltipGithubIssues'
+  tag: 'EditorJsTooltipGithubIssues'
 }
 
 options = {
   private_pem: Config::PRIVATE_PEM,
   app_id: Config::APP_ID,
   repo: 'kommitters/editorjs-tooltip',
-  filters: { state: 'all' },
+  filters: { state: 'open' },
   organization: Config::ORGANIZATION,
   domain: Config::DOMAIN,
   status: 'Backlog',

@@ -98,10 +98,42 @@ module UseCasesExecution
       { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", time: ['12:10'], day: ['Friday'] }
     ].freeze
 
+    OSPO_PROJECT_ISSUES = [
+      { path: "#{__dir__}/ospo_maintenance/projects/bas", time: ['08:00', '11:00', '14:00', '17:00', '20:00'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/bas_use_cases",
+        time: ['08:01', '11:01', '14:01', '17:01', '20:01'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_dapp", time: ['18:00'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_prototype", time: ['18:01'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/chaincerts_smart_contracts", time: ['18:02'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editorjs_break_line", time: ['18:03'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editorjs_drag_drop", time: ['18:04'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editorjs_inline_image", time: ['18:05'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editorjs_toggle_block", time: ['18:06'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editorjs_tooltip", time: ['18:07'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/editor_js_undo", time: ['18:08'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/elixir_xdr", time: ['18:09'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/kadena_ex", time: ['18:10'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/mintacoin", time: ['18:11'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/mtk_automation", time: ['18:12'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/soroban_ex", time: ['18:13'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/soroban_smart_contracts", time: ['18:14'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/stellar_base", time: ['18:15'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/stellar_sdk", time: ['18:16'] },
+      { path: "#{__dir__}/ospo_maintenance/projects/tickspot_js", time: ['18:17'] }
+    ].freeze
+
     EXPIRED_PROJECTS_SCHEDULES = [
       { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
       { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
       { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] }
+    ].freeze
+
+    GITHUB_NOTION_ISSUES_SYNC_SCHEDULES = [
+      { path: "#{__dir__}/github_notion_issues_sync/format_github_issues.rb",
+        time: ['08:10', '11:10', '14:10', '17:10', '20:10'] },
+      { path: "#{__dir__}/github_notion_issues_sync/create_or_update_issues.rb",
+        time: ['08:15', '11:15', '14:15', '17:15', '20:15'] },
+      { path: "#{__dir__}/github_notion_issues_sync/garbage_collector.rb", time: ['21:05'] }
     ].freeze
   end
 end
