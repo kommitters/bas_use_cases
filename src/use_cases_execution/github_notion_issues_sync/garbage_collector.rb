@@ -10,13 +10,13 @@ require_relative 'config'
 # Configuration
 write_options = {
   connection: Config::CONNECTION,
-  db_table: 'github_notion_issues_sync',
+  db_table: 'github_issues',
   tag: 'GarbageCollector'
 }
 
 options = {
   connection: Config::CONNECTION,
-  db_table: 'github_notion_issues_sync'
+  db_table: 'github_issues'
 }
 
 # Process bot

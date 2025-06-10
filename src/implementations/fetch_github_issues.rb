@@ -3,7 +3,7 @@
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-
+require 'byebug'
 module Implementation
   ##
   # The Implementation::FetchGithubIssues class serves as a bot implementation to fetch GitHub issues from a
@@ -46,7 +46,7 @@ module Implementation
   #  Implementation::FetchGithubIssues.new(options, shared_storage).execute
   #
   class FetchGithubIssues < Bas::Bot::Base
-    ISSUE_PARAMS = %i[id html_url title body labels state created_at updated_at state].freeze
+    ISSUE_PARAMS = %i[id html_url title body number state created_at updated_at state].freeze
     PER_PAGE = 100
 
     # Process function to request GitHub issues using the octokit utility
@@ -91,6 +91,7 @@ module Implementation
         ISSUE_PARAMS.reduce({}) do |hash, param|
           hash.merge({ param => issue.send(param) })
               .merge({ assignees: issue.assignees.map(&:login) })
+              .merge({ labels: issue.labels.map { |l| l.to_h.slice(:id, :name, :color, :description) } })
         end
       end
     end

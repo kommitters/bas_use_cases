@@ -12,13 +12,13 @@ module Implementation
   #
   #   read_options = {
   #     connection: Config::CONNECTION,
-  #     db_table: "github_notion_issues_sync",
+  #     db_table: "github_issues",
   #     tag: 'FetchGithubIssues',
   #   }
   #
   #   write_options = {
   #     connection: Config::CONNECTION,
-  #     db_table: "github_notion_issues_sync",
+  #     db_table: "github_issues",
   #     tag: 'FormatGithubIssues'
   #   }
   #
@@ -30,25 +30,28 @@ module Implementation
   #
   class FormatGithubIssuesForNotion < Bas::Bot::Base
     def process
-      github_issues = read_response.data
-      return { error: { message: 'No GitHub issues data found' } } unless github_issues.is_a?(Array)
+      data = read_response.data
+      return { error: { message: 'No GitHub issue data found' } } unless data.is_a?(Hash)
+      return { error: { message: 'Empty issue hash received' } } if data.nil? || data.empty?
 
-      { success: format_for_notion(github_issues) }
+      { success: format_for_notion(data['issue']) }
     rescue StandardError => e
       { error: { message: e.message } }
     end
 
     private
 
-    def format_for_notion(issues)
-      issues.map do |issue|
-        {
+    def format_for_notion(issue)
+      {
+        issue_number: issue['number'],
+        issue_id: issue['id'],
+        notion_object: {
           'Detail' => format_title(issue['title']),
           'Tags' => format_labels(issue['labels']),
           'Github issue id' => format_issue_id(issue['number']),
           'children' => format_body(issue)
         }
-      end
+      }
     end
 
     def format_title(title)
