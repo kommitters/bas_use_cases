@@ -117,11 +117,9 @@ module UseCasesExecution
     ].freeze
 
     GITHUB_NOTION_ISSUES_SYNC_SCHEDULES = [
-      { path: "#{__dir__}/github_notion_issues_sync/fetch_github_issues.rb",
-        time: ['08:05', '11:05', '14:05', '17:05', '20:05'] },
       { path: "#{__dir__}/github_notion_issues_sync/format_github_issues.rb",
         time: ['08:10', '11:10', '14:10', '17:10', '20:10'] },
-      { path: "#{__dir__}/github_notion_issues_sync/notify_github_issues.rb",
+      { path: "#{__dir__}/github_notion_issues_sync/create_or_update_issues.rb",
         time: ['08:15', '11:15', '14:15', '17:15', '20:15'] },
       { path: "#{__dir__}/github_notion_issues_sync/garbage_collector.rb", time: ['21:05'] }
     ].freeze
