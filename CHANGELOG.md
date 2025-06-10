@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.0 (10.06.25)
+- [GitHub notion issues sync](https://github.com/kommitters/bas_use_cases/pull/104)
+- [Move pending automation to workspace](https://github.com/kommitters/bas_use_cases/pull/108)
+- [Solve #96 - Add warehouse migration config](https://github.com/kommitters/bas_use_cases/pull/97)
+
 ## 1.7.0 (05.06.25)
 - [feat: Notify missing worklogs in workspace](https://github.com/kommitters/bas_use_cases/pull/94)
 - [Refactor update notion db](https://github.com/kommitters/bas_use_cases/pull/95)
