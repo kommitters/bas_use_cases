@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# This file is used to store the configuration of the apollo sync use case.
-# It contains the connection information to the database where the apollo data is stored.
+# This file is used to store the configuration of the warehouse sync data.
+# It contains the connection information to the database where the warehouse sync data is stored.
 # The connection information is stored in the CONNECTION constant.
 #
 

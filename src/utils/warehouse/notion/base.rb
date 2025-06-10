@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'date'
+
 module Utils
   module Warehouse
     module Notion
@@ -25,6 +27,23 @@ module Utils
           return '' if value.nil? || value['select'].nil?
 
           value['select']['name']
+        end
+
+        def extract_status(column_name)
+          value = @properties[column_name]
+          return '' if value.nil? || value['status'].nil?
+
+          value['status']['name']
+        end
+
+        def extract_date(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['date'].nil?
+
+          date_value = value['date']['start']
+          return nil if date_value.nil? || date_value.empty?
+
+          Date.parse(date_value)
         end
 
         def extract_multi_select(column_name)

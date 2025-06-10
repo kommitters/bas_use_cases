@@ -3,7 +3,6 @@
 require 'spec_helper'
 require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
-
 require_relative '../../../../src/implementations/fetch_records_from_notion_database'
 
 RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
@@ -19,7 +18,8 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
   let(:shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:subject) { described_class.new(options, shared_storage_reader, shared_storage_writer) }
 
-  let(:formatter) { instance_double('Formatter::ProjectFormatter') }
+  let(:formatter) { double('Formatter::ProjectFormatter', format: { normalized: true }) }
+
   let(:notion_response) do
     double('HTTParty::Response',
            code: 200,
@@ -30,9 +30,7 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
   end
 
   before do
-    stub_const('Formatter::ProjectFormatter', Class.new)
     allow(Formatter::ProjectFormatter).to receive(:new).and_return(formatter)
-    allow(formatter).to receive(:format).and_return({ normalized: true })
     allow(Utils::Notion::Request).to receive(:execute).and_return(notion_response)
   end
 

@@ -34,14 +34,20 @@ module Implementation
   #     .execute
   #
   class FetchRecordsFromNotionDatabase < Bas::Bot::Base
-    # Process function to execute the Notion utility to fetch birthdays from a notion database
+    # Procces method fetches records from a Notion database based on the provided options.
     #
     def process
       response = Utils::Notion::Request.execute(params)
       return error_response(response) unless response.code == 200
 
       entities = normalize_response(response.parsed_response['results'])
-      entities += fetch_all_entities(response) if response.parsed_response['has_more']
+      if response.parsed_response['has_more']
+        paginated_entities = fetch_all_entities(response)
+
+        return paginated_entities if paginated_entities.is_a?(Hash) && paginated_entities[:error]
+
+        entities += paginated_entities
+      end
 
       success_response(entities)
     end
@@ -67,14 +73,21 @@ module Implementation
       }
     end
 
-    def fetch_all_entities(response)
+    # Fetches all additional entities if there are more pages in the Notion API.
+    # If a paginated request fails, returns an error_response hash.
+    def fetch_all_entities(initial_response)
       entities = []
+      response = initial_response
 
       loop do
         break unless response.parsed_response['has_more']
 
-        response = Utils::Notion::Request.execute(next_cursor_params(response.parsed_response['next_cursor']))
-        entities += normalize_response(response.parsed_response['results']) if response.code == 200
+        next_response = Utils::Notion::Request.execute(next_cursor_params(response.parsed_response['next_cursor']))
+
+        return error_response(next_response) unless next_response.code == 200
+
+        entities += normalize_response(next_response.parsed_response['results'])
+        response = next_response
       end
 
       entities
@@ -97,11 +110,7 @@ module Implementation
 
     def body
       filter = filter_conditions
-      if filter.nil? || filter.empty?
-        {} # No incluye filter
-      else
-        { filter: filter }
-      end
+      filter.nil? || filter.empty? ? {} : { filter: filter }
     end
 
     def filter_conditions
@@ -113,17 +122,18 @@ module Implementation
       records.map { |record| formatter.format(record) }
     end
 
+    # Returns the correct formatter for the given entity, or raises if not implemented.
+    FORMATTERS = {
+      'project' => Formatter::ProjectFormatter,
+      'activity' => Formatter::ActivityFormatter,
+      'work_item' => Formatter::WorkItemFormatter
+    }.freeze
+
     def formatter_for_entity(entity)
-      case entity
-      when 'project'
-        Formatter::ProjectFormatter.new
-      when 'activity'
-        Formatter::ActivityFormatter.new
-      when 'work_item'
-        Formatter::WorkItemFormatter.new
-      else
-        raise "No formatter implemented for entity: #{entity}"
-      end
+      formatter = FORMATTERS[entity]
+      raise "No formatter implemented for entity: #{entity}" unless formatter
+
+      formatter.new
     end
   end
 end
