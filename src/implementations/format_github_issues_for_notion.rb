@@ -33,7 +33,8 @@ module Implementation
     def process
       data = read_response.data
       return { error: { message: 'No GitHub issue data found' } } unless data.is_a?(Hash)
-      return { error: { message: 'Empty issue hash received' } } if data.nil? || data.empty?
+      return { error: { message: 'Empty issue hash received' } } if data.empty?
+      return { error: { message: 'Missing issue payload' } } unless data.key?('issue') && data['issue'].is_a?(Hash)
 
       { success: format_for_notion(data['issue']) }
     rescue StandardError => e

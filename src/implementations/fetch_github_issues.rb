@@ -46,7 +46,7 @@ module Implementation
   #  Implementation::FetchGithubIssues.new(options, shared_storage).execute
   #
   class FetchGithubIssues < Bas::Bot::Base
-    ISSUE_PARAMS = %i[id html_url title body number state created_at updated_at state].freeze
+    ISSUE_PARAMS = %i[id html_url title body number state created_at updated_at].freeze
     PER_PAGE = 100
 
     # Process function to request GitHub issues using the octokit utility
