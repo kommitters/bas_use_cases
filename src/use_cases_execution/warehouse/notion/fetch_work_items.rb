@@ -16,9 +16,9 @@ write_options = {
 }
 
 options = {
-  database_id: Config::PROJECTS_NOTION_DATABASE_ID,
+  database_id: Config::WORK_ITEMS_NOTION_DATABASE_ID,
   secret: Config::NOTION_SECRET,
-  entity: 'project'
+  entity: 'work_item'
 }
 
 # Process bot

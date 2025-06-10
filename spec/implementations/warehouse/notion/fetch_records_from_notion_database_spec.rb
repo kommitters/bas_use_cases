@@ -66,7 +66,7 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
       end
 
       before do
-        allow(Utils::Notion::Request).to receive(:execute).and_return(paged_response_1, paged_response_2)
+        allow(Utils::Notion::Request).to receive(:execute).and_return(paged_response1, paged_response2)
       end
 
       it 'fetches all pages and returns all normalized entities' do

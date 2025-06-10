@@ -3,6 +3,8 @@
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
 require_relative '../utils/warehouse/notion/projects'
+require_relative '../utils/warehouse/notion/activities'
+require_relative '../utils/warehouse/notion/work_items'
 
 module Implementation
   ##
@@ -36,7 +38,6 @@ module Implementation
     #
     def process
       response = Utils::Notion::Request.execute(params)
-
       return error_response(response) unless response.code == 200
 
       entities = normalize_response(response.parsed_response['results'])
@@ -116,10 +117,10 @@ module Implementation
       case entity
       when 'project'
         Formatter::ProjectFormatter.new
-      # when 'activity'
-      #   Formatter::ActivityFormatter.new
-      # when 'work_item'
-      #   Formatter::WorkItemFormatter.new
+      when 'activity'
+        Formatter::ActivityFormatter.new
+      when 'work_item'
+        Formatter::WorkItemFormatter.new
       else
         raise "No formatter implemented for entity: #{entity}"
       end
