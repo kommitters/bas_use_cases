@@ -51,6 +51,8 @@ module Services
         handle_error(e)
       end
 
+      private
+
       def project_id(id)
         return nil unless id
 
@@ -62,8 +64,6 @@ module Services
 
         Activity.new(db).query(external_activity_id: id).first
       end
-
-      private
 
       def assign_activity_id(params)
         return unless params.key?(:external_activity_id)

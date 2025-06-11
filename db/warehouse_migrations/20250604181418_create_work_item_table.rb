@@ -4,6 +4,7 @@ Sequel.migration do
   up do
     create_table(:work_items) do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
+      String :name, size: 100, null: true
       String :external_work_item_id, size: 255, null: false
       foreign_key :project_id, :projects, type: :uuid, null: true
       foreign_key :activity_id, :activities, type: :uuid, null: true
