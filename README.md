@@ -99,6 +99,36 @@ The project uses a migration system based on [Sequel](https://sequel.jeremyevans
 - Migrations are versioned and can be applied or rolled back, providing version control for your database schema.
 - You can safely add, modify, or remove tables and columns over time.
 
+### UUID Support and Extensions
+
+If you need to use columns of type UUID (for example, for primary keys), the PostgreSQL extension `pgcrypto` must be enabled in your database. This allows the use of the function `gen_random_uuid()` to generate UUIDs automatically.
+
+If you are working locally and your database does not have it enabled, you can do so manually with: 
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+```
+
+#### Example: Defining a UUID primary key in Sequel migrations
+
+```ruby
+Sequel.migration do
+  up do
+    create_table(:projects) do
+      uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
+      String :external_project_id, size: 255, null: false
+      # ... other columns ...
+    end
+  end
+
+  down do
+    drop_table(:projects)
+  end
+end
+```
+
+---
+
 ### How to Generate a Migration
 To generate a migration file for a new table, run:
 
