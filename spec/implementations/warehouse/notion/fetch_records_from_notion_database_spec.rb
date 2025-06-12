@@ -41,12 +41,11 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
         allow(Utils::Notion::Request).to receive(:execute).and_return(notion_response)
       end
 
-      it 'returns success response with normalized entities in content' do
+      it 'returns success response with all normalized entities in content array' do
         result = subject.process
         expect(result).to have_key(:success)
         expect(result[:success][:type]).to eq('project')
-        all_content = result[:success][:pages].flat_map { |p| p[:content] }
-        expect(all_content).to all(eq({ normalized: true }))
+        expect(result[:success][:content]).to eq([{ normalized: true }, { normalized: true }])
       end
     end
 
@@ -74,11 +73,9 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
         allow(Utils::Notion::Request).to receive(:execute).and_return(paged_response1, paged_response2)
       end
 
-      it 'fetches all pages and returns all normalized entities' do
+      it 'fetches all pages and returns all normalized entities in content array' do
         result = subject.process
-        all_content = result[:success][:pages].flat_map { |p| p[:content] }
-        expect(all_content.size).to eq(2)
-        expect(all_content).to all(eq({ normalized: true }))
+        expect(result[:success][:content]).to eq([{ normalized: true }, { normalized: true }])
       end
     end
 
@@ -98,6 +95,29 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
         expect(result).to have_key(:error)
         expect(result[:error][:status_code]).to eq(400)
       end
+    end
+  end
+
+  describe '#write' do
+    it 'writes one record per 100 or fewer items in content' do
+      # 205 registros normalizados -> 3 páginas (100, 100, 5)
+      content = Array.new(205) { { normalized: true } }
+      process_response = { success: { type: 'project', content: content } }
+      allow(subject).to receive(:process_response).and_return(process_response)
+
+      expect(shared_storage_writer).to receive(:write).exactly(3).times do |record|
+        expect(record[:success][:content].size).to be <= 100
+        expect(record[:success][:type]).to eq('project')
+      end
+
+      subject.write
+    end
+
+    it 'writes nothing if content is empty' do
+      process_response = { success: { type: 'project', content: [] } }
+      allow(subject).to receive(:process_response).and_return(process_response)
+      expect(shared_storage_writer).not_to receive(:write)
+      subject.write
     end
   end
 end

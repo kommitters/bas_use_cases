@@ -8,16 +8,25 @@ require_relative '../utils/warehouse/notion/work_item_formatter'
 
 module Implementation
   ##
-  # The Implementation::FetchRecordsFromNotionDatabase class provides a bot implementation
-  # that reads records (such as projects) from a Notion database and saves them
-  # into shared storage (e.g., PostgresDB).
+  # Implementation::FetchRecordsFromNotionDatabase
+  #
+  # This class implements a bot that fetches records (such as projects, activities, or work items)
+  # from a Notion database and saves them into shared storage (e.g., PostgresDB).
   #
   # <b>Usage Example</b>
   #
-  #   write_options = {
-  #     connection: <DB_CONNECTION>,
+  #   read_options = {
+  #     connection: Config::CONNECTION,
   #     db_table: 'warehouse_sync',
-  #     tag: 'FetchRecordsFromNotionDatabase'
+  #     avoid_process: true,
+  #     where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
+  #     params: [false, 'FetchProjectsFromNotionDatabase']
+  #   }
+  #
+  #   write_options = {
+  #     connection: Config::CONNECTION,
+  #     db_table: 'warehouse_sync',
+  #     tag: 'FetchProjectsFromNotionDatabase'
   #   }
   #
   #   options = {
@@ -26,11 +35,10 @@ module Implementation
   #     entity: 'project'
   #   }
   #
-  #   shared_storage_reader = Bas::SharedStorage::Default.new
-  #   shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
-  #
+  #    shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
+
   #   Implementation::FetchRecordsFromNotionDatabase
-  #     .new(options, shared_storage_reader, shared_storage_writer)
+  #     .new(options, shared_storage)
   #     .execute
   #
   class FetchRecordsFromNotionDatabase < Bas::Bot::Base
@@ -45,86 +53,45 @@ module Implementation
     # Proccess method fetches records from a Notion database based on the provided options.
     #
     def process
-      entities = fetch_all_entities
-      return entities if entities.is_a?(Hash) && entities[:error]
+      response = Utils::Notion::Request.execute(params)
+      return error_response(response) unless response.code == 200
 
-      build_paged_response(entities)
+      entities = normalize_response(response.parsed_response['results'])
+      entities += fetch_all_entities(response) if response.parsed_response['has_more']
+
+      { success: { type: process_options[:entity], content: entities } }
     end
 
     def write
-      pages = process_response.dig(:success, :pages) || []
-      pages.each do |page|
-        next if @process_options[:avoid_empty_data] && page[:content].empty?
+      content = process_response.dig(:success, :content) || []
+      paged_entities = content.each_slice(PAGE_SIZE).to_a
 
-        record = build_record(page)
+      paged_entities.each_with_index do |page, idx|
+        record = build_record(
+          content: page, page_index: idx + 1,
+          total_pages: paged_entities.size, total_records: content.size
+        )
         @shared_storage_writer.write(record)
       end
     end
 
     private
 
-    def build_paged_response(entities)
-      paged_entities = entities.each_slice(PAGE_SIZE).to_a
-      {
-        success: {
-          type: process_options[:entity],
-          pages: paged_entities.each_with_index.map do |page, idx|
-            build_page(page, idx, paged_entities.size, entities.size)
-          end
-        }
-      }
-    end
-
-    def build_page(page, idx, total_pages, total_records)
-      {
-        content: page,
-        page_index: idx + 1,
-        total_pages: total_pages,
-        total_records: total_records
-      }
-    end
-
-    def build_record(page)
-      {
-        success: {
-          type: process_options[:entity],
-          **page
-        }
-      }
-    end
-
-    def error_response(response)
-      {
-        error: {
-          message: response.parsed_response,
-          status_code: response.code
-        }
-      }
-    end
-
-    # Fetches all additional entities if there are more pages in the Notion API.
-    # If a paginated request fails, returns an error_response hash.
-    def fetch_all_entities
-      all_entities = []
-      next_cursor = nil
+    def fetch_all_entities(initial_response)
+      entities = []
+      response = initial_response
 
       loop do
-        response = fetch_notion_page(next_cursor)
-        return error_response(response) unless response.code == 200
-
-        all_entities += normalize_response(response.parsed_response['results'])
         break unless response.parsed_response['has_more']
 
         next_cursor = response.parsed_response['next_cursor']
+        response = Utils::Notion::Request.execute(next_cursor_params(next_cursor))
+        break unless response.code == 200
+
+        entities += normalize_response(response.parsed_response['results'])
       end
 
-      all_entities
-    end
-
-    def fetch_notion_page(cursor = nil)
-      request_body = body.dup
-      request_body[:start_cursor] = cursor if cursor
-      Utils::Notion::Request.execute(params.merge(body: request_body))
+      entities
     end
 
     def params
@@ -134,6 +101,11 @@ module Implementation
         method: 'post',
         body:
       }
+    end
+
+    def next_cursor_params(next_cursor)
+      next_body = body.merge({ start_cursor: next_cursor })
+      params.merge(body: next_body)
     end
 
     def body
@@ -152,6 +124,27 @@ module Implementation
     def normalize_response(records)
       formatter_class = FORMATTERS[process_options[:entity]]
       records.map { |record| formatter_class.new(record).format }
+    end
+
+    def build_record(content:, page_index:, total_pages:, total_records:)
+      {
+        success: {
+          type: process_options[:entity],
+          content: content,
+          page_index: page_index,
+          total_pages: total_pages,
+          total_records: total_records
+        }
+      }
+    end
+
+    def error_response(response)
+      {
+        error: {
+          message: response.parsed_response,
+          status_code: response.code
+        }
+      }
     end
   end
 end
