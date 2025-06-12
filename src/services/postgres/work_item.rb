@@ -5,6 +5,7 @@ require_relative 'activity'
 require_relative 'project'
 require_relative 'domain'
 require_relative 'person'
+require_relative 'weekly_scope'
 
 module Services
   module Postgres
