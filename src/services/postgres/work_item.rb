@@ -3,6 +3,8 @@
 require_relative 'base'
 require_relative 'activity'
 require_relative 'project'
+require_relative 'domain'
+require_relative 'person'
 
 module Services
   module Postgres
@@ -13,10 +15,16 @@ module Services
     class WorkItem < Services::Postgres::Base
       TABLE = :work_items
 
+      RELATIONS = [
+        { service: Project, external: :external_project_id, internal: :project_id },
+        { service: Activity, external: :external_activity_id, internal: :activity_id },
+        { service: Domain, external: :external_domain_id, internal: :domain_id },
+        { service: Person, external: :external_person_id, internal: :person_id }
+      ].freeze
+
       def insert(params)
         params = params.dup
-        assign_activity_id(params)
-        assign_project_id(params)
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -26,8 +34,7 @@ module Services
         raise ArgumentError, 'Work item id is required to update' unless id
 
         params = params.dup
-        assign_activity_id(params)
-        assign_project_id(params)
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
@@ -53,36 +60,22 @@ module Services
 
       private
 
-      def project_id(id)
-        return nil unless id
+      # Assigns foreign keys based on external IDs in params.
+      def assign_relations(params)
+        RELATIONS.each do |relation|
+          next unless params.key?(relation[:external])
 
-        Project.new(db).query(external_project_id: id).first
-      end
-
-      def activity_id(id)
-        return nil unless id
-
-        Activity.new(db).query(external_activity_id: id).first
-      end
-
-      def assign_activity_id(params)
-        return unless params.key?(:external_activity_id)
-
-        if params[:external_activity_id]
-          activity = activity_id(params[:external_activity_id])
-          params[:activity_id] = activity[:id] if activity
+          params[relation[:internal]] = fetch_foreign_id(params[relation[:external]], relation)
+          params.delete(relation[:external])
         end
-        params.delete(:external_activity_id)
       end
 
-      def assign_project_id(params)
-        return unless params.key?(:external_project_id)
+      # Fetches the foreign ID from the related service based on the external ID.
+      def fetch_foreign_id(external_id, relation)
+        return nil unless external_id
 
-        if params[:external_project_id]
-          project = project_id(params[:external_project_id])
-          params[:project_id] = project[:id] if project
-        end
-        params.delete(:external_project_id)
+        record = relation[:service].new(db).query(relation[:external] => external_id).first
+        record ? record[:id] : nil
       end
 
       def handle_error(error)
