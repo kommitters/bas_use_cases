@@ -4,22 +4,19 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/domain'
+require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::Domain do
+  include TestDBHelpers
+
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
 
   before(:each) do
     db.drop_table?(:domains)
-    db.create_table(:domains) do
-      primary_key :id
-      String :external_domain_id, null: false
-      String :name, null: false
-      TrueClass :archived, default: false, null: false
-      DateTime :created_at
-      DateTime :updated_at
-    end
+
+    create_domains_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end

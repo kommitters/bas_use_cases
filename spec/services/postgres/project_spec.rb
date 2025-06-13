@@ -5,8 +5,11 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/project'
 require_relative '../../../src/services/postgres/domain'
+require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::Project do
+  include TestDBHelpers
+
   # Setup in-memory SQLite DB for testing
   let(:db) { Sequel.sqlite }
   let(:config) do
@@ -21,22 +24,9 @@ RSpec.describe Services::Postgres::Project do
   before(:each) do
     db.drop_table?(:projects)
     db.drop_table?(:domains)
-    db.create_table(:domains) do
-      primary_key :id
-      String :external_domain_id, null: false
-      String :name, null: false
-      DateTime :created_at
-      DateTime :updated_at
-    end
-    db.create_table(:projects) do
-      primary_key :id
-      String :external_project_id, null: false
-      String :name, null: false
-      String :status, null: false
-      Integer :domain_id
-      DateTime :created_at
-      DateTime :updated_at
-    end
+
+    create_projects_table(db)
+    create_domains_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end

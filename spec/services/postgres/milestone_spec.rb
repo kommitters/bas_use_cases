@@ -5,8 +5,11 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/milestone'
 require_relative '../../../src/services/postgres/project'
+require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::Milestone do
+  include TestDBHelpers
+
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
@@ -15,24 +18,9 @@ RSpec.describe Services::Postgres::Milestone do
   before(:each) do
     db.drop_table?(:milestones)
     db.drop_table?(:projects)
-    db.create_table(:projects) do
-      primary_key :id
-      String :external_project_id, null: false
-      String :name, null: false
-      String :status, null: false
-      DateTime :created_at
-      DateTime :updated_at
-    end
-    db.create_table(:milestones) do
-      primary_key :id
-      String :external_milestone_id, null: false
-      String :name, null: false
-      String :status, null: false
-      DateTime :completion_date
-      Integer :project_id
-      DateTime :created_at
-      DateTime :updated_at
-    end
+
+    create_milestones_table(db)
+    create_projects_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
