@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1 (13.06.25)
+- [Fix OSPO projects fetching schedule](https://github.com/kommitters/bas_use_cases/pull/115)
+- [Adjust next week birthdays automation with correct env var](https://github.com/kommitters/bas_use_cases/pull/118)
+
 ## 1.8.0 (10.06.25)
 - [GitHub notion issues sync](https://github.com/kommitters/bas_use_cases/pull/104)
 - [Move pending automation to workspace](https://github.com/kommitters/bas_use_cases/pull/108)
