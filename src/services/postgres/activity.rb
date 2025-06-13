@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'domain'
 
 module Services
   module Postgres
@@ -11,7 +12,13 @@ module Services
     class Activity < Services::Postgres::Base
       TABLE = :activities
 
+      RELATIONS = [
+        { service: Domain, external: :external_domain_id, internal: :domain_id }
+      ].freeze
+
       def insert(params)
+        params = params.dup
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -20,6 +27,8 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Activity id is required to update' unless id
 
+        params = params.dup
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
