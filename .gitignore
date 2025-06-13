@@ -69,3 +69,6 @@ env.yml
 # Claude code
 # Project level claude folder may be different for each user
 .claude
+
+# Terraform
+infrastructure/.terraform
