@@ -22,6 +22,7 @@ write_options = {
 
 options = {
   avoid_empty_data: true,
+  notion_property: Config::NOTION_PROPERTY,
   secret: ENV.fetch('NOTION_SECRET'),
   database_id: ENV.fetch('OSPO_MAINTENANCE_NOTION_DATABASE_ID')
 }
