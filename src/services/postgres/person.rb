@@ -59,24 +59,6 @@ module Services
 
       private
 
-      # Assigns the project_id based on the external_project_id.
-      def assign_relations(params)
-        RELATIONS.each do |relation|
-          next unless params.key?(relation[:external])
-
-          params[relation[:internal]] = fetch_foreign_id(params[relation[:external]], relation)
-          params.delete(relation[:external])
-        end
-      end
-
-      # Fetches the foreign ID from the related service based on the external ID.
-      def fetch_foreign_id(external_id, relation)
-        return nil unless external_id
-
-        record = relation[:service].new(db).query(relation[:external] => external_id).first
-        record ? record[:id] : nil
-      end
-
       # Handles and logs errors, then re-raises them.
       def handle_error(error)
         puts "[Person Service ERROR] #{error.class}: #{error.message}"
