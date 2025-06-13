@@ -50,7 +50,7 @@ module Implementation
         notion_object: {
           'Detail' => format_title(issue['title']),
           'Tags' => format_labels(issue['labels']),
-          'Github issue id' => format_issue_id(issue['number']),
+          process_options[:notion_property] => format_issue_id(issue['number']),
           'children' => format_body(issue)
         }
       }

@@ -20,7 +20,8 @@ write_options = {
 }
 
 options = {
-  avoid_empty_data: true
+  avoid_empty_data: true,
+  notion_property: Config::NOTION_PROPERTY
 }
 
 # Process bot

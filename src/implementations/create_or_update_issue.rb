@@ -38,8 +38,6 @@ module Implementation
   #  Implementation::CreateOrUpdateIssue.new(options, shared_storage).execute
   #
   class CreateOrUpdateIssue < Bas::Bot::Base
-    NOTION_PROPERTY = 'Github issue id'
-
     # process function to execute the Notion utility to delete work items on a notion
     # database if they exists
     def process
@@ -75,7 +73,7 @@ module Implementation
         database_id: process_options[:database_id],
         secret: process_options[:secret],
         body: {
-          filter: { property: NOTION_PROPERTY, rich_text: { equals: @issue_number } }
+          filter: { property: process_options[:notion_property], rich_text: { equals: @issue_number } }
         }
       }
 
@@ -86,7 +84,7 @@ module Implementation
       options = {
         page_id: page_id,
         secret: process_options[:secret],
-        body: { properties: read_response.data['notion_object'].except('children', NOTION_PROPERTY) }
+        body: { properties: read_response.data['notion_object'].except('children', process_options[:notion_property]) }
       }
 
       update_response = Utils::Notion::UpdateDatabasePage.new(options).execute
