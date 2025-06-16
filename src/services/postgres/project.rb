@@ -2,6 +2,7 @@
 
 require_relative 'base'
 require_relative 'domain'
+require_relative 'projects_key_results'
 
 module Services
   module Postgres
@@ -19,9 +20,13 @@ module Services
 
       # Insert a new project record.
       def insert(params)
-        params = params.dup
         assign_relations(params)
-        transaction { insert_item(TABLE, params) }
+
+        transaction do
+          project_id = insert_item(TABLE, params)
+
+          add_key_results_relations(project_id, params) if params[:external_key_results_ids]
+        end
       rescue StandardError => e
         handle_error(e)
       end
@@ -30,9 +35,11 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Project id is required to update' unless id
 
-        params = params.dup
         assign_relations(params)
-        transaction { update_item(TABLE, id, params) }
+        transaction do
+          update_key_results_relations(id, params) if params[:external_key_results_ids]
+          update_item(TABLE, id, params)
+        end
       rescue StandardError => e
         handle_error(e)
       end
@@ -64,6 +71,25 @@ module Services
       def handle_error(error)
         puts "[Project Service ERROR] #{error.class}: #{error.message}"
         raise error
+      end
+
+      def add_key_results_relations(project_id, params)
+        params[:external_key_results_ids].each do |external_id|
+          attributes = { project_id: project_id, external_key_result_id: external_id }
+
+          ProjectsKeyResults.new(db).insert(attributes)
+        end
+
+        params.delete(:external_key_results_ids)
+      end
+
+      def update_key_results_relations(id, params)
+        service = ProjectsKeyResults.new(db)
+        projects_key_results = service.query(project_id: id)
+
+        projects_key_results.each { |project_key_result| service.delete(project_key_result[:id]) }
+
+        add_key_results_relations(id, params)
       end
     end
   end
