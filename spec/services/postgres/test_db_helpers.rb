@@ -100,4 +100,37 @@ module TestDBHelpers
       DateTime :updated_at
     end
   end
+
+  def create_key_results_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:key_results) do
+      primary_key :id
+      String :external_key_result_id, null: false
+      String :okr, null: false
+      String :key_result, null: false
+      Float :metric, null: false
+      Float :current, null: false
+      Float :progress, null: false
+      String :period, null: false
+      String :objective, null: false
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_key_results_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:key_results_history) do
+      primary_key :id
+      Integer :key_result_id
+      String :external_key_result_id, null: false
+      String :okr, null: false
+      String :key_result, null: false
+      Float :metric, null: false
+      Float :current, null: false
+      Float :progress, null: false
+      String :period, null: false
+      String :objective, null: false
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
 end
