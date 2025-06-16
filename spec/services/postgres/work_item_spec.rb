@@ -8,6 +8,7 @@ require_relative '../../../src/services/postgres/project'
 require_relative '../../../src/services/postgres/activity'
 require_relative '../../../src/services/postgres/domain'
 require_relative '../../../src/services/postgres/person'
+require_relative '../../../src/services/postgres/weekly_scope'
 require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::WorkItem do
@@ -20,6 +21,7 @@ RSpec.describe Services::Postgres::WorkItem do
   let(:activity_service) { Services::Postgres::Activity.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
   let(:person_service) { Services::Postgres::Person.new(config) }
+  let(:weekly_scope_service) { Services::Postgres::WeeklyScope.new(config) }
 
   before(:each) do
     db.drop_table?(:work_items)
@@ -27,12 +29,14 @@ RSpec.describe Services::Postgres::WorkItem do
     db.drop_table?(:activities)
     db.drop_table?(:domains)
     db.drop_table?(:persons)
+    db.drop_table?(:weekly_scope)
 
     create_projects_table(db)
     create_activities_table(db)
     create_domains_table(db)
     create_persons_table(db)
     create_work_items_table(db)
+    create_weekly_scope_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -56,6 +60,7 @@ RSpec.describe Services::Postgres::WorkItem do
       activity_id = activity_service.insert(external_activity_id: 'act-1', name: 'Act1')
       domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Dom1')
       person_id = person_service.insert(external_person_id: 'per-1', name: 'Person1')
+      weekly_scope_id = weekly_scope_service.insert(external_weekly_scope_id: 'ws-1', description: 'weekly scope')
       params = {
         external_work_item_id: 'ext-wi-2',
         name: 'WorkItem with FKs',
@@ -63,7 +68,8 @@ RSpec.describe Services::Postgres::WorkItem do
         external_project_id: 'proj-1',
         external_activity_id: 'act-1',
         external_domain_id: 'dom-1',
-        external_person_id: 'per-1'
+        external_person_id: 'per-1',
+        external_weekly_scope_id: 'ws-1'
       }
       id = service.insert(params)
       work_item = service.find(id)
@@ -71,6 +77,7 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(work_item[:activity_id]).to eq(activity_id)
       expect(work_item[:domain_id]).to eq(domain_id)
       expect(work_item[:person_id]).to eq(person_id)
+      expect(work_item[:weekly_scope_id]).to eq(weekly_scope_id)
     end
 
     it 'removes all external ids from params even if nil' do
@@ -81,7 +88,8 @@ RSpec.describe Services::Postgres::WorkItem do
         external_project_id: nil,
         external_activity_id: nil,
         external_domain_id: nil,
-        external_person_id: nil
+        external_person_id: nil,
+        external_weekly_scope_id: nil
       }
       id = service.insert(params)
       work_item = service.find(id)
@@ -89,10 +97,12 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(work_item).not_to have_key(:external_activity_id)
       expect(work_item).not_to have_key(:external_domain_id)
       expect(work_item).not_to have_key(:external_person_id)
+      expect(work_item).not_to have_key(:external_weekly_scope_id)
       expect(work_item[:project_id]).to be_nil
       expect(work_item[:activity_id]).to be_nil
       expect(work_item[:domain_id]).to be_nil
       expect(work_item[:person_id]).to be_nil
+      expect(work_item[:weekly_scope_id]).to be_nil
     end
   end
 

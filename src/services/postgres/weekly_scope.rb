@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'domain'
+require_relative 'person'
 
 module Services
   module Postgres
@@ -10,8 +12,13 @@ module Services
     # Provides CRUD operations for the 'weekly_scope' table using the Base service.
     class WeeklyScope < Services::Postgres::Base
       TABLE = :weekly_scopes
+      RELATIONS = [
+        { service: Domain, external: :external_domain_id, internal: :domain_id },
+        { service: Person, external: :external_person_id, internal: :person_id }
+      ].freeze
 
       def insert(params)
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -20,6 +27,7 @@ module Services
       def update(id, params)
         raise ArgumentError, 'WeeklyScope id is required to update' unless id
 
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)

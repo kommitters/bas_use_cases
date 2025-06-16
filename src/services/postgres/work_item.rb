@@ -20,7 +20,8 @@ module Services
         { service: Project, external: :external_project_id, internal: :project_id },
         { service: Activity, external: :external_activity_id, internal: :activity_id },
         { service: Domain, external: :external_domain_id, internal: :domain_id },
-        { service: Person, external: :external_person_id, internal: :person_id }
+        { service: Person, external: :external_person_id, internal: :person_id },
+        { service: WeeklyScope, external: :external_weekly_scope_id, internal: :weekly_scope_id }
       ].freeze
 
       def insert(params)

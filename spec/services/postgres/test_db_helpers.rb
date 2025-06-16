@@ -57,7 +57,7 @@ module TestDBHelpers
       Integer :activity_id
       Integer :domain_id
       Integer :person_id
-      String :external_weekly_scope_id
+      Integer :weekly_scope_id
       DateTime :created_at
       DateTime :updated_at
     end
@@ -82,6 +82,20 @@ module TestDBHelpers
       String :name, null: false
       String :external_document_id, null: false
       Integer :domain_id
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_weekly_scope_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:weekly_scopes) do
+      primary_key :id
+      String :external_weekly_scope_id, null: false
+      String :description, null: false
+      Integer :domain_id
+      Integer :person_id
+      DateTime :start_week_date
+      DateTime :end_week_date
       DateTime :created_at
       DateTime :updated_at
     end
