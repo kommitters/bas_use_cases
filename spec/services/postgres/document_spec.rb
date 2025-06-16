@@ -4,8 +4,11 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/document'
+require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::Document do
+  include TestDBHelpers
+
   # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
   let(:config) do
@@ -15,18 +18,16 @@ RSpec.describe Services::Postgres::Document do
     }
   end
   let(:service) { described_class.new(config) }
+  let(:domain_service) { Services::Postgres::Domain.new(config) }
 
   # Create the table structure before each test
   before(:each) do
     db.drop_table?(:documents)
-    db.create_table(:documents) do
-      primary_key :id
-      String :name, null: false
-      String :external_document_id, null: false
-      DateTime :created_at
-      DateTime :updated_at
-    end
-    # Inject the in-memory DB connection into the service
+    db.drop_table?(:domains)
+
+    create_domains_table(db)
+    create_documents_table(db)
+
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
@@ -38,6 +39,30 @@ RSpec.describe Services::Postgres::Document do
       expect(document[:name]).to eq('ops-doc')
       expect(document[:external_document_id]).to eq('ext-doc-1')
     end
+
+    it 'assigns domain_id when given external_domain_id' do
+      domain_id = domain_service.insert(external_domain_id: 'ext-d-1', name: 'Domain1')
+      params = {
+        external_document_id: 'ext-d-2',
+        name: 'With Domain',
+        external_domain_id: 'ext-d-1'
+      }
+      id = service.insert(params)
+      document = service.find(id)
+      expect(document[:domain_id]).to eq(domain_id)
+    end
+
+    it 'removes external_domain_id if it is present and nil' do
+      params = {
+        external_document_id: 'ext-d-3',
+        name: 'Nil Domain',
+        external_domain_id: nil
+      }
+      id = service.insert(params)
+      document = service.find(id)
+      expect(document).not_to have_key(:external_domain_id)
+      expect(document[:domain_id]).to be_nil
+    end
   end
 
   describe '#update' do
@@ -47,6 +72,14 @@ RSpec.describe Services::Postgres::Document do
       updated = service.find(id)
       expect(updated[:name]).to eq('Updated Document')
       expect(updated[:external_document_id]).to eq('ext-doc-2')
+    end
+
+    it 'reassigns domain_id on update with external_domain_id' do
+      domain = domain_service.insert(external_domain_id: 'domain-2', name: 'Domain2')
+      id = service.insert(external_document_id: 'ext-a-5', name: 'To Reassign', external_domain_id: 'domain-1')
+      service.update(id, { external_domain_id: 'domain-2' })
+      updated = service.find(id)
+      expect(updated[:domain_id]).to eq(domain)
     end
 
     it 'raises error if no ID is provided' do

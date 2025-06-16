@@ -75,4 +75,15 @@ module TestDBHelpers
       DateTime :updated_at
     end
   end
+
+  def create_documents_table(db)
+    db.create_table(:documents) do
+      primary_key :id
+      String :name, null: false
+      String :external_document_id, null: false
+      Integer :domain_id
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
 end

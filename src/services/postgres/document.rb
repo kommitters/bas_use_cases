@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'domain'
 
 module Services
   module Postgres
@@ -10,8 +11,12 @@ module Services
     # Provides CRUD operations for the 'documents' table using the Base service.
     class Document < Services::Postgres::Base
       TABLE = :documents
+      RELATIONS = [
+        { service: Domain, external: :external_domain_id, internal: :domain_id }
+      ].freeze
 
       def insert(params)
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -20,6 +25,7 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Document id is required to update' unless id
 
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
