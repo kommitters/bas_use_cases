@@ -14,6 +14,8 @@ module Services
     #
     # Provides CRUD operations for the 'work_items' table using the Base service.
     class WorkItem < Services::Postgres::Base
+      ATTRIBUTES = %i[name external_work_item_id project_id activity_id status completion_date weekly_scope_id
+                      description domain_id person_id].freeze
       TABLE = :work_items
 
       RELATIONS = [

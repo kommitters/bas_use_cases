@@ -9,6 +9,7 @@ module Services
     #
     # Provides CRUD operations for the 'domains' table using the Base service.
     class Domain < Services::Postgres::Base
+      ATTRIBUTES = %i[external_domain_id name archived].freeze
       TABLE = :domains
 
       # Insert a new domain record.

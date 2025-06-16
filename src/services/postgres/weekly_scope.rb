@@ -11,6 +11,7 @@ module Services
     #
     # Provides CRUD operations for the 'weekly_scope' table using the Base service.
     class WeeklyScope < Services::Postgres::Base
+      ATTRIBUTES = %i[external_weekly_scope description start_week_date end_week_date domain_id person_id].freeze
       TABLE = :weekly_scopes
       RELATIONS = [
         { service: Domain, external: :external_domain_id, internal: :domain_id },

@@ -36,6 +36,14 @@ module Services
         )
       end
 
+      def entity_attributes(params)
+        params.select { |key, _| attributes.include?(key) }
+      end
+
+      def attributes
+        %i[id created_at updated_at] + self.class.const_get(:ATTRIBUTES)
+      end
+
       protected
 
       def query_item(table_name, conditions = {})
@@ -55,7 +63,11 @@ module Services
           params[:updated_at] ||= now
         end
 
-        db[table_name].insert(params)
+        attr = entity_attributes(params)
+        puts('')
+        puts("-------> ATTRIBUTES #{attr}")
+        puts('')
+        db[table_name].insert(attr)
       end
 
       def update_item(table_name, id, params)

@@ -10,6 +10,7 @@ module Services
     #
     # Provides CRUD operations for the 'projects' table using the Base service.
     class Project < Services::Postgres::Base
+      ATTRIBUTES = %i[external_project_id name status domain_id].freeze
       TABLE = :projects
 
       RELATIONS = [

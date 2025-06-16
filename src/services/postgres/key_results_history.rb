@@ -9,6 +9,8 @@ module Services
     #
     # Provides CRUD operations for the 'key_results_history' table using the Base service.
     class KeyResultsHistory < Services::Postgres::Base
+      ATTRIBUTES = %i[key_result_id external_key_result_id okr key_result metric current progress period
+                      objective].freeze
       TABLE = :key_results_history
 
       def insert(params)
