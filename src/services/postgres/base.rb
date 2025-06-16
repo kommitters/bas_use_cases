@@ -64,16 +64,14 @@ module Services
         end
 
         attr = entity_attributes(params)
-        puts('')
-        puts("-------> ATTRIBUTES #{attr}")
-        puts('')
         db[table_name].insert(attr)
       end
 
       def update_item(table_name, id, params)
         params[:updated_at] = Time.now if timestamp?(table_name)
 
-        db[table_name].where(id: id).update(params)
+        attr = entity_attributes(params)
+        db[table_name].where(id: id).update(attr)
       end
 
       def delete_item(table_name, id)
