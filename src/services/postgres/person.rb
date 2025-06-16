@@ -1,27 +1,22 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'activity'
-require_relative 'project'
 require_relative 'domain'
-require_relative 'person'
 
 module Services
   module Postgres
     ##
-    # WorkItem Service for PostgreSQL
+    # Person Service for PostgreSQL
     #
-    # Provides CRUD operations for the 'work_items' table using the Base service.
-    class WorkItem < Services::Postgres::Base
-      TABLE = :work_items
+    # Provides CRUD operations for the 'persons' table using the Base service.
+    class Person < Services::Postgres::Base
+      TABLE = :persons
 
       RELATIONS = [
-        { service: Project, external: :external_project_id, internal: :project_id },
-        { service: Activity, external: :external_activity_id, internal: :activity_id },
-        { service: Domain, external: :external_domain_id, internal: :domain_id },
-        { service: Person, external: :external_person_id, internal: :person_id }
+        { service: Domain, external: :external_domain_id, internal: :domain_id }
       ].freeze
 
+      # Insert a new person record.
       def insert(params)
         params = params.dup
         assign_relations(params)
@@ -30,8 +25,9 @@ module Services
         handle_error(e)
       end
 
+      # Updates a person by ID.
       def update(id, params)
-        raise ArgumentError, 'Work item id is required to update' unless id
+        raise ArgumentError, 'Person id is required to update' unless id
 
         params = params.dup
         assign_relations(params)
@@ -40,18 +36,21 @@ module Services
         handle_error(e)
       end
 
+      # Deletes a person by ID.
       def delete(id)
         transaction { delete_item(TABLE, id) }
       rescue StandardError => e
         handle_error(e)
       end
 
+      # Finds a person by ID.
       def find(id)
         find_item(TABLE, id)
       rescue StandardError => e
         handle_error(e)
       end
 
+      # Queries persons by conditions.
       def query(conditions = {})
         query_item(TABLE, conditions)
       rescue StandardError => e
@@ -60,8 +59,9 @@ module Services
 
       private
 
+      # Handles and logs errors, then re-raises them.
       def handle_error(error)
-        puts "[WorkItem Service ERROR] #{error.class}: #{error.message}"
+        puts "[Person Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end

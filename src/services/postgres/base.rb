@@ -77,6 +77,27 @@ module Services
         column_names = schema.map(&:first)
         column_names.include?(:created_at) && column_names.include?(:updated_at)
       end
+
+      # Assigns foreign relations based on the defined RELATIONS constant.
+      def assign_relations(params)
+        return unless self.class.const_defined?(:RELATIONS)
+
+        relations = self.class.const_get(:RELATIONS)
+        relations.each do |relation|
+          next unless params.key?(relation[:external])
+
+          params[relation[:internal]] = fetch_foreign_id(params[relation[:external]], relation)
+          params.delete(relation[:external])
+        end
+      end
+
+      #  Fetches the foreign ID based on the external ID and relation definition.
+      def fetch_foreign_id(external_id, relation)
+        return nil unless external_id
+
+        record = relation[:service].new(db).query(relation[:external] => external_id).first
+        record ? record[:id] : nil
+      end
     end
   end
 end
