@@ -10,6 +10,8 @@ module Services
     #
     # Provides CRUD operations for the 'persons' table using the Base service.
     class Person < Services::Postgres::Base
+      ATTRIBUTES = %i[external_person_id full_name email_address role is_active hire_date exit_date github_username
+                      notion_user_id worklogs_user_id domain_id].freeze
       TABLE = :persons
 
       RELATIONS = [

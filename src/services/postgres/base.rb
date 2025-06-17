@@ -36,6 +36,14 @@ module Services
         )
       end
 
+      def entity_attributes(params)
+        params.select { |key, _| attributes.include?(key) }
+      end
+
+      def attributes
+        %i[id created_at updated_at] + self.class.const_get(:ATTRIBUTES)
+      end
+
       protected
 
       def query_item(table_name, conditions = {})
@@ -55,13 +63,15 @@ module Services
           params[:updated_at] ||= now
         end
 
-        db[table_name].insert(params)
+        attr = entity_attributes(params)
+        db[table_name].insert(attr)
       end
 
       def update_item(table_name, id, params)
         params[:updated_at] = Time.now if timestamp?(table_name)
 
-        db[table_name].where(id: id).update(params)
+        attr = entity_attributes(params)
+        db[table_name].where(id: id).update(attr)
       end
 
       def delete_item(table_name, id)

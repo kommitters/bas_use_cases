@@ -5,12 +5,13 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/activity'
 require_relative '../../../src/services/postgres/domain'
+require_relative '../../../src/services/postgres/key_results'
+require_relative '../../../src/services/postgres/activities_key_results'
 require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::Activity do
   include TestDBHelpers
 
-  # Setup in-memory SQLite DB for testing
   let(:db) { Sequel.sqlite }
   let(:config) do
     {
@@ -18,15 +19,22 @@ RSpec.describe Services::Postgres::Activity do
       database: ':memory:'
     }
   end
+
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
+  let(:key_results_service) { Services::Postgres::KeyResults.new(config) }
+  let(:akr_service) { Services::Postgres::ActivitiesKeyResults.new(config) }
 
   before(:each) do
+    db.drop_table?(:activities_key_results)
+    db.drop_table?(:key_results)
     db.drop_table?(:activities)
     db.drop_table?(:domains)
 
-    create_activities_table(db)
     create_domains_table(db)
+    create_activities_table(db)
+    create_key_results_table(db)
+    create_activities_key_results_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -66,6 +74,21 @@ RSpec.describe Services::Postgres::Activity do
       expect(activity).not_to have_key(:external_domain_id)
       expect(activity[:domain_id]).to be_nil
     end
+
+    it 'creates activity with related key_results using external_key_results_ids' do
+      params = {
+        external_activity_id: 'ext-a-10',
+        name: 'With Key Results',
+        external_key_results_ids: %w[kr1 kr2]
+      }
+
+      id = service.insert(params)
+      activity = service.find(id)
+      expect(activity[:external_activity_id]).to eq('ext-a-10')
+
+      relations = akr_service.query(activity_id: id)
+      expect(relations.size).to eq(2)
+    end
   end
 
   describe '#update' do
@@ -78,11 +101,29 @@ RSpec.describe Services::Postgres::Activity do
     end
 
     it 'reassigns domain_id on update with external_domain_id' do
+      domain_service.insert(external_domain_id: 'domain-1', name: 'Domain1')
       domain2 = domain_service.insert(external_domain_id: 'domain-2', name: 'Domain2')
       id = service.insert(external_activity_id: 'ext-a-5', name: 'To Reassign', external_domain_id: 'domain-1')
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain2)
+    end
+
+    it 'replaces key_results associations on update' do
+      kr3 = key_results_service.insert(external_key_result_id: 'kr3', okr: 'Test', key_result: 'KR3', metric: 'x',
+                                       current: 0, progress: 0, period: 'Q1', objective: 'Obj')
+
+      id = service.insert(
+        external_activity_id: 'ext-a-6',
+        name: 'To Update Relations',
+        external_key_results_ids: %w[kr1 kr2]
+      )
+
+      expect(akr_service.query(activity_id: id).size).to eq(2)
+
+      service.update(id, { external_key_results_ids: ['kr3'] })
+      expect(akr_service.query(activity_id: id).size).to eq(1)
+      expect(akr_service.query(activity_id: id).first[:key_result_id]).to eq(kr3)
     end
 
     it 'raises error if no ID is provided' do
@@ -91,10 +132,12 @@ RSpec.describe Services::Postgres::Activity do
   end
 
   describe '#delete' do
-    it 'deletes an activity by ID' do
-      id = service.insert(external_activity_id: 'ext-a-6', name: 'To Delete')
-      expect { service.delete(id) }.to change { service.query.size }.by(-1)
+    it 'deletes an activity by ID and removes relations' do
+      id = service.insert(external_activity_id: 'ext-a-6', name: 'To Delete', external_key_results_ids: ['kr-d'])
+
+      expect { service.delete(id) }.to change { service.query(id: id).size }.by(-1)
       expect(service.find(id)).to be_nil
+      expect(akr_service.query(activity_id: id)).to be_empty
     end
   end
 

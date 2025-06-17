@@ -10,6 +10,7 @@ module Services
     #
     # Provides CRUD operations for the 'milestones' table using the Base service.
     class Milestone < Services::Postgres::Base
+      ATTRIBUTES = %i[external_milestone_id name status completion_date project_id].freeze
       TABLE = :milestones
 
       RELATIONS = [

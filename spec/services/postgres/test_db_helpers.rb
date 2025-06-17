@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module TestDBHelpers
+module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_projects_table(db)
     db.create_table(:projects) do
       primary_key :id
@@ -35,11 +35,19 @@ module TestDBHelpers
     end
   end
 
-  def create_persons_table(db)
+  def create_persons_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:persons) do
       primary_key :id
       String :external_person_id, null: false
-      String :name, null: false
+      String :full_name, null: false
+      String :email_address, null: true
+      String :role, null: true
+      Boolean :is_active, null: true
+      DateTime :hire_date, null: true
+      DateTime :exit_date, null: true
+      String :github_username, null: true
+      Integer :notion_user_id, null: true
+      Integer :worklogs_user_id, null: true
       Integer :domain_id
       DateTime :created_at
       DateTime :updated_at
@@ -57,7 +65,7 @@ module TestDBHelpers
       Integer :activity_id
       Integer :domain_id
       Integer :person_id
-      String :external_weekly_scope_id
+      Integer :weekly_scope_id
       DateTime :created_at
       DateTime :updated_at
     end
@@ -71,6 +79,74 @@ module TestDBHelpers
       String :status, null: false
       DateTime :completion_date
       Integer :project_id
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_documents_table(db)
+    db.create_table(:documents) do
+      primary_key :id
+      String :name, null: false
+      String :external_document_id, null: false
+      Integer :domain_id
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_weekly_scope_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:weekly_scopes) do
+      primary_key :id
+      String :external_weekly_scope_id, null: false
+      String :description, null: false
+      Integer :domain_id
+      Integer :person_id
+      DateTime :start_week_date
+      DateTime :end_week_date
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_key_results_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:key_results) do
+      primary_key :id
+      String :external_key_result_id, null: false
+      String :okr, null: false
+      String :key_result, null: false
+      Float :metric, null: false
+      Float :current, null: false
+      Float :progress, null: false
+      String :period, null: false
+      String :objective, null: false
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_key_results_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:key_results_history) do
+      primary_key :id
+      Integer :key_result_id
+      String :external_key_result_id, null: false
+      String :okr, null: false
+      String :key_result, null: false
+      Float :metric, null: false
+      Float :current, null: false
+      Float :progress, null: false
+      String :period, null: false
+      String :objective, null: false
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_activities_key_results_table(db)
+    db.create_table(:activities_key_results) do
+      primary_key :id
+      foreign_key :activity_id, :activities, on_delete: :cascade
+      foreign_key :key_result_id, :key_results, on_delete: :cascade
       DateTime :created_at
       DateTime :updated_at
     end
