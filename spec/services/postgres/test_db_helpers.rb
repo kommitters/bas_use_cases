@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module TestDBHelpers
+module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_projects_table(db)
     db.create_table(:projects) do
       primary_key :id
@@ -35,11 +35,19 @@ module TestDBHelpers
     end
   end
 
-  def create_persons_table(db)
+  def create_persons_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:persons) do
       primary_key :id
       String :external_person_id, null: false
-      String :name, null: false
+      String :full_name, null: false
+      String :email_address, null: true
+      String :role, null: true
+      Boolean :is_active, null: true
+      DateTime :hire_date, null: true
+      DateTime :exit_date, null: true
+      String :github_username, null: true
+      Integer :notion_user_id, null: true
+      Integer :worklogs_user_id, null: true
       Integer :domain_id
       DateTime :created_at
       DateTime :updated_at
@@ -129,6 +137,16 @@ module TestDBHelpers
       Float :progress, null: false
       String :period, null: false
       String :objective, null: false
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
+
+  def create_activities_key_results_table(db)
+    db.create_table(:activities_key_results) do
+      primary_key :id
+      foreign_key :activity_id, :activities, on_delete: :cascade
+      foreign_key :key_result_id, :key_results, on_delete: :cascade
       DateTime :created_at
       DateTime :updated_at
     end

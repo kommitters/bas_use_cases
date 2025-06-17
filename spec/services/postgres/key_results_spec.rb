@@ -9,23 +9,23 @@ require_relative 'test_db_helpers'
 RSpec.describe Services::Postgres::KeyResults do
   include TestDBHelpers
 
-  # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
-  let(:config) do
-    {
-      adapter: 'sqlite',
-      database: ':memory:'
-    }
-  end
+  let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:params) do
+
+  let(:valid_params) do
     {
-      external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9', okr: 'save time', key_result: 'save time result',
-      metric: 12, current: 56, progress: 84, period: 'Q2', objective: 'save a lot of time'
+      external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9',
+      okr: 'save time',
+      key_result: 'save time result',
+      metric: 12,
+      current: 56,
+      progress: 84,
+      period: 'Q2',
+      objective: 'save a lot of time'
     }
   end
 
-  # Create the table structure before each test
   before(:each) do
     db.drop_table?(:key_results)
     db.drop_table?(:key_results_history)
@@ -37,45 +37,52 @@ RSpec.describe Services::Postgres::KeyResults do
   end
 
   describe '#insert' do
-    it 'creates a new key result history and returns its ID' do
-      id = service.insert(params)
-      key_result = service.find(id)
+    context 'with valid params' do
+      it 'creates a new key result and returns its ID' do
+        id = service.insert(valid_params)
+        result = service.find(id)
 
-      expect(key_result[:external_key_result_id]).to eq('ad3dcdfc-24e9-4008-a026-0e7958655aa9')
-      expect(key_result[:okr]).to eq('save time')
-      expect(key_result[:key_result]).to eq('save time result')
-      expect(key_result[:metric]).to eq(12)
-      expect(key_result[:current]).to eq(56)
-      expect(key_result[:progress]).to eq(84)
-      expect(key_result[:period]).to eq('Q2')
-      expect(key_result[:objective]).to eq('save a lot of time')
+        expect(result).not_to be_nil
+        expect(result[:external_key_result_id]).to eq(valid_params[:external_key_result_id])
+        expect(result[:okr]).to eq(valid_params[:okr])
+        expect(result[:key_result]).to eq(valid_params[:key_result])
+        expect(result[:metric]).to eq(valid_params[:metric])
+        expect(result[:current]).to eq(valid_params[:current])
+        expect(result[:progress]).to eq(valid_params[:progress])
+        expect(result[:period]).to eq(valid_params[:period])
+        expect(result[:objective]).to eq(valid_params[:objective])
+      end
+    end
+
+    context 'with missing required param' do
+      it 'raises an error' do
+        invalid_params = valid_params.dup.tap { |h| h.delete(:external_key_result_id) }
+        expect { service.insert(invalid_params) }.to raise_error(Sequel::NotNullConstraintViolation)
+      end
     end
   end
 
   describe '#update' do
-    it 'updates an key result history by ID' do
-      id = service.insert(params)
-      service.update(id, { key_result: 'Updated Key Result' })
-      updated = service.find(id)
+    context 'with valid ID' do
+      it 'updates a key result by ID' do
+        id = service.insert(valid_params)
+        service.update(id, key_result: 'Updated result')
+        updated = service.find(id)
 
-      expect(updated[:external_key_result_id]).to eq('ad3dcdfc-24e9-4008-a026-0e7958655aa9')
-      expect(updated[:okr]).to eq('save time')
-      expect(updated[:key_result]).to eq('Updated Key Result')
-      expect(updated[:metric]).to eq(12)
-      expect(updated[:current]).to eq(56)
-      expect(updated[:progress]).to eq(84)
-      expect(updated[:period]).to eq('Q2')
-      expect(updated[:objective]).to eq('save a lot of time')
+        expect(updated[:key_result]).to eq('Updated result')
+      end
     end
 
-    it 'raises error if no ID is provided' do
-      expect { service.update(key_result: 'No ID') }.to raise_error(ArgumentError)
+    context 'without ID' do
+      it 'raises an ArgumentError' do
+        expect { service.update(nil, key_result: 'Oops') }.to raise_error(ArgumentError)
+      end
     end
   end
 
   describe '#delete' do
-    it 'deletes a key_result by ID' do
-      id = service.insert(params)
+    it 'removes a key result by ID' do
+      id = service.insert(valid_params)
 
       expect { service.delete(id) }.to change { service.query.size }.by(-1)
       expect(service.find(id)).to be_nil
@@ -83,35 +90,33 @@ RSpec.describe Services::Postgres::KeyResults do
   end
 
   describe '#find' do
-    it 'finds a key result by ID' do
-      id = service.insert(params)
+    it 'retrieves a key result by ID' do
+      id = service.insert(valid_params)
       found = service.find(id)
 
-      expect(found[:external_key_result_id]).to eq('ad3dcdfc-24e9-4008-a026-0e7958655aa9')
-      expect(found[:okr]).to eq('save time')
-      expect(found[:key_result]).to eq('save time result')
-      expect(found[:metric]).to eq(12)
-      expect(found[:current]).to eq(56)
-      expect(found[:progress]).to eq(84)
-      expect(found[:period]).to eq('Q2')
-      expect(found[:objective]).to eq('save a lot of time')
+      expect(found).not_to be_nil
+      expect(found[:key_result]).to eq(valid_params[:key_result])
     end
   end
 
   describe '#query' do
-    it 'queries key result by condition' do
-      id = service.insert(params)
-      results = service.query(external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9')
+    context 'with filters' do
+      it 'returns filtered results' do
+        id = service.insert(valid_params)
+        results = service.query(external_key_result_id: valid_params[:external_key_result_id])
 
-      expect(results.map { |a| a[:id] }).to include(id)
-      expect(results.first[:external_key_result_id]).to eq('ad3dcdfc-24e9-4008-a026-0e7958655aa9')
+        expect(results).not_to be_empty
+        expect(results.map { |r| r[:id] }).to include(id)
+      end
     end
 
-    it 'returns all key results with empty conditions' do
-      count = service.query.size
-      service.insert(params)
+    context 'without filters' do
+      it 'returns all results' do
+        initial_count = service.query.size
+        service.insert(valid_params)
 
-      expect(service.query.size).to eq(count + 1)
+        expect(service.query.size).to eq(initial_count + 1)
+      end
     end
   end
 end

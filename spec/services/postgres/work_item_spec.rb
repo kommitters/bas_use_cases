@@ -59,7 +59,7 @@ RSpec.describe Services::Postgres::WorkItem do
       project_id = project_service.insert(external_project_id: 'proj-1', name: 'Proj1', status: 'active')
       activity_id = activity_service.insert(external_activity_id: 'act-1', name: 'Act1')
       domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Dom1')
-      person_id = person_service.insert(external_person_id: 'per-1', name: 'Person1')
+      person_id = person_service.insert(external_person_id: 'per-1', full_name: 'Person1')
       weekly_scope_id = weekly_scope_service.insert(external_weekly_scope_id: 'ws-1', description: 'weekly scope')
       params = {
         external_work_item_id: 'ext-wi-2',

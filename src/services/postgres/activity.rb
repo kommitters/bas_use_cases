@@ -24,6 +24,8 @@ module Services
           activity_id = insert_item(TABLE, params)
 
           add_key_results_relations(activity_id, params) if params[:external_key_results_ids]
+
+          activity_id
         end
       rescue StandardError => e
         handle_error(e)

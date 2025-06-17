@@ -26,6 +26,8 @@ module Services
           project_id = insert_item(TABLE, params)
 
           add_key_results_relations(project_id, params) if params[:external_key_results_ids]
+
+          project_id
         end
       rescue StandardError => e
         handle_error(e)

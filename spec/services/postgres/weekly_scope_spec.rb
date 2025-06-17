@@ -52,7 +52,7 @@ RSpec.describe Services::Postgres::WeeklyScope do
 
     it 'assigns all foreign keys when given their external ids' do
       domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Dom1')
-      person_id = person_service.insert(external_person_id: 'per-1', name: 'Person1')
+      person_id = person_service.insert(external_person_id: 'per-1', full_name: 'Person1')
       params = {
         external_weekly_scope_id: 'ext-ws-2',
         description: 'WeeklyScope with FKs',

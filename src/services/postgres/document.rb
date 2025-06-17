@@ -10,7 +10,7 @@ module Services
     #
     # Provides CRUD operations for the 'documents' table using the Base service.
     class Document < Services::Postgres::Base
-      ATTRIBUTES = %i[name external_document_id].freeze
+      ATTRIBUTES = %i[name external_document_id domain_id].freeze
       TABLE = :documents
       RELATIONS = [
         { service: Domain, external: :external_domain_id, internal: :domain_id }
