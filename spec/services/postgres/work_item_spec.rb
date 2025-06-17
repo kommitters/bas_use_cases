@@ -29,7 +29,7 @@ RSpec.describe Services::Postgres::WorkItem do
     db.drop_table?(:activities)
     db.drop_table?(:domains)
     db.drop_table?(:persons)
-    db.drop_table?(:weekly_scope)
+    db.drop_table?(:weekly_scopes)
 
     create_projects_table(db)
     create_activities_table(db)

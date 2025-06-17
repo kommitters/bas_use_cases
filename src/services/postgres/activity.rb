@@ -66,10 +66,12 @@ module Services
       end
 
       def add_key_results_relations(activity_id, params)
+        service = ActivitiesKeyResults.new(db)
+
         params[:external_key_results_ids].each do |external_id|
           attributes = { activity_id: activity_id, external_key_result_id: external_id }
 
-          ActivitiesKeyResults.new(db).insert(attributes)
+          service.insert(attributes)
         end
 
         params.delete(:external_key_results_ids)

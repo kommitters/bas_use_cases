@@ -18,6 +18,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:weekly_scopes)
+    drop_table(:key_results)
   end
 end

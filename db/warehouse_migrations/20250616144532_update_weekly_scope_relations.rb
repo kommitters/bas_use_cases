@@ -12,6 +12,8 @@ Sequel.migration do
     alter_table(:weekly_scopes) do
       drop_foreign_key :domain_id
       drop_foreign_key :person_id
+      drop_column :domain_id
+      drop_column :person_id
     end
   end
 end

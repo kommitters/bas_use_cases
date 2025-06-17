@@ -81,7 +81,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
   end
 
   describe '#delete' do
-    it 'deletes a weekly scope by ID' do
+    it 'deletes a key result history by ID' do
       key_result_id = key_result_service.insert(key_results_params)
       id = service.insert(key_results_params.merge(key_result_id: key_result_id))
 
@@ -91,7 +91,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
   end
 
   describe '#find' do
-    it 'finds a weekly scope by ID' do
+    it 'finds a key result history by ID' do
       key_result_id = key_result_service.insert(key_results_params)
       id = service.insert(key_results_params.merge(key_result_id: key_result_id))
       found = service.find(id)
@@ -109,7 +109,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
   end
 
   describe '#query' do
-    it 'queries weekly scope by condition' do
+    it 'queries key result histories by condition' do
       key_result_id = key_result_service.insert(key_results_params)
       id = service.insert(key_results_params.merge(key_result_id: key_result_id))
       results = service.query(external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9')
@@ -118,7 +118,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
       expect(results.first[:external_key_result_id]).to eq('ad3dcdfc-24e9-4008-a026-0e7958655aa9')
     end
 
-    it 'returns all weekly scope with empty conditions' do
+    it 'returns all key results history with empty conditions' do
       count = service.query.size
       key_result_id = key_result_service.insert(key_results_params)
       service.insert(key_results_params.merge(key_result_id: key_result_id))

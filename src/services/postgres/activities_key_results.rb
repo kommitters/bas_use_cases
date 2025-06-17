@@ -24,7 +24,7 @@ module Services
       end
 
       def update(id, params)
-        raise ArgumentError, 'ActivityKeyResults id is required to update' unless id
+        raise ArgumentError, 'ActivitiesKeyResults id is required to update' unless id
 
         assign_relations(params)
         transaction { update_item(TABLE, id, params) }
@@ -49,7 +49,7 @@ module Services
       private
 
       def handle_error(error)
-        puts "[ActivityKeyResults Service ERROR] #{error.class}: #{error.message}"
+        puts "[ActivitiesKeyResults Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end

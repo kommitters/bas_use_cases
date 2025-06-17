@@ -6,7 +6,7 @@ require_relative 'domain'
 module Services
   module Postgres
     ##
-    # Activity Service for PostgreSQL
+    # Document Service for PostgreSQL
     #
     # Provides CRUD operations for the 'documents' table using the Base service.
     class Document < Services::Postgres::Base
