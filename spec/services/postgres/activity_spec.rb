@@ -76,11 +76,6 @@ RSpec.describe Services::Postgres::Activity do
     end
 
     it 'creates activity with related key_results using external_key_results_ids' do
-      kr1 = key_results_service.insert(external_key_result_id: 'kr1', okr: 'Test', key_result: 'KR1', metric: 'x',
-                                       current: 0, progress: 0, period: 'Q1', objective: 'Obj')
-      kr2 = key_results_service.insert(external_key_result_id: 'kr2', okr: 'Test', key_result: 'KR2', metric: 'x',
-                                       current: 0, progress: 0, period: 'Q1', objective: 'Obj')
-
       params = {
         external_activity_id: 'ext-a-10',
         name: 'With Key Results',
@@ -115,10 +110,6 @@ RSpec.describe Services::Postgres::Activity do
     end
 
     it 'replaces key_results associations on update' do
-      kr1 = key_results_service.insert(external_key_result_id: 'kr1', okr: 'Test', key_result: 'KR1', metric: 'x',
-                                       current: 0, progress: 0, period: 'Q1', objective: 'Obj')
-      kr2 = key_results_service.insert(external_key_result_id: 'kr2', okr: 'Test', key_result: 'KR2', metric: 'x',
-                                       current: 0, progress: 0, period: 'Q1', objective: 'Obj')
       kr3 = key_results_service.insert(external_key_result_id: 'kr3', okr: 'Test', key_result: 'KR3', metric: 'x',
                                        current: 0, progress: 0, period: 'Q1', objective: 'Obj')
 
@@ -142,8 +133,6 @@ RSpec.describe Services::Postgres::Activity do
 
   describe '#delete' do
     it 'deletes an activity by ID and removes relations' do
-      kr = key_results_service.insert(external_key_result_id: 'kr-d', okr: 'Del', key_result: 'KR', metric: 'x',
-                                      current: 0, progress: 0, period: 'Q1', objective: 'Obj')
       id = service.insert(external_activity_id: 'ext-a-6', name: 'To Delete', external_key_results_ids: ['kr-d'])
 
       expect { service.delete(id) }.to change { service.query(id: id).size }.by(-1)
