@@ -1,0 +1,7 @@
+#cloud-config
+write_files:
+  - path: /etc/myapp/database_password
+    permissions: "0600"
+    owner: "root:root"
+    content: |
+      ${db_password}

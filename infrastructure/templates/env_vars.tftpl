@@ -1,0 +1,7 @@
+#cloud-config
+write_files:
+  - path: /db/.env
+    permissions: "0600"
+    owner: "root:root"  # Change if a different user needs ownership
+    content: |
+      POSTGRES_PASSWORD=${postgres_password}
