@@ -72,3 +72,4 @@ env.yml
 
 # Terraform
 infrastructure/.terraform
+terraform.tfstate*

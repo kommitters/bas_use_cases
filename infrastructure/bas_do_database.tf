@@ -32,10 +32,21 @@ resource "digitalocean_droplet" "bas-database" {
     destination = "/db/docker-compose.yml"
   }
 
+  provisioner "file" {
+    source = "scripts/create_basic_db_structure.sql"
+    destination = "/db/create_basic_db_structure.sql"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "docker network create db_net || true",
       "cd /db && docker-compose up -d --remove-orphans"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker exec -i bas_db psql -U postgres -f /db/create_basic_db_structure.sql"
     ]
   }
 }
