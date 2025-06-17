@@ -3,6 +3,7 @@ resource "digitalocean_droplet" "bas-database" {
   name = "bas-database"
   region = "nyc3"
   size = "s-1vcpu-1gb"
+  vpc_uuid = digitalocean_vpc.bas-network.id
   ssh_keys = [
     data.digitalocean_ssh_key.terraform.id
   ]

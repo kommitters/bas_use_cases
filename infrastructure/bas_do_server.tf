@@ -3,6 +3,7 @@ resource "digitalocean_droplet" "bas" {
   name = "bas"
   region = "nyc3"
   size = "s-1vcpu-1gb"
+  vpc_uuid = digitalocean_vpc.bas-network.id
   ssh_keys = [
     data.digitalocean_ssh_key.terraform.id
   ]
@@ -23,4 +24,22 @@ resource "digitalocean_droplet" "bas" {
 resource "digitalocean_project_resources" "bas_server_assignment" {
   project   = data.digitalocean_project.bas_project.id
   resources = [digitalocean_droplet.bas.urn]
+}
+
+resource "null_resource" "configure-bas-server" {
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'DB_PORT=8001' >> /etc/environment",
+      "echo 'DB_HOST=${digitalocean_droplet.bas-database.ipv4_address_private}' >> /etc/environment",
+      "echo 'PGPASSWORD=${var.database_password}' >> /etc/environment"
+    ]
+  }
+
+  connection {
+    host = digitalocean_droplet.bas.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
+    private_key = file(var.pvt_key)
+  }
 }
