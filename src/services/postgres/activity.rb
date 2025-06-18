@@ -18,6 +18,7 @@ module Services
       ].freeze
 
       def insert(params)
+        params = symbolize_keys(params)
         assign_relations(params)
 
         transaction do
@@ -34,6 +35,7 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Activity id is required to update' unless id
 
+        params = symbolize_keys(params)
         assign_relations(params)
 
         transaction do

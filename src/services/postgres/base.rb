@@ -29,7 +29,7 @@ module Services
         Sequel.connect(
           adapter: 'postgres',
           host: config[:host],
-          database: config[:database],
+          database: config[:dbname],
           user: config[:user],
           password: config[:password],
           port: config[:port]
@@ -94,10 +94,14 @@ module Services
 
         relations = self.class.const_get(:RELATIONS)
         relations.each do |relation|
-          next unless params.key?(relation[:external])
+          external_key = relation[:external]
+          internal_key = relation[:internal]
 
-          params[relation[:internal]] = fetch_foreign_id(params[relation[:external]], relation)
-          params.delete(relation[:external])
+          value = params.delete(external_key)
+
+          next if value.nil? || (value.respond_to?(:empty?) && value.empty?)
+
+          params[internal_key] = fetch_foreign_id(value, relation)
         end
       end
 
@@ -107,6 +111,14 @@ module Services
 
         record = relation[:service].new(db).query(relation[:external] => external_id).first
         record ? record[:id] : nil
+      end
+
+      def symbolize_keys(hash)
+        hash.transform_keys do |k|
+          k.to_sym
+        rescue StandardError
+          k
+        end
       end
     end
   end

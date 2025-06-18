@@ -20,7 +20,7 @@ module Services
 
       # Insert a new person record.
       def insert(params)
-        params = params.dup
+        params = symbolize_keys(params)
         assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
@@ -31,7 +31,7 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Person id is required to update' unless id
 
-        params = params.dup
+        params = symbolize_keys(params)
         assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
