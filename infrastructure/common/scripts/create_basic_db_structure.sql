@@ -27,4 +27,4 @@ ALTER SEQUENCE public.generic_data_id_seq OWNED BY public.generic_data.id;
 
 ALTER TABLE ONLY public.generic_data ALTER COLUMN id SET DEFAULT nextval('public.generic_data_id_seq'::regclass);
 
-ALTER TABLE ONLY public.generic_data ADD CONSTRAINT birthday_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.generic_data ADD CONSTRAINT generic_data_pkey PRIMARY KEY (id);

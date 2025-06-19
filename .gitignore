@@ -71,5 +71,6 @@ env.yml
 .claude
 
 # Terraform
+.terraform
 infrastructure/.terraform
 terraform.tfstate*

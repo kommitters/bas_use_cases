@@ -1,13 +1,8 @@
-terraform {
-  required_providers {
-    digitalocean = {
-      source = "digitalocean/digitalocean"
-      version = "~> 2.0"
-    }
-  }
+variable "do_token" {
+  description = "The DigitalOcean API token."
+  type        = string
+  sensitive   = true
 }
-
-variable "do_token" {}
 
 variable "pvt_key" {
   description = "The private SSH key for the DigitalOcean account."
@@ -32,16 +27,4 @@ variable "database_password" {
 variable "digital_ocean_ssh_key" {
   description = "The name of the SSH key to use for DigitalOcean."
   type        = string
-}
-
-provider "digitalocean" {
-  token = var.do_token
-}
-
-data "digitalocean_ssh_key" "terraform" {
-  name = var.digital_ocean_ssh_key
-}
-
-data "digitalocean_project" "bas_project" {
-  name = var.digitalocean_project
 }

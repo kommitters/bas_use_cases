@@ -4,9 +4,7 @@ resource "digitalocean_droplet" "bas" {
   region = "nyc3"
   size = "s-1vcpu-1gb"
   vpc_uuid = digitalocean_vpc.bas-network.id
-  ssh_keys = [
-    data.digitalocean_ssh_key.terraform.id
-  ]
+  ssh_keys = [data.digitalocean_ssh_key.terraform.id]
 
   connection {
     host = self.ipv4_address
@@ -17,7 +15,7 @@ resource "digitalocean_droplet" "bas" {
   }
 
   provisioner "remote-exec" {
-    script = "scripts/install_docker_on_ubuntu.sh"
+    script = "../common/scripts/install_docker_on_ubuntu.sh"
   } 
 }
 
