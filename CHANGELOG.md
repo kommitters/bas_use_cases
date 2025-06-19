@@ -1,5 +1,10 @@
 # Changelog
 
+# 1.8.2 (19.06.25)
+- [Solve #116 - expand notion entities for warehouse](https://github.com/kommitters/bas_use_cases/pull/124)
+- [Add warehouse notion entities - Domain, Milestone and Person](https://github.com/kommitters/bas_use_cases/pull/122)
+- [Fix Notion property for github issue entries](https://github.com/kommitters/bas_use_cases/pull/121)
+
 ## 1.8.1 (13.06.25)
 - [Fix OSPO projects fetching schedule](https://github.com/kommitters/bas_use_cases/pull/115)
 - [Adjust next week birthdays automation with correct env var](https://github.com/kommitters/bas_use_cases/pull/118)
