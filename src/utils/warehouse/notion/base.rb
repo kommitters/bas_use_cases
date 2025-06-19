@@ -70,6 +70,13 @@ module Utils
         def extract_id
           @data['id']
         end
+
+        def extract_number(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['number'].nil?
+
+          value['number']
+        end
       end
     end
   end
