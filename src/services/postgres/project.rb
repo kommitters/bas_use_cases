@@ -20,7 +20,6 @@ module Services
 
       # Insert a new project record.
       def insert(params)
-        params = symbolize_keys(params)
         assign_relations(params)
 
         transaction do
@@ -38,7 +37,6 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Project id is required to update' unless id
 
-        params = symbolize_keys(params)
         assign_relations(params)
         transaction do
           update_key_results_relations(id, params) if params[:external_key_results_ids]

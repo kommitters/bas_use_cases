@@ -14,7 +14,6 @@ module Services
 
       # Insert a new domain record.
       def insert(params)
-        params = symbolize_keys(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -24,7 +23,6 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Domain id is required to update' unless id
 
-        params = symbolize_keys(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)

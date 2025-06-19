@@ -57,6 +57,7 @@ module Services
       end
 
       def insert_item(table_name, params)
+        params = symbolize_keys(params)
         if timestamp?(table_name)
           now = Time.now
           params[:created_at] ||= now
@@ -68,6 +69,7 @@ module Services
       end
 
       def update_item(table_name, id, params)
+        params = symbolize_keys(params)
         params[:updated_at] = Time.now if timestamp?(table_name)
 
         attr = entity_attributes(params)
@@ -92,16 +94,13 @@ module Services
       def assign_relations(params)
         return unless self.class.const_defined?(:RELATIONS)
 
-        relations = self.class.const_get(:RELATIONS)
-        relations.each do |relation|
+        self.class.const_get(:RELATIONS).each do |relation|
           external_key = relation[:external]
           internal_key = relation[:internal]
 
-          value = params.delete(external_key)
+          next unless params.key?(external_key)
 
-          next if value.nil? || (value.respond_to?(:empty?) && value.empty?)
-
-          params[internal_key] = fetch_foreign_id(value, relation)
+          params[internal_key] = fetch_foreign_id(params[external_key], relation)
         end
       end
 
