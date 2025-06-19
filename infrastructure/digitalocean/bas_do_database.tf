@@ -16,6 +16,7 @@ resource "digitalocean_droplet" "bas-database" {
 
   user_data = templatefile("../common/templates/env_vars.tftpl", {
     postgres_password = var.database_password
+    env_file_path = "/db/.env"
   })
 
   provisioner "remote-exec" {

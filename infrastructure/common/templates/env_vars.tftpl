@@ -1,6 +1,6 @@
 #cloud-config
 write_files:
-  - path: /db/.env
+  - path: ${env_file_path}
     permissions: "0600"
     owner: "root:root"  # Change if a different user needs ownership
     content: |

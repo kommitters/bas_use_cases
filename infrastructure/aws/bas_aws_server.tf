@@ -1,10 +1,11 @@
 # BAS Server EC2 Instance - equivalent to DigitalOcean droplet
 resource "aws_instance" "bas" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  key_name               = data.aws_key_pair.terraform.key_name
-  vpc_security_group_ids = [aws_security_group.bas_server_sg.id]
-  subnet_id              = aws_subnet.bas_public_subnet.id
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  key_name                    = data.aws_key_pair.terraform.key_name
+  vpc_security_group_ids      = [aws_security_group.bas_server_sg.id]
+  subnet_id                   = aws_subnet.bas_public_subnet.id
+  associate_public_ip_address = true
 
   tags = {
     Name = "bas"
@@ -23,7 +24,7 @@ resource "aws_instance" "bas" {
   }
 }
 
-# Configure BAS server with database connection details
+# Configure BAS server with database connection credentials
 resource "null_resource" "configure_bas_server" {
   provisioner "remote-exec" {
     inline = [
