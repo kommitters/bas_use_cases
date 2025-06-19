@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
 wait_for_apt_lock() {
   # Wait for apt lock to be released before proceeding
   # Set a timeout of 5 minutes (300 seconds)

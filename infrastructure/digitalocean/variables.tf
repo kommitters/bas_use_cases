@@ -8,7 +8,6 @@ variable "pvt_key" {
   description = "The private SSH key for the DigitalOcean account."
   type        = string
   default     = "~/.ssh/id_rsa"
-  sensitive   = true
 }
 
 variable "digitalocean_project" {

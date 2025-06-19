@@ -84,7 +84,7 @@ terraform destroy -var "do_token=${DO_PAT}" -var "digital_ocean_ssh_key=My-Perso
 
 ### Prerequisites
 1. Terraform installed on your local machine.
-2. An AWS account with an IAM user that has permissions to create EC2 instances, security groups, VPCs, and other necessary resources.
+2. An AWS account with an IAM user who has permissions to create EC2 instances, security groups, VPCs, and other necessary resources.
 3. Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and configure it with your credentials.
 4. Create an EC2 Key Pair in your desired AWS region.
 

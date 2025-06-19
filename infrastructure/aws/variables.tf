@@ -20,7 +20,6 @@ variable "pvt_key" {
   description = "The private SSH key file path."
   type        = string
   default     = "~/.ssh/id_rsa"
-  sensitive   = true
 }
 
 variable "aws_key_pair_name" {
