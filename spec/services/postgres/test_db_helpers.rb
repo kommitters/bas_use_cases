@@ -151,4 +151,21 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       DateTime :updated_at
     end
   end
+
+  def create_work_logs_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table :work_logs do
+      primary_key :id
+      String :external_work_log_id, size: 255, null: false
+      Integer :duration_minutes, null: false
+      Text :tags
+      foreign_key :person_id, :persons, null: false, on_delete: :cascade
+      foreign_key :project_id, :projects, null: true, on_delete: :set_null
+      foreign_key :activity_id, :activities, null: true, on_delete: :set_null
+      foreign_key :work_item_id, :work_items, null: true, on_delete: :set_null
+      DateTime :creation_date, null: false
+      DateTime :modification_date
+      DateTime :created_at
+      DateTime :updated_at
+    end
+  end
 end
