@@ -1,0 +1,27 @@
+version: "3.8"
+
+networks:
+  db_net:
+    external: true
+    name: db_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:16.9-alpine
+    container_name: bas_db
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - /db:/db
+      - /home/ubuntu/db:/tmp/db
+      - postgres_data:/var/lib/postgresql/data:rw
+    ports:
+      - '8001:5432'
+    networks:
+      - db_net
+    hostname: postgres.local
+    restart: unless-stopped
