@@ -19,7 +19,6 @@ module Services
 
       # Insert a new milestone record.
       def insert(params)
-        params = params.dup
         assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
@@ -30,7 +29,6 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Milestone id is required to update' unless id
 
-        params = params.dup
         assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e

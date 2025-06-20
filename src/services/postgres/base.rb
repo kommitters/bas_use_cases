@@ -29,7 +29,7 @@ module Services
         Sequel.connect(
           adapter: 'postgres',
           host: config[:host],
-          database: config[:database],
+          database: config[:dbname],
           user: config[:user],
           password: config[:password],
           port: config[:port]
@@ -57,6 +57,7 @@ module Services
       end
 
       def insert_item(table_name, params)
+        params = symbolize_keys(params)
         if timestamp?(table_name)
           now = Time.now
           params[:created_at] ||= now
@@ -68,6 +69,7 @@ module Services
       end
 
       def update_item(table_name, id, params)
+        params = symbolize_keys(params)
         params[:updated_at] = Time.now if timestamp?(table_name)
 
         attr = entity_attributes(params)
@@ -92,12 +94,13 @@ module Services
       def assign_relations(params)
         return unless self.class.const_defined?(:RELATIONS)
 
-        relations = self.class.const_get(:RELATIONS)
-        relations.each do |relation|
-          next unless params.key?(relation[:external])
+        self.class.const_get(:RELATIONS).each do |relation|
+          external_key = relation[:external]
+          internal_key = relation[:internal]
 
-          params[relation[:internal]] = fetch_foreign_id(params[relation[:external]], relation)
-          params.delete(relation[:external])
+          next unless params.key?(external_key)
+
+          params[internal_key] = fetch_foreign_id(params[external_key], relation)
         end
       end
 
@@ -107,6 +110,14 @@ module Services
 
         record = relation[:service].new(db).query(relation[:external] => external_id).first
         record ? record[:id] : nil
+      end
+
+      def symbolize_keys(hash)
+        hash.transform_keys do |k|
+          k.to_sym
+        rescue StandardError
+          k
+        end
       end
     end
   end

@@ -13,8 +13,7 @@ module Utils
             {
               external_project_id: extract_id,
               name: extract_title('Name'),
-              type: extract_select('Project Type'),
-              external_weekly_scope_id: extract_relation('Weekly Scope').first,
+              status: extract_select('Status'),
               external_domain_id: extract_relation('Domain').first
             }
           end
