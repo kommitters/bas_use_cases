@@ -54,37 +54,36 @@ module Implementation
     }.freeze
 
     def process
-      return { success: { notification: '' } } if unprocessable_response
+      return { success: { processed: 0 } } if unprocessable_response
 
-      type = read_response.data['type']
-      return { success: { processed: 0 } } unless type && SERVICES[type]
+      @type = read_response.data['type']
+      return { success: { processed: 0 } } unless @type && SERVICES[@type]
 
-      config = SERVICES[type]
+      config = SERVICES[@type]
       @external_key = config[:external_key]
       @service = config[:services].new(process_options[:db])
 
-      process_items(type, read_response.data['content'])
+      process_items
     end
 
     private
 
-    def process_items(type, content)
+    def process_items
       processed = 0
-      content.each do |item|
-        upsert(item, type)
-
+      read_response.data['content'].each do |item|
+        upsert(item)
         processed += 1
       end
 
       { success: { processed: processed } }
     end
 
-    def upsert(item, type)
+    def upsert(item)
       external_id = item[@external_key]
       found = @service.query({ @external_key.to_sym => external_id }).first
       persist(found, item)
     rescue StandardError => e
-      puts "[WarehouseIngester ERROR][#{type}] #{e.class}: #{e.message}"
+      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e.message}"
     end
 
     def persist(found, item)
