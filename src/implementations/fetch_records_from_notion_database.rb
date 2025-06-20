@@ -57,7 +57,7 @@ module Implementation
       'document' => Utils::Warehouse::Notion::Formatter::DocumentFormatter,
       'weekly_scope' => Utils::Warehouse::Notion::Formatter::WeeklyScopeFormatter,
       'person' => Utils::Warehouse::Notion::Formatter::PersonFormatter,
-      'key_result' => Utils::Warehouse::Notion::Formatter::KeyResultsFormatter
+      'key_result' => Utils::Warehouse::Notion::Formatter::KeyResultFormatter
     }.freeze
 
     PAGE_SIZE = 100

@@ -7,8 +7,8 @@ module Utils
     module Notion
       module Formatter
         ##
-        # This class formats Notion key_results records into a standardized hash format.
-        class KeyResultsFormatter < Base
+        # This class formats Notion key_result records into a standardized hash format.
+        class KeyResultFormatter < Base
           def format
             {
               external_key_results_id: extract_id,
