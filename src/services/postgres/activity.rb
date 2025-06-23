@@ -19,7 +19,6 @@ module Services
 
       def insert(params)
         assign_relations(params)
-
         transaction do
           activity_id = insert_item(TABLE, params)
 
