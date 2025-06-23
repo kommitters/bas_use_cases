@@ -83,12 +83,12 @@ resource "aws_security_group" "bas_database_sg" {
   description = "Security group for BAS database"
   vpc_id      = aws_vpc.bas_network.id
 
-  # SSH access
+  # SSH access only from server security group
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port                = 22
+    to_port                  = 22
+    protocol                 = "tcp"
+    source_security_group_id = aws_security_group.bas_server_sg.id
   }
 
   # Internal VPC communication

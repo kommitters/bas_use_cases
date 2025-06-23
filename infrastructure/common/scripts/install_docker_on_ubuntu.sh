@@ -27,7 +27,7 @@ wait_for_apt_lock() {
 }
 
 wait_for_apt_lock
-for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove -y $pkg; done
 
 wait_for_apt_lock
 sudo apt-get update
