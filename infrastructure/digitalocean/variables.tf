@@ -24,12 +24,11 @@ variable "digitalocean_project" {
 variable "database_password" {
   description = "The password for the bas database."
   type        = string
-  default     = "DefaultPass!"
   sensitive   = true
 
   validation {
-    condition     = var.database_password != "" && var.database_password != "DefaultPass!"
-    error_message = "Please set a strong database_password and do not use the placeholder."
+    condition     = length(var.database_password) >= 8
+    error_message = "The database_password must be at least 8 characters long."
   }
 }
 

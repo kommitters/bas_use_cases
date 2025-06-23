@@ -17,6 +17,12 @@ Choose between Digital Ocean and AWS based on your requirements:
 - **Digital Ocean**: Simpler setup, droplet-based infrastructure
 - **AWS**: More configuration options, EC2-based infrastructure
 
+## Before you start
+
+1. Pick a cloud provider and create a new SSH key for the cloud provider.
+2. Copy the `bas_use_cases.tfvars.sample` file to `bas_use_cases.tfvars` into the corresponding cloud provider directory (e.g. `cp bas_use_cases.tfvars.sample aws/secrets.tfvars`).
+3. Fill in the variables in the `bas_use_cases.tfvars` file (only required variables are present in the sample file, the rest are optional).
+
 ## Using Digital Ocean
 
 ### Prerequisites
@@ -26,9 +32,8 @@ Choose between Digital Ocean and AWS based on your requirements:
 3. A registered SSH key in your Digital Ocean account. Register it [here](https://cloud.digitalocean.com/account/security).
 
 ```bash
-# Set required environment variables
+# Set important environment variables
 export TF_LOG=INFO
-export DO_PAT=dop_v1_...
 ```
 
 ### Deployment Commands
@@ -48,7 +53,7 @@ terraform init
 Re-run this command when you change the infrastructure configuration
 
 ```bash
-terraform plan -var "do_token=${DO_PAT}" -var "digital_ocean_ssh_key=My-Personal-Key"
+terraform plan
 ```
 
 By default, the droplets are set to be created under the BAS project, you can specify a different project by adding
@@ -59,14 +64,14 @@ By default, the droplets are set to be created under the BAS project, you can sp
 Remember to replace My-Personal-Key with your actual key you registered on the digital ocean dashboard. Also, use a secure database password
 
 ```bash
-terraform apply -var "do_token=${DO_PAT}" -var "digital_ocean_ssh_key=My-Personal-Key" -var "pvt_key=~/.ssh/id_rsa" -var "database_password=my-password"
+terraform apply
 ```
 
 Sometimes it may be necessary to refresh the state after making changes outside terraform or if the initial deployment fails. You can do this with the following command:
 
 ```bash
 # Refresh state (if needed)
-terraform refresh -var "do_token=${DO_PAT}" -var "digital_ocean_ssh_key=My-Personal-Key"
+terraform refresh
 ```
 
 #### Destroy Infrastructure
@@ -77,7 +82,7 @@ If you were testing and want to remove the infrastructure, you can use the follo
 > This will destroy all resources created by Terraform and cannot be undone. Make sure you have backups of any important data.
 
 ```bash
-terraform destroy -var "do_token=${DO_PAT}" -var "digital_ocean_ssh_key=My-Personal-Key"
+terraform destroy
 ```
 
 ## Using Amazon Web Services (AWS)
@@ -108,18 +113,18 @@ terraform init
 
 #### Plan deployment
 ```bash
-terraform plan -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}" -var "aws_key_pair_name=My-Personal-Key"
+terraform plan
 ```
 
 #### Deploy infrastructure
 Replace `My-Personal-Key` with your actual AWS key pair name:
 ```bash
-terraform apply -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}" -var "aws_key_pair_name=My-Personal-Key" -var "pvt_key=~/.ssh/id_rsa" -var "database_password=my-password"
+terraform apply
 ```
 
 #### Destroy Infrastructure
 ```bash
-terraform destroy -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}" -var "aws_key_pair_name=My-Personal-Key"
+terraform destroy
 ```
 
 ## Configuration Options

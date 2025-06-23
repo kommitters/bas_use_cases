@@ -25,13 +25,18 @@ variable "pvt_key" {
 variable "aws_key_pair_name" {
   description = "The name of the AWS key pair to use for EC2 instances."
   type        = string
+  sensitive   = true
 }
 
 variable "database_password" {
   description = "The password for the bas database."
   type        = string
-  default     = "ChangeMeASAP!"
   sensitive   = true
+
+  validation {
+    condition     = length(var.database_password) >= 8
+    error_message = "The database_password must be at least 8 characters long."
+  }
 }
 
 variable "instance_type" {
