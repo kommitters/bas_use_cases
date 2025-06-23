@@ -1,8 +1,9 @@
-# VPC - equivalent to DigitalOcean VPC
+# VPC (equivalent to DigitalOcean VPC)
 resource "aws_vpc" "bas_network" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
+  instance_tenancy     = "default"
 
   tags = {
     Name = "bas-network"
@@ -20,10 +21,15 @@ resource "aws_internet_gateway" "bas_igw" {
 
 # Public subnet for instances with internet access
 resource "aws_subnet" "bas_public_subnet" {
-  vpc_id                  = aws_vpc.bas_network.id
-  cidr_block              = var.vpc_cidr
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = true
+  vpc_id                                    = aws_vpc.bas_network.id
+  cidr_block                                = var.vpc_cidr
+  availability_zone                         = "${var.aws_region}a"
+  map_public_ip_on_launch                   = true
+  enable_dns64                              = false
+  assign_ipv6_address_on_creation           = false
+  enable_resource_name_dns_a_record_on_launch = false
+  ipv6_native                               = false
+  enable_resource_name_dns_aaaa_record_on_launch = false
 
   tags = {
     Name = "bas-public-subnet"
@@ -52,24 +58,35 @@ resource "aws_route_table_association" "bas_public_rta" {
 
 # Security group for BAS server
 resource "aws_security_group" "bas_server_sg" {
-  name        = "bas-server-sg"
-  description = "Security group for BAS server"
-  vpc_id      = aws_vpc.bas_network.id
+  name                   = "bas-server-sg"
+  description            = "Security group for BAS server"
+  vpc_id                 = aws_vpc.bas_network.id
+  revoke_rules_on_delete = false
 
   # SSH access
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "SSH access"
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    security_groups  = []
+    self             = false
   }
 
   # Outbound internet access
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "All outbound traffic"
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    security_groups  = []
+    self             = false
   }
 
   tags = {
@@ -79,45 +96,65 @@ resource "aws_security_group" "bas_server_sg" {
 
 # Security group for BAS database
 resource "aws_security_group" "bas_database_sg" {
-  name        = "bas-database-sg"
-  description = "Security group for BAS database"
-  vpc_id      = aws_vpc.bas_network.id
+  name                   = "bas-database-sg"
+  description            = "Security group for BAS database"
+  vpc_id                 = aws_vpc.bas_network.id
+  revoke_rules_on_delete = false
 
-  # SSH access only from server security group
+  depends_on = [aws_security_group.bas_server_sg]
+
+  # SSH access
   ingress {
-    from_port                = 22
-    to_port                  = 22
-    protocol                 = "tcp"
-    source_security_group_id = aws_security_group.bas_server_sg.id
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "SSH access from server"
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    self             = false
   }
 
-  # Internal VPC communication
+  # PostgreSQL access from server security group
   ingress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    from_port        = 8001
+    to_port          = 8001
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.bas_server_sg.id]
+    description      = "PostgreSQL access from server"
+    cidr_blocks      = []
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    self             = false
   }
+
+  # # Internal VPC communication
+  # ingress {
+  #   from_port        = 0
+  #   to_port          = 65535
+  #   protocol         = "tcp"
+  #   cidr_blocks      = [var.vpc_cidr]
+  #   description      = "Internal VPC communication"
+  #   ipv6_cidr_blocks = []
+  #   prefix_list_ids  = []
+  #   security_groups  = []
+  #   self             = false
+  # }
 
   # Outbound internet access
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "All outbound traffic"
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    security_groups  = []
+    self             = false
   }
 
   tags = {
     Name = "bas-database-sg"
   }
-}
-
-resource "aws_security_group_rule" "allow_postgres_from_server" {
-  type                     = "ingress"
-  description              = "Allow PostgreSQL traffic from the web server"
-  from_port                = 8001
-  to_port                  = 8001
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.bas_server_sg.id     # The source of the traffic
-  security_group_id        = aws_security_group.bas_database_sg.id # The group to apply this rule to
 }

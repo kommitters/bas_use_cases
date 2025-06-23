@@ -6,21 +6,40 @@ resource "aws_instance" "bas" {
   vpc_security_group_ids      = [aws_security_group.bas_server_sg.id]
   subnet_id                   = aws_subnet.bas_public_subnet.id
   associate_public_ip_address = true
+  get_password_data           = false
+  source_dest_check           = true
+  user_data_replace_on_change = false
 
   tags = {
     Name = "bas"
   }
 
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ubuntu"  # Ubuntu AMI uses ubuntu user, not root
-    private_key = file(var.pvt_key)
-    timeout     = "2m"
+  # Wait for instance to be ready
+  provisioner "remote-exec" {
+    inline = ["echo 'Instance is ready'"]
+
+    connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file(var.pvt_key)
+      timeout     = "5m"
+      agent       = false
+    }
   }
 
+  # Install Docker
   provisioner "remote-exec" {
     script = "../common/scripts/install_docker_on_ubuntu.sh"
+
+    connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file(var.pvt_key)
+      timeout     = "10m"
+      agent       = false
+    }
   }
 }
 
@@ -32,14 +51,15 @@ resource "null_resource" "configure_bas_server" {
       "echo 'DB_HOST=${aws_instance.bas_database.private_ip}' | sudo tee -a /etc/environment",
       "echo 'PGPASSWORD=${var.database_password}' | sudo tee -a /etc/environment"
     ]
-  }
 
-  connection {
-    type        = "ssh"
-    host        = aws_instance.bas.public_ip
-    user        = "ubuntu"
-    private_key = file(var.pvt_key)  
-    timeout     = "2m"
+    connection {
+      type        = "ssh"
+      host        = aws_instance.bas.public_ip
+      user        = "ubuntu"
+      private_key = file(var.pvt_key)  
+      timeout     = "5m"
+      agent       = false
+    }
   }
 
   depends_on = [aws_instance.bas_database]

@@ -12,7 +12,12 @@ variable "do_token" {
 variable "pvt_key" {
   description = "The private SSH key for the DigitalOcean account."
   type        = string
-  default     = "~/.ssh/id_rsa"
+  sensitive   = true
+
+  validation {
+    condition     = length(var.pvt_key) > 0
+    error_message = "The pvt_key variable must be provided and non-empty."
+  }
 }
 
 variable "digitalocean_project" {

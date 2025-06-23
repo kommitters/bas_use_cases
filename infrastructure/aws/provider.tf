@@ -8,14 +8,8 @@ terraform {
 }
 
 provider "aws" {
-  region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-}
-
-# Get available availability zones
-data "aws_availability_zones" "available" {
-  state = "available"
+  # Secret and access keys should be set through environment variables
+  region = var.aws_region
 }
 
 data "aws_key_pair" "terraform" {

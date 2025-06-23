@@ -20,7 +20,7 @@ Choose between Digital Ocean and AWS based on your requirements:
 ## Before you start
 
 1. Pick a cloud provider and create a new SSH key for the cloud provider.
-2. Copy the `bas_use_cases.tfvars.sample` file to `bas_use_cases.tfvars` into the corresponding cloud provider directory (e.g. `cp bas_use_cases.tfvars.sample aws/secrets.tfvars`).
+2. Copy the `bas_use_cases.tfvars.sample` file to `bas_use_cases.tfvars` into the corresponding cloud provider directory (e.g. `cp bas_use_cases.tfvars.sample aws/terraform.tfvars`). Use `terraform.tfvars` as the filename so that terraform can automatically pick it up.
 3. Fill in the variables in the `bas_use_cases.tfvars` file (only required variables are present in the sample file, the rest are optional).
 
 ## Using Digital Ocean
@@ -93,10 +93,18 @@ terraform destroy
 3. Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and configure it with your credentials.
 4. Create an EC2 Key Pair in your desired AWS region.
 
+## AWS Credentials Configuration
+
+**Important**: This configuration uses AWS's standard credential chain instead of hardcoded credentials for security reasons. Do not add AWS access keys or secret keys to your Terraform variables or state files.
+
+### Setting up AWS Credentials
+
+Choose one of the following methods to configure your AWS credentials:
+
+#### Option 1: Environment Variables (Recommended for CI/CD)
 ```bash
-# Set required environment variables
-export AWS_ACCESS_KEY_ID=your_access_key
-export AWS_SECRET_ACCESS_KEY=your_secret_key
+export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
 ```
 
 ### Deployment Commands

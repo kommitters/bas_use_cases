@@ -3,8 +3,6 @@ do_token = "dop_..."
 digital_ocean_ssh_key = "your-ssh-key-name"
 
 # AWS
-aws_access_key = "your-aws-access-key"
-aws_secret_key = "your-aws-secret-key"
 aws_key_pair_name = "your-aws-key-pair-name"
 
 # Common variables
