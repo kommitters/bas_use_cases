@@ -2,16 +2,15 @@
 
 require 'bas/bot/base'
 require 'bas/utils/notion/request'
-require_relative '../utils/warehouse/notion/project_formatter'
 require_relative '../utils/warehouse/notion/activity_formatter'
-require_relative '../utils/warehouse/notion/work_item_formatter'
-require_relative '../utils/warehouse/notion/domain_formatter'
-require_relative '../utils/warehouse/notion/milestone_formatter'
 require_relative '../utils/warehouse/notion/document_formatter'
-require_relative '../utils/warehouse/notion/weekly_scope_formatter'
-require_relative '../utils/warehouse/notion/person_formatter'
+require_relative '../utils/warehouse/notion/domain_formatter'
 require_relative '../utils/warehouse/notion/key_result_formatter'
-
+require_relative '../utils/warehouse/notion/milestone_formatter'
+require_relative '../utils/warehouse/notion/person_formatter'
+require_relative '../utils/warehouse/notion/project_formatter'
+require_relative '../utils/warehouse/notion/weekly_scope_formatter'
+require_relative '../utils/warehouse/notion/work_item_formatter'
 module Implementation
   ##
   # Implementation::FetchRecordsFromNotionDatabase
@@ -49,15 +48,15 @@ module Implementation
   #
   class FetchRecordsFromNotionDatabase < Bas::Bot::Base
     FORMATTERS = {
-      'project' => Utils::Warehouse::Notion::Formatter::ProjectFormatter,
       'activity' => Utils::Warehouse::Notion::Formatter::ActivityFormatter,
-      'work_item' => Utils::Warehouse::Notion::Formatter::WorkItemFormatter,
-      'domain' => Utils::Warehouse::Notion::Formatter::DomainFormatter,
-      'milestone' => Utils::Warehouse::Notion::Formatter::MilestoneFormatter,
       'document' => Utils::Warehouse::Notion::Formatter::DocumentFormatter,
-      'weekly_scope' => Utils::Warehouse::Notion::Formatter::WeeklyScopeFormatter,
+      'domain' => Utils::Warehouse::Notion::Formatter::DomainFormatter,
+      'key_result' => Utils::Warehouse::Notion::Formatter::KeyResultFormatter,
+      'milestone' => Utils::Warehouse::Notion::Formatter::MilestoneFormatter,
       'person' => Utils::Warehouse::Notion::Formatter::PersonFormatter,
-      'key_result' => Utils::Warehouse::Notion::Formatter::KeyResultFormatter
+      'project' => Utils::Warehouse::Notion::Formatter::ProjectFormatter,
+      'weekly_scope' => Utils::Warehouse::Notion::Formatter::WeeklyScopeFormatter,
+      'work_item' => Utils::Warehouse::Notion::Formatter::WorkItemFormatter
     }.freeze
 
     PAGE_SIZE = 100

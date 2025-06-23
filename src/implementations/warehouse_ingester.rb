@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require_relative '../services/postgres/project'
 require_relative '../services/postgres/activity'
-require_relative '../services/postgres/work_item'
+require_relative '../services/postgres/document'
 require_relative '../services/postgres/domain'
+require_relative '../services/postgres/key_result'
+require_relative '../services/postgres/milestone'
 require_relative '../services/postgres/person'
+require_relative '../services/postgres/project'
+require_relative '../services/postgres/weekly_scope'
+require_relative '../services/postgres/work_item'
 
 module Implementation
   ##
@@ -46,11 +50,15 @@ module Implementation
   #
   class WarehouseIngester < Bas::Bot::Base
     SERVICES = {
-      'project' => { service: Services::Postgres::Project, external_key: 'external_project_id' },
       'activity' => { service: Services::Postgres::Activity, external_key: 'external_activity_id' },
-      'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
+      'document' => { service: Services::Postgres::Document, external_key: 'external_document_id' },
       'domain' => { service: Services::Postgres::Domain, external_key: 'external_domain_id' },
-      'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' }
+      'key_result' => { service: Services::Postgres::KeyResult, external_key: 'external_key_result_id' },
+      'milestone' => { service: Services::Postgres::Milestone, external_key: 'external_milestone_id' },
+      'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
+      'project' => { service: Services::Postgres::Project, external_key: 'external_project_id' },
+      'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
+      'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' }
     }.freeze
 
     def process
