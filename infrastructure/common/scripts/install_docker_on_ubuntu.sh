@@ -27,13 +27,16 @@ wait_for_apt_lock() {
 }
 
 wait_for_apt_lock
-for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove -y $pkg; done
+# Remove old Docker packages if they exist (ignore errors if packages don't exist)
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do 
+  sudo apt-get remove -qq -y $pkg >/dev/null 2>&1 || true
+done
 
 wait_for_apt_lock
 sudo apt-get update
 
 wait_for_apt_lock
-sudo apt-get install -y ca-certificates curl
+sudo apt-get install -qq -y ca-certificates curl
 
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
@@ -49,4 +52,4 @@ wait_for_apt_lock
 sudo apt-get update
 
 wait_for_apt_lock
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
+sudo apt-get install -qq -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
