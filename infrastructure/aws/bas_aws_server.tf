@@ -45,6 +45,12 @@ resource "aws_instance" "bas" {
 
 # Configure BAS server with database connection credentials
 resource "null_resource" "configure_bas_server" {
+  triggers = {
+    bas_instance_id     = aws_instance.bas.id
+    database_instance_id = aws_instance.bas_database.id
+    database_password    = var.database_password
+  }
+
   provisioner "remote-exec" {
     inline = [
       "echo 'DB_PORT=8001' | sudo tee -a /etc/environment",

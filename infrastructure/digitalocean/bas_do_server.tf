@@ -25,6 +25,12 @@ resource "digitalocean_project_resources" "bas_server_assignment" {
 }
 
 resource "null_resource" "configure-bas-server" {
+  triggers = {
+    bas_instance_id     = digitalocean_droplet.bas.id
+    database_instance_id = digitalocean_droplet.bas-database.id
+    database_password    = var.database_password
+  }
+
   provisioner "remote-exec" {
     inline = [
       "echo 'DB_PORT=8001' >> /etc/environment",
