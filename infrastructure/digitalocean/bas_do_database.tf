@@ -11,7 +11,7 @@ resource "digitalocean_droplet" "bas-database" {
     user = "root"
     type = "ssh"
     timeout = "2m"
-    private_key = file(var.pvt_key)
+    private_key = file(var.private_key_path)
   }
 
   user_data = templatefile("../common/templates/env_vars.tftpl", {

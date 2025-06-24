@@ -19,7 +19,9 @@ Choose between Digital Ocean and AWS based on your requirements:
 
 ## Before you start
 
-1. Pick a cloud provider and create a new SSH key for the cloud provider.
+1. Pick a cloud provider and create a new SSH key pair for the cloud provider.
+  - For **Digital Ocean**, you can create a new SSH key in the [Digital Ocean Control Panel](https://cloud.digitalocean.com/account/security).
+  - For **AWS**, you can create a new SSH key in the [AWS Management Console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:).
 2. Copy the `bas_use_cases.tfvars.sample` file to `bas_use_cases.tfvars` into the corresponding cloud provider directory (e.g. `cp bas_use_cases.tfvars.sample aws/terraform.tfvars`). Use `terraform.tfvars` as the filename so that terraform can automatically pick it up.
 3. Fill in the variables in the `bas_use_cases.tfvars` file (only required variables are present in the sample file, the rest are optional).
 

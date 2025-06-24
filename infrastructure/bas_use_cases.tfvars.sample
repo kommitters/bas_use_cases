@@ -6,5 +6,5 @@ digital_ocean_ssh_key = "your-ssh-key-name"
 aws_key_pair_name = "your-aws-key-pair-name"
 
 # Common variables
-pvt_key = "your-ssh-private-key"
+private_key_path = "your-ssh-private-key"
 database_password = "your-secure-password"

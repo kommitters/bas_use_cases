@@ -11,7 +11,7 @@ resource "digitalocean_droplet" "bas" {
     user = "root"
     type = "ssh"
     timeout = "2m"
-    private_key = file(var.pvt_key)
+    private_key = file(var.private_key_path)
   }
 
   provisioner "remote-exec" {
@@ -44,6 +44,6 @@ resource "null_resource" "configure-bas-server" {
     user = "root"
     type = "ssh"
     timeout = "2m"
-    private_key = file(var.pvt_key)
+    private_key = file(var.private_key_path)
   }
 }

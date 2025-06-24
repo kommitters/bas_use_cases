@@ -9,14 +9,14 @@ variable "do_token" {
   }
 }
 
-variable "pvt_key" {
+variable "private_key_path" {
   description = "The private SSH key for the DigitalOcean account."
   type        = string
   sensitive   = true
 
   validation {
-    condition     = length(var.pvt_key) > 0
-    error_message = "The pvt_key variable must be provided and non-empty."
+    condition     = length(var.private_key_path) > 0
+    error_message = "The private_key_path variable must be provided and non-empty."
   }
 }
 

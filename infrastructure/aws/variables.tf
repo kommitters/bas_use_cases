@@ -4,7 +4,7 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "pvt_key" {
+variable "private_key_path" {
   description = "The private SSH key file path."
   type        = string
   default     = "~/.ssh/id_rsa"

@@ -22,7 +22,7 @@ resource "aws_instance" "bas" {
       type        = "ssh"
       host        = self.public_ip
       user        = "ubuntu"
-      private_key = file(var.pvt_key)
+      private_key = file(var.private_key_path)
       timeout     = "5m"
       agent       = false
     }
@@ -36,7 +36,7 @@ resource "aws_instance" "bas" {
       type        = "ssh"
       host        = self.public_ip
       user        = "ubuntu"
-      private_key = file(var.pvt_key)
+      private_key = file(var.private_key_path)
       timeout     = "10m"
       agent       = false
     }
@@ -62,7 +62,7 @@ resource "null_resource" "configure_bas_server" {
       type        = "ssh"
       host        = aws_instance.bas.public_ip
       user        = "ubuntu"
-      private_key = file(var.pvt_key)  
+      private_key = file(var.private_key_path)  
       timeout     = "5m"
       agent       = false
     }
