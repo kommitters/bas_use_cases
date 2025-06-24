@@ -12,13 +12,13 @@ module Utils
           def format
             {
               external_key_results_id: extract_id,
-              okr: extract_relation('OKR'),
-              key_result: extract_relation('Key Result'),
+              okr: extract_relation('OKR').first,
+              key_result: extract_title('Key Result'),
               metric: extract_number('Metric'),
               current: extract_number('Current'),
-              progress: extract_number('Progress'),
-              period: extract_multi_select('Period'),
-              objective: extract_relation('Objective')
+              progress: extract_formula_number('Progress'),
+              period: extract_rich_text('Period'),
+              objective: extract_rich_text('Objective')
             }
           end
         end

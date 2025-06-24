@@ -15,8 +15,8 @@ module Utils
               description: extract_rich_text('Description'),
               start_week_date: extract_date('Start Week Data'),
               end_week_date: extract_date('End Week Data'),
-              external_domain_id: extract_relation('Domain'),
-              external_person_id: extract_relation('Person')
+              external_domain_id: extract_relation('Domain').first,
+              external_person_id: extract_relation('Person').first
             }
           end
         end

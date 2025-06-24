@@ -77,6 +77,44 @@ module Utils
 
           value['number']
         end
+
+        def extract_email(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['email'].nil?
+
+          value['email']
+        end
+
+        def extract_people_id(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['people'].nil? || value['people'].empty?
+
+          value['people'].first['id']
+        end
+
+        def extract_formula_number(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['formula'].nil?
+          return nil unless value['formula']['type'] == 'number'
+
+          value['formula']['number']
+        end
+
+        # def extract_rollup_array(column_name)
+        #   value = @properties[column_name]
+
+        #   value['rollup']['array'].map do |item|
+        #     case item['type']
+        #     when 'title', 'rich_text'
+        #       texts = item[item['type']]
+        #       texts.map { |t| t['plain_text'] }.join(' ')
+        #     when 'text'
+        #       item.dig('text', 'content')
+        #     when 'number'
+        #       item['number']
+        #     end
+        #   end.compact
+        # end
       end
     end
   end

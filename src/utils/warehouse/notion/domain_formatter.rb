@@ -13,7 +13,7 @@ module Utils
             {
               external_domain_id: extract_id,
               name: extract_title('Name'),
-              archived: extract_multi_select('Archived')
+              archived: extract_select('Status') == 'Archived'
             }
           end
         end
