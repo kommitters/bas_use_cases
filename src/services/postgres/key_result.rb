@@ -9,7 +9,7 @@ module Services
     # Activity Service for PostgreSQL
     #
     # Provides CRUD operations for the 'key_results' table using the Base service.
-    class KeyResults < Services::Postgres::Base
+    class KeyResult < Services::Postgres::Base
       ATTRIBUTES = %i[external_key_result_id okr key_result metric current progress period objective].freeze
       TABLE = :key_results
 

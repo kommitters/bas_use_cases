@@ -34,7 +34,6 @@ module Services
         raise ArgumentError, 'Activity id is required to update' unless id
 
         assign_relations(params)
-
         transaction do
           update_key_results_relations(id, params) if params[:external_key_results_ids]
           update_item(TABLE, id, params)
@@ -55,6 +54,8 @@ module Services
 
       def query(conditions = {})
         query_item(TABLE, conditions)
+      rescue StandardError => e
+        handle_error(e)
       end
 
       private
