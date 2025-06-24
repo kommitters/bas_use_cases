@@ -9,13 +9,23 @@ require_relative 'config'
 require 'pg'
 
 array = PG::TextEncoder::Array.new.encode(
-  %w[FetchWorkItemsFromNotionDatabase FetchProjectsFromNotionDatabase FetchActivitiesFromNotionDatabase]
+  %w[
+    FetchDomainsFromNotionDatabase
+    FetchDocumentsFromNotionDatabase
+    FetchWeeklyScopesFromNotionDatabase
+    FetchKeyResultsFromNotionDatabase
+    FetchProjectsFromNotionDatabase
+    FetchActivitiesFromNotionDatabase
+    FetchPersonsFromNotionDatabase
+    FetchWorkItemsFromNotionDatabase
+    FetchMilestonesFromNotionDatabase
+  ]
 )
 
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'warehouse_sync',
-  where: 'archived=$1 AND tag=ANY($2) AND stage=$3 ORDER BY inserted_at DESC',
+  where: 'archived=$1 AND tag=ANY($2) AND stage=$3 ORDER BY inserted_at ASC',
   params: [false, array, 'unprocessed']
 }
 
