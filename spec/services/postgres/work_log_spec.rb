@@ -31,6 +31,7 @@ RSpec.describe Services::Postgres::WorkLog do
     db.drop_table?(:domains)
     db.drop_table?(:persons)
     db.drop_table?(:work_items)
+    db.drop_table?(:weekly_scopes)
 
     create_projects_table(db)
     create_activities_table(db)
@@ -38,6 +39,7 @@ RSpec.describe Services::Postgres::WorkLog do
     create_persons_table(db)
     create_work_items_table(db)
     create_work_logs_table(db)
+    create_weekly_scopes_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -49,7 +51,8 @@ RSpec.describe Services::Postgres::WorkLog do
         external_work_log_id: 'ext-log-1',
         duration_minutes: 90,
         creation_date: Time.now,
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       }
       id = service.insert(params)
       log = service.find(id)
@@ -69,7 +72,8 @@ RSpec.describe Services::Postgres::WorkLog do
         external_person_id: 'person-2',
         external_project_id: 'proj-1',
         external_activity_id: 'act-1',
-        external_work_item_id: 'wi-1'
+        external_work_item_id: 'wi-1',
+        started_at: Time.now
       }
       id = service.insert(params)
       log = service.find(id)
@@ -86,7 +90,8 @@ RSpec.describe Services::Postgres::WorkLog do
         duration_minutes: 120,
         creation_date: Time.now,
         tags: JSON.generate(%w[urgent backend]),
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       }
       id = service.insert(params)
       log = service.find(id)
@@ -102,7 +107,8 @@ RSpec.describe Services::Postgres::WorkLog do
         duration_minutes: 45,
         creation_date: Time.now,
         tags: JSON.generate(%w[init]),
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       )
       service.update(id, duration_minutes: 75, tags: JSON.generate(%w[revised important]))
       log = service.find(id)
@@ -118,7 +124,8 @@ RSpec.describe Services::Postgres::WorkLog do
         external_work_log_id: 'ext-log-5',
         duration_minutes: 30,
         creation_date: Time.now,
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       )
       expect { service.delete(id) }.to change { service.query.size }.by(-1)
     end
@@ -131,7 +138,8 @@ RSpec.describe Services::Postgres::WorkLog do
         external_work_log_id: 'ext-log-6',
         duration_minutes: 100,
         creation_date: Time.now,
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       )
       log = service.find(id)
       expect(log[:external_work_log_id]).to eq('ext-log-6')
@@ -145,7 +153,8 @@ RSpec.describe Services::Postgres::WorkLog do
         external_work_log_id: 'ext-log-7',
         duration_minutes: 20,
         creation_date: Time.now,
-        person_id: person_id
+        person_id: person_id,
+        started_at: Time.now
       )
       results = service.query(duration_minutes: 20)
       expect(results.size).to be >= 1

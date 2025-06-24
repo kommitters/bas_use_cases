@@ -16,6 +16,7 @@ module Services
       ATTRIBUTES = %i[
         external_work_log_id duration_minutes tags person_id
         project_id activity_id work_item_id creation_date modification_date
+        external deleted started_at description
       ].freeze
 
       TABLE = :work_logs

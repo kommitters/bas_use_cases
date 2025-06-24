@@ -34,7 +34,7 @@ RSpec.describe Services::Postgres::WeeklyScope do
 
     create_domains_table(db)
     create_persons_table(db)
-    create_weekly_scope_table(db)
+    create_weekly_scopes_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end

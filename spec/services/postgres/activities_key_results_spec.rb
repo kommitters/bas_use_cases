@@ -35,7 +35,9 @@ RSpec.describe Services::Postgres::ActivitiesKeyResults do
     db.drop_table?(:activities_key_results)
     db.drop_table?(:key_results)
     db.drop_table?(:activities)
+    db.drop_table?(:domains)
 
+    create_domains_table(db)
     create_key_results_table(db)
     create_activities_table(db)
     create_activities_key_results_table(db)
