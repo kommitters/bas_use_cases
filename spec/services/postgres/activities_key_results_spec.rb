@@ -3,7 +3,7 @@
 require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
-require_relative '../../../src/services/postgres/key_results'
+require_relative '../../../src/services/postgres/key_result'
 require_relative '../../../src/services/postgres/activities_key_results'
 require_relative 'test_db_helpers'
 
@@ -13,7 +13,7 @@ RSpec.describe Services::Postgres::ActivitiesKeyResults do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
 
-  let(:key_result_service) { Services::Postgres::KeyResults.new(config) }
+  let(:key_result_service) { Services::Postgres::KeyResult.new(config) }
   let(:activity_key_result_service) { described_class.new(config) }
 
   let(:key_result_params) do

@@ -10,7 +10,7 @@ module Services
     #
     # Provides CRUD operations for the 'key_results' table using the Base service.
     class KeyResult < Services::Postgres::Base
-      ATTRIBUTES = %i[external_key_result_id okr key_result metric current progress period objective].freeze
+      ATTRIBUTES = %i[external_key_result_id okr key_result metric current progress period objective tags].freeze
       TABLE = :key_results
 
       def insert(params)

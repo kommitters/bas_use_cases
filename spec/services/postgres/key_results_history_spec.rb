@@ -4,7 +4,7 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/key_results_history'
-require_relative '../../../src/services/postgres/key_results'
+require_relative '../../../src/services/postgres/key_result'
 require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::KeyResultsHistory do
@@ -19,7 +19,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
     }
   end
   let(:service) { described_class.new(config) }
-  let(:key_result_service) { Services::Postgres::KeyResults.new(config) }
+  let(:key_result_service) { Services::Postgres::KeyResult.new(config) }
   let(:key_results_params) do
     {
       external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9', okr: 'save time', key_result: 'save time result',
