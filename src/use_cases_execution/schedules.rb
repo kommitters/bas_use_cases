@@ -139,13 +139,13 @@ module UseCasesExecution
     NOTION_WAREHOUSE_SYNC_SCHEDULES = [
       { path: "#{__dir__}/warehouse/notion/fetch_domains.rb", time: ['05:00'] },
       { path: "#{__dir__}/warehouse/notion/fetch_documents.rb", time: ['05:05'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:10'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_key_results.rb", time: ['05:15'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_projects.rb", time: ['05:20'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_activities.rb", time: ['05:25'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_persons.rb", time: ['05:30'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_key_results.rb", time: ['05:10'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_projects.rb", time: ['05:15'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_activities.rb", time: ['05:20'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_persons.rb", time: ['05:25'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:30'] },
       { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:35'] },
-      { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3600 }
+      { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
   end
 end

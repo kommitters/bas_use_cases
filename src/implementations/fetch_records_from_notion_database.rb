@@ -11,6 +11,7 @@ require_relative '../utils/warehouse/notion/person_formatter'
 require_relative '../utils/warehouse/notion/project_formatter'
 require_relative '../utils/warehouse/notion/weekly_scope_formatter'
 require_relative '../utils/warehouse/notion/work_item_formatter'
+
 module Implementation
   ##
   # Implementation::FetchRecordsFromNotionDatabase

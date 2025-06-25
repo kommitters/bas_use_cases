@@ -100,18 +100,29 @@ module Utils
           value['formula']['number']
         end
 
-        def extract_rollup_value(column_name) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+        def extract_rollup_value(column_name)
           value = @properties[column_name]
           return '' unless value && value['rollup'] && value['rollup']['array'].is_a?(Array)
 
           value['rollup']['array'].map do |item|
-            case item['type']
-            when 'title'
-              item['title']&.map { |t| t['plain_text'] }&.join(' ')
-            when 'select'
-              item['select']&.dig('name')
-            end
+            format_rollup_item(item)
           end.compact.join(' ')
+        end
+
+        private
+
+        def format_rollup_item(item)
+          return format_title(item['title']) if item['type'].eql?('title')
+
+          format_select(item['select']) if item['type'].eql?('select')
+        end
+
+        def format_title(title)
+          title&.map { |t| t['plain_text'] }&.join(' ')
+        end
+
+        def format_select(select)
+          select&.dig('name')
         end
       end
     end
