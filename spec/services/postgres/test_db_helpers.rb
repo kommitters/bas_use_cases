@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_projects_table(db)
     db.create_table(:projects) do
@@ -7,9 +8,9 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :external_project_id, null: false
       String :name, null: false
       String :status, null: false
-      Integer :domain_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -18,9 +19,9 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       String :external_activity_id, null: false
       String :name, null: false
-      Integer :domain_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -30,8 +31,8 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :external_domain_id, null: false
       String :name, null: false
       Boolean :archived, default: false, null: false
-      DateTime :created_at
-      DateTime :updated_at
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -48,9 +49,9 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :github_username, null: true
       Integer :notion_user_id, null: true
       Integer :worklogs_user_id, null: true
-      Integer :domain_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -61,13 +62,13 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :name, null: false
       String :status, null: false
       DateTime :completion_date
-      Integer :project_id
-      Integer :activity_id
-      Integer :domain_id
-      Integer :person_id
-      Integer :weekly_scope_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :project_id, :projects, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :activity_id, :activities, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :weekly_scope_id, :weekly_scopes, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -78,9 +79,9 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :name, null: false
       String :status, null: false
       DateTime :completion_date
-      Integer :project_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :project_id, :projects, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -89,23 +90,23 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       String :name, null: false
       String :external_document_id, null: false
-      Integer :domain_id
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
-  def create_weekly_scope_table(db) # rubocop:disable Metrics/MethodLength
+  def create_weekly_scopes_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:weekly_scopes) do
       primary_key :id
       String :external_weekly_scope_id, null: false
       String :description, null: false
-      Integer :domain_id
-      Integer :person_id
+      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       DateTime :start_week_date
       DateTime :end_week_date
-      DateTime :created_at
-      DateTime :updated_at
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -120,8 +121,8 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       Float :progress, null: false
       String :period, null: false
       String :objective, null: false
-      DateTime :created_at
-      DateTime :updated_at
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
@@ -137,18 +138,39 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       Float :progress, null: false
       String :period, null: false
       String :objective, null: false
-      DateTime :created_at
-      DateTime :updated_at
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 
   def create_activities_key_results_table(db)
     db.create_table(:activities_key_results) do
       primary_key :id
-      foreign_key :activity_id, :activities, on_delete: :cascade
-      foreign_key :key_result_id, :key_results, on_delete: :cascade
-      DateTime :created_at
-      DateTime :updated_at
+      foreign_key :activity_id, :activities, type: :uuid, on_delete: :cascade
+      foreign_key :key_result_id, :key_results, type: :uuid, on_delete: :cascade
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_work_logs_table(db) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    db.create_table :work_logs do
+      primary_key :id
+      String :external_work_log_id, size: 255, null: false
+      Integer :duration_minutes, null: false
+      column :tags, 'text[]', null: true
+      foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :project_id, :projects, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :activity_id, :activities, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :work_item_id, :work_items, type: :uuid, null: true, on_delete: :cascade
+      DateTime :creation_date, null: false
+      DateTime :modification_date, null: true
+      TrueClass :external, null: true
+      TrueClass :deleted, null: true
+      DateTime :started_at, null: false
+      String :description, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 end
