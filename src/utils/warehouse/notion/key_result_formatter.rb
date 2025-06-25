@@ -9,16 +9,17 @@ module Utils
         ##
         # This class formats Notion key_result records into a standardized hash format.
         class KeyResultFormatter < Base
-          def format
+          def format # rubocop:disable Metrics/MethodLength
             {
-              external_key_results_id: extract_id,
-              okr: extract_relation('OKR'),
-              key_result: extract_relation('Key Result'),
+              external_key_result_id: extract_id,
+              okr: extract_relation('OKR').first,
+              key_result: extract_title('Key Result'),
               metric: extract_number('Metric'),
               current: extract_number('Current'),
-              progress: extract_number('Progress'),
-              period: extract_multi_select('Period'),
-              objective: extract_relation('Objective')
+              progress: extract_formula_number('Progress'),
+              period: extract_rollup_value('Period'),
+              objective: extract_rollup_value('Objective'),
+              tags: extract_multi_select('Tags')
             }
           end
         end

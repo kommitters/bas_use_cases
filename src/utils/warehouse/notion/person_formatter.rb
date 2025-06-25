@@ -13,10 +13,10 @@ module Utils
             {
               external_person_id: extract_id,
               full_name: extract_title('Name'),
-              email_address: extract_rich_text('Email'),
+              email_address: extract_email('Email'),
               role: extract_select('Role'),
-              notion_user_id: extract_rich_text('Notion Id'),
-              external_domain_id: extract_relation('Domain')
+              notion_user_id: extract_people_id('Notion User'),
+              external_domain_id: extract_relation('Domain').first
             }
           end
         end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'key_results'
+require_relative 'key_result'
 
 module Services
   module Postgres
@@ -13,7 +13,7 @@ module Services
       ATTRIBUTES = %i[activity_id key_result_id].freeze
       TABLE = :activities_key_results
       RELATIONS = [
-        { service: KeyResults, external: :external_key_result_id, internal: :key_result_id }
+        { service: KeyResult, external: :external_key_result_id, internal: :key_result_id }
       ].freeze
 
       def insert(params)

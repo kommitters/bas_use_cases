@@ -5,7 +5,7 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/activity'
 require_relative '../../../src/services/postgres/domain'
-require_relative '../../../src/services/postgres/key_results'
+require_relative '../../../src/services/postgres/key_result'
 require_relative '../../../src/services/postgres/activities_key_results'
 require_relative 'test_db_helpers'
 
@@ -22,7 +22,7 @@ RSpec.describe Services::Postgres::Activity do
 
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
-  let(:key_results_service) { Services::Postgres::KeyResults.new(config) }
+  let(:key_results_service) { Services::Postgres::KeyResult.new(config) }
   let(:akr_service) { Services::Postgres::ActivitiesKeyResults.new(config) }
 
   before(:each) do

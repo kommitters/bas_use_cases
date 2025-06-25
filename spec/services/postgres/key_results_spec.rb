@@ -3,10 +3,10 @@
 require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
-require_relative '../../../src/services/postgres/key_results'
+require_relative '../../../src/services/postgres/key_result'
 require_relative 'test_db_helpers'
 
-RSpec.describe Services::Postgres::KeyResults do
+RSpec.describe Services::Postgres::KeyResult do
   include TestDBHelpers
 
   let(:db) { Sequel.sqlite }

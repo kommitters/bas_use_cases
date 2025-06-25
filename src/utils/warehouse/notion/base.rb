@@ -77,6 +77,53 @@ module Utils
 
           value['number']
         end
+
+        def extract_email(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['email'].nil?
+
+          value['email']
+        end
+
+        def extract_people_id(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['people'].nil? || value['people'].empty?
+
+          value['people'].first['id']
+        end
+
+        def extract_formula_number(column_name)
+          value = @properties[column_name]
+          return nil if value.nil? || value['formula'].nil?
+          return nil unless value['formula']['type'] == 'number'
+
+          value['formula']['number']
+        end
+
+        def extract_rollup_value(column_name)
+          value = @properties[column_name]
+          return '' unless value && value['rollup'] && value['rollup']['array'].is_a?(Array)
+
+          value['rollup']['array'].map do |item|
+            format_rollup_item(item)
+          end.compact.join(' ')
+        end
+
+        private
+
+        def format_rollup_item(item)
+          return format_title(item['title']) if item['type'].eql?('title')
+
+          format_select(item['select']) if item['type'].eql?('select')
+        end
+
+        def format_title(title)
+          title&.map { |t| t['plain_text'] }&.join(' ')
+        end
+
+        def format_select(select)
+          select&.dig('name')
+        end
       end
     end
   end

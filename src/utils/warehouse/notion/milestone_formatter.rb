@@ -15,7 +15,7 @@ module Utils
               name: extract_title('Name'),
               status: extract_multi_select('Status'),
               completion_date: extract_date('Completion Date'),
-              external_project_id: extract_relation('Project')
+              external_project_id: extract_relation('Project').first
             }
           end
         end

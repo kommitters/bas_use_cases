@@ -92,12 +92,11 @@ module Services
 
       # Assigns foreign relations based on the defined RELATIONS constant.
       def assign_relations(params)
-        return unless self.class.const_defined?(:RELATIONS)
+        params.replace(symbolize_keys(params))
 
         self.class.const_get(:RELATIONS).each do |relation|
           external_key = relation[:external]
           internal_key = relation[:internal]
-
           next unless params.key?(external_key)
 
           params[internal_key] = fetch_foreign_id(params[external_key], relation)
@@ -106,8 +105,6 @@ module Services
 
       #  Fetches the foreign ID based on the external ID and relation definition.
       def fetch_foreign_id(external_id, relation)
-        return nil unless external_id
-
         record = relation[:service].new(db).query(relation[:external] => external_id).first
         record ? record[:id] : nil
       end
