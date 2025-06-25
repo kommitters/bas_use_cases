@@ -118,8 +118,8 @@ RSpec.describe Services::Postgres::WorkLog do
   end
 
   describe '#delete' do
-    it 'removes a work_log' do
-      person_id = person_service.insert(external_person_id: 'person-5', full_name: 'Deleter')
+    it 'deletes a work_log' do
+      person_id = person_service.insert(external_person_id: 'person-5', full_name: 'Deleted')
       id = service.insert(
         external_work_log_id: 'ext-log-5',
         duration_minutes: 30,

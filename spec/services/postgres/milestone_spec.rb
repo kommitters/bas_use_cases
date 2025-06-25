@@ -18,6 +18,7 @@ RSpec.describe Services::Postgres::Milestone do
   before(:each) do
     db.drop_table?(:milestones)
     db.drop_table?(:projects)
+    db.drop_table?(:domains)
 
     create_domains_table(db)
     create_milestones_table(db)
