@@ -16,7 +16,9 @@ write_options = {
 
 options = {
   spreadsheet_id: ENV.fetch('GOOGLE_SHEETS_SPREADSHEET_ID'),
-  credentials_path: ENV.fetch('GOOGLE_SERVICE_ACCOUNT_JSON')
+  credentials: ENV.fetch('SERVICE_ACCOUNT_CREDENTIALS_JSON'),
+  sheet_name: 'Sheet1',
+  range: 'A2:J'
 }
 
 begin

@@ -20,8 +20,17 @@ module Implementation
   #
   #  options = {
   #    spreadsheet_id: ENV.fetch('GOOGLE_SHEETS_SPREADSHEET_ID'),
-  #    credentials_path: ENV.fetch('GOOGLE_SERVICE_ACCOUNT_JSON')
-  #  }
+  #    credentials: ENV.fetch('SERVICE_ACCOUNT_CREDENTIALS_JSON'),
+  #    sheet_name: 'Sheet1',
+  #    range: 'A2:J',
+  #    column_mapping: {
+  #      person: 1, # Column B
+  #      start_date: 3, # Column D
+  #      end_date: 4, # Column E
+  #      period: 5, # Column F
+  #      category: 7, # Column H
+  #      status: 9 # Column J
+  #    }
   #
   #  begin
   #    shared_storage_reader = Bas::SharedStorage::Default.new
@@ -33,7 +42,6 @@ module Implementation
   #  end
   #
   class FetchPtosFromGoogleSheets < Bas::Bot::Base
-    # Process function to execute the Google Sheets utility to fetch PTOs from the spreadsheet
     def process
       ptos = extract_and_humanize_ptos
       { success: { ptos: ptos } }
@@ -46,37 +54,46 @@ module Implementation
     end
 
     def sheet_name
-      'Sheet1'
+      process_options[:sheet_name] || "'PTO Summary #{today.year}'"
     end
 
     def range
-      "#{sheet_name}!A2:J"
+      "#{sheet_name}!#{process_options[:range] || 'A2:J'}"
     end
 
     def fetch_sheet_rows
       service = Google::Apis::SheetsV4::SheetsService.new
       service.authorization = sheet_auth
-      response = service.get_spreadsheet_values(spreadsheet_id, range)
-      response.values || []
+      begin
+        response = service.get_spreadsheet_values(spreadsheet_id, range)
+        response.values || []
+      rescue Google::Apis::Error => e
+        raise "Google Sheets API error: #{e.message}"
+      end
     end
 
     def sheet_auth
       Google::Auth::ServiceAccountCredentials.make_creds(
-        json_key_io: File.open(credentials_path),
-        scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-        subject: 'info@podnation.co'
+        json_key_io: StringIO.new(credentials_json),
+        scope: ['https://www.googleapis.com/auth/spreadsheets.readonly']
       )
     end
 
+    def credentials_json
+      process_options[:credentials] || raise('Missing :credentials in process_options')
+    end
+
     def extract_and_humanize_ptos
-      rows = fetch_sheet_rows
-      rows.filter_map { |row| process_row(row) }
+      fetch_sheet_rows.filter_map { |row| process_row(row) }
     end
 
     def process_row(row)
       return unless valid_row?(row)
 
-      person, start_str, end_str, period, category = row.values_at(1, 3, 4, 5, 7)
+      person, start_str, end_str, period, category = extract_fields(row).values_at(
+        :person, :start_date, :end_date, :period, :category
+      )
+
       start_date = safe_parse_date(start_str)
       end_date = safe_parse_date(end_str)
       return unless start_date && end_date && (start_date..end_date).cover?(today)
@@ -85,19 +102,21 @@ module Implementation
     end
 
     def valid_row?(row)
-      person, start_str, end_str, _, _, status = extract_fields(row)
-      [person, start_str, end_str].none?(&:nil?) && status.to_s.downcase != 'inactive'
+      fields = extract_fields(row)
+      [fields[:person], fields[:start_date], fields[:end_date]].none?(&:nil?) &&
+        fields[:status].to_s.downcase != 'inactive'
     end
 
     def extract_fields(row)
-      [
-        row[1], # Person (B)
-        row[3], # StartDateTime (D)
-        row[4], # EndDateTime (E)
-        row[5], # Day (F)
-        row[7], # Category (H)
-        row[9]  # Status (J)
-      ]
+      map = process_options[:column_mapping]
+      {
+        person: row[map[:person]],
+        start_date: row[map[:start_date]],
+        end_date: row[map[:end_date]],
+        period: row[map[:period]],
+        category: row[map[:category]],
+        status: row[map[:status]]
+      }
     end
 
     def safe_parse_date(str)
@@ -146,10 +165,6 @@ module Implementation
 
     def spreadsheet_id
       process_options[:spreadsheet_id]
-    end
-
-    def credentials_path
-      process_options[:credentials_path]
     end
   end
 end

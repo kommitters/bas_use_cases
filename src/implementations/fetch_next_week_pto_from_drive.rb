@@ -21,7 +21,9 @@ module Implementation
   #
   #  options = {
   #    spreadsheet_id: ENV.fetch('GOOGLE_SHEETS_SPREADSHEET_ID'),
-  #    credentials_path: ENV.fetch('GOOGLE_SERVICE_ACCOUNT_JSON')
+  #    credentials: ENV.fetch('SERVICE_ACCOUNT_CREDENTIALS_JSON')
+  #    sheet_name: 'Sheet1',
+  #    range: 'A2:J',
   #  }
   #
   #  begin
@@ -45,15 +47,19 @@ module Implementation
       Google::Apis::SheetsV4::SheetsService
         .new
         .tap { |svc| svc.authorization = sheet_credentials }
-        .get_spreadsheet_values(spreadsheet_id, 'Sheet1!A2:J')
+        .get_spreadsheet_values(spreadsheet_id, "#{process_options[:sheet_name]}!#{process_options[:range] || 'A2:J'}")
         .values || []
     end
 
     def sheet_credentials
       Google::Auth::ServiceAccountCredentials.make_creds(
-        json_key_io: File.open(credentials_path),
+        json_key_io: StringIO.new(credentials_json),
         scope: ['https://www.googleapis.com/auth/spreadsheets.readonly']
       )
+    end
+
+    def credentials_json
+      process_options[:credentials] || raise('Missing :credentials in process_options')
     end
 
     def format_pto(row)
@@ -70,7 +76,7 @@ module Implementation
     end
 
     def valid_row?(row)
-      person, start_str, end_str, _, _, status = row.values_at(1, 3, 4, 5, 7, 9)
+      person, start_str, end_str, status = row.values_at(1, 3, 4, 9)
       [person, start_str, end_str].none?(&:nil?) && status.to_s.downcase != 'inactive'
     end
 
@@ -138,10 +144,6 @@ module Implementation
 
     def spreadsheet_id
       process_options[:spreadsheet_id]
-    end
-
-    def credentials_path
-      process_options[:credentials_path]
     end
   end
 end

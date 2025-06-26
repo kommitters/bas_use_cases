@@ -13,7 +13,9 @@ RSpec.describe Implementation::FetchNextWeekPtosFromGoogleSheets do
   before do
     options = {
       spreadsheet_id: 'FAKE_SPREADSHEET_ID',
-      credentials_path: 'spec/fixtures/fake_credentials.json'
+      credentials: '{}',
+      sheet_name: 'Sheet1',
+      range: 'A2:J'
     }
 
     allow(File).to receive(:open)

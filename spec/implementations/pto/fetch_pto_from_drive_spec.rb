@@ -13,7 +13,15 @@ RSpec.describe Implementation::FetchPtosFromGoogleSheets do
   before do
     options = {
       spreadsheet_id: 'FAKE_SPREADSHEET_ID',
-      credentials_path: 'spec/fixtures/fake_credentials.json'
+      credentials: '{}',
+      column_mapping: {
+        person: 1,
+        start_date: 3,
+        end_date: 4,
+        period: 5,
+        category: 7,
+        status: 9
+      }
     }
 
     allow(File).to receive(:open)

@@ -16,7 +16,17 @@ write_options = {
 
 options = {
   spreadsheet_id: ENV.fetch('GOOGLE_SHEETS_SPREADSHEET_ID'),
-  credentials_path: ENV.fetch('GOOGLE_SERVICE_ACCOUNT_JSON')
+  credentials: ENV.fetch('SERVICE_ACCOUNT_CREDENTIALS_JSON'),
+  sheet_name: 'Sheet1',
+  range: 'A2:J',
+  column_mapping: {
+    person: 1, # Column B
+    start_date: 3, # Column D
+    end_date: 4, # Column E
+    period: 5, # Column F
+    category: 7, # Column H
+    status: 9 # Column J
+  }
 }
 
 # Process bot
