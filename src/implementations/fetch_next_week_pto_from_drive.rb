@@ -44,10 +44,12 @@ module Implementation
     private
 
     def fetch_rows
+      range = "'#{process_options[:sheet_name]}'!#{process_options[:range] || 'A2:J'}"
+
       Google::Apis::SheetsV4::SheetsService
         .new
         .tap { |svc| svc.authorization = sheet_credentials }
-        .get_spreadsheet_values(spreadsheet_id, "'#{process_options[:sheet_name]}'!#{process_options[:range] || 'A2:J'}")
+        .get_spreadsheet_values(spreadsheet_id, range)
         .values || []
     end
 
