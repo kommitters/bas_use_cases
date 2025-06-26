@@ -35,14 +35,14 @@ module UseCasesExecution
     ].freeze
 
     PTO_SCHEDULES = [
-      { path: "#{__dir__}/pto/fetch_pto_from_notion_for_workspace.rb", time: ['13:15'] },
+      { path: "#{__dir__}/pto/fetch_pto_from_drive.rb", time: ['13:15'] },
       { path: "#{__dir__}/pto/humanize_pto_workspace.rb", time: ['13:25'] },
       { path: "#{__dir__}/pto/notify_pto_in_workspace.rb", time: ['13:35'] },
       { path: "#{__dir__}/pto/garbage_collector.rb", time: ['00:00'] }
     ].freeze
 
     PTO_NEXT_WEEK_SCHEDULES = [
-      { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_notion_for_workspace.rb",
+      { path: "#{__dir__}/pto_next_week/fetch_next_week_pto_from_drive_for_workspace.rb",
         time: ['12:45'], day: ['Thursday'] },
       { path: "#{__dir__}/pto_next_week/humanize_next_week_pto_workspace.rb", time: ['12:55'], day: ['Thursday'] },
       { path: "#{__dir__}/pto_next_week/notify_pto_next_week_in_workspace.rb", time: ['13:05'], day: ['Thursday'] },
