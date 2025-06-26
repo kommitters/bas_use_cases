@@ -36,7 +36,7 @@ write_options = {
 }
 
 options = {
-  db: Config::CONNECTION
+  db: Config::WAREHOUSE_CONNECTION
 }
 
 begin
