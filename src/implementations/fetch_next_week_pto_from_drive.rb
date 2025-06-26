@@ -47,7 +47,7 @@ module Implementation
       Google::Apis::SheetsV4::SheetsService
         .new
         .tap { |svc| svc.authorization = sheet_credentials }
-        .get_spreadsheet_values(spreadsheet_id, "#{process_options[:sheet_name]}!#{process_options[:range] || 'A2:J'}")
+        .get_spreadsheet_values(spreadsheet_id, "'#{process_options[:sheet_name]}'!#{process_options[:range] || 'A2:J'}")
         .values || []
     end
 

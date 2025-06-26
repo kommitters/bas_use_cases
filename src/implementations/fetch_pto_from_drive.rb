@@ -54,7 +54,8 @@ module Implementation
     end
 
     def sheet_name
-      process_options[:sheet_name] || "'PTO Summary #{today.year}'"
+      name = process_options[:sheet_name] || "PTO Summary #{today.year}"
+      "'#{name}'"
     end
 
     def range
@@ -108,7 +109,7 @@ module Implementation
     end
 
     def extract_fields(row)
-      map = process_options[:column_mapping]
+      map = process_options[:column_mapping] || raise('Missing :column_mapping in process_options')
       {
         person: row[map[:person]],
         start_date: row[map[:start_date]],
