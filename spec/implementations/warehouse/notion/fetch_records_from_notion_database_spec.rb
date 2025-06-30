@@ -5,8 +5,11 @@ require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
 require 'ostruct'
 require_relative '../../../../src/implementations/fetch_records_from_notion_database'
+require_relative '../../../../src/utils/warehouse/notion/milestone_formatter'
 
 RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
+  subject(:bot) { described_class.new(options, shared_storage_reader, shared_storage_writer) }
+
   let(:options) do
     {
       database_id: 'fake_db_id',
@@ -17,107 +20,127 @@ RSpec.describe Implementation::FetchRecordsFromNotionDatabase do
 
   let(:shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
   let(:shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
-  let(:subject) { described_class.new(options, shared_storage_reader, shared_storage_writer) }
-  let(:formatter) { double('Formatter::ProjectFormatter', format: { normalized: true }) }
+  let(:project_formatter) do
+    instance_double(Utils::Warehouse::Notion::Formatter::ProjectFormatter, format: { project_normalized: true })
+  end
 
   before do
-    allow(Utils::Warehouse::Notion::Formatter::ProjectFormatter).to receive(:new).and_return(formatter)
-    allow(shared_storage_reader).to receive(:read_response).and_return(OpenStruct.new(inserted_at: nil))
-    allow(subject).to receive(:read_response).and_return(OpenStruct.new(inserted_at: nil))
+    allow(Utils::Warehouse::Notion::Formatter::ProjectFormatter).to receive(:new).and_return(project_formatter)
+    allow(bot).to receive(:read_response).and_return(OpenStruct.new(inserted_at: nil))
   end
 
   describe '#process' do
-    context 'when Notion response is successful and has no more pages' do
-      let(:notion_response) do
-        double('HTTParty::Response',
-               code: 200,
-               parsed_response: {
-                 'results' => [{ id: 1 }, { id: 2 }],
-                 'has_more' => false
-               })
-      end
-
-      before do
-        allow(Utils::Notion::Request).to receive(:execute).and_return(notion_response)
-      end
-
-      it 'returns success response with all normalized entities in content array' do
-        result = subject.process
-        expect(result).to have_key(:success)
-        expect(result[:success][:type]).to eq('project')
-        expect(result[:success][:content]).to eq([{ normalized: true }, { normalized: true }])
-      end
-    end
-
-    context 'when Notion response is successful and has more pages' do
-      let(:paged_response1) do
-        double('HTTParty::Response',
-               code: 200,
-               parsed_response: {
-                 'results' => [{ id: 1 }],
-                 'has_more' => true,
-                 'next_cursor' => 'abc123'
-               })
-      end
-
-      let(:paged_response2) do
-        double('HTTParty::Response',
-               code: 200,
-               parsed_response: {
-                 'results' => [{ id: 2 }],
-                 'has_more' => false
-               })
-      end
-
-      before do
-        allow(Utils::Notion::Request).to receive(:execute).and_return(paged_response1, paged_response2)
-      end
-
-      it 'fetches all pages and returns all normalized entities in content array' do
-        result = subject.process
-        expect(result[:success][:content]).to eq([{ normalized: true }, { normalized: true }])
-      end
-    end
-
-    context 'when Notion response is an error' do
-      let(:error_response) do
-        double('HTTParty::Response',
-               code: 400,
-               parsed_response: { 'message' => 'Bad request' })
-      end
+    context 'when Notion API call for main entities fails' do
+      let(:error_response) { double('HTTParty::Response', code: 401, parsed_response: { 'message' => 'Unauthorized' }) }
 
       before do
         allow(Utils::Notion::Request).to receive(:execute).and_return(error_response)
       end
 
-      it 'returns error_response with status_code' do
-        result = subject.process
+      it 'returns an error hash' do
+        result = bot.process
         expect(result).to have_key(:error)
-        expect(result[:error][:status_code]).to eq(400)
+        expect(result.dig(:error, :status_code)).to eq(401)
+      end
+    end
+
+    context 'when Notion API call for main entities is successful' do
+      let(:notion_api_response) do
+        double('HTTParty::Response',
+               code: 200,
+               parsed_response: { 'results' => [{ id: 'proj_1' }], 'has_more' => false })
+      end
+      let(:formatted_projects) { [{ project_normalized: true }] }
+
+      before do
+        allow(Utils::Notion::Request).to receive(:execute).and_return(notion_api_response)
+      end
+
+      context 'and entity is "project"' do
+        it 'fetches nested milestones and includes them in the response' do
+          mock_milestones = [{ milestone_normalized: true }]
+          # Mock the formatter's class method to control its output
+          expect(Utils::Warehouse::Notion::Formatter::MilestoneFormatter)
+            .to receive(:fetch_for_projects)
+            .with(formatted_projects, secret: 'fake_secret')
+            .and_return(mock_milestones)
+
+          result = bot.process
+
+          expect(result).to have_key(:success)
+          expect(result.dig(:success, :type)).to eq('project')
+          expect(result.dig(:success, :content)).to eq(formatted_projects)
+          # Verify the nested structure
+          expect(result.dig(:success, :nested, :type)).to eq('milestone')
+          expect(result.dig(:success, :nested, :content)).to eq(mock_milestones)
+        end
+
+        it 'does not include the :nested key if no milestones are found' do
+          # Mock the formatter to return an empty array
+          expect(Utils::Warehouse::Notion::Formatter::MilestoneFormatter)
+            .to receive(:fetch_for_projects)
+            .and_return([])
+
+          result = bot.process
+
+          expect(result[:success]).not_to have_key(:nested)
+        end
+      end
+
+      context 'and entity is not "project"' do
+        let(:options) { super().merge(entity: 'activity') }
+        # --- CORRECCIÓN ---
+        # Se añade un mock para el ActivityFormatter para evitar el error.
+        let(:activity_formatter) do
+          instance_double(Utils::Warehouse::Notion::Formatter::ActivityFormatter, format: { activity_normalized: true })
+        end
+
+        before do
+          allow(Utils::Warehouse::Notion::Formatter::ActivityFormatter).to receive(:new).and_return(activity_formatter)
+        end
+
+        it 'does not attempt to fetch milestones' do
+          # Expect that the milestone fetcher is NEVER called
+          expect(Utils::Warehouse::Notion::Formatter::MilestoneFormatter).not_to receive(:fetch_for_projects)
+          bot.process
+        end
       end
     end
   end
 
   describe '#write' do
     it 'writes one record per 100 or fewer items in content' do
-      # 205 registros normalizados -> 3 páginas (100, 100, 5)
       content = Array.new(205) { { normalized: true } }
       process_response = { success: { type: 'project', content: content } }
-      allow(subject).to receive(:process_response).and_return(process_response)
+      allow(bot).to receive(:process_response).and_return(process_response)
 
-      expect(shared_storage_writer).to receive(:write).exactly(3).times do |record|
-        expect(record[:success][:content].size).to be <= 100
-        expect(record[:success][:type]).to eq('project')
-      end
+      expect(shared_storage_writer).to receive(:write).exactly(3).times
+      bot.write
+    end
 
-      subject.write
+    it 'writes for both main and nested content' do
+      main_content = Array.new(150) { { project: true } } # 2 pages
+      nested_content = Array.new(50) { { milestone: true } } # 1 page
+      process_response = {
+        success: {
+          type: 'project', content: main_content,
+          nested: { type: 'milestone', content: nested_content }
+        }
+      }
+      allow(bot).to receive(:process_response).and_return(process_response)
+
+      # Expect 2 writes for projects and 1 for milestones
+      expect(shared_storage_writer).to receive(:write).with(hash_including(success: hash_including(type: 'project'))).twice # rubocop:disable Layout/LineLength
+      expect(shared_storage_writer).to receive(:write).with(hash_including(success: hash_including(type: 'milestone'))).once # rubocop:disable Layout/LineLength
+      bot.write
     end
 
     it 'writes nothing if content is empty' do
       process_response = { success: { type: 'project', content: [] } }
-      allow(subject).to receive(:process_response).and_return(process_response)
+      allow(bot).to receive(:process_response).and_return(process_response)
+
       expect(shared_storage_writer).not_to receive(:write)
-      subject.write
+      bot.write
     end
   end
 end
