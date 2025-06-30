@@ -65,59 +65,78 @@ module Implementation
     # Proccess method fetches records from a Notion database based on the provided options.
     #
     def process
-      response = Utils::Notion::Request.execute(params)
-      return error_response(response) unless response.code == 200
+      entities = fetch_all_main_entities
+      return entities if entities.is_a?(Hash)
+      return { success: { type: entity_type, content: [] } } if entities.empty?
 
-      entities = normalize_response(response.parsed_response['results'])
-      entities += fetch_all_entities(response) if response.parsed_response['has_more']
+      result = { type: entity_type, content: entities }
 
-      { success: { type: process_options[:entity], content: entities } }
+      add_nested_milestones_if_applicable(result)
+
+      { success: result }
     end
 
     def write
-      content = process_response.dig(:success, :content) || []
-      paged_entities = content.each_slice(PAGE_SIZE).to_a
+      write_entity(process_response.dig(:success, :type), process_response.dig(:success, :content))
+      nested = process_response.dig(:success, :nested)
+      return unless nested
 
+      write_entity(nested[:type], nested[:content])
+    end
+
+    def write_entity(type, content)
+      paged_entities = content.each_slice(PAGE_SIZE).to_a
       paged_entities.each_with_index do |page, idx|
-        record = build_record(
-          content: page, page_index: idx + 1,
-          total_pages: paged_entities.size, total_records: content.size
-        )
+        record = {
+          success: {
+            type: type, content: page, page_index: idx + 1,
+            total_pages: paged_entities.size, total_records: content.size
+          }
+        }
         @shared_storage_writer.write(record)
       end
     end
 
     private
 
-    def fetch_all_entities(initial_response)
-      entities = []
-      response = initial_response
-
+    def fetch_all_main_entities
+      all_entities = []
+      next_cursor = nil
       loop do
-        break unless response.parsed_response['has_more']
+        records, next_cursor, error = fetch_and_process_page(next_cursor)
+        return error if error
 
-        next_cursor = response.parsed_response['next_cursor']
-        response = Utils::Notion::Request.execute(next_cursor_params(next_cursor))
-        break unless response.code == 200
-
-        entities += normalize_response(response.parsed_response['results'])
+        all_entities.concat(records)
+        break unless next_cursor
       end
 
-      entities
+      all_entities
     end
 
-    def params
-      {
-        endpoint: "databases/#{process_options[:database_id]}/query",
-        secret: process_options[:secret],
-        method: 'post',
-        body:
-      }
+    def fetch_and_process_page(cursor)
+      request_body = body
+      request_body[:start_cursor] = cursor if cursor
+
+      response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query", body: request_body)
+      return [nil, nil, error_response(response)] unless response.code == 200
+
+      records = normalize_response(response.parsed_response['results'])
+      new_cursor = response.parsed_response['has_more'] ? response.parsed_response['next_cursor'] : nil
+
+      [records, new_cursor, nil]
     end
 
-    def next_cursor_params(next_cursor)
-      next_body = body.merge({ start_cursor: next_cursor })
-      params.merge(body: next_body)
+    def add_nested_milestones_if_applicable(result_hash)
+      return unless process_options[:entity] == 'project'
+
+      projects = result_hash[:content]
+      milestones = FORMATTERS['milestone'].fetch_for_projects(projects, secret: process_options[:secret])
+
+      result_hash[:nested] = { type: 'milestone', content: milestones } if milestones.any?
+    end
+
+    def entity_type
+      process_options[:entity]
     end
 
     def body
@@ -138,25 +157,23 @@ module Implementation
       records.map { |record| formatter_class.new(record).format }
     end
 
+    def notion_request(endpoint:, method: 'post', body: {})
+      Utils::Notion::Request.execute(endpoint: endpoint, secret: process_options[:secret], method: method, body: body)
+    end
+
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: process_options[:entity],
-          content: content,
-          page_index: page_index,
-          total_pages: total_pages,
-          total_records: total_records
+          type: process_options[:entity], content: content, page_index: page_index,
+          total_pages: total_pages, total_records: total_records
         }
       }
     end
 
     def error_response(response)
-      {
-        error: {
-          message: response.parsed_response,
-          status_code: response.code
-        }
-      }
+      { error: {
+        message: response.parsed_response, status_code: response.code
+      } }
     end
   end
 end
