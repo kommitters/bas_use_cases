@@ -109,6 +109,13 @@ module Utils
           end.compact.join(' ')
         end
 
+        def extract_checkbox(column_name)
+          value = @properties[column_name]
+          return false if value.nil? || value['checkbox'].nil?
+
+          value['checkbox']
+        end
+
         private
 
         def format_rollup_item(item)
