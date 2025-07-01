@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'project_formatter'
 require 'bas/utils/notion/request'
 
 module Utils
@@ -26,32 +25,27 @@ module Utils
             }
           end
 
-          def self.fetch_for_projects(raw_project_records, secret:, filter_body: {})
-            project_formatter = Utils::Warehouse::Notion::Formatter::ProjectFormatter
-            formatted_projects = raw_project_records.map { |record| project_formatter.new(record).format }
-
-            formatted_projects.flat_map do |project|
-              project_id = project[:external_project_id]
-              db_id = find_milestone_database_id(project_id, secret: secret)
-              next [] unless db_id
-
-              records = fetch_milestone_records(db_id, secret: secret, filter_body: filter_body)
-              next [] if records.empty?
-
-              format_records(records, project_id: project_id)
-            end
-          end
-
           class << self
+            def fetch_for_projects(raw_project_records, secret:, filter_body: {})
+              raw_project_records.flat_map do |project_record|
+                project_id = project_record['id']
+                db_id = find_milestone_database_id(project_id, secret: secret)
+                next [] unless db_id
+
+                records = fetch_milestone_records(db_id, secret: secret, filter_body: filter_body)
+                next [] if records.empty?
+
+                format_records(records, project_id: project_id)
+              end
+            end
+
             private
 
             def find_milestone_database_id(project_id, secret:)
               response = notion_request(endpoint: "blocks/#{project_id}/children", method: 'get', secret: secret)
               return nil unless response.code == 200
 
-              child_blocks = response.parsed_response['results']
-              db_block = child_blocks.find { |block| block['type'] == 'child_database' }
-
+              db_block = response.parsed_response['results'].find { |block| block['type'] == 'child_database' }
               db_block ? db_block['id'] : nil
             end
 
