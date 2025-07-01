@@ -65,78 +65,67 @@ module Implementation
     # Proccess method fetches records from a Notion database based on the provided options.
     #
     def process
-      entities = fetch_all_main_entities
-      return entities if entities.is_a?(Hash)
-      return { success: { type: entity_type, content: [] } } if entities.empty?
+      response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query", body: body)
+      return error_response(response) unless response.code == 200
 
-      result = { type: entity_type, content: entities }
+      records = response.parsed_response['results']
+      records.concat(fetch_all_pages(response)) if response.parsed_response['has_more']
 
-      add_nested_milestones_if_applicable(result)
+      entities = normalize_response(records)
 
-      { success: result }
+      { success: { type: entity_type, content: entities } }
     end
 
     def write
-      write_entity(process_response.dig(:success, :type), process_response.dig(:success, :content))
-      nested = process_response.dig(:success, :nested)
-      return unless nested
-
-      write_entity(nested[:type], nested[:content])
-    end
-
-    def write_entity(type, content)
+      content = process_response.dig(:success, :content) || []
       paged_entities = content.each_slice(PAGE_SIZE).to_a
+
       paged_entities.each_with_index do |page, idx|
-        record = {
-          success: {
-            type: type, content: page, page_index: idx + 1,
-            total_pages: paged_entities.size, total_records: content.size
-          }
-        }
+        record = build_record(
+          content: page, page_index: idx + 1,
+          total_pages: paged_entities.size, total_records: content.size
+        )
         @shared_storage_writer.write(record)
       end
     end
 
     private
 
-    def fetch_all_main_entities
-      all_entities = []
-      next_cursor = nil
-      loop do
-        records, next_cursor, error = fetch_and_process_page(next_cursor)
-        return error if error
+    def normalize_response(records)
+      formatter_class = FORMATTERS[entity_type]
 
-        all_entities.concat(records)
-        break unless next_cursor
+      if entity_type == 'milestone'
+        return formatter_class.fetch_for_projects(records, secret: process_options[:secret], filter_body: body)
       end
 
-      all_entities
+      records.map { |record| formatter_class.new(record).format }
     end
 
-    def fetch_and_process_page(cursor)
-      request_body = body
-      request_body[:start_cursor] = cursor if cursor
+    def fetch_all_pages(initial_response) # rubocop:disable Metrics/MethodLength
+      all_records = []
+      response = initial_response
 
-      response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query", body: request_body)
-      return [nil, nil, error_response(response)] unless response.code == 200
+      loop do
+        break unless response.parsed_response['has_more']
 
-      records = normalize_response(response.parsed_response['results'])
-      new_cursor = response.parsed_response['has_more'] ? response.parsed_response['next_cursor'] : nil
+        next_cursor = response.parsed_response['next_cursor']
+        response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query",
+                                  body: body.merge({ start_cursor: next_cursor }))
+        break unless response.code == 200
 
-      [records, new_cursor, nil]
+        all_records.concat(response.parsed_response['results'])
+      end
+
+      all_records
     end
 
-    def add_nested_milestones_if_applicable(result_hash)
-      return unless process_options[:entity] == 'project'
-
-      projects = result_hash[:content]
-      milestones = FORMATTERS['milestone'].fetch_for_projects(projects, secret: process_options[:secret])
-
-      result_hash[:nested] = { type: 'milestone', content: milestones } if milestones.any?
-    end
-
-    def entity_type
-      process_options[:entity]
+    def notion_request(endpoint:, body: {})
+      Utils::Notion::Request.execute(
+        endpoint: endpoint,
+        secret: process_options[:secret],
+        method: 'post',
+        body: body
+      )
     end
 
     def body
@@ -152,28 +141,29 @@ module Implementation
       }]
     end
 
-    def normalize_response(records)
-      formatter_class = FORMATTERS[process_options[:entity]]
-      records.map { |record| formatter_class.new(record).format }
-    end
-
-    def notion_request(endpoint:, method: 'post', body: {})
-      Utils::Notion::Request.execute(endpoint: endpoint, secret: process_options[:secret], method: method, body: body)
+    def entity_type
+      process_options[:entity]
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: process_options[:entity], content: content, page_index: page_index,
-          total_pages: total_pages, total_records: total_records
+          type: process_options[:entity],
+          content: content,
+          page_index: page_index,
+          total_pages: total_pages,
+          total_records: total_records
         }
       }
     end
 
     def error_response(response)
-      { error: {
-        message: response.parsed_response, status_code: response.code
-      } }
+      {
+        error: {
+          message: response.parsed_response,
+          status_code: response.code
+        }
+      }
     end
   end
 end
