@@ -10,6 +10,10 @@ module Utils
         def initialize(work_log_record)
           @record = work_log_record
         end
+
+        def format_tags(tags)
+          tags ? "{#{tags.join(',')}}" : nil
+        end
       end
     end
   end

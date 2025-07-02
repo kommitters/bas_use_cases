@@ -11,7 +11,7 @@ module Utils
           {
             external_work_log_id: @record['id'],
             duration_minutes: @record['duration'].to_i,
-            tags: @record['tags'] ? "{#{@record['tags'].join(',')}}" : nil,
+            tags: format_tags(@record['tags']),
             person_id: @record['person_id'],
             project_id: @record['project_id'],
             activity_id: @record['activity_id'],

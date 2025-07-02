@@ -45,7 +45,8 @@ module Implementation
     PAGE_SIZE = 100
 
     def process
-      start_date = read_response.inserted_at || (Date.today - 30).to_s
+      last_sync = read_response
+      start_date = last_sync&.inserted_at || (Date.today - 30).to_s
       end_date = Date.today.to_s
 
       logs = fetch_all_logs(start_date, end_date)
