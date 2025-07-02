@@ -47,6 +47,8 @@ gem 'googleauth'
 
 gem 'google-apis-chat_v1'
 
+gem 'google-apis-sheets_v4', '~> 0.45.0'
+
 group :test do
   gem 'sqlite3'
 end
