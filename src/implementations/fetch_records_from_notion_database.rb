@@ -65,13 +65,15 @@ module Implementation
     # Proccess method fetches records from a Notion database based on the provided options.
     #
     def process
-      response = Utils::Notion::Request.execute(params)
+      response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query", body: body)
       return error_response(response) unless response.code == 200
 
-      entities = normalize_response(response.parsed_response['results'])
-      entities += fetch_all_entities(response) if response.parsed_response['has_more']
+      records = response.parsed_response['results']
+      records.concat(fetch_all_pages(response)) if response.parsed_response['has_more']
 
-      { success: { type: process_options[:entity], content: entities } }
+      entities = normalize_response(records)
+
+      { success: { type: entity_type, content: entities } }
     end
 
     def write
@@ -89,35 +91,41 @@ module Implementation
 
     private
 
-    def fetch_all_entities(initial_response)
-      entities = []
+    def normalize_response(records)
+      formatter_class = FORMATTERS[entity_type]
+
+      if entity_type == 'milestone'
+        return formatter_class.fetch_for_projects(records, secret: process_options[:secret], filter_body: body)
+      end
+
+      records.map { |record| formatter_class.new(record).format }
+    end
+
+    def fetch_all_pages(initial_response) # rubocop:disable Metrics/MethodLength
+      all_records = []
       response = initial_response
 
       loop do
         break unless response.parsed_response['has_more']
 
         next_cursor = response.parsed_response['next_cursor']
-        response = Utils::Notion::Request.execute(next_cursor_params(next_cursor))
+        response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query",
+                                  body: body.merge({ start_cursor: next_cursor }))
         break unless response.code == 200
 
-        entities += normalize_response(response.parsed_response['results'])
+        all_records.concat(response.parsed_response['results'])
       end
 
-      entities
+      all_records
     end
 
-    def params
-      {
-        endpoint: "databases/#{process_options[:database_id]}/query",
+    def notion_request(endpoint:, body: {})
+      Utils::Notion::Request.execute(
+        endpoint: endpoint,
         secret: process_options[:secret],
         method: 'post',
-        body:
-      }
-    end
-
-    def next_cursor_params(next_cursor)
-      next_body = body.merge({ start_cursor: next_cursor })
-      params.merge(body: next_body)
+        body: body
+      )
     end
 
     def body
@@ -133,9 +141,8 @@ module Implementation
       }]
     end
 
-    def normalize_response(records)
-      formatter_class = FORMATTERS[process_options[:entity]]
-      records.map { |record| formatter_class.new(record).format }
+    def entity_type
+      process_options[:entity]
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)

@@ -22,7 +22,7 @@ write_options = {
 }
 
 options = {
-  database_id: Config::MILESTONES_NOTION_DATABASE_ID,
+  database_id: Config::PROJECTS_NOTION_DATABASE_ID,
   secret: Config::NOTION_SECRET,
   entity: 'milestone'
 }
