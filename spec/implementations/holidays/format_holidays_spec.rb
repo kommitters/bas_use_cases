@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/elasticsearch'
 require_relative '../../../src/implementations/format_holidays'
 
 RSpec.describe Implementation::FormatHolidays do
-  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage) { instance_double(Bas::SharedStorage::Elasticsearch) }
   let(:holidays_data) do
     {
       'holidays' => [
