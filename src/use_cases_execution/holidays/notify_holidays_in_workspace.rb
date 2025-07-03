@@ -28,6 +28,5 @@ begin
 
   Implementation::NotifyWorkspace.new(options, shared_storage).execute
 rescue StandardError => e
-  # Logger.new($stdout).info(e.message)
-  raise e
+  Logger.new($stdout).info(e.message)
 end

@@ -28,6 +28,5 @@ begin
 
   Implementation::FetchHolidays.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
-  # Logger.new($stdout).info(e.message)
-  raise e
+  Logger.new($stdout).info(e.message)
 end

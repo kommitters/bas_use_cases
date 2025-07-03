@@ -9,6 +9,8 @@ module Implementation
   #
   class FormatHolidays < Bas::Bot::Base
     def process
+      return { error: { message: 'No holidays data found' } } if read_response.nil?
+
       data = read_response.data
       return { error: { message: 'No holidays data found' } } unless data.is_a?(Hash)
       unless data.key?('holidays') && data['holidays'].is_a?(Array) && data['holidays'].any?
