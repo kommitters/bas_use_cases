@@ -147,5 +147,12 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:35'] },
       { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
+
+    HOLIDAYS_SCHEDULES = [
+      { path: "#{__dir__}/holidays/fetch_holidays_from_api.rb", time: ['08:00'] },
+      { path: "#{__dir__}/holidays/format_holidays.rb", time: ['08:01'] },
+      { path: "#{__dir__}/holidays/notify_holidays_in_workspace.rb", time: ['08:02'] },
+      { path: "#{__dir__}/holidays/garbage_collector.rb", time: ['08:03'] }
+    ].freeze
   end
 end

@@ -61,7 +61,7 @@ module Utils
 
       def params
         {
-          key: ENV.fetch('HOLIDAYS_API_KEY', nil),
+          key: ENV.fetch('HOLIDAYS_API_KEY'),
           country: @country,
           year: @year,
           month: @month,

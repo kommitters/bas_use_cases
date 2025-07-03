@@ -32,12 +32,11 @@ RSpec.describe Implementation::ElasticsearchGarbageCollector do
   context '.execute' do
     before do
       allow(@bot).to receive(:process).and_return({ success: { archived: true } })
-      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot and return success' do
       result = @bot.execute
-      expect(result).to eq({ success: true })
+      expect(result).to eq({ 'status' => 'success' })
     end
   end
 end

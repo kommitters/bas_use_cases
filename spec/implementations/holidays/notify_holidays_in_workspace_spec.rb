@@ -28,7 +28,6 @@ RSpec.describe Implementation::NotifyWorkspace do
   context '.execute' do
     before do
       allow(@bot).to receive(:process).and_return({ success: {} })
-      allow(@bot).to receive(:execute).and_return({ success: true })
     end
 
     it 'should execute the bas bot' do

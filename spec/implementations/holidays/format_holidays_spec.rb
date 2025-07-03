@@ -34,9 +34,7 @@ RSpec.describe Implementation::FormatHolidays do
 
   context '.execute' do
     before do
-      bas_bot = instance_double(Implementation::FormatHolidays)
-      allow(Implementation::FormatHolidays).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return(
+      allow(@bot).to receive(:execute).and_return(
         { success: { notification: "Upcoming Holidays:\n- New Year on January 01\n- Independence Day on July 04" } }
       )
     end

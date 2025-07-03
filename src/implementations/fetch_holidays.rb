@@ -22,7 +22,7 @@ module Implementation
       if response.is_a?(Hash) && response['holidays']
         { success: { holidays: response['holidays'] } }
       else
-        { error: { message: response[:error] } }
+        { error: { message: response['error'] } }
       end
     end
   end
