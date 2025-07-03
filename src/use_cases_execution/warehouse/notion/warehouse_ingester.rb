@@ -19,6 +19,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchPersonsFromNotionDatabase
     FetchWorkItemsFromNotionDatabase
     FetchMilestonesFromNotionDatabase
+    FetchRecordsFromWorkLogs
   ]
 )
 
