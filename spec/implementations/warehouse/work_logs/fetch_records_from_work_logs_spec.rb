@@ -85,9 +85,8 @@ RSpec.describe Implementation::FetchRecordsFromWorkLogs do
         allow(Utils::WorkLogs::Request).to receive(:execute).and_return(error_response)
       end
 
-      it 'handles the error gracefully and returns empty content' do
-        result = subject.process
-        expect(result[:success][:content]).to be_empty
+      it 'raises a runtime error with a specific message' do
+        expect { subject.process }.to raise_error(RuntimeError, 'Error fetching data: 500 - Server Error')
       end
     end
   end

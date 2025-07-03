@@ -10,7 +10,7 @@ module Utils
         def format # rubocop:disable Metrics/MethodLength
           {
             external_work_log_id: @record['id'],
-            duration_minutes: @record['duration'].to_i,
+            duration_minutes: (@record['duration'].to_f * 60).round,
             tags: format_tags(@record['tags']),
             person_id: @record['person_id'],
             project_id: @record['project_id'],

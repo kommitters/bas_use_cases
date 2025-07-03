@@ -45,13 +45,9 @@ module Implementation
     PAGE_SIZE = 100
 
     def process
-      last_sync = read_response
-      start_date = last_sync&.inserted_at || (Date.today - 30).to_s
-      end_date = Date.today.to_s
-
-      logs = fetch_all_logs(start_date, end_date)
-
-      normalized_content = normalize_response(Array(logs))
+      start_date = (read_response.inserted_at || Date.new(2023, 7, 10)).to_s
+      logs = fetch_all_logs(start_date)
+      normalized_content = normalize_response(logs)
 
       { success: { type: process_options[:entity], content: normalized_content } }
     end
@@ -71,23 +67,23 @@ module Implementation
 
     private
 
-    def fetch_all_logs(start_date, end_date)
+    def fetch_all_logs(start_date)
       all_logs = []
       page = 1
       loop do
-        response = fetch_page(start_date, end_date, page)
-        break unless response.success? || handle_failed_response(response)
+        response = fetch_page(start_date, page)
+        handle_failed_response(response) unless response.success?
 
-        all_logs.concat(new_logs = Array(response.parsed_response['logs']))
-        break if new_logs.size < RECORDS_PER_PAGE
+        all_logs.concat(new_log = response.parsed_response['logs'])
+        break if new_log.size < RECORDS_PER_PAGE
 
         page += 1
       end
       all_logs
     end
 
-    def fetch_page(start_date, end_date, page)
-      params = { start_date: start_date, end_date: end_date, page: page }
+    def fetch_page(start_date, page)
+      params = { start_date: start_date, end_date: Date.today.to_s, page: page }
       Utils::WorkLogs::Request.execute(
         token: process_options[:secret],
         base_url: process_options[:work_logs_url],
@@ -100,7 +96,7 @@ module Implementation
     end
 
     def handle_failed_response(response)
-      puts "Error fetching data: #{response.code} - #{response.message}"
+      raise "Error fetching data: #{response.code} - #{response.message}"
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
