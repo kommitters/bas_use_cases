@@ -144,8 +144,9 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/notion/fetch_milestones.rb", time: ['05:20'] },
       { path: "#{__dir__}/warehouse/notion/fetch_activities.rb", time: ['05:25'] },
       { path: "#{__dir__}/warehouse/notion/fetch_persons.rb", time: ['05:30'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:35'] },
-      { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:40'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_hired_persons.rb", time: ['05:35'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:40'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:45'] },
       { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
   end
