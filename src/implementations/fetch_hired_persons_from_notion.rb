@@ -7,10 +7,9 @@ require_relative '../services/postgres/person'
 
 module Implementation
   ##
-  # Implementation::FetchHiredPersonsFromNotionDatabase
-  #
-  # This class implements a bot that fetches records (such as projects, activities, or work items)
-  # from a Notion database and saves them into shared storage (e.g., PostgresDB).
+  # The Implementation::FetchHiredPersonsFromNotionDatabase class serves as a bot implementation to fetch
+  # hiring data (e.g., hire/exit dates) for people from a Notion database and enrich their profiles
+  # in the data warehouse.
   #
   # <b>Usage Example</b>
   #
@@ -35,7 +34,7 @@ module Implementation
   #
   class FetchHiredPersonsFromNotionDatabase < Bas::Bot::Base
     PAGE_SIZE = 100
-    # Proccess method fetches records from a Notion database based on the provided options.
+    # Process method fetches records from a Notion database based on the provided options.
     #
     def process
       response = notion_request(endpoint: "databases/#{process_options[:database_id]}/query", body: body)
@@ -65,6 +64,8 @@ module Implementation
     private
 
     def normalize_response(records)
+      @person_service = Services::Postgres::Person.new(process_options[:db])
+
       formatter_class = Utils::Warehouse::Notion::Formatter::HiredPersonFormatter
       records.map do |notion_record|
         formatted_person = formatter_class.new(notion_record).format
@@ -76,14 +77,9 @@ module Implementation
       email = person_data[:email_address]
       return nil if email.nil? || email.strip.empty?
 
-      person_service = Services::Postgres::Person.new(process_options[:db])
-      warehouse_person = person_service.query({ email_address: email }).first
+      warehouse_person = @person_service.query({ email_address: email }).first
 
-      person_data[:external_person_id] = if warehouse_person
-                                           warehouse_person[:external_person_id]
-                                         else
-                                           "NEW_#{notion_id}"
-                                         end
+      person_data[:external_person_id] = warehouse_person ? warehouse_person[:external_person_id] : "NEW_#{notion_id}"
 
       person_data
     end

@@ -2,15 +2,22 @@
 
 require 'logger'
 require 'bas/shared_storage/postgres'
-require 'bas/shared_storage/default'
 
 require_relative '../../../implementations/fetch_hired_persons_from_notion'
 require_relative 'config'
 
+read_options = {
+  connection: Config::CONNECTION,
+  db_table: 'warehouse_sync',
+  avoid_process: true,
+  where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
+  params: [false, 'FetchHiredPersonsFromNotionDatabase']
+}
+
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchPersonsFromNotionDatabase'
+  tag: 'FetchHiredPersonsFromNotionDatabase'
 }
 
 options = {
@@ -22,10 +29,9 @@ options = {
 
 # Process bot
 begin
-  shared_storage_reader = Bas::SharedStorage::Default.new
-  shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
+  shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::FetchHiredPersonsFromNotionDatabase.new(options, shared_storage_reader, shared_storage_writer).execute
+  Implementation::FetchHiredPersonsFromNotionDatabase.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
