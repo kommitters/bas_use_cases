@@ -12,6 +12,7 @@ module Utils
           # Formats a list of Notion records.
           def format
             {
+              external_person_id: extract_id,
               full_name: extract_title('Name'),
               email_address: extract_email('Email'),
               hired_date: extract_date('Beginning Date'),

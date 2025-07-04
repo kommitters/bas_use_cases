@@ -66,19 +66,24 @@ module Implementation
 
     def normalize_response(records)
       formatter_class = Utils::Warehouse::Notion::Formatter::HiredPersonFormatter
-      formatted_records = records.map { |record| formatter_class.new(record).format }
-      formatted_records.map { |person_data| add_id_to_person(person_data) }
+      records.map do |notion_record|
+        formatted_person = formatter_class.new(notion_record).format
+        add_id_to_person(formatted_person, notion_record['id'])
+      end.compact
     end
 
-    def add_id_to_person(person_data)
+    def add_id_to_person(person_data, notion_id)
       email = person_data[:email_address]
-      unless email && !email.strip.empty?
-        person_data[:warehouse_id] = -1
-        return person_data
-      end
+      return nil if email.nil? || email.strip.empty?
+
       person_service = Services::Postgres::Person.new(process_options[:db])
       warehouse_person = person_service.query({ email_address: email }).first
-      person_data[:warehouse_id] = warehouse_person ? warehouse_person[:id] : -1
+
+      person_data[:external_person_id] = if warehouse_person
+                                           warehouse_person[:external_person_id]
+                                         else
+                                           "NEW_#{notion_id}"
+                                         end
 
       person_data
     end

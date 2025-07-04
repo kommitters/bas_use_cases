@@ -10,7 +10,7 @@ require_relative 'config'
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchHiredPersonsFromNotionDatabase'
+  tag: 'FetchPersonsFromNotionDatabase'
 }
 
 options = {
