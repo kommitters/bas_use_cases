@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'rspec'
+require 'bas/shared_storage/default'
+
 require_relative '../../../src/implementations/fetch_holidays'
 
 RSpec.describe Implementation::FetchHolidays do
@@ -45,7 +47,8 @@ RSpec.describe Implementation::FetchHolidays do
       ).and_return(mock_holidays_request)
       allow(mock_holidays_request).to receive(:execute).and_return({ error: 'Failed to fetch holidays' })
 
-      bot = described_class.new(options, nil, nil)
+      default_storage = Bas::SharedStorage::Default.new
+      bot = described_class.new(options, default_storage, default_storage)
       result = bot.process
 
       expect(result).to eq({ error: { message: 'Failed to fetch holidays' } })

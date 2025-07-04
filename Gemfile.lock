@@ -335,7 +335,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-sdk-s3
-  bas
+  bas (~> 1.7.2)
   discordrb
   dotenv
   faraday-retry
