@@ -15,7 +15,7 @@ module Utils
               external_person_id: extract_id,
               full_name: extract_title('Name'),
               email_address: extract_email('Email'),
-              hired_date: extract_date('Beginning Date'),
+              hire_date: extract_date('Beginning Date'),
               exit_date: extract_date('End Date'),
               role: extract_select('Role'),
               external_domain_id: extract_relation('Domains').first
