@@ -11,7 +11,7 @@ module Services
     class GithubRelease < Services::Postgres::Base
       ATTRIBUTES = %i[
         external_github_release_id repository_id name tag_name
-        is_prerelease creation_timestamp pulished_timestamp
+        is_prerelease creation_timestamp published_timestamp
       ].freeze
 
       TABLE = :github_releases

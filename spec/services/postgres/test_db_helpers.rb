@@ -183,7 +183,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :tag_name, size: 255, null: false
       Boolean :is_prerelease, null: false, default: false
       DateTime :creation_timestamp, null: false
-      DateTime :pulished_timestamp, null: true
+      DateTime :published_timestamp, null: true
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
