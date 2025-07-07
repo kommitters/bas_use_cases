@@ -148,7 +148,7 @@ module Implementation
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: process_options[:entity],
+          type: entity_type,
           content: content,
           page_index: page_index,
           total_pages: total_pages,
