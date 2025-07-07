@@ -173,4 +173,19 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
+
+  def create_github_releases_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:github_releases) do
+      primary_key :id
+      String :external_github_release_id, size: 255, null: false
+      BigInt :repository_id, null: false
+      String :name, size: 255, null: true
+      String :tag_name, size: 255, null: false
+      Boolean :is_prerelease, null: false, default: false
+      DateTime :creation_timestamp, null: false
+      DateTime :published_timestamp, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
 end
