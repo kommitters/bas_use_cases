@@ -9,10 +9,8 @@ module Services
     #
     # Provides CRUD operations for the 'github_releases' table using the Base service.
     class GithubRelease < Services::Postgres::Base
-      ATTRIBUTES = %i[
-        external_github_release_id repository_id name tag_name
-        is_prerelease creation_timestamp published_timestamp
-      ].freeze
+      ATTRIBUTES = %i[external_github_release_id repository_id name tag_name is_prerelease creation_timestamp
+                      published_timestamp].freeze
 
       TABLE = :github_releases
 
