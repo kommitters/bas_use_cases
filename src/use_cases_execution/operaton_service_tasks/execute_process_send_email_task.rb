@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
-$LOAD_PATH.unshift(File.expand_path('../../../../bas/lib', __dir__))
-require 'bas'
+
+require 'bas/shared_storage/base'
+require 'bas/shared_storage/postgres'
+
 require_relative '../../implementations/process_send_email_task'
 require_relative 'config'
 
@@ -30,4 +32,3 @@ begin
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
-

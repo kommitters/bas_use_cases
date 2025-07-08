@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'logger'
-$LOAD_PATH.unshift(File.expand_path('../../../../bas/lib', __dir__))
-require 'bas'
+
+require 'bas/shared_storage/base'
+require 'bas/shared_storage/postgres'
+
 require_relative '../../implementations/process_variables_task'
 require_relative 'config'
 
