@@ -7,7 +7,7 @@ gem 'rspec'
 
 gem 'dotenv'
 
-gem 'bas', '~> 1.8.0'
+gem 'bas', '~> 1.8.1'
 
 gem 'discordrb'
 
