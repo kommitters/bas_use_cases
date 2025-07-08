@@ -1,23 +1,16 @@
 # frozen_string_literal: true
 
 require 'logger'
-
-require 'bas/shared_storage/base'
 require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
 
 require_relative '../../implementations/complete_operaton_task'
 require_relative 'config'
 
-module Bas
-  module Utils
-    Postgres = ::Utils::Postgres
-  end
-end
-
 # Configuration
 options = {
   operaton_base_url: ENV.fetch('OPERATON_BASE_URL', 'http://localhost:8080/engine-rest'),
-  worker_id: ENV.fetch('OPERATON_COMPLETER_WORKER_ID', "operaton_completer_#{Time.now.to_i}")
+  worker_id: ENV.fetch('OPERATON_POLLER_WORKER_ID', "operaton_completer_#{Time.now.to_i}")
 }
 
 # This bot reads records created by ANY worker.

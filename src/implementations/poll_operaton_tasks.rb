@@ -35,24 +35,35 @@ module Implementation
   #  Logger.new($stdout).info(e.message)
   # end
   class PollOperatonTasks < Bas::Bot::Base
-    # Process function to fetch, lock, and store an Operaton task.
-    #
     def process
-      client = polling
+      client = build_client
       task = search_and_lock_tasks(client)
 
-      if task.nil? || task.empty?
-        Logger.new($stdout).info('[Poller] No tasks available.')
-        return { error: { message: 'No tasks available' } }
-      end
+      return error_response('No tasks available') if task.nil? || task.empty?
 
       Logger.new($stdout).info("--> [Poller] Task obtained and locked: #{task['id']} (Topic: #{task['topicName']})")
 
-      normalized_task = normalize_task(task)
-      { success: normalized_task }
+      success_response(normalize_task(task))
+    rescue StandardError => e
+      Logger.new($stdout).info("[Poller] Unexpected error during polling: #{e.message}")
+      error_response(e.message)
     end
 
     private
+
+    def build_client
+      puts '--> [Poller] Searching for any available task in Operaton...'
+
+      Utils::Operaton::ExternalTaskClient.execute(
+        base_url: process_options[:operaton_base_url],
+        worker_id: process_options[:worker_id]
+      )
+    end
+
+    def search_and_lock_tasks(client)
+      tasks = client.fetch_and_lock(process_options[:topics], max_tasks: 1)
+      tasks.first unless tasks.empty?
+    end
 
     def normalize_task(task)
       {
@@ -62,20 +73,12 @@ module Implementation
       }
     end
 
-    def polling
-      puts '--> [Poller] Searching for any available task in Operaton...'
-      Bas::Utils::Operaton::ExternalTaskClient.new(
-        base_url: @process_options[:operaton_base_url],
-        worker_id: @process_options[:worker_id]
-      )
+    def success_response(result)
+      { success: result }
     end
 
-    def search_and_lock_tasks(client)
-      tasks = client.fetch_and_lock(@process_options[:topics], max_tasks: 1)
-
-      return nil if tasks.empty?
-
-      tasks.first
+    def error_response(message)
+      { error: { message: message } }
     end
   end
 end

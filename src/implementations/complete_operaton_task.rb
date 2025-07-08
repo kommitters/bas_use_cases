@@ -15,7 +15,7 @@ module Implementation
   # Example
   #  options = {
   #   operaton_base_url: ENV.fetch('OPERATON_BASE_URL', 'http://localhost:8080/engine-rest'),
-  #   worker_id: ENV.fetch('OPERATON_COMPLETER_WORKER_ID', "operaton_completer_#{Time.now.to_i}")
+  #   worker_id: ENV.fetch('OPERATON_POLLER_WORKER_ID', "operaton_completer_#{Time.now.to_i}")
   #   }
   #
   ## This bot reads records created by ANY worker.
@@ -88,7 +88,7 @@ module Implementation
     end
 
     def initialize_operaton_client(base_url, worker_id)
-      Bas::Utils::Operaton::ExternalTaskClient.new(
+      Utils::Operaton::ExternalTaskClient.execute(
         base_url: base_url,
         worker_id: worker_id
       )

@@ -1,17 +1,11 @@
 # frozen_string_literal: true
 
 require 'logger'
-require 'bas/shared_storage/default'
 require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
 
 require_relative '../../implementations/poll_operaton_tasks'
 require_relative 'config'
-
-module Bas
-  module Utils
-    Postgres = ::Utils::Postgres
-  end
-end
 
 # Configuration
 write_options = {
@@ -23,8 +17,6 @@ write_options = {
 options = {
   operaton_base_url: ENV.fetch('OPERATON_BASE_URL', 'http://localhost:8080/engine-rest'),
   worker_id: ENV.fetch('OPERATON_POLLER_WORKER_ID', "operaton_poller_#{Time.now.to_i}"),
-  # We can add a list of topics to poll in the future from an ENV var:
-  # topics: ENV.fetch('OPERATON_TOPICS', 'send_email,variables').split(',')
   topics: 'send_email,variables'
 }
 
@@ -35,5 +27,6 @@ begin
 
   Implementation::PollOperatonTasks.new(options, shared_storage_reader, shared_storage_writer).execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  Logger.new($stdout).info("[Poller] Error: #{e.message}")
+  puts e.backtrace.join("\n")
 end
