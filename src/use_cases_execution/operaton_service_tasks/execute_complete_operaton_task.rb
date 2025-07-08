@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
 require 'logger'
-$LOAD_PATH.unshift(File.expand_path('../../../../bas/lib', __dir__))
-require 'bas'
+
+require 'bas/shared_storage/base'
+require 'bas/shared_storage/postgres'
+
 require_relative '../../implementations/complete_operaton_task'
 require_relative 'config'
+
+module Bas
+  module Utils
+    Postgres = ::Utils::Postgres
+  end
+end
 
 # Configuration
 options = {
@@ -17,7 +25,7 @@ read_options = {
   connection: Config::CONNECTION,
   db_table: 'operaton_tasks',
   # We use a LIKE query to find any processed task, regardless of the topic.
-  where: "archived=$1 AND tag LIKE $2 AND stage=$3 ORDER BY inserted_at ASC",
+  where: 'archived=$1 AND tag LIKE $2 AND stage=$3 ORDER BY inserted_at ASC',
   params: [false, 'OperatonTaskProcessed_%', 'unprocessed']
 }
 

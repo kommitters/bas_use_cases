@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 require 'logger'
-$LOAD_PATH.unshift(File.expand_path('../../../../bas/lib', __dir__))
-require 'bas'
+require 'bas/shared_storage/default'
+require 'bas/shared_storage/postgres'
+
 require_relative '../../implementations/poll_operaton_tasks'
 require_relative 'config'
+
+module Bas
+  module Utils
+    Postgres = ::Utils::Postgres
+  end
+end
 
 # Configuration
 write_options = {
