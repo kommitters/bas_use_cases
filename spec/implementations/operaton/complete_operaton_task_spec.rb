@@ -17,7 +17,7 @@ RSpec.describe Implementation::CompleteOperatonTask do
     }
   end
 
-  let(:fake_client) { instance_double(Bas::Utils::Operaton::ExternalTaskClient) }
+  let(:fake_client) { instance_double(Utils::Operaton::ExternalTaskClient) }
 
   before do
     options = {
@@ -45,7 +45,7 @@ RSpec.describe Implementation::CompleteOperatonTask do
 
   context '.execute' do
     before do
-      allow(Bas::Utils::Operaton::ExternalTaskClient).to receive(:new).and_return(fake_client)
+      allow(Utils::Operaton::ExternalTaskClient).to receive(:new).and_return(fake_client)
       allow(fake_client).to receive(:complete).and_return(true)
     end
 

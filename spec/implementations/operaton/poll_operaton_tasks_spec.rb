@@ -18,7 +18,7 @@ RSpec.describe Implementation::PollOperatonTasks do
     }
   end
 
-  let(:fake_client) { instance_double(Bas::Utils::Operaton::ExternalTaskClient) }
+  let(:fake_client) { instance_double(Utils::Operaton::ExternalTaskClient) }
 
   before do
     options = {
@@ -42,7 +42,7 @@ RSpec.describe Implementation::PollOperatonTasks do
     allow(mocked_shared_storage_reader).to receive(:set_processed).and_return(nil)
     allow(mocked_shared_storage_reader).to receive(:set_in_process).and_return(nil)
 
-    allow(Bas::Utils::Operaton::ExternalTaskClient).to receive(:new).and_return(fake_client)
+    allow(Utils::Operaton::ExternalTaskClient).to receive(:new).and_return(fake_client)
     allow(fake_client).to receive(:fetch_and_lock).and_return([task_data])
 
     @bot = Implementation::PollOperatonTasks.new(options, mocked_shared_storage_reader, mocked_shared_storage_writer)
