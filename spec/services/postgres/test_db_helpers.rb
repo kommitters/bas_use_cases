@@ -192,14 +192,14 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_github_issues_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:github_issues) do
       primary_key :id
-      String :external_github_issue_id, null: false
+      BigInt :external_github_issue_id, null: false, unique: true
       foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
       BigInt :repository_id, null: false
       BigInt :milestone_id, null: true
-      String :assignees
-      String :labels
-      DateTime :created_at
-      DateTime :updated_at
+      column :assignees, 'text[]', null: true
+      column :labels, 'text[]', null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
 end

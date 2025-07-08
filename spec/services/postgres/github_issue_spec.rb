@@ -27,8 +27,8 @@ RSpec.describe Services::Postgres::GithubIssue do
     db.drop_table?(:persons)
     db.drop_table?(:domains)
 
-    create_domains_table(db)
     create_persons_table(db)
+    create_domains_table(db)
     create_github_issues_table(db)
 
     @person_id = person_service.insert(external_person_id: 'person-123', full_name: 'Test Person')
@@ -37,7 +37,7 @@ RSpec.describe Services::Postgres::GithubIssue do
   describe '#insert' do
     it 'creates a new github_issue and returns its ID' do
       params = {
-        external_github_issue_id: 'issue-1',
+        external_github_issue_id: 1,
         repository_id: 100,
         external_person_id: 'person-123'
       }
@@ -45,13 +45,13 @@ RSpec.describe Services::Postgres::GithubIssue do
       issue = service.find(id)
 
       expect(issue).not_to be_nil
-      expect(issue[:external_github_issue_id]).to eq('issue-1')
+      expect(issue[:external_github_issue_id]).to eq(1)
       expect(issue[:repository_id]).to eq(100)
     end
 
     it 'assigns the person_id foreign key from the external id' do
       params = {
-        external_github_issue_id: 'issue-2',
+        external_github_issue_id: 2,
         repository_id: 101,
         external_person_id: 'person-123'
       }
@@ -63,7 +63,7 @@ RSpec.describe Services::Postgres::GithubIssue do
 
     it 'handles array fields for labels and assignees' do
       params = {
-        external_github_issue_id: 'issue-3',
+        external_github_issue_id: 3,
         repository_id: 102,
         external_person_id: 'person-123',
         labels: JSON.generate(%w[bug critical]),
@@ -80,7 +80,7 @@ RSpec.describe Services::Postgres::GithubIssue do
   describe '#update' do
     let!(:issue_id) do
       service.insert(
-        external_github_issue_id: 'issue-4',
+        external_github_issue_id: 4,
         repository_id: 200,
         external_person_id: 'person-123'
       )
@@ -113,7 +113,7 @@ RSpec.describe Services::Postgres::GithubIssue do
   describe '#delete' do
     it 'deletes a github_issue by ID' do
       id_to_delete = service.insert(
-        external_github_issue_id: 'issue-5',
+        external_github_issue_id: 5,
         repository_id: 300,
         external_person_id: 'person-123'
       )
@@ -126,7 +126,7 @@ RSpec.describe Services::Postgres::GithubIssue do
   describe '#query' do
     before do
       service.insert(
-        external_github_issue_id: 'issue-6',
+        external_github_issue_id: 6,
         repository_id: 400,
         milestone_id: 1,
         external_person_id: 'person-123'
