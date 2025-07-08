@@ -67,6 +67,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
       foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       foreign_key :weekly_scope_id, :weekly_scopes, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :github_issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end

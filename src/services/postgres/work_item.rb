@@ -6,6 +6,7 @@ require_relative 'project'
 require_relative 'domain'
 require_relative 'person'
 require_relative 'weekly_scope'
+require_relative 'github_issue'
 
 module Services
   module Postgres
@@ -15,7 +16,7 @@ module Services
     # Provides CRUD operations for the 'work_items' table using the Base service.
     class WorkItem < Services::Postgres::Base
       ATTRIBUTES = %i[name external_work_item_id project_id activity_id status completion_date weekly_scope_id
-                      description domain_id person_id].freeze
+                      description domain_id person_id github_issue_id].freeze
       TABLE = :work_items
 
       RELATIONS = [
@@ -23,7 +24,8 @@ module Services
         { service: Activity, external: :external_activity_id, internal: :activity_id },
         { service: Domain, external: :external_domain_id, internal: :domain_id },
         { service: Person, external: :external_person_id, internal: :person_id },
-        { service: WeeklyScope, external: :external_weekly_scope_id, internal: :weekly_scope_id }
+        { service: WeeklyScope, external: :external_weekly_scope_id, internal: :weekly_scope_id },
+        { service: GithubIssue, external: :external_github_issue_id, internal: :github_issue_id }
       ].freeze
 
       def insert(params)
