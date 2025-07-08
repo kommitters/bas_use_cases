@@ -2,6 +2,7 @@
 
 require 'time'
 require 'bas/bot/base'
+require 'logger'
 
 module Implementation
   ##
@@ -44,11 +45,11 @@ module Implementation
       validation_result = validate_task_data(task_data)
       return validation_result if validation_result
 
-      puts "--> [Worker] Processing task: #{task_data['task_id']} (Topic: #{task_data['topic_name']})"
+      Logger.new($stdout).info("[Worker] Processing task: #{task_data['task_id']} (Topic: #{task_data['topic_name']})")
 
       result_payload = execute_business_logic(task_data)
 
-      puts "--> [Worker] Business logic completed. Result: #{result_payload.inspect}"
+      Logger.new($stdout).info("--> [Worker] Business logic completed. Result: #{result_payload.inspect}")
 
       { success: { original_task_data: task_data, result_variables: result_payload } }
     rescue StandardError => e

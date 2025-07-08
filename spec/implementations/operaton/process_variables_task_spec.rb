@@ -26,15 +26,12 @@ RSpec.describe Implementation::ProcessVariablesTask do
   end
 
   context '.execute' do
-    before do
-      bas_bot = instance_double(Implementation::ProcessVariablesTask)
-
-      allow(Implementation::ProcessVariablesTask).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({ success: true })
-    end
-
     it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      result = @bot.execute
+
+      expect(result).not_to be_nil
+      expect(mocked_shared_storage).to have_received(:read)
+      expect(mocked_shared_storage).to have_received(:write)
     end
   end
 end

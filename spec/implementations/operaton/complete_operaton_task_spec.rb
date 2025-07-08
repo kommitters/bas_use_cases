@@ -50,7 +50,11 @@ RSpec.describe Implementation::CompleteOperatonTask do
     end
 
     it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      result = @bot.execute
+
+      expect(result).not_to be_nil
+      expect(mocked_shared_storage_reader).to have_received(:read)
+      expect(mocked_shared_storage_writer).to have_received(:write)
     end
   end
 end

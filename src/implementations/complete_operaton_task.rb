@@ -3,6 +3,7 @@
 require 'time'
 require 'bas/bot/base'
 require 'bas/utils/operaton/external_task_client'
+require 'logger'
 
 module Implementation
   ##
@@ -72,18 +73,18 @@ module Implementation
     def execute_completion_flow(task_variables)
       log_task_completion(task_variables[:original_task_data], task_variables[:worker_id])
 
-      client = initialize_operaton_client(@process_options[:operaton_base_url], task_variables[:worker_id])
+      client = initialize_operaton_client(@process_options[:operaton_base_url], @process_options[:worker_id])
       complete_operaton_task(client, task_variables[:original_task_data]['id'], task_variables[:result_vars])
 
-      puts '--> [Completer] Task successfully completed in Operaton.'
+      Logger.new($stdout).info('--> [Completer] Task successfully completed in Operaton.')
 
       build_success_response(task_variables[:original_task], read_response)
     end
 
     def log_task_completion(original_task_data, worker_id)
-      puts "--> [Completer] Finalizing task: #{original_task_data['id']} " \
+      Logger.new($stdout).info("--> [Completer] Finalizing task: #{original_task_data['id']} " \
            "with Topic: #{original_task_data['topicName']} " \
-           "using workerId: #{worker_id}"
+           "using workerId: #{worker_id}")
     end
 
     def initialize_operaton_client(base_url, worker_id)

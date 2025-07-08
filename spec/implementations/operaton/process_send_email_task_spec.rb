@@ -26,15 +26,12 @@ RSpec.describe Implementation::ProcessSendEmailTask do
   end
 
   context '.execute' do
-    before do
-      bas_bot = instance_double(Implementation::ProcessSendEmailTask)
+    it 'should execute the bas bot and use shared storage' do
+      result = @bot.execute
 
-      allow(Implementation::ProcessSendEmailTask).to receive(:new).and_return(bas_bot)
-      allow(bas_bot).to receive(:execute).and_return({ success: true })
-    end
-
-    it 'should execute the bas bot' do
-      expect(@bot.execute).not_to be_nil
+      expect(result).not_to be_nil
+      expect(mocked_shared_storage).to have_received(:read)
+      expect(mocked_shared_storage).to have_received(:write)
     end
   end
 end

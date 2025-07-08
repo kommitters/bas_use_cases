@@ -2,6 +2,7 @@
 
 require 'bas/bot/base'
 require 'bas/utils/operaton/external_task_client'
+require 'logger'
 
 module Implementation
   ##
@@ -41,11 +42,11 @@ module Implementation
       task = search_and_lock_tasks(client)
 
       if task.nil? || task.empty?
-        puts '--> [Poller] No tasks available.'
+        Logger.new($stdout).info('[Poller] No tasks available.')
         return { error: { message: 'No tasks available' } }
       end
 
-      puts "--> [Poller] Task obtained and locked: #{task['id']} (Topic: #{task['topicName']})"
+      Logger.new($stdout).info("--> [Poller] Task obtained and locked: #{task['id']} (Topic: #{task['topicName']})")
 
       normalized_task = normalize_task(task)
       { success: normalized_task }
