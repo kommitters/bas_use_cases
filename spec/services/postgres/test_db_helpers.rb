@@ -67,6 +67,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
       foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       foreign_key :weekly_scope_id, :weekly_scopes, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :github_issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
@@ -184,6 +185,20 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       Boolean :is_prerelease, null: false, default: false
       DateTime :creation_timestamp, null: false
       DateTime :published_timestamp, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_github_issues_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:github_issues) do
+      primary_key :id
+      BigInt :external_github_issue_id, null: false, unique: true
+      foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
+      BigInt :repository_id, null: false
+      BigInt :milestone_id, null: true
+      column :assignees, 'text[]', null: true
+      column :labels, 'text[]', null: true
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end

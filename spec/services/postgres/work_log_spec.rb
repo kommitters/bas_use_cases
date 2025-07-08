@@ -32,6 +32,7 @@ RSpec.describe Services::Postgres::WorkLog do
     db.drop_table?(:persons)
     db.drop_table?(:work_items)
     db.drop_table?(:weekly_scopes)
+    db.drop_table?(:github_issues)
 
     create_projects_table(db)
     create_activities_table(db)
@@ -40,6 +41,7 @@ RSpec.describe Services::Postgres::WorkLog do
     create_work_items_table(db)
     create_work_logs_table(db)
     create_weekly_scopes_table(db)
+    create_github_issues_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
