@@ -4,7 +4,7 @@ Sequel.migration do
   up do
     create_table(:github_pull_requests) do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
-      BigInt :external_github_pull_request_id, size: 255, null: false
+      BigInt :external_github_pull_request_id, null: false
       BigInt :repository_id, null: false
       foreign_key :release_id, :github_releases, type: :uuid, null: true, on_delete: :cascade
       foreign_key :issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade

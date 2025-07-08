@@ -17,8 +17,8 @@ module Services
       TABLE = :github_pull_requests
 
       RELATIONS = [
-        { service: GithubRelease, external: :external_release_id, internal: :release_id },
-        { service: GithubIssue, external: :external_issue_id, internal: :issue_id }
+        { service: GithubRelease, external: :external_github_release_id, internal: :release_id },
+        { service: GithubIssue, external: :external_github_issue_id, internal: :issue_id }
       ].freeze
 
       def insert(params)

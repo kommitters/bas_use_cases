@@ -45,7 +45,7 @@ module Services
       private
 
       def handle_error(error)
-        puts "[GithubRelease Service ERROR] #{error.class}: #{error.message}}"
+        puts "[GithubRelease Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end
