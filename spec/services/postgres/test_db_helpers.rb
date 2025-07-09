@@ -203,4 +203,21 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
+
+  def create_github_pull_requests_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:github_pull_requests) do
+      primary_key :id
+      BigInt :external_github_pull_request_id, null: false, unique: true
+      BigInt :repository_id, null: false
+      foreign_key :release_id, :github_releases, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade
+      column :related_issue_ids, 'bigint[]', null: true
+      column :reviews_data, :jsonb, null: true
+      String :title, size: 255, null: false
+      DateTime :creation_date, null: false
+      DateTime :merge_date, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
 end
