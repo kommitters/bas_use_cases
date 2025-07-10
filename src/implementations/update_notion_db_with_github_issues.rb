@@ -37,8 +37,6 @@ module Implementation
   #
   class UpdateNotionDBWithGithubIssues < Bas::Bot::Base
     def process
-      puts "DEBUG: read_response.data = #{read_response.data.inspect}"
-
       page = find_notion_page
       return { error: 'No matching Notion page found' } if page.nil?
 
