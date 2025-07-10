@@ -31,37 +31,32 @@ module Implementation
     BASE_URL = 'https://api.github.com/search/issues'
 
     def process
-      current_period, previous_period = build_periods
+      current_period = build_current_period
 
       closed_issues = fetch_closed_issues(current_period)
       opened_issues = fetch_opened_issues(current_period)
-      previous_open_issues = fetch_previous_open_issues(previous_period)
+      previous_open_issues = fetch_previous_open_issues(current_period)
 
       result = normalize_metrics(current_period, closed_issues, opened_issues, previous_open_issues)
 
       { success: result }
     rescue StandardError => e
+      warn "[ERROR] Exception in process: #{e.message}"
       { error: { message: e.message } }
     end
 
     private
 
-    # Builds the periods for the current and previous months
-    def build_periods
+    ##
+    # Builds the date range for the current month
+    def build_current_period
       today = Date.today
-      current_start = Date.new(today.year, today.month, 1)
-      current_end = current_start.next_month.prev_day
+      start_date = Date.new(today.year, today.month, 1)
+      end_date = (start_date >> 1) - 1 # last day of current month
 
-      previous_start = current_start << 1
-      previous_end = current_start - 1
-
-      [
-        { start_date: current_start, end_date: current_end },
-        { start_date: previous_start, end_date: previous_end }
-      ]
+      { start_date:, end_date: }
     end
 
-    # Fetches the issues from GitHub
     def fetch_closed_issues(period)
       fetch_count(query_closed_issues(period))
     end
@@ -70,21 +65,22 @@ module Implementation
       fetch_count(query_opened_issues(period))
     end
 
-    # Fetches the number of previously opened issues
-    def fetch_previous_open_issues(previous_period)
-      created_before = fetch_count(query_created_before(previous_period[:end_date]))
-      closed_before = fetch_count(query_closed_before(previous_period[:end_date]))
+    ##
+    # Calculates how many issues were open at the end of the current month
+    def fetch_previous_open_issues(current_period)
+      boundary_date = current_period[:end_date]
+      created_before = fetch_count("org:kommitters is:issue is:public created:<#{boundary_date}")
+      closed_before  = fetch_count("org:kommitters is:issue is:public is:closed closed:<#{boundary_date}")
       created_before - closed_before
     end
 
-    # Normalizes the metrics for the return
     def normalize_metrics(period, closed_issues, opened_issues, previous_open_issues)
       {
         month: period[:start_date].strftime('%B'),
         year: period[:start_date].year,
-        closed_issues: build_metric('# Closed Tickets', closed_issues),
-        opened_issues: build_metric('# Opened Issues', opened_issues),
-        previous_open_issues: build_metric('Previous Open Issues', previous_open_issues)
+        closed_issues: build_metric('# Closed Tickets', closed_issues.to_i),
+        opened_issues: build_metric('# Opened Issues', opened_issues.to_i),
+        previous_open_issues: build_metric('Previous Open Issues', previous_open_issues.to_i)
       }
     end
 
@@ -92,43 +88,33 @@ module Implementation
       { name:, value: }
     end
 
-    # Fetches the count of issues from GitHub
-    def fetch_count(query)
-      response = HTTParty.get(BASE_URL, headers: headers, query: { q: query })
-      return 0 unless response.code == 200
-
-      data = response.parsed_response
-      return 0 if data['incomplete_results']
-
-      data['total_count']
+    # GitHub Search Queries (date only)
+    def query_closed_issues(period)
+      "org:kommitters is:issue is:closed closed:#{period[:start_date]}..#{period[:end_date]} is:public"
     end
 
-    # Sets the headers for the GitHub API request
+    def query_opened_issues(period)
+      "org:kommitters is:issue is:public created:#{period[:start_date]}..#{period[:end_date]}"
+    end
+
+    def fetch_count(query)
+      response = HTTParty.get(BASE_URL, headers: headers, query: { q: query })
+
+      unless response.code == 200
+        warn "[GitHub API] Error #{response.code} for query: #{query}"
+        return 0
+      end
+
+      data = response.parsed_response
+
+      data['total_count'] || 0
+    end
+
     def headers
       {
         'User-Agent' => 'RubyBot',
         'Accept' => 'application/vnd.github+json'
       }
-    end
-
-    # Builds the query for closed issues
-    def query_closed_issues(period)
-      "org:kommitters is:issue is:closed closed:#{period[:start_date]}..#{period[:end_date]} is:public"
-    end
-
-    # Builds the query for opened issues
-    def query_opened_issues(period)
-      "org:kommitters is:issue is:public created:#{period[:start_date]}..#{period[:end_date]}"
-    end
-
-    # Builds the query for issues created before a specific date
-    def query_created_before(date)
-      "org:kommitters is:issue is:public created:<#{date}"
-    end
-
-    # Builds the query for closed issues before a specific date
-    def query_closed_before(date)
-      "org:kommitters is:issue is:public is:closed closed:<#{date}"
     end
   end
 end
