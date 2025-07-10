@@ -12,6 +12,7 @@
 package-lock.json
 /logs
 .env
+*.pem
 /discord_bot/vendor
 telegram_app/Gemfile
 telegram_app/Gemfile.lock
