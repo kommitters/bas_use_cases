@@ -154,6 +154,8 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:40'] },
       { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:45'] },
       { path: "#{__dir__}/warehouse/worklogs/fetch_work_logs.rb", time: ['05:50'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_releases_from_github.rb", time: ['05:55'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommitters_releases_from_github.rb", time: ['06:00'] },
       { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
   end
