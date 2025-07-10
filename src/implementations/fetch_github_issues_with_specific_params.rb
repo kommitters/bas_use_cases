@@ -32,10 +32,11 @@ module Implementation
 
     def process
       current_period = build_current_period
+      previous_period = build_previous_period(current_period)
 
       closed_issues = fetch_closed_issues(current_period)
       opened_issues = fetch_opened_issues(current_period)
-      previous_open_issues = fetch_previous_open_issues(current_period)
+      previous_open_issues = fetch_previous_open_issues(previous_period)
 
       result = normalize_metrics(current_period, closed_issues, opened_issues, previous_open_issues)
 
@@ -47,14 +48,19 @@ module Implementation
 
     private
 
-    ##
-    # Builds the date range for the current month
     def build_current_period
       today = Date.today
       start_date = Date.new(today.year, today.month, 1)
-      end_date = (start_date >> 1) - 1 # last day of current month
+      end_date = (start_date >> 1) - 1
 
       { start_date:, end_date: }
+    end
+
+    def build_previous_period(current_period)
+      previous_end = current_period[:start_date] - 1
+      previous_start = Date.new(previous_end.year, previous_end.month, 1)
+
+      { start_date: previous_start, end_date: previous_end }
     end
 
     def fetch_closed_issues(period)
@@ -66,9 +72,9 @@ module Implementation
     end
 
     ##
-    # Calculates how many issues were open at the end of the current month
-    def fetch_previous_open_issues(current_period)
-      boundary_date = current_period[:end_date]
+    # Calculates open issues at the end of the *previous* month
+    def fetch_previous_open_issues(previous_period)
+      boundary_date = previous_period[:end_date]
       created_before = fetch_count("org:kommitters is:issue is:public created:<#{boundary_date}")
       closed_before  = fetch_count("org:kommitters is:issue is:public is:closed closed:<#{boundary_date}")
       created_before - closed_before
@@ -88,7 +94,6 @@ module Implementation
       { name:, value: }
     end
 
-    # GitHub Search Queries (date only)
     def query_closed_issues(period)
       "org:kommitters is:issue is:closed closed:#{period[:start_date]}..#{period[:end_date]} is:public"
     end
@@ -106,7 +111,6 @@ module Implementation
       end
 
       data = response.parsed_response
-
       data['total_count'] || 0
     end
 
