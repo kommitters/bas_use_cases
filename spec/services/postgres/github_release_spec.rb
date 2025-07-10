@@ -28,7 +28,7 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#insert' do
     it 'creates a new github_release and returns its ID' do
       params = {
-        external_github_release_id: 'ghr-1',
+        external_github_release_id: 1, # Changed from string to integer
         repository_id: 12_345,
         tag_name: 'v1.0.0',
         creation_timestamp: Time.now,
@@ -38,7 +38,7 @@ RSpec.describe Services::Postgres::GithubRelease do
       release = service.find(id)
 
       expect(release).not_to be_nil
-      expect(release[:external_github_release_id]).to eq('ghr-1')
+      expect(release[:external_github_release_id]).to eq(1) # Expect an integer
       expect(release[:repository_id]).to eq(12_345)
       expect(release[:tag_name]).to eq('v1.0.0')
       expect(release[:name]).to eq('First Release')
@@ -48,7 +48,7 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#update' do
     let!(:release_id) do
       service.insert(
-        external_github_release_id: 'ghr-2',
+        external_github_release_id: 2, # Changed from string to integer
         repository_id: 54_321,
         tag_name: 'v1.1.0',
         name: 'Initial Release',
@@ -85,7 +85,7 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#delete' do
     it 'deletes a github_release by ID' do
       id_to_delete = service.insert(
-        external_github_release_id: 'ghr-3',
+        external_github_release_id: 3, # Changed from string to integer
         repository_id: 67_890,
         tag_name: 'v2.0.0-beta',
         creation_timestamp: Time.now
@@ -99,14 +99,14 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#query' do
     before do
       service.insert(
-        external_github_release_id: 'ghr-4',
+        external_github_release_id: 4, # Changed from string to integer
         repository_id: 111,
         tag_name: 'v3.0.0',
         name: 'Find Me',
         creation_timestamp: Time.now
       )
       service.insert(
-        external_github_release_id: 'ghr-5',
+        external_github_release_id: 5, # Changed from string to integer
         repository_id: 222,
         tag_name: 'v3.0.1',
         name: 'Another One',
