@@ -3,7 +3,7 @@
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require_relative '../../src/utils/warehouse/github/releases_format'
+require_relative '../utils/warehouse/github/releases_format'
 
 module Implementation
   ##
