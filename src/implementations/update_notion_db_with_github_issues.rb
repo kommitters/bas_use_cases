@@ -38,6 +38,7 @@ module Implementation
   class UpdateNotionDBWithGithubIssues < Bas::Bot::Base
     def process
       page = find_notion_page
+      return { error: 'No matching Notion page found' } if page.nil?
 
       body = build_update_body
       update_page(page['id'], body)
@@ -56,8 +57,9 @@ module Implementation
     end
 
     def parse_month
-      month = read_response.data['month']
-      Date.parse("1 #{month}").strftime('%b')
+      data = read_response.data
+
+      Date.parse("1 #{data['month']}").strftime('%b')
     end
 
     def query_notion_database

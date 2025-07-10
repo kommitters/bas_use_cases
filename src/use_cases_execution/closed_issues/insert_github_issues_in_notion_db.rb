@@ -16,7 +16,7 @@ read_options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'github_issues',
-  tag: 'GithubIssueRequest'
+  tag: 'InsertGithubIssuesInNotionDB'
 }
 
 options = {
