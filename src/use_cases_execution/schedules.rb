@@ -94,8 +94,14 @@ module UseCasesExecution
     ].freeze
 
     OSPO_CLOSED_ISSUES_KPI_SCHEDULES = [
-      { path: "#{__dir__}/closed_issues/fetch_github_issues.rb", time: ['12:00'], day: ['Friday'] },
-      { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", time: ['12:10'], day: ['Friday'] }
+      { path: "#{__dir__}/closed_issues/fetch_github_issues.rb", custom_rule: {
+        type: 'last_day_of_month',
+        time: ['12:00']
+      } },
+      { path: "#{__dir__}/closed_issues/insert_github_issues_in_notion_db.rb", custom_rule: {
+        type: 'last_day_of_month',
+        time: ['12:10']
+      } }
     ].freeze
 
     OSPO_PROJECT_ISSUES = [
