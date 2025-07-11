@@ -17,20 +17,12 @@ module Utils
           @data.id
         end
 
-        def extract_html_url
-          @data.html_url
-        end
-
         def extract_tag_name
           @data.tag_name
         end
 
         def extract_name
           @data.name
-        end
-
-        def extract_body
-          @data.body
         end
 
         def extract_published_at
@@ -45,12 +37,26 @@ module Utils
           @data.prerelease
         end
 
-        def extract_author_login
-          @data.author&.login
-        end
-
         def extract_repository_id
           @repo.id
+        end
+
+        def extract_milestone_id
+          @data.milestone&.id
+        end
+
+        def extract_assignees_logins
+          @data.assignees&.map(&:login)
+        end
+
+        def extract_labels_names
+          @data.labels&.map(&:name)
+        end
+
+        def format_pg_array(array)
+          return nil if array.nil? || array.empty?
+
+          "{#{array.map(&:to_s).join(',')}}"
         end
       end
     end
