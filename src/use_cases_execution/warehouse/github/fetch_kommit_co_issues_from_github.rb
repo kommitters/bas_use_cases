@@ -4,7 +4,7 @@ require 'logger'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
 require_relative 'config'
-require_relative '../../../implementations/fetch_releases_from_github'
+require_relative '../../../implementations/fetch_issues_from_github'
 
 read_options = {
   connection: Config::CONNECTION,
@@ -29,7 +29,7 @@ options = {
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::FetchReleasesFromGithub.new(options, shared_storage).execute
+  Implementation::FetchIssuesFromGithub.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
