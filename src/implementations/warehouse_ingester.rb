@@ -12,6 +12,7 @@ require_relative '../services/postgres/weekly_scope'
 require_relative '../services/postgres/work_item'
 require_relative '../services/postgres/work_log'
 require_relative '../services/postgres/github_release'
+require_relative '../services/postgres/github_issue'
 
 module Implementation
   ##
@@ -62,7 +63,8 @@ module Implementation
       'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
       'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
-      'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' }
+      'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
+      'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' }
     }.freeze
 
     def process
