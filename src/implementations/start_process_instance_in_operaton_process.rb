@@ -33,20 +33,19 @@ module Implementation
       process_key = data['process_key']
       business_key = data['business_key']
       variables = data['variables'] || {}
-      validate_business_key = data['validate_business_key'] || false
 
       return { error: 'process_key is required' } unless process_key
       return { error: 'business_key is required' } unless business_key
 
-      execute_creation(process_key, business_key, variables, validate_business_key)
+      execute_creation(process_key, business_key, variables)
     end
 
     private
 
-    def execute_creation(process_key, business_key, variables, validate)
-      log_instance_start(process_key, business_key, validate)
+    def execute_creation(process_key, business_key, variables)
+      log_instance_start(process_key, business_key)
       client = build_client
-      response = start_instance(client, process_key, business_key, variables, validate)
+      response = start_instance(client, process_key, business_key, variables)
       success_response(response)
     rescue StandardError => e
       error_response(e)
@@ -58,12 +57,11 @@ module Implementation
       )
     end
 
-    def start_instance(client, process_key, business_key, variables, validate)
+    def start_instance(client, process_key, business_key, variables)
       client.start_process_instance_by_key(
         process_key,
         business_key: business_key,
         variables: variables,
-        validate_business_key: validate
       )
     end
 
@@ -77,9 +75,9 @@ module Implementation
       { error: error.message }
     end
 
-    def log_instance_start(process_key, business_key, validate)
+    def log_instance_start(process_key, business_key)
       Logger.new($stdout).info("🚀 Starting instance of process '#{process_key}' " \
-           "with business key '#{business_key}', validation active: #{validate}")
+           "with business key '#{business_key}'")
     end
   end
 end
