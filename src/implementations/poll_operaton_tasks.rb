@@ -54,7 +54,7 @@ module Implementation
     def build_client
       puts '--> [Poller] Searching for any available task in Operaton...'
 
-      Utils::Operaton::ExternalTaskClient.execute(
+      Utils::Operaton::ExternalTaskClient.new(
         base_url: process_options[:operaton_base_url],
         worker_id: process_options[:worker_id]
       )

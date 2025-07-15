@@ -88,7 +88,7 @@ module Implementation
     end
 
     def initialize_operaton_client(base_url, worker_id)
-      Utils::Operaton::ExternalTaskClient.execute(
+      Utils::Operaton::ExternalTaskClient.new(
         base_url: base_url,
         worker_id: worker_id
       )
