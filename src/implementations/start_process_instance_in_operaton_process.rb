@@ -61,7 +61,7 @@ module Implementation
       client.start_process_instance_by_key(
         process_key,
         business_key: business_key,
-        variables: variables,
+        variables: variables
       )
     end
 
