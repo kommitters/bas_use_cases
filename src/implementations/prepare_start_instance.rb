@@ -41,8 +41,8 @@ module Implementation
           process_key: prompt('🔑 Enter the process_key of the process to be instantiated:'),
           business_key: prompt('🏷️  Enter the business_key of the instance:'),
           variables: collect_variables,
-          validate_business_key: confirm('🔍 Do you want to validate that NO other instance
-           exists with the same business_key? (y/n):')
+          validate_business_key: confirm('🔍 Do you want to validate that NO other instance ' \
+          'exists with the same business_key? (y/n):')
         }
       }.tap { show_success }
     end
@@ -71,6 +71,9 @@ module Implementation
       return {} unless confirm('➕ ¿Do you want to add variables? (y/n):')
 
       count = prompt('🔢 How many variables do you want to add?').to_i
+
+      return {} if count <= 0 || count > 100
+
       variables = {}
 
       count.times do |i|

@@ -2,6 +2,7 @@
 
 require 'bas/bot/base'
 require 'bas/utils/operaton/process_client'
+require 'logger'
 
 module Implementation
   ##
@@ -53,7 +54,7 @@ module Implementation
 
     def build_client
       Utils::Operaton::ProcessClient.new(
-        base_url: ENV.fetch('OPERATON_BASE_URL')
+        base_url: ENV.fetch('OPERATON_BASE_URL') { raise 'OPERATON_BASE_URL environment variable is required' }
       )
     end
 
@@ -67,18 +68,18 @@ module Implementation
     end
 
     def success_response(response)
-      puts "✅ Instance created successfully. ID: #{response['id']}"
+      Logger.new($stdout).info("✅ Instance created successfully. ID: #{response['id']}")
       { success: response }
     end
 
     def error_response(error)
-      puts "❌ Error creating instance: #{error.message}"
+      Logger.new($stdout).error("❌ Error creating instance: #{error.message}")
       { error: error.message }
     end
 
     def log_instance_start(process_key, business_key, validate)
-      puts "🚀 Starting instance of process '#{process_key}' " \
-           "with business key '#{business_key}', validation active: #{validate}"
+      Logger.new($stdout).info("🚀 Starting instance of process '#{process_key}' " \
+           "with business key '#{business_key}', validation active: #{validate}")
     end
   end
 end

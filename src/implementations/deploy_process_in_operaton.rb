@@ -2,6 +2,7 @@
 
 require 'bas/bot/base'
 require 'bas/utils/operaton/process_client'
+require 'logger'
 
 module Implementation
   ##
@@ -64,13 +65,13 @@ module Implementation
     def deploy_process(file_path, deployment_name)
       client = Utils::Operaton::ProcessClient.new(base_url: process_options[:operaton_base_url])
 
-      puts "🚀 Deploying process from: #{file_path}..."
+      Logger.new($stdout).info("🚀 Deploying process from: #{file_path} with deployment name: #{deployment_name}")
       response = client.deploy_process(file_path, deployment_name: deployment_name)
 
-      puts "✅ Process deployed successfully. ID: #{response['id']}"
+      Logger.new($stdout).info("✅ Process deployed successfully. ID: #{response['id']}")
       { success: response }
     rescue StandardError => e
-      puts "❌ Error deploying process: #{e.message}"
+      Logger.new($stdout).error("❌ Error deploying process: #{e.message}")
       { error: e.message }
     end
   end

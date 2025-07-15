@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# This file is used to store the configuration of the operaton tasks use case.
-# It contains the connection information to the database where the operaton tasks data is stored.
+# This file is used to store the configuration of the deploy process use case.
+# It contains the connection information to the database where the deploy process data is stored.
 # The connection information is stored in the CONNECTION constant.
 #
 
