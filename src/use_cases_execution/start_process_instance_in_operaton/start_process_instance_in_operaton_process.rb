@@ -8,13 +8,13 @@ require_relative 'config'
 # Configuration
 read_options = {
   connection: Config::CONNECTION,
-  db_table: 'operaton_created_instance',
+  db_table: 'operaton_instances',
   tag: 'PrepareStartInstance'
 }
 
 write_options = {
   connection: Config::CONNECTION,
-  db_table: 'operaton_created_instance',
+  db_table: 'operaton_instances',
   tag: 'StartProcessInstance'
 }
 
