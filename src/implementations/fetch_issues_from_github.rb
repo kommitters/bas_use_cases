@@ -47,9 +47,11 @@ module Implementation
       client_response = initialize_client
       return client_response if client_response[:error]
 
+      last_run_timestamp = fetch_last_run_timestamp
+
       client = client_response[:client]
       repositories = fetch_repositories(client)
-      all_issues = fetch_all_issues(client, repositories)
+      all_issues = fetch_all_issues(client, repositories, last_run_timestamp)
 
       { success: { type: 'github_issue', content: all_issues } }
     end
@@ -64,6 +66,14 @@ module Implementation
     end
 
     private
+
+    # Fetches the timestamp of the last successful run from shared storage.
+    def fetch_last_run_timestamp
+      read_result = @shared_storage_reader.read
+      return if read_result.inserted_at.nil?
+
+      Time.parse(read_result.inserted_at.to_s)
+    end
 
     # Initializes the Octokit client and handles authentication.
     def initialize_client
@@ -81,14 +91,35 @@ module Implementation
     end
 
     # Fetches all issues for a given list of repositories.
-    def fetch_all_issues(client, repositories)
-      all_issues = []
-      repositories.each do |repo|
-        # Fetching both open and closed issues
-        issues = client.issues(repo.full_name, state: 'all', per_page: PER_PAGE)
-        all_issues.concat(normalize_response(issues, repo))
+    def fetch_all_issues(client, repositories, last_run_timestamp)
+      api_params = {
+        state: 'all',
+        per_page: PER_PAGE,
+        since: last_run_timestamp&.iso8601
+      }.compact
+
+      client.auto_paginate = false # Disable for manual pagination with `since`
+
+      repositories.flat_map { |repo| process_repository(client, repo, api_params) }
+    end
+
+    # Processes a single repository to fetch and format its issues.
+    def process_repository(client, repo, api_params)
+      raw_issues = fetch_all_pages_for_repo(client, repo, api_params)
+      normalize_response(raw_issues, repo)
+    end
+
+    # Fetches all pages of issues for a single repository, handling pagination manually.
+    def fetch_all_pages_for_repo(client, repo, api_params)
+      issues = client.issues(repo.full_name, api_params)
+      last_response = client.last_response
+
+      while last_response&.rels&.[](:next)
+        last_response = last_response.rels[:next].get
+        issues.concat(last_response.data)
       end
-      all_issues
+
+      issues
     end
 
     # Paginates content and writes each page to the shared storage.
