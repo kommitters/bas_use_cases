@@ -6,7 +6,7 @@ require 'logger'
 
 module Implementation
   ##
-  # The Implementation::DeployProcess class serves as a bot to deploy a BPMN process to the Operaton.
+  # The Implementation::DeployProcess class serves as a bot to deploy a BPMN process to an Operaton instance.
   # It reads the deployment input (BPMN file path and deployment name)
   # from the shared storage and uses the Operaton REST API to deploy the diagram.
   #

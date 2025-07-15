@@ -2,7 +2,7 @@
 
 Sequel.migration do
   up do
-    create_table?(:operaton_created_instance) do
+    create_table?(:operaton_instances) do
       primary_key :id
       column :data, :jsonb
       String :tag, size: 255
@@ -17,6 +17,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table?(:operaton_created_instance)
+    drop_table?(:operaton_instances)
   end
 end
