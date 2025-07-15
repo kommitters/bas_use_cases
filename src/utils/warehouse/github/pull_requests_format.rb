@@ -12,21 +12,17 @@ module Utils
       class PullRequestsFormat < Base
         ##
         # Formats the pull request data.
-        #
-        # @return [Hash] The formatted pull request data.
-        #
-        def format
+        def format # rubocop:disable Metrics/MethodLength
           {
             external_github_pull_request_id: extract_id,
             repository_id: extract_repository_id,
-            external_issue_id: extract_issue_number_from_url, # For later lookup
-            related_issue_ids: format_pg_array(extract_related_issue_ids),
+            external_issue_id: extract_related_issues&.first,
+            external_github_release_id: extract_release_id,
+            related_issue_ids: format_pg_array(extract_related_issues),
             reviews_data: format_reviews_as_json,
             title: extract_title,
             creation_date: extract_created_at,
             merge_date: extract_merged_at
-            # release_id is left out as it's not directly available on the PR object
-            # and will be associated later.
           }
         end
       end
