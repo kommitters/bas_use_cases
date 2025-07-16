@@ -81,7 +81,6 @@ module Implementation
       return client_response if client_response[:error]
 
       client = client_response[:client]
-      client.auto_paginate = true
       { client: client }
     end
 
@@ -92,25 +91,23 @@ module Implementation
 
     # Fetches all issues for a given list of repositories.
     def fetch_all_issues(client, repositories, last_run_timestamp)
-      api_params = {
-        state: 'all',
-        per_page: PER_PAGE,
-        since: last_run_timestamp&.iso8601
-      }.compact
-
       client.auto_paginate = false # Disable for manual pagination with `since`
 
-      repositories.flat_map { |repo| process_repository(client, repo, api_params) }
+      repositories.flat_map { |repo| process_repository(client, repo, last_run_timestamp) }
     end
 
     # Processes a single repository to fetch and format its issues.
-    def process_repository(client, repo, api_params)
-      raw_issues = fetch_all_pages_for_repo(client, repo, api_params)
+    def process_repository(client, repo, last_run_timestamp)
+      raw_issues = fetch_all_pages_for_repo(client, repo, last_run_timestamp)
       normalize_response(raw_issues, repo)
     end
 
     # Fetches all pages of issues for a single repository, handling pagination manually.
-    def fetch_all_pages_for_repo(client, repo, api_params)
+    def fetch_all_pages_for_repo(client, repo, last_run_timestamp)
+      api_params = {
+        state: 'all', per_page: PER_PAGE, since: last_run_timestamp&.iso8601
+      }.compact
+
       issues = client.issues(repo.full_name, api_params)
       last_response = client.last_response
 
