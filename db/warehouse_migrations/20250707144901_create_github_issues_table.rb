@@ -5,7 +5,7 @@ Sequel.migration do
     create_table(:github_issues) do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
       BigInt :external_github_issue_id, null: false, unique: true
-      foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       BigInt :repository_id, null: false
       BigInt :milestone_id, null: true
       column :assignees, 'text[]', null: true

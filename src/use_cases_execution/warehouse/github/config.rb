@@ -15,9 +15,11 @@ module Config
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
 
-  GITHUB_PRIVATE_PEM = File.read('./github_private_key.pem')
-  GITHUB_APP_ID = ENV.fetch('GITHUB_APP_ID')
-
+  KOMMITERS_GITHUB_PRIVATE_PEM = File.read('./kommiters_private_key.pem')
+  KOMMITERS_GITHUB_APP_ID = ENV.fetch('KOMMITERS_GITHUB_APP_ID')
   KOMMITERS_ORGANIZATION = 'kommitters'
+
+  KOMMIT_CO_GITHUB_PRIVATE_PEM = File.read('./kommit_co_private_key.pem')
+  KOMMIT_CO_GITHUB_APP_ID = ENV.fetch('KOMMIT_CO_GITHUB_APP_ID')
   KOMMIT_CO_ORGANIZATION = 'kommit-co'
 end

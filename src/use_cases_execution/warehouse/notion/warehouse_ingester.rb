@@ -22,6 +22,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchRecordsFromWorkLogs
     FetchHiredPersonsFromNotionDatabase
     FetchReleasesFromGithub
+    FetchIssuesFromGithub
   ]
 )
 
