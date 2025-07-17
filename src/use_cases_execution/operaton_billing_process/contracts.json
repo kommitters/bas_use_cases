@@ -1,0 +1,82 @@
+[
+  {
+    "contract_id": "C-12345",
+    "client_id": "CL-999",
+    "client_name": "Client 1",
+    "start_date": "2024-07-01",
+    "billing_frequency": "monthly",
+    "last_billed_date": "2025-06-14",
+    "fixed_price": false,
+    "fixed_rate": 100,
+    "rate_unit": "hour",
+    "terms": {
+      "payment_due_days": 15,
+      "grace_period_days": 5
+    },
+    "active": true
+  },
+  {
+    "contract_id": "C-54321",
+    "client_id": "CL-111",
+    "client_name": "Client A",
+    "start_date": "2023-01-15",
+    "billing_frequency": "monthly",
+    "last_billed_date": "2025-04-15",
+    "fixed_price": true,
+    "fixed_rate": 5000,
+    "rate_unit": "project",
+    "terms": {
+      "payment_due_days": 30,
+      "grace_period_days": 10
+    },
+    "active": true
+  },
+  {
+    "contract_id": "C-67890",
+    "client_id": "CL-222",
+    "client_name": "Client B",
+    "start_date": "2024-11-01",
+    "billing_frequency": "monthly",
+    "last_billed_date": "2025-06-01",
+    "fixed_price": false,
+    "fixed_rate": 120,
+    "rate_unit": "hour",
+    "terms": {
+      "payment_due_days": 15,
+      "grace_period_days": 5
+    },
+    "active": false
+  },
+  {
+    "contract_id": "C-09876",
+    "client_id": "CL-333",
+    "client_name": "Client C",
+    "start_date": "2025-02-20",
+    "billing_frequency": "weekly",
+    "last_billed_date": "2025-06-24",
+    "fixed_price": false,
+    "fixed_rate": 80,
+    "rate_unit": "hour",
+    "terms": {
+      "payment_due_days": 7,
+      "grace_period_days": 2
+    },
+    "active": true
+  },
+  {
+    "contract_id": "C-11223",
+    "client_id": "CL-444",
+    "client_name": "Client D",
+    "start_date": "2024-05-01",
+    "billing_frequency": "monthly",
+    "last_billed_date": "2025-07-10",
+    "fixed_price": true,
+    "fixed_rate": 25000,
+    "rate_unit": "project",
+    "terms": {
+      "payment_due_days": 60,
+      "grace_period_days": 15
+    },
+    "active": true
+  }
+]

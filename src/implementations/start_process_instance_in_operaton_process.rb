@@ -33,7 +33,6 @@ module Implementation
       process_key = data['process_key']
       business_key = data['business_key']
       variables = data['variables'] || {}
-
       return { error: 'process_key is required' } unless process_key
       return { error: 'business_key is required' } unless business_key
 
@@ -53,7 +52,8 @@ module Implementation
 
     def build_client
       Utils::Operaton::ProcessClient.new(
-        base_url: ENV.fetch('OPERATON_BASE_URL') { raise 'OPERATON_BASE_URL environment variable is required' }
+        base_url: process_options[:operaton_base_url], username: process_options[:operaton_api_user],
+        password: process_options[:operaton_password]
       )
     end
 
