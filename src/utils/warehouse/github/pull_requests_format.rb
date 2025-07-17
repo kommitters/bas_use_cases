@@ -16,7 +16,7 @@ module Utils
           {
             external_github_pull_request_id: extract_id,
             repository_id: extract_repository_id,
-            external_issue_id: extract_related_issues&.first,
+            external_github_issue_id: extract_related_issues&.first,
             external_github_release_id: extract_release_id,
             related_issue_ids: format_pg_array(extract_related_issues),
             reviews_data: format_reviews_as_json,

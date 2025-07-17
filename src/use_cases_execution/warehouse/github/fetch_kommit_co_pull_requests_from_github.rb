@@ -21,11 +21,10 @@ write_options = {
 }
 
 options = {
-  private_pem: Config::GITHUB_PRIVATE_PEM,
-  app_id: Config::GITHUB_APP_ID,
+  private_pem: Config::KOMMIT_CO_GITHUB_PRIVATE_PEM,
+  app_id: Config::KOMMIT_CO_GITHUB_APP_ID,
   organization: Config::KOMMIT_CO_ORGANIZATION
 }
-
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 

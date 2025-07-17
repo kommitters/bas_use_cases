@@ -13,6 +13,7 @@ require_relative '../services/postgres/work_item'
 require_relative '../services/postgres/work_log'
 require_relative '../services/postgres/github_release'
 require_relative '../services/postgres/github_issue'
+require_relative '../services/postgres/github_pull_request'
 
 module Implementation
   ##
@@ -64,7 +65,8 @@ module Implementation
       'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
-      'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' }
+      'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
+      'github_pull_request' => { service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id' }
     }.freeze
 
     def process
