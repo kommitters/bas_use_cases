@@ -21,8 +21,8 @@ write_options = {
 }
 
 options = {
-  private_pem: Config::GITHUB_PRIVATE_PEM,
-  app_id: Config::GITHUB_APP_ID,
+  private_pem: Config::KOMMITERS_GITHUB_PRIVATE_PEM,
+  app_id: Config::KOMMITERS_GITHUB_APP_ID,
   organization: Config::KOMMITERS_ORGANIZATION
 }
 
