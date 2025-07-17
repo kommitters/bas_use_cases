@@ -94,28 +94,23 @@ module Implementation
     # Fetches all releases for the given repositories and organizes them by repository ID.
     #
     def fetch_and_organize_releases(client, repositories)
-      releases_by_repo = {}
-      repositories.each do |repo|
+      repositories.to_h do |repo|
         releases = client.releases(repo[:full_name])
-        releases_by_repo[repo[:id]] = releases.sort_by { |r| r[:published_at] }.reverse
+        sorted_releases = releases.sort_by { |r| r[:published_at] }.reverse
+        [repo[:id], sorted_releases]
       end
-      releases_by_repo
     end
 
     ##
     # Fetches all pull requests and their associated data for a list of repositories.
     #
     def fetch_all_pull_requests(client, repositories, releases_by_repo)
-      all_prs = []
-      repositories.each do |repo|
+      repositories.flat_map do |repo|
         pull_requests = client.pull_requests(repo[:full_name], state: 'all', per_page: PER_PAGE)
         repo_releases = releases_by_repo[repo[:id]] || []
 
-        pull_requests.each do |pr|
-          all_prs << process_pull_request(client, pr, repo, repo_releases)
-        end
+        pull_requests.map { |pr| process_pull_request(client, pr, repo, repo_releases) }
       end
-      all_prs
     end
 
     def process_pull_request(client, pull_request, repo, repo_releases)
@@ -138,11 +133,7 @@ module Implementation
       issue_numbers = pr_body.scan(/(?:closes|fixes|resolves|fix)\s+#(\d+)/i).flatten.map(&:to_i)
       return [] if issue_numbers.empty?
 
-      issue_numbers.map do |n|
-        client.issue(repo_full_name, n)
-      rescue StandardError
-        nil
-      end.compact
+      issue_numbers.map { |n| find_issue(client, repo_full_name, n) }.compact
     end
 
     def paginate_and_write(content)
@@ -171,6 +162,12 @@ module Implementation
           total_pages: total_pages, total_records: total_records
         }
       }
+    end
+
+    def find_issue(client, repo_full_name, number)
+      client.issue(repo_full_name, number)
+    rescue Octokit::NotFound
+      nil
     end
 
     def error_response(response)
