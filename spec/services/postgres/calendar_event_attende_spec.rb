@@ -4,32 +4,12 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/calendar_event'
-require_relative '../../../src/services/postgres/calendar_event_attendee'
+require_relative '../../../src/services/postgres/calendar_event_attende'
+require_relative 'test_db_helpers'
 
-# Helper methods to create tables for tests
-def create_calendar_events_table(db)
-  db.create_table(:calendar_events) do
-    uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
-    String :external_calendar_event_id, size: 255, null: false, unique: true
-    String :summary, size: 1000
-    Integer :duration_minutes, null: false
-    DateTime :start_time, null: false
-    DateTime :end_time, null: false
-    DateTime :creation_timestamp, null: false
-  end
-end
+RSpec.describe Services::Postgres::CalendarEventAttende do
+  include TestDBHelpers
 
-# Updated helper: Does not include person_id or its index
-def create_calendar_event_attendees_table(db)
-  db.create_table(:calendar_event_attendees) do
-    uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
-    foreign_key :calendar_event_id, :calendar_events, type: :uuid, null: false, on_delete: :cascade
-    String :email, size: 255, null: false
-    String :response_status, size: 50, null: false
-  end
-end
-
-RSpec.describe Services::Postgres::CalendarEventAttendee do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }

@@ -9,7 +9,7 @@ module Services
     # CalendarEventAttendee Service for PostgreSQL
     #
     # Provides CRUD operations for the 'calendar_event_attendees' table.
-    class CalendarEventAttendee < Services::Postgres::Base
+    class CalendarEventAttende < Services::Postgres::Base
       ATTRIBUTES = %i[calendar_event_id email response_status].freeze
 
       TABLE = :calendar_event_attendees
