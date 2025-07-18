@@ -50,9 +50,13 @@ module Implementation
       normalized_content = normalize_response(logs)
 
       { success: { type: process_options[:entity], content: normalized_content } }
+    rescue StandardError => e
+      error_response(e)
     end
 
     def write
+      return @shared_storage_writer.write(process_response) if process_response[:error]
+
       content = process_response.dig(:success, :content) || []
       paged_entities = content.each_slice(PAGE_SIZE).to_a
 
@@ -109,6 +113,10 @@ module Implementation
           total_records: total_records
         }
       }
+    end
+
+    def error_response(response)
+      { error: { message: response.message } }
     end
   end
 end

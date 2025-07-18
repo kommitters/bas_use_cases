@@ -85,8 +85,10 @@ RSpec.describe Implementation::FetchRecordsFromWorkLogs do
         allow(Utils::WorkLogs::Request).to receive(:execute).and_return(error_response)
       end
 
-      it 'raises a runtime error with a specific message' do
-        expect { subject.process }.to raise_error(RuntimeError, 'Error fetching data: 500 - Server Error')
+      it 'returns a formatted error hash' do
+        result = subject.process
+        expect(result).to have_key(:error)
+        expect(result.dig(:error, :message)).to eq('Error fetching data: 500 - Server Error')
       end
     end
   end
