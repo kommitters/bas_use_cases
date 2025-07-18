@@ -73,10 +73,12 @@ module Implementation
 
       entities = normalize_response(records)
 
-      { success: { type: entity_type, content: entities } }
+      { success: { type: process_options[:entity], content: entities } }
     end
 
     def write
+      return @shared_storage_writer.write(process_response) if process_response[:error]
+
       content = process_response.dig(:success, :content) || []
       paged_entities = content.each_slice(PAGE_SIZE).to_a
 
@@ -92,9 +94,9 @@ module Implementation
     private
 
     def normalize_response(records)
-      formatter_class = FORMATTERS[entity_type]
+      formatter_class = FORMATTERS[process_options[:entity]]
 
-      if entity_type == 'milestone'
+      if process_options[:entity] == 'milestone'
         return formatter_class.fetch_for_projects(records, secret: process_options[:secret], filter_body: body)
       end
 
@@ -135,20 +137,13 @@ module Implementation
     def date_filter
       return [] if read_response.inserted_at.nil?
 
-      [{
-        timestamp: :last_edited_time,
-        last_edited_time: { on_or_after: read_response.inserted_at }
-      }]
-    end
-
-    def entity_type
-      process_options[:entity]
+      [{ timestamp: :last_edited_time, last_edited_time: { on_or_after: read_response.inserted_at } }]
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: entity_type,
+          type: process_options[:entity],
           content: content,
           page_index: page_index,
           total_pages: total_pages,
@@ -158,12 +153,7 @@ module Implementation
     end
 
     def error_response(response)
-      {
-        error: {
-          message: response.parsed_response,
-          status_code: response.code
-        }
-      }
+      { error: { message: response.parsed_response, status_code: response.code } }
     end
   end
 end
