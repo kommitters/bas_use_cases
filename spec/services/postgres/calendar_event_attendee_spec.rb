@@ -4,10 +4,10 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/calendar_event'
-require_relative '../../../src/services/postgres/calendar_event_attende'
+require_relative '../../../src/services/postgres/calendar_event_attendee'
 require_relative 'test_db_helpers'
 
-RSpec.describe Services::Postgres::CalendarEventAttende do
+RSpec.describe Services::Postgres::CalendarEventAttendee do
   include TestDBHelpers
 
   let(:db) { Sequel.sqlite }
