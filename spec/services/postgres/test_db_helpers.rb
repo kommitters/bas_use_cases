@@ -234,4 +234,13 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
+
+  def create_calendar_event_attendees_table(db)
+    db.create_table(:calendar_event_attendees) do
+      primary_key :id
+      foreign_key :calendar_event_id, :calendar_events, type: :uuid, null: false, on_delete: :cascade
+      String :email, size: 255, null: false
+      String :response_status, size: 50, null: false
+    end
+  end
 end
