@@ -2,7 +2,7 @@
 
 require 'rspec'
 require 'date'
-require_relative '../../../src/implementations/fetch_pto_from_google.rb'
+require_relative '../../../src/implementations/fetch_pto_from_google'
 
 RSpec.describe Implementation::FetchPtoFromGoogle do
   let(:today) { Date.today }
@@ -64,9 +64,7 @@ RSpec.describe Implementation::FetchPtoFromGoogle do
     it 'includes only people who are on PTO today' do
       expected_people.each do |name|
         found = ptos_result.any? { |msg| msg.include?(name) }
-        unless found
-          puts "\n Expected '#{name}' to be included but wasn't.\nAll messages: #{ptos_result.inspect}"
-        end
+        puts "\n Expected '#{name}' to be included but wasn't.\nAll messages: #{ptos_result.inspect}" unless found
         expect(found).to be true
       end
     end
@@ -74,9 +72,7 @@ RSpec.describe Implementation::FetchPtoFromGoogle do
     it 'excludes people not on PTO today' do
       unexpected_people.each do |name|
         found = ptos_result.any? { |msg| msg.include?(name) }
-        if found
-          puts "\n Expected '#{name}' to be excluded but was found.\nAll messages: #{ptos_result.inspect}"
-        end
+        puts "\n Expected '#{name}' to be excluded but was found.\nAll messages: #{ptos_result.inspect}" if found
         expect(found).to be false
       end
     end

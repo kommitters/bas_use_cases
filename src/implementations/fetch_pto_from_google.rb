@@ -4,27 +4,27 @@ require 'date'
 require 'bas/bot/base'
 
 module Implementation
-##
-# The Implementation::FetchPtoFromGoogle class filters and formats current-day PTOs 
-# from Google Workspace data. It generates human-readable messages and write them 
-# on a PostgresDB table with a specific format.
-#
-# <b>Example</b>
-#
-#   options = {
-#     ptos: [
-#       {
-#         "Person" => "Jane Doe",
-#         "StartdateTime" => "2025-07-21",
-#         "EndDateTime" => "2025-07-22"
-#       }
-#     ]
-#   }
-#
-#   shared_storage_reader = Bas::SharedStorage::Default.new
-#   shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
-#
-#   Implementation::FetchPtoFromGoogle.new(options, shared_storage_reader, shared_storage_writer).execute
+  ##
+  # The Implementation::FetchPtoFromGoogle class filters and formats current-day PTOs
+  # from Google Workspace data. It generates human-readable messages and write them
+  # on a PostgresDB table with a specific format.
+  #
+  # <b>Example</b>
+  #
+  #   options = {
+  #     ptos: [
+  #       {
+  #         "Person" => "Jane Doe",
+  #         "StartdateTime" => "2025-07-21",
+  #         "EndDateTime" => "2025-07-22"
+  #       }
+  #     ]
+  #   }
+  #
+  #   shared_storage_reader = Bas::SharedStorage::Default.new
+  #   shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+  #
+  #   Implementation::FetchPtoFromGoogle.new(options, shared_storage_reader, shared_storage_writer).execute
   class FetchPtoFromGoogle < Bas::Bot::Base
     def process
       today = Date.today
@@ -79,7 +79,11 @@ module Implementation
     end
 
     def symbolize_keys(hash)
-      hash.transform_keys { |key| key.to_sym rescue key }
+      hash.transform_keys do |key|
+        key.to_sym
+      rescue StandardError
+        key
+      end
     end
   end
 end

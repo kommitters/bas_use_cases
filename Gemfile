@@ -47,9 +47,9 @@ gem 'googleauth'
 
 gem 'google-apis-chat_v1'
 
-gem "rackup", "~> 2.2"
+gem 'rackup', '~> 2.2'
 
-gem "puma", "~> 6.6"
+gem 'puma', '~> 6.6'
 
 group :test do
   gem 'sqlite3'
