@@ -20,6 +20,7 @@ write_options = {
 }
 
 options = {
+  close_connection_after_process: false,
   avoid_empty_data: true,
   notion_property: Config::NOTION_PROPERTY
 }
@@ -34,6 +35,8 @@ begin
     object.execute
     break if object.process_response.key?(:error)
   end
+
+  shared_storage.close_connections
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

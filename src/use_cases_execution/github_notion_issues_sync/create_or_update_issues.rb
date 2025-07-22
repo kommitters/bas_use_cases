@@ -36,6 +36,8 @@ begin
     object.execute
     break if object.process_response.key?(:error)
   end
+
+  shared_storage.close_connections
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
