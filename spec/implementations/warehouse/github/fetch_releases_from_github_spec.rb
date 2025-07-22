@@ -37,7 +37,7 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
       it 'returns an error hash' do
         result = bot.process
         expect(result).to have_key(:error)
-        expect(result[:error]).to eq('Authentication failed')
+        expect(result.dig(:error, :message)).to eq('Authentication failed')
       end
     end
 

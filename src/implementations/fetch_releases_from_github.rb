@@ -45,7 +45,7 @@ module Implementation
     #
     def process
       client_response = initialize_client
-      return client_response if client_response[:error]
+      return error_response(client_response) if client_response[:error]
 
       client = client_response[:client]
       repositories = fetch_repositories(client)
@@ -57,6 +57,8 @@ module Implementation
     # Orchestrates the writing of processed data to the configured shared storage.
     #
     def write
+      return @shared_storage_writer.write(process_response) if process_response[:error]
+
       content = process_response.dig(:success, :content) || []
       return if content.empty?
 
@@ -126,6 +128,10 @@ module Implementation
           total_records: total_records
         }
       }
+    end
+
+    def error_response(response)
+      { error: { message: response[:error] } }
     end
   end
 end

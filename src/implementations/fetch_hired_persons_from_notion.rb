@@ -49,6 +49,8 @@ module Implementation
     end
 
     def write
+      return @shared_storage_writer.write(process_response) if process_response[:error]
+
       content = process_response.dig(:success, :content) || []
       paged_entities = content.each_slice(PAGE_SIZE).to_a
 
@@ -118,10 +120,7 @@ module Implementation
     def date_filter
       return [] if read_response.inserted_at.nil?
 
-      [{
-        timestamp: :last_edited_time,
-        last_edited_time: { on_or_after: read_response.inserted_at }
-      }]
+      [{ timestamp: :last_edited_time, last_edited_time: { on_or_after: read_response.inserted_at } }]
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
@@ -137,12 +136,7 @@ module Implementation
     end
 
     def error_response(response)
-      {
-        error: {
-          message: response.parsed_response,
-          status_code: response.code
-        }
-      }
+      { error: { message: response.parsed_response, status_code: response.code } }
     end
   end
 end
