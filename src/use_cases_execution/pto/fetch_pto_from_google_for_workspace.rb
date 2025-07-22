@@ -38,7 +38,7 @@ post '/pto' do
       return { error: 'Missing or invalid "ptos" array' }.to_json
     end
 
-    bot = Implementation::FetchPtoFromGoogle.new({ ptos: ptos }, shared_storage_reader, shared_storage_writer)
+    bot = Implementation::FetchPtoFromGoogle.new({ ptos: ptos }, shared_storage_reader, shared_storage_writer).process
     result = bot.execute
 
     status 200

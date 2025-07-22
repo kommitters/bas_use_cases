@@ -2,7 +2,7 @@
 
 require 'rspec'
 require 'date'
-require_relative '/home/human/Dev/bas_use_cases/src/implementations/fetch_pto_from_google.rb'
+require_relative '../../../src/implementations/fetch_pto_from_google.rb'
 
 RSpec.describe Implementation::FetchPtoFromGoogle do
   let(:today) { Date.today }
