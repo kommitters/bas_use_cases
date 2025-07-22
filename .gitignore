@@ -66,6 +66,7 @@ node_modules
 # Environment keys
 env.yml
 .tool-versions
+google_credentials.json
 
 # Claude code
 # Project level claude folder may be different for each user
