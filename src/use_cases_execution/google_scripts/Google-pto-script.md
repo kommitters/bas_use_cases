@@ -38,11 +38,11 @@ function sendSheetToWebhook() {
     .map(entry => ({
       Person: entry['Person'],
       Description: 'Data',
-      StartdateTime: format(entry['StartDateTime'], tz, true),
+      StartDateTime: format(entry['StartDateTime'], tz, true),
       EndDateTime: format(entry['EndDateTime'], tz, false)
     }));
 
-  const url = PropertiesService.getScriptProperties().getProperty('<YOUR_WEBHOOK_URL>');
+  const url = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
   if (!url || ptos.length === 0) return;
 
   const payload = JSON.stringify({ ptos });
