@@ -30,7 +30,7 @@ module Implementation
       today = Date.today
 
       filtered_ptos = process_options[:ptos].map { |pto| symbolize_keys(pto) }.select do |pto|
-        start_date = parse_date(pto[:StartdateTime])
+        start_date = parse_date(pto[:StartDateTime])
         end_date   = parse_date(pto[:EndDateTime])
 
         (start_date..end_date).cover?(today)
@@ -45,7 +45,7 @@ module Implementation
     def normalize_response(ptos)
       ptos.map do |pto|
         name       = pto[:Person]
-        start_date = parse_date(pto[:StartdateTime])
+        start_date = parse_date(pto[:StartDateTime])
         end_date   = parse_date(pto[:EndDateTime])
 
         description(name, start_date, end_date)
