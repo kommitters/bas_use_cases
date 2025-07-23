@@ -10,7 +10,7 @@ require_relative '../../../src/implementations/fetch_pto_from_google'
 
 set :server, :puma
 set :bind, '0.0.0.0'
-set :environment, Config::RACK_ENV
+set :environment, :production
 
 write_options = {
   connection: Config::CONNECTION,

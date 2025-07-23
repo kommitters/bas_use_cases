@@ -6,7 +6,7 @@ This script is designed to be used in a Google Sheets spreadsheet that contains 
 
 ## Script Location
 
-This file is part of the FetchPtoFromGoogle use case and is located in the implementations folder, as a reference.
+This file is part of the FetchPtoFromGoogle use case and is located in the @src/implementations/fetch_pto_from_google.rb folder, as a reference. 
 
 ---
 
@@ -86,7 +86,7 @@ function format(date, tz, isStart) {
 
 ## Environment Variables and Configuration
 
-- **<YOUR_WEBHOOK_URL>**: Replace with the backend /webhook URL (can be exposed via a tunnel like Ngrok if running locally).
+- **<YOUR_WEBHOOK_URL>**: Replace with the backend /pto URL (can be exposed via a tunnel like Ngrok if running locally).
 - The script uses spreadsheet headers, so the **column names must exactly match** what the backend expects:
   - Person, StartDateTime, EndDateTime, Category, etc.
 
@@ -99,7 +99,7 @@ function format(date, tz, isStart) {
 3. Delete any existing code in the editor.
 4. Paste the full script (above) into the editor.
 5. The webhook URL must be stored in the script's properties...
-Go to Apps Script > Project Settings > Script Properties, and set a key named WEBHOOK_URL
+Go to Apps Script > Project Settings > Script Properties, and set a key named WEBHOOK_URL **<YOUR_WEBHOOK_URL>**
 6. Click on the **floppy disk icon or File > Save** and give the project a name, e.g., SendPTOToWebhook.
 7. (Optional) Test the function by clicking the **▶ Run** button and check the logs under View > Logs.
 

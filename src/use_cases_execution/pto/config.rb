@@ -9,7 +9,6 @@
 require 'dotenv/load'
 
 module Config
-  RACK_ENV = ENV.fetch('RACK_ENV')
   CONNECTION = {
     host: ENV.fetch('DB_HOST'),
     port: ENV.fetch('DB_PORT'),
