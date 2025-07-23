@@ -146,9 +146,9 @@ Make sure to authorize using an account that has access to the spreadsheet.
 
 ---
 
-## Implement a use case using 'google_webserver.rb'
+## Implement a use case using 'app.rb'
 
-To expose a webhook that can receive data from Google Sheets, you must implement a Sinatra route and mount it in a modular server such using `use_cases_webserver.rb`.
+To expose a webhook that can receive data from Google Sheets, you must implement a Sinatra route and mount it in a modular server such using `app.rb`.
 
 ---
 
@@ -173,7 +173,7 @@ end
 ```
 ---
 
-### Implementation on google_webserver
+### Implementation on app.rb
 
 ```ruby
 # frozen_string_literal: true
