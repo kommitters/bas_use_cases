@@ -10,34 +10,34 @@ RSpec.describe Implementation::FetchPtoFromGoogle do
   let(:ptos) do
     [
       # [ ]Covers today (yesterday to tomorrow)
-      { 'Person' => 'Jane Doe', 'StartdateTime' => (today - 1).to_s, 'EndDateTime' => (today + 1).to_s },
+      { 'Person' => 'Jane Doe', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today + 1).to_s },
 
       # [x] Future only
-      { 'Person' => 'John Smith', 'StartdateTime' => (today + 7).to_s, 'EndDateTime' => (today + 8).to_s },
+      { 'Person' => 'John Smith', 'StartDateTime' => (today + 7).to_s, 'EndDateTime' => (today + 8).to_s },
 
       # [x] Past only
-      { 'Person' => 'Alice', 'StartdateTime' => (today - 7).to_s, 'EndDateTime' => (today - 1).to_s },
+      { 'Person' => 'Alice', 'StartDateTime' => (today - 7).to_s, 'EndDateTime' => (today - 1).to_s },
 
       # [ ] Today only
-      { 'Person' => 'Bob', 'StartdateTime' => today.to_s, 'EndDateTime' => today.to_s },
+      { 'Person' => 'Bob', 'StartDateTime' => today.to_s, 'EndDateTime' => today.to_s },
 
       # [ ] Starts today, ends in 3 days
-      { 'Person' => 'Charlie', 'StartdateTime' => today.to_s, 'EndDateTime' => (today + 3).to_s },
+      { 'Person' => 'Charlie', 'StartDateTime' => today.to_s, 'EndDateTime' => (today + 3).to_s },
 
       # [ ] Started 3 days ago, ends today
-      { 'Person' => 'Diana', 'StartdateTime' => (today - 3).to_s, 'EndDateTime' => today.to_s },
+      { 'Person' => 'Diana', 'StartDateTime' => (today - 3).to_s, 'EndDateTime' => today.to_s },
 
       # [x] Only tomorrow
-      { 'Person' => 'Eve', 'StartdateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s },
+      { 'Person' => 'Eve', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s },
 
       # [ ] Long PTO (10 days ago to 10 days ahead)
-      { 'Person' => 'Frank', 'StartdateTime' => (today - 10).to_s, 'EndDateTime' => (today + 10).to_s },
+      { 'Person' => 'Frank', 'StartDateTime' => (today - 10).to_s, 'EndDateTime' => (today + 10).to_s },
 
       # [x] One-day PTO in the past (yesterday)
-      { 'Person' => 'Grace', 'StartdateTime' => (today - 1).to_s, 'EndDateTime' => (today - 1).to_s },
+      { 'Person' => 'Grace', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today - 1).to_s },
 
       # [x] One-day PTO in the future (tomorrow)
-      { 'Person' => 'Hank', 'StartdateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s }
+      { 'Person' => 'Hank', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s }
     ]
   end
 
