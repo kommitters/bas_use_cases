@@ -39,5 +39,6 @@ begin
 
   shared_storage.close_connections
 rescue StandardError => e
+  shared_storage&.close_connections
   Logger.new($stdout).info(e.message)
 end
