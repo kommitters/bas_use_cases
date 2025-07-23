@@ -148,6 +148,7 @@ Make sure to authorize using an account that has access to the spreadsheet.
 
 ## Implement a use case using 'google_webserver.rb'
 
+<<<<<<< Updated upstream
 To expose a webhook that can receive data from Google Sheets, you must implement a Sinatra route and mount it in a modular server such using `google_webserver.rb`.
 
 ---
@@ -171,8 +172,14 @@ module Routes
 end
 
 ```
+<<<<<<< Updated upstream
 
 ### implementation on google_webserver
+=======
+---
+
+### Implementation on google_webserver
+>>>>>>> Stashed changes
 
 ```ruby
 # frozen_string_literal: true
