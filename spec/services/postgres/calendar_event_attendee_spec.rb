@@ -5,6 +5,8 @@ require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/calendar_event'
 require_relative '../../../src/services/postgres/calendar_event_attendee'
+require_relative '../../../src/services/postgres/person'
+
 require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::CalendarEventAttendee do
@@ -14,13 +16,18 @@ RSpec.describe Services::Postgres::CalendarEventAttendee do
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
   let(:event_service) { Services::Postgres::CalendarEvent.new(config) }
+  let(:person_service) { Services::Postgres::Person.new(config) }
 
   before(:each) do
     # Drop tables in reverse order of creation
     db.drop_table?(:calendar_event_attendees)
     db.drop_table?(:calendar_events)
+    db.drop_table?(:persons)
+    db.drop_table?(:domains)
 
     # Create tables
+    create_domains_table(db)
+    create_persons_table(db)
     create_calendar_events_table(db)
     create_calendar_event_attendees_table(db)
 
@@ -52,6 +59,40 @@ RSpec.describe Services::Postgres::CalendarEventAttendee do
       expect(attendee[:email]).to eq('test@example.com')
       expect(attendee[:response_status]).to eq('accepted')
     end
+
+    context 'with person association' do
+      let!(:person_id) do
+        person_service.insert(
+          external_person_id: 'ext-john',
+          full_name: 'John Doe',
+          email_address: 'john.doe@example.com'
+        )
+      end
+
+      it 'assigns person_id if the attendee email exists in the people table' do
+        params = {
+          external_calendar_event_id: 'evt-1',
+          email: 'john.doe@example.com', # Email que coincide con una persona existente
+          response_status: 'accepted'
+        }
+        id = service.insert(params)
+        attendee = service.find(id)
+
+        expect(attendee[:person_id]).to eq(person_id)
+      end
+
+      it 'leaves person_id as nil if the attendee email does not exist' do
+        params = {
+          external_calendar_event_id: 'evt-1',
+          email: 'unknown@example.com', # Email que no existe en la tabla people
+          response_status: 'needsAction'
+        }
+        id = service.insert(params)
+        attendee = service.find(id)
+
+        expect(attendee[:person_id]).to be_nil
+      end
+    end
   end
 
   describe '#update' do
@@ -66,9 +107,26 @@ RSpec.describe Services::Postgres::CalendarEventAttendee do
       updated = service.find(attendee_id)
       expect(updated[:response_status]).to eq('declined')
     end
-
     it 'raises an error if no ID is provided' do
       expect { service.update(nil, { response_status: 'accepted' }) }.to raise_error(ArgumentError)
+    end
+
+    context 'with person association' do
+      let!(:person_id) do
+        person_service.insert(
+          external_person_id: 'ext-jane',
+          full_name: 'Jane Doe',
+          email_address: 'jane.doe@example.com'
+        )
+      end
+
+      it 'assigns person_id on update when email is changed to match a person' do
+        # Se actualiza el email para que coincida con una persona existente
+        service.update(attendee_id, { email: 'jane.doe@example.com' })
+        updated = service.find(attendee_id)
+
+        expect(updated[:person_id]).to eq(person_id)
+      end
     end
   end
 
