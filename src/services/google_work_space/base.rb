@@ -27,11 +27,10 @@ module Service
           scope: scope
         )
 
-        auth_as_admin = authorizer.dup
-        auth_as_admin.sub = config[:admin_email]
-        auth_as_admin.fetch_access_token!
+        authorizer.sub = config[:admin_email]
+        authorizer.fetch_access_token!
 
-        auth_as_admin
+        authorizer
       end
 
       # This method MUST be implemented by any child class.
