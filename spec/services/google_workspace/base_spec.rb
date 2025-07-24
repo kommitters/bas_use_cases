@@ -3,9 +3,9 @@
 require 'rspec'
 require 'googleauth'
 require 'stringio'
-require_relative '../../../src/services/google_work_space/base'
+require_relative '../../../src/services/google_workspace/base'
 
-RSpec.describe Service::GoogleWorkSpace::Base do
+RSpec.describe Service::GoogleWorkspace::Base do
   let(:admin_email) { 'test-admin@example.com' }
   let(:scope) { 'https://www.googleapis.com/auth/any_scope' }
   let(:keyfile_content) { '{"private_key": "fake"}' }
