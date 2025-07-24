@@ -2,7 +2,7 @@
 
 require 'googleauth'
 
-module Service
+module Services
   module GoogleWorkspace
     ##
     # Base class for Google Workspace API services.

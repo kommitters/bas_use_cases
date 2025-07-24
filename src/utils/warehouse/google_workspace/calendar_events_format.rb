@@ -5,6 +5,10 @@ require_relative 'base'
 module Utils
   module Warehouse
     module Workspace
+      ##
+      # Class for formatting Google Calendar events from activity data.
+      # It extracts relevant information such as event ID, start time, end time,
+      # summary, duration, and attendees from the activity data.
       class CalendarEventsFormatter < Base
         # Main method that returns a hash with formatted event data.
         def format
@@ -33,13 +37,13 @@ module Utils
 
         def start_time
           @start_time ||= extract_time_from_param(
-            create_event.parameters.find { |p| p.name == 'start_time' || p.name == 'start_date' }
+            create_event.parameters.find { |p| %w[start_time start_date].include?(p.name) }
           )
         end
 
         def end_time
           @end_time ||= extract_time_from_param(
-            create_event.parameters.find { |p| p.name == 'end_time' || p.name == 'end_date' }
+            create_event.parameters.find { |p| %w[end_time end_date].include?(p.name) }
           )
         end
 
@@ -58,13 +62,20 @@ module Utils
 
         def latest_title_change
           @latest_title_change ||= begin
-            change_event = @data
-              .select { |activity| activity.events.any? { |e| e.name == 'change_event_title' } }
-              .max_by { |a| a.id.time }
-              &.events&.find { |e| e.name == 'change_event_title' }
-
+            change_event = find_latest_title_change_event
             extract_parameter_value(change_event&.parameters, 'event_title')
           end
+        end
+
+        def find_latest_title_change_event
+          title_change_activities = @data.select do |activity|
+            activity.events&.any? { |event| event.name == 'change_event_title' }
+          end
+
+          return nil if title_change_activities.empty?
+
+          latest_activity = title_change_activities.max_by { |activity| activity.id.time }
+          latest_activity.events.find { |event| event.name == 'change_event_title' }
         end
 
         def all_attendee_emails

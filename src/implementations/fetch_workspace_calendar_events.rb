@@ -14,7 +14,7 @@ module Implementation
     DEFAULT_START_DATE = Time.new(2025, 5, 1).freeze
 
     def process
-      reports_service = Service::GoogleWorkspace::Reports.new(google_config)
+      reports_service = Services::GoogleWorkspace::Reports.new(google_config)
 
       activities_response = reports_service.fetch_calendar_activities(start_time: filters[:since])
       return error_response(activities_response[:error][:message]) if activities_response[:error]

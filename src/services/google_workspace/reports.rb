@@ -3,7 +3,7 @@
 require_relative 'base'
 require 'google/apis/admin_reports_v1'
 
-module Service
+module Services
   module GoogleWorkspace
     ##
     # Service class to interact with the Google Workspace Admin Reports API.
@@ -22,17 +22,12 @@ module Service
 
       # Fetches all calendar audit activities from a specified start time.
       # This method automatically handles pagination to retrieve all available records.
-      def fetch_calendar_activities(start_time:)
+      def fetch_calendar_activities(start_time:) # rubocop:disable Metrics/MethodLength
         all_activities = []
         page_token = nil
 
         loop do
-          response = @service.list_activities(
-            'all',
-            'calendar',
-            page_token: page_token,
-            start_time: start_time.iso8601
-          )
+          response = @service.list_activities('all', 'calendar', page_token: page_token, start_time: start_time.iso8601)
 
           all_activities.concat(response.items || [])
           page_token = response.next_page_token

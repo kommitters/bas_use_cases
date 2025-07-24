@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'rspec'
+require 'spec_helper'
 require 'googleauth'
 require 'stringio'
 require_relative '../../../src/services/google_workspace/base'
 
-RSpec.describe Service::GoogleWorkspace::Base do
+RSpec.describe Services::GoogleWorkspace::Base do
   let(:admin_email) { 'test-admin@example.com' }
   let(:scope) { 'https://www.googleapis.com/auth/any_scope' }
   let(:keyfile_content) { '{"private_key": "fake"}' }

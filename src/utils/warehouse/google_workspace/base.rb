@@ -5,6 +5,10 @@ require 'time'
 module Utils
   module Warehouse
     module Workspace
+      ##
+      # Base class for handling Google Workspace activity data.
+      # This class provides methods to extract and manipulate activity data
+      # from Google Workspace reports
       class Base
         # Constant for the .NET epoch (Time.utc(1,1,1)), used as the reference point
         # for time values expressed as seconds since year 0001-01-01.
@@ -24,7 +28,7 @@ module Utils
         def extract_parameter_value(params, name)
           params&.find { |p| p.name == name }&.value
         end
-        
+
         # Converts the param's int_value (assumed to be in seconds since the .NET epoch)
         # into a Ruby DateTime object.
         def extract_time_from_param(param)
@@ -38,7 +42,7 @@ module Utils
         # Calculates the duration in minutes between two DateTime objects.
         def calculate_duration(start_time, end_time)
           return 0 unless start_time && end_time
-          
+
           ((end_time - start_time) * 24 * 60).to_i
         end
 
