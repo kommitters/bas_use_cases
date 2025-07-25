@@ -11,7 +11,7 @@ module Implementation
   # It uses the Google Calendar API to retrieve events and formats them for storage.
   #
   class FetchWorkspaceCalendarEvents < Bas::Bot::Base
-    DEFAULT_START_DATE = Time.new(2025, 5, 1).freeze
+    DEFAULT_START_DATE = Time.utc(2025, 5, 1).freeze
 
     def process
       reports_service = Services::GoogleWorkspace::Reports.new(google_config)
@@ -55,7 +55,7 @@ module Implementation
       activities_by_event_id.delete(nil)
 
       activities_by_event_id.values.map do |activity_group|
-        Utils::Warehouse::Workspace::CalendarEventsFormatter.new(activity_group).format
+        Utils::Warehouse::GoogleWorkspace::CalendarEventsFormatter.new(activity_group).format
       end.compact
     end
 

@@ -4,7 +4,7 @@ require_relative 'base'
 
 module Utils
   module Warehouse
-    module Workspace
+    module GoogleWorkspace
       ##
       # Class for formatting Google Calendar events from activity data.
       # It extracts relevant information such as event ID, start time, end time,

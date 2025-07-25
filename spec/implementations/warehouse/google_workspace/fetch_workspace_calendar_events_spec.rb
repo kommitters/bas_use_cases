@@ -16,7 +16,7 @@ RSpec.describe Implementation::FetchWorkspaceCalendarEvents do
   let(:shared_storage_reader) { instance_double(Bas::SharedStorage::Default) }
   let(:shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
   let(:reports_service) { instance_double(Services::GoogleWorkspace::Reports) }
-  let(:formatter) { instance_double('Utils::Warehouse::Workspace::CalendarEventsFormatter') }
+  let(:formatter) { instance_double('Utils::Warehouse::GoogleWorkspace::CalendarEventsFormatter') }
 
   let(:activity1_for_event1) do
     OpenStruct.new(events: [OpenStruct.new(name: 'create_event',
@@ -43,7 +43,7 @@ RSpec.describe Implementation::FetchWorkspaceCalendarEvents do
   before do
     allow(bot).to receive(:read_response).and_return(OpenStruct.new(inserted_at: nil))
     allow(Services::GoogleWorkspace::Reports).to receive(:new).and_return(reports_service)
-    allow(Utils::Warehouse::Workspace::CalendarEventsFormatter).to receive(:new).and_return(formatter)
+    allow(Utils::Warehouse::GoogleWorkspace::CalendarEventsFormatter).to receive(:new).and_return(formatter)
     allow(formatter).to receive(:format).and_return(formatted_event)
   end
 
@@ -92,7 +92,7 @@ RSpec.describe Implementation::FetchWorkspaceCalendarEvents do
         allow(bot).to receive(:read_response).and_return(nil)
         result = bot.process
 
-        expect(Utils::Warehouse::Workspace::CalendarEventsFormatter).to have_received(:new).twice
+        expect(Utils::Warehouse::GoogleWorkspace::CalendarEventsFormatter).to have_received(:new).twice
         expect(formatter).to have_received(:format).twice
 
         expect(result).to eq({ success: { type: 'calendar_event', content: [formatted_event, formatted_event] } })

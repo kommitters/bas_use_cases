@@ -4,7 +4,7 @@ require 'time'
 
 module Utils
   module Warehouse
-    module Workspace
+    module GoogleWorkspace
       ##
       # Base class for handling Google Workspace activity data.
       # This class provides methods to extract and manipulate activity data
