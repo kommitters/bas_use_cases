@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'calendar_event'
+require_relative 'person'
 
 module Services
   module Postgres
@@ -10,12 +10,10 @@ module Services
     #
     # Provides CRUD operations for the 'calendar_event_attendees' table.
     class CalendarEventAttendee < Services::Postgres::Base
-      ATTRIBUTES = %i[calendar_event_id email response_status].freeze
-
+      ATTRIBUTES = %i[calendar_event_id person_id response_status].freeze
       TABLE = :calendar_event_attendees
-
       RELATIONS = [
-        { service: CalendarEvent, external: :external_calendar_event_id, internal: :calendar_event_id }
+        { service: Person, external: :email_address, internal: :person_id }
       ].freeze
 
       def insert(params)

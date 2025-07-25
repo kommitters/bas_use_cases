@@ -239,7 +239,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     db.create_table(:calendar_event_attendees) do
       primary_key :id
       foreign_key :calendar_event_id, :calendar_events, type: :uuid, null: false, on_delete: :cascade
-      String :email, size: 255, null: false
+      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       String :response_status, size: 50, null: false
     end
   end
