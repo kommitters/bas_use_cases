@@ -10,7 +10,7 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'birthday',
-  tag: 'FetchBirthdaysFromNotionForWorkspace'
+  tag: 'FetchBirthdaysFromGoogle'
 }
 
 write_options = {

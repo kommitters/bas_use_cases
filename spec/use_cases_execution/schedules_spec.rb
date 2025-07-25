@@ -7,7 +7,6 @@ RSpec.describe UseCasesExecution::Schedules do
   describe '.schedules' do
     it 'loads only the provided schedules' do
       birthday_schedule = [
-        { path: '/birthday/fetch_birthday_from_notion.rb', time: ['01:00:00'] },
         { path: '/birthday/format_birthday.rb', time: ['01:10:00'] },
         { path: '/birthday/garbage_collector.rb', time: ['13:00:00'] },
         { path: '/birthday/notify_birthday_in_discord.rb', time: ['13:10:00'] }

@@ -14,7 +14,6 @@ module UseCasesExecution
     end
 
     BIRTHDAY_SCHEDULES = [
-      { path: "#{__dir__}/birthday/fetch_birthday_from_notion_for_workspace.rb", time: ['12:45'] },
       { path: "#{__dir__}/birthday/format_birthday_workspace.rb", time: ['12:55'] },
       { path: "#{__dir__}/birthday/notify_birthday_in_workspace.rb", time: ['13:05'] },
       { path: "#{__dir__}/birthday/garbage_collector.rb", time: ['00:00'] }
