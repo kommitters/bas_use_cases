@@ -48,5 +48,6 @@ gem 'googleauth'
 gem 'google-apis-chat_v1'
 
 group :test do
+  gem 'rack-test'
   gem 'sqlite3'
 end
