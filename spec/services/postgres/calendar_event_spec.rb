@@ -70,6 +70,29 @@ RSpec.describe Services::Postgres::CalendarEvent do
       end
       expect(emails).to contain_exactly('jane@example.com', 'other@example.com')
     end
+
+    it 'handles attendees with unknown email addresses gracefully' do
+      person_service.insert(
+        external_person_id: 'ext-p-1',
+        full_name: 'Jane Doe',
+        email_address: 'jane@example.com'
+      )
+
+      params = {
+        external_calendar_event_id: 'evt-123',
+        summary: 'Test Event',
+        duration_minutes: 60,
+        start_time: Time.now,
+        end_time: Time.now + 3600,
+        creation_timestamp: Time.now - 86_400,
+        attendees: [
+          { email_address: 'jane@example.com', response_status: 'accepted' },
+          { email_address: 'unknown@example.com', response_status: 'declined' }
+        ]
+      }
+      # Should either skip unknown attendees or handle gracefully
+      expect { service.insert(params) }.not_to raise_error
+    end
   end
 
   describe '#update' do
