@@ -11,44 +11,36 @@ require_relative '../../../src/implementations/fetch_pto_from_google'
 module Routes
   # Routes::Pto defines the /pto endpoint that receives PTO data
   class Pto < Sinatra::Base
-    write_options = {
-      connection: Config::CONNECTION,
-      db_table: 'pto',
-      tag: 'FetchPtosFromGoogleWorkspace'
-    }
-
-    shared_storage_reader = Bas::SharedStorage::Default.new
-    shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
-
     post '/pto' do
-      request_body = request.body.read.to_s
+      begin
+        request_body = request.body.read.to_s
+        data = JSON.parse(request_body)
 
-      if request_body.strip.empty?
-        status 400
-        return { error: 'Empty request body' }.to_json
+        if request_body.strip.empty?
+          status 400
+          return { error: 'Empty request body' }.to_json
+        end
+        unless data.is_a?(Hash) && data['ptos'].is_a?(Array)
+          status 400
+          return { error: 'Missing or invalid "ptos" array' }.to_json
+        end
+
+        write_options = {
+          connection: Config::CONNECTION,
+          db_table: 'pto',
+          tag: 'FetchPtosForWorkspace'
+        }
+
+        shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+        shared_storage_writer.write(success: { ptos: data['ptos'] })
+
+        status 200
+        { message: 'PTOs stored successfully' }.to_json
+      rescue StandardError => e
+        logger.error "Failed to process PTO data: #{e.message}"
+        status 500
+        { error: 'Internal Server Error' }.to_json
       end
-
-      data = JSON.parse(request_body)
-      ptos = data['ptos']
-
-      unless ptos.is_a?(Array)
-        status 400
-        return { error: 'Missing or invalid \"ptos\" array' }.to_json
-      end
-
-      bot = Implementation::FetchPtoFromGoogle.new({ ptos: ptos }, shared_storage_reader, shared_storage_writer)
-      result = bot.execute
-
-      status 200
-      result.to_json
-    rescue JSON::ParserError => e
-      logger.error "Invalid JSON format: #{e.message}"
-      status 400
-      { error: 'Invalid JSON format' }.to_json
-    rescue StandardError => e
-      logger.error "Failed to process PTO data: #{e.message}"
-      status 500
-      { error: 'Internal Server Error' }.to_json
     end
   end
 end
