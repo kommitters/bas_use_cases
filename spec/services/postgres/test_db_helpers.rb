@@ -240,7 +240,6 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       foreign_key :calendar_event_id, :calendar_events, type: :uuid, null: false, on_delete: :cascade
       foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
-      String :email, size: 255, null: false
       String :response_status, size: 50, null: false
     end
   end
