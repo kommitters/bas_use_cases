@@ -17,7 +17,7 @@ options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'pto',
-  tag: 'FetchPtosFromNotionForWorkspace'
+  tag: 'FetchPtosForWorkspace'
 }
 
 # Process bot

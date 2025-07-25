@@ -13,7 +13,7 @@ today = Time.at(utc_today, in: '-05:00').strftime('%F').to_s
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'pto',
-  tag: 'FetchPtosFromNotionForWorkspace'
+  tag: 'FetchPtosForWorkspace'
 }
 
 write_options = {
