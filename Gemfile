@@ -50,3 +50,6 @@ gem 'google-apis-chat_v1'
 group :test do
   gem 'sqlite3'
 end
+
+gem "rackup", "~> 2.2"
+gem "puma", "~> 6.6"

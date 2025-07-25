@@ -162,5 +162,11 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:20'] },
       { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
+
+    WEBSITE_CONTACT_FORM = [
+      { path: "#{__dir__}/website_contact_form/format_contact_request.rb", interval: 150_00 },
+      { path: "#{__dir__}/website_contact_form/notify_contact_request_in_workspace.rb", interval: 300_00 },
+      { path: "#{__dir__}/website_contact_form/garbage_collector.rb", interval: 240_00 }
+    ].freeze
   end
 end
