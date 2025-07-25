@@ -16,7 +16,7 @@ module Routes
     write_options = {
       connection: Config::CONNECTION,
       db_table: 'birthday',
-      tag: 'FetchBirthdaysFromGoogle'
+      tag: 'BirthdaysFromGoogle'
     }
 
     shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)

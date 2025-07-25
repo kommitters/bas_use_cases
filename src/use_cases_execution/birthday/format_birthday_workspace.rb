@@ -10,7 +10,7 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'birthday',
-  tag: 'FetchBirthdaysFromGoogle'
+  tag: 'BirthdaysFromGoogle'
 }
 
 write_options = {
