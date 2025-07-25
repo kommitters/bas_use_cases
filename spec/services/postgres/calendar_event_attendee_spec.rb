@@ -32,7 +32,7 @@ RSpec.describe Services::Postgres::CalendarEventAttendee do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
-  # Datos de prueba
+  # Test data
   let!(:person_id) do
     person_service.insert(
       external_person_id: 'p-1',
