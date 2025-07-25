@@ -5,10 +5,13 @@ require 'json'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
 require_relative 'config'
-require_relative '../../../src/implementations/fetch_birthdays_from_google'
 
 module Routes
-  # Routes::Birthdays defines the /birthday endpoint that receives birthday data
+  # Routes::Birthdays handles incoming birthday data from Google Workspace
+  #
+  # POST /birthday - Accepts JSON payload with birthday data
+  # Expected format: { "birthdays": [array of birthday objects] }
+  # Returns: 200 with success message or 400/500 with error details
   class Birthdays < Sinatra::Base
     write_options = {
       connection: Config::CONNECTION,
