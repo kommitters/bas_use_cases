@@ -4,6 +4,14 @@ ENV['RACK_ENV'] = 'test'
 
 require 'rspec'
 require 'rack/test'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+# Define a mock Config module and CONNECTION constant
+module Config
+  CONNECTION = { mocked: true }.freeze
+end
+
 require_relative '../../../src/use_cases_execution/birthday/fetch_birthdays_from_google'
 
 RSpec.describe Routes::Birthdays do
@@ -14,10 +22,15 @@ RSpec.describe Routes::Birthdays do
   end
 
   let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
+  let(:mocked_shared_storage_default) { instance_double(Bas::SharedStorage::Default) }
 
   before do
     allow(Bas::SharedStorage::Postgres).to receive(:new).and_return(mocked_shared_storage_writer)
-    allow(mocked_shared_storage_writer).to receive(:write).and_return(true)
+    allow(mocked_shared_storage_writer).to receive(:write).with(hash_including(success: anything)).and_return(true)
+
+    allow(Bas::SharedStorage::Default).to receive(:new).and_return(mocked_shared_storage_default)
+
+    allow_any_instance_of(Routes::Birthdays).to receive(:logger).and_return(double('logger').as_null_object)
   end
 
   let(:valid_payload) do
