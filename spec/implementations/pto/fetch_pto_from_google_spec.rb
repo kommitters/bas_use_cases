@@ -1,87 +1,55 @@
 # frozen_string_literal: true
 
+ENV['RACK_ENV'] = 'test'
+
 require 'rspec'
-require 'date'
-require_relative '../../../src/implementations/fetch_pto_from_google'
+require 'rack/test'
+require 'json'
+require 'sinatra/base'
+require_relative '../../../src/use_cases_execution/pto/fetch_pto_from_google_for_workspace'
 
-RSpec.describe Implementation::FetchPtoFromGoogle do
-  let(:today) { Date.today }
+RSpec.describe Routes::Pto do
+  include Rack::Test::Methods
 
-  let(:ptos) do
+  let(:app) { described_class.new }
+  let(:formatted_ptos) do
     [
-      # [ ]Covers today (yesterday to tomorrow)
-      { 'Person' => 'Jane Doe', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today + 1).to_s },
-
-      # [x] Future only
-      { 'Person' => 'John Smith', 'StartDateTime' => (today + 7).to_s, 'EndDateTime' => (today + 8).to_s },
-
-      # [x] Past only
-      { 'Person' => 'Alice', 'StartDateTime' => (today - 7).to_s, 'EndDateTime' => (today - 1).to_s },
-
-      # [ ] Today only
-      { 'Person' => 'Bob', 'StartDateTime' => today.to_s, 'EndDateTime' => today.to_s },
-
-      # [ ] Starts today, ends in 3 days
-      { 'Person' => 'Charlie', 'StartDateTime' => today.to_s, 'EndDateTime' => (today + 3).to_s },
-
-      # [ ] Started 3 days ago, ends today
-      { 'Person' => 'Diana', 'StartDateTime' => (today - 3).to_s, 'EndDateTime' => today.to_s },
-
-      # [x] Only tomorrow
-      { 'Person' => 'Eve', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s },
-
-      # [ ] Long PTO (10 days ago to 10 days ahead)
-      { 'Person' => 'Frank', 'StartDateTime' => (today - 10).to_s, 'EndDateTime' => (today + 10).to_s },
-
-      # [x] One-day PTO in the past (yesterday)
-      { 'Person' => 'Grace', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today - 1).to_s },
-
-      # [x] One-day PTO in the future (tomorrow)
-      { 'Person' => 'Hank', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s }
+      'Jane Doe will not be working between 2025-07-23 and 2025-07-25. And returns the Monday, July 28, 2025',
+      'John Johnson will not be working between 2025-07-20 and 2025-07-26. And returns the Monday, July 28, 2025'
     ]
   end
 
-  let(:options) { { ptos: ptos } }
-  let(:reader) { double('SharedStorageReader') }
-  let(:writer) { double('SharedStorageWriter') }
+  def post_pto(ptos)
+    post '/pto', ptos.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  end
 
-  subject { described_class.new(options, reader, writer) }
+  context 'POST /pto' do
+    it 'returns 400 for empty request body' do
+      post '/pto', '', { 'CONTENT_TYPE' => 'application/json' }
 
-  describe '#process' do
-    let(:result) { subject.process }
-    let(:ptos_result) { result[:success][:ptos] }
-
-    # People whose PTOs should include today
-    let(:expected_people) do
-      ['Jane Doe', 'Bob', 'Charlie', 'Diana', 'Frank']
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Empty request body')
     end
 
-    # People whose PTOs should not be included
-    let(:unexpected_people) do
-      ['John Smith', 'Alice', 'Eve', 'Grace', 'Hank']
+    it 'returns 400 for invalid JSON' do
+      post '/pto', '{not valid json}', { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Invalid JSON format')
     end
 
-    it 'includes only people who are on PTO today' do
-      expected_people.each do |name|
-        found = ptos_result.any? { |msg| msg.include?(name) }
-        puts "\n Expected '#{name}' to be included but wasn't.\nAll messages: #{ptos_result.inspect}" unless found
-        expect(found).to be true
-      end
+    it 'returns 400 for missing ptos key' do
+      post_pto({ wrong_key: [] })
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "ptos" array')
     end
 
-    it 'excludes people not on PTO today' do
-      unexpected_people.each do |name|
-        found = ptos_result.any? { |msg| msg.include?(name) }
-        puts "\n Expected '#{name}' to be excluded but was found.\nAll messages: #{ptos_result.inspect}" if found
-        expect(found).to be false
-      end
-    end
+    it 'returns 400 if ptos is not an array' do
+      post_pto({ ptos: 'not an array' })
 
-    it 'formats the messages correctly' do
-      ptos_result.each do |msg|
-        expect(msg).to match(/will not be working between/)
-        expect(msg).to match(/And returns the/)
-      end
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "ptos" array')
     end
   end
 end
