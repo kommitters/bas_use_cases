@@ -12,15 +12,25 @@ RSpec.describe Routes::Pto do
   include Rack::Test::Methods
 
   let(:app) { described_class.new }
-  let(:formatted_ptos) do
-    [
-      'Jane Doe will not be working between 2025-07-23 and 2025-07-25. And returns the Monday, July 28, 2025',
-      'John Johnson will not be working between 2025-07-20 and 2025-07-26. And returns the Monday, July 28, 2025'
-    ]
+
+  let(:valid_payload) do
+    {
+      ptos: [
+        { name: 'Jane Doe', start_date: '2025-07-23', end_date: '2025-07-25' },
+        { name: 'John Johnson', start_date: '2025-07-20', end_date: '2025-07-26' }
+      ]
+    }
   end
 
-  def post_pto(ptos)
-    post '/pto', ptos.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  def post_pto(payload)
+    post '/pto', payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  end
+
+  before do
+    # Stub el escritor para evitar conexión real a base de datos
+    allow_any_instance_of(Bas::SharedStorage::Postgres)
+      .to receive(:write)
+      .and_return(true)
   end
 
   context 'POST /pto' do
@@ -50,6 +60,13 @@ RSpec.describe Routes::Pto do
 
       expect(last_response.status).to eq(400)
       expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "ptos" array')
+    end
+
+    it 'returns 200 and success message when valid ptos are sent' do
+      post_pto(valid_payload)
+
+      expect(last_response.status).to eq(200)
+      expect(JSON.parse(last_response.body)).to include('message' => 'PTOs stored successfully')
     end
   end
 end
