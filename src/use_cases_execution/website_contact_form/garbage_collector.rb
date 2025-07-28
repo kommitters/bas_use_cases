@@ -15,7 +15,7 @@ options = {
 # Configuration
 write_options = {
   connection: Config::CONNECTION,
-  db_table: 'pto',
+  db_table: 'website_form_contact',
   tag: 'GarbageCollector'
 }
 

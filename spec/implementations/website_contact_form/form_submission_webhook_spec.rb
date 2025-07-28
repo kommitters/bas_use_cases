@@ -12,14 +12,16 @@ describe Routes::FormSubmissions do
     Routes::FormSubmissions.new
   end
 
-  let(:valid_payload) do
+  let(:valid_payload_hash) do
     {
       name: 'Ana',
       email: 'ana@example.com',
       thematic: ['Emergency response'],
       feature: 'contact_form'
-    }.to_json
+    }
   end
+
+  let(:valid_payload) { valid_payload_hash.to_json }
 
   let(:write_options) do
     {
@@ -35,9 +37,11 @@ describe Routes::FormSubmissions do
 
   describe 'POST /webhook' do
     context 'with valid requests' do
-      it 'responds with 200 OK for valid JSON payload' do
+      it 'responds with 200 OK and success message' do
         post '/webhook', valid_payload, { 'CONTENT_TYPE' => 'application/json' }
+
         expect(last_response.status).to eq(200)
+        expect(JSON.parse(last_response.body)).to eq('message' => 'Form submission received successfully')
       end
 
       it 'initializes storage with correct options' do
@@ -49,30 +53,44 @@ describe Routes::FormSubmissions do
       end
 
       it 'writes the parsed JSON data to storage' do
+        parsed_payload = JSON.parse(valid_payload)
+
         mock_storage = double
-        expect(Bas::SharedStorage::Postgres).to receive(:new).and_return(mock_storage)
-        expect(mock_storage).to receive(:write).with(success: JSON.parse(valid_payload))
+        allow(Bas::SharedStorage::Postgres).to receive(:new).and_return(mock_storage)
+
+        expect(mock_storage).to receive(:write).with(success: parsed_payload)
 
         post '/webhook', valid_payload, { 'CONTENT_TYPE' => 'application/json' }
       end
     end
 
     context 'with invalid requests' do
-      it 'raises JSON::ParserError for malformed JSON' do
-        expect do
-          post '/webhook', '{invalid: json}', { 'CONTENT_TYPE' => 'application/json' }
-        end.to raise_error(JSON::ParserError)
+      it 'returns 400 for malformed JSON' do
+        post '/webhook', '{invalid: json}', { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(400)
+        expect(JSON.parse(last_response.body)).to eq('error' => 'Invalid JSON format')
       end
 
-      it 'raises JSON::ParserError for empty body' do
-        expect do
-          post '/webhook', '', { 'CONTENT_TYPE' => 'application/json' }
-        end.to raise_error(JSON::ParserError)
+      it 'returns 400 for empty body' do
+        post '/webhook', '', { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(400)
+        expect(JSON.parse(last_response.body)).to eq('error' => 'Empty request body')
       end
 
-      it 'accepts non-JSON content type if body is valid JSON' do
-        post '/webhook', valid_payload, { 'CONTENT_TYPE' => 'text/plain' }
-        expect(last_response.status).to eq(200)
+      it 'returns 400 for empty JSON object' do
+        post '/webhook', '{}', { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(400)
+        expect(JSON.parse(last_response.body)).to eq('error' => 'Invalid JSON format')
+      end
+
+      it 'returns 400 for non-object JSON (like array)' do
+        post '/webhook', '[1,2,3]', { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(400)
+        expect(JSON.parse(last_response.body)).to eq('error' => 'Invalid JSON format')
       end
     end
   end
