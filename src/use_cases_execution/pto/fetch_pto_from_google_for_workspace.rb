@@ -22,13 +22,17 @@ module Routes
       body = request.body.read.strip
       halt 400, json(error: 'Empty request body') if body.empty?
 
-      data = JSON.parse(body) rescue halt(400, json(error: 'Invalid JSON format'))
+      data = begin
+        JSON.parse(body)
+      rescue StandardError
+        halt(400, json(error: 'Invalid JSON format'))
+      end
       halt 400, json(error: 'Missing or invalid "ptos" array') unless data.is_a?(Hash) && data['ptos'].is_a?(Array)
 
       shared_storage_writter.write(success: { ptos: data['ptos'] })
       status 200
       json(message: 'PTOs stored successfully')
-    rescue => e
+    rescue StandardError => e
       logger.error "Failed to process PTO data: #{e.message}\n#{e.backtrace.join("\n")}"
       halt 500, json(error: 'Internal Server Error')
     end

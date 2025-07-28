@@ -45,7 +45,10 @@ module Implementation
     end
 
     def query
-      "UPDATE #{process_options[:db_table]} SET archived=true WHERE data =  \'{ \"notification\": \"\"}\'::jsonb or tag= \'NotifyWorkspace\'"
+      "UPDATE #{process_options[:db_table]} " \
+      'SET archived=true ' \
+      "WHERE data = '{ \"notification\": \"\"}'::jsonb " \
+      "OR tag = 'NotifyWorkspace'"
     end
   end
 end

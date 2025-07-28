@@ -36,10 +36,7 @@ module Implementation
 
       notification = (
         if read_response.data['feature'] == 'contact_form'
-          puts 'CONTACT FORM FORMAT'
-          x = build_contact_template(read_response.data)
-          puts x
-          x
+          build_contact_template(read_response.data)
         else
           build_verification_template(read_response.data)
         end
