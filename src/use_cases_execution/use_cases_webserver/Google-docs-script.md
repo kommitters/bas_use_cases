@@ -17,7 +17,7 @@ function processFolder(folder, domainId, level) {
 
   while (subfolders.hasNext()) {
     const subfolder = subfolders.next();
- 
+
     // Recursive call for the subfolder with increased indentation
     const subfolderSet = processFolder(subfolder, level === 1 ? subfolder.getName() : domainId, level + 1);
     fileSet = fileSet.concat(subfolderSet);
@@ -28,7 +28,7 @@ function processFolder(folder, domainId, level) {
   while (files.hasNext()) {
     const file = files.next();
     const fileId = file.getId();
-    fileSet.push({ external_document_id: fileId, name: file.getName(), external_domain_id: domainId })
+    fileSet.push({ external_document_id: fileId, name: file.getName(), external_domain_id: domainId });
   }
 
   return fileSet;
@@ -41,7 +41,7 @@ function sendGoogleDocsToWebhook() {
 
   try {
     const rootFolder = DriveApp.getFolderById(rootFolderId);
-    console.log(`Scanning: ${rootFolder.getName()}`);
+    console.log(`Scanning ${rootFolder.getName()}...`);
     docs = processFolder(rootFolder, null, 1);
   } catch (e) {
     console.error(`Error: Failed to access folder ${rootFolderId}. Details: ${e.message}`);
