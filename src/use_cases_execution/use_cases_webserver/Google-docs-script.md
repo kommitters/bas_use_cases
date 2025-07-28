@@ -63,3 +63,16 @@ function sendGoogleDocsToWebhook() {
     }
 }
 ```
+
+---
+
+## Environment Variables and Configuration
+
+Set up these variables in the script properties section in the Google Apps Script editor.
+
+- **ROOT_FOLDER_ID**: The ID of the root Google Drive folder you want to scan. It can be found in the URL of the folder.
+- **WEBHOOK_URL**: The backend URL that will receive the list of documents including the path (i.e it should end with /google_docs). For local development, you can expose the backend via a tunnel like Ngrok or Cloudflare Tunnels.
+
+---
+
+For instructions on setting up the script, creating time-driven triggers, required permissions, manual testing, notes, and implementing the backend webhook, please refer to [Google-apps-readme.md](./Google-apps-readme.md).
