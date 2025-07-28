@@ -10,11 +10,13 @@ require_relative 'config'
 module Routes
   # Routes::GoogleDocuments defines the /google_documents endpoint that receives Google Documents data
   class GoogleDocuments < Sinatra::Base
-    write_options = {
-      connection: Config::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchGoogleDocumentsFromWorkspace'
-    }
-
-    shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+    def initialize(args)
+      super(args)
+      write_options = {
+        connection: Config::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchGoogleDocumentsFromWorkspace'
+      }
+      @shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+    end
 
     ##
     # POST /google_docs
@@ -52,7 +54,8 @@ module Routes
         halt 400, { error: 'Missing or invalid "google_documents" array' }.to_json
       end
 
-      shared_storage_writer.write(success: { type: 'document', content: data['google_documents'] })
+      @shared_storage_writer.write(success: { type: 'document', content: data['google_documents'] })
+
       status 200
       { message: 'Google documents stored successfully' }.to_json
     rescue JSON::ParserError => e
@@ -61,7 +64,7 @@ module Routes
       { error: 'Invalid JSON format' }.to_json
     rescue StandardError => e
       logger.error "Failed to process Google documents data: #{e.message}\n#{e.backtrace.join("\n")}"
-      halt(500, { error: 'Internal Server Error' }.to_json)
+      halt 500, { error: 'Internal Server Error' }.to_json
     end
   end
 end
