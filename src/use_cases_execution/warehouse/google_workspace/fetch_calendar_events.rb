@@ -5,6 +5,7 @@ require 'bas/shared_storage/postgres'
 
 require_relative '../../../implementations/fetch_workspace_calendar_events'
 require_relative 'config'
+require_relative '../../../../spec/implementations/warehouse/google_workspace/mock_data_helper'
 
 read_options = {
   connection: Config::CONNECTION,
@@ -21,8 +22,7 @@ write_options = {
 }
 
 options = {
-  google_keyfile_path: Config::GOOGLE_KEYFILE_PATH,
-  google_admin_email: Config::GOOGLE_ADMIN_EMAIL
+  calendar_events: MockData.generate_calendar_events
 }
 
 begin

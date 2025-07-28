@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require_relative '../services/google_workspace/reports'
 require_relative '../utils/warehouse/google_workspace/calendar_events_format'
 
 module Implementation
@@ -11,39 +10,18 @@ module Implementation
   # It uses the Google Calendar API to retrieve events and formats them for storage.
   #
   class FetchWorkspaceCalendarEvents < Bas::Bot::Base
-    DEFAULT_START_DATE = Time.utc(2025, 5, 1).freeze
-
     def process
-      reports_service = Services::GoogleWorkspace::Reports.new(google_config)
+      all_activities = process_options[:calendar_events]
 
-      activities_response = reports_service.fetch_calendar_activities(start_time: filters[:since])
-      return error_response(activities_response[:error][:message]) if activities_response[:error]
-
-      all_activities = activities_response[:success][:activities]
+      unless all_activities.is_a?(Array) && !all_activities.empty?
+        return error_response('Input data must be a non-empty Array.')
+      end
 
       formatted_events = normalize_response(all_activities)
       { success: { type: 'calendar_event', content: formatted_events } }
     end
 
     private
-
-    def filters
-      { since: fetch_last_run_timestamp || DEFAULT_START_DATE }
-    end
-
-    def fetch_last_run_timestamp
-      last_run = read_response&.inserted_at
-      return unless last_run
-
-      Time.parse(last_run.to_s)
-    end
-
-    def google_config
-      {
-        keyfile_path: process_options[:google_keyfile_path],
-        admin_email: process_options[:google_admin_email]
-      }
-    end
 
     def normalize_response(activities)
       activities_by_event_id = (activities || []).group_by do |activity|

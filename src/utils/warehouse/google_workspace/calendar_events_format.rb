@@ -54,7 +54,7 @@ module Utils
         def attendees
           @attendees ||= all_attendee_emails.map do |email|
             {
-              email: email,
+              email_address: email,
               response_status: attendee_status_map.fetch(email, 'needsAction')
             }
           end
