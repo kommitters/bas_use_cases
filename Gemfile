@@ -50,4 +50,3 @@ gem 'google-apis-chat_v1'
 group :test do
   gem 'sqlite3'
 end
-
