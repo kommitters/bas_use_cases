@@ -1,87 +1,92 @@
 # frozen_string_literal: true
 
+ENV['RACK_ENV'] = 'test'
+
 require 'rspec'
-require 'date'
-require_relative '../../../src/implementations/fetch_pto_from_google'
+require 'rack/test'
+require 'json'
+require 'sinatra/base'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
 
-RSpec.describe Implementation::FetchPtoFromGoogle do
-  let(:today) { Date.today }
+module Config
+  CONNECTION = { mocked: true }.freeze
+end
 
-  let(:ptos) do
-    [
-      # [ ]Covers today (yesterday to tomorrow)
-      { 'Person' => 'Jane Doe', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today + 1).to_s },
+require_relative '../../../src/use_cases_execution/pto/fetch_pto_from_google_for_workspace'
 
-      # [x] Future only
-      { 'Person' => 'John Smith', 'StartDateTime' => (today + 7).to_s, 'EndDateTime' => (today + 8).to_s },
+RSpec.describe Routes::Pto do
+  include Rack::Test::Methods
 
-      # [x] Past only
-      { 'Person' => 'Alice', 'StartDateTime' => (today - 7).to_s, 'EndDateTime' => (today - 1).to_s },
-
-      # [ ] Today only
-      { 'Person' => 'Bob', 'StartDateTime' => today.to_s, 'EndDateTime' => today.to_s },
-
-      # [ ] Starts today, ends in 3 days
-      { 'Person' => 'Charlie', 'StartDateTime' => today.to_s, 'EndDateTime' => (today + 3).to_s },
-
-      # [ ] Started 3 days ago, ends today
-      { 'Person' => 'Diana', 'StartDateTime' => (today - 3).to_s, 'EndDateTime' => today.to_s },
-
-      # [x] Only tomorrow
-      { 'Person' => 'Eve', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s },
-
-      # [ ] Long PTO (10 days ago to 10 days ahead)
-      { 'Person' => 'Frank', 'StartDateTime' => (today - 10).to_s, 'EndDateTime' => (today + 10).to_s },
-
-      # [x] One-day PTO in the past (yesterday)
-      { 'Person' => 'Grace', 'StartDateTime' => (today - 1).to_s, 'EndDateTime' => (today - 1).to_s },
-
-      # [x] One-day PTO in the future (tomorrow)
-      { 'Person' => 'Hank', 'StartDateTime' => (today + 1).to_s, 'EndDateTime' => (today + 1).to_s }
-    ]
+  def app
+    described_class.new
   end
 
-  let(:options) { { ptos: ptos } }
-  let(:reader) { double('SharedStorageReader') }
-  let(:writer) { double('SharedStorageWriter') }
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
 
-  subject { described_class.new(options, reader, writer) }
+  let(:valid_payload) do
+    {
+      ptos: [
+        { name: 'Jane Doe', start_date: '2025-07-23', end_date: '2025-07-25' },
+        { name: 'John Johnson', start_date: '2025-07-20', end_date: '2025-07-26' }
+      ]
+    }
+  end
 
-  describe '#process' do
-    let(:result) { subject.process }
-    let(:ptos_result) { result[:success][:ptos] }
+  def post_pto(payload)
+    post '/pto', payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  end
 
-    # People whose PTOs should include today
-    let(:expected_people) do
-      ['Jane Doe', 'Bob', 'Charlie', 'Diana', 'Frank']
+  before do
+    allow(Bas::SharedStorage::Postgres).to receive(:new).and_return(mocked_shared_storage_writer)
+    allow(mocked_shared_storage_writer).to receive(:write).and_return(true)
+
+    allow_any_instance_of(Routes::Pto).to receive(:logger).and_return(double('logger').as_null_object)
+  end
+
+  context 'POST /pto' do
+    it 'returns 400 for empty request body' do
+      post '/pto', '', { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Empty request body')
     end
 
-    # People whose PTOs should not be included
-    let(:unexpected_people) do
-      ['John Smith', 'Alice', 'Eve', 'Grace', 'Hank']
+    it 'returns 400 for invalid JSON' do
+      post '/pto', '{not valid json}', { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Invalid JSON format')
     end
 
-    it 'includes only people who are on PTO today' do
-      expected_people.each do |name|
-        found = ptos_result.any? { |msg| msg.include?(name) }
-        puts "\n Expected '#{name}' to be included but wasn't.\nAll messages: #{ptos_result.inspect}" unless found
-        expect(found).to be true
-      end
+    it 'returns 400 for missing ptos key' do
+      post_pto({ wrong_key: [] })
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "ptos" array')
     end
 
-    it 'excludes people not on PTO today' do
-      unexpected_people.each do |name|
-        found = ptos_result.any? { |msg| msg.include?(name) }
-        puts "\n Expected '#{name}' to be excluded but was found.\nAll messages: #{ptos_result.inspect}" if found
-        expect(found).to be false
-      end
+    it 'returns 400 if ptos is not an array' do
+      post_pto({ ptos: 'not an array' })
+
+      expect(last_response.status).to eq(400)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "ptos" array')
     end
 
-    it 'formats the messages correctly' do
-      ptos_result.each do |msg|
-        expect(msg).to match(/will not be working between/)
-        expect(msg).to match(/And returns the/)
-      end
+    it 'returns 200 and success message when valid ptos are sent' do
+      post_pto(valid_payload)
+
+      expect(last_response.status).to eq(200)
+      expect(JSON.parse(last_response.body)).to include('message' => 'PTOs stored successfully')
+    end
+
+    it 'returns 500 if shared storage write fails' do
+      allow(mocked_shared_storage_writer).to receive(:write).and_raise(StandardError.new('boom'))
+
+      post_pto(valid_payload)
+
+      expect(last_response.status).to eq(500)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error')
     end
   end
 end
