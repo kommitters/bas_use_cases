@@ -27,7 +27,6 @@ RSpec.describe Routes::Pto do
   end
 
   before do
-    # Stub el escritor para evitar conexión real a base de datos
     allow_any_instance_of(Bas::SharedStorage::Postgres)
       .to receive(:write)
       .and_return(true)
