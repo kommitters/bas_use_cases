@@ -13,7 +13,6 @@ require_relative '../google_documents/listen_to_google_docs_updates'
 # for all available endpoints.
 # WebServer is the main Sinatra application class.
 class WebServer < Sinatra::Base
-  set :host_authorization, { permitted_hosts: [] }
   use Routes::Pto
   use Routes::Birthdays
   use Routes::GoogleDocuments

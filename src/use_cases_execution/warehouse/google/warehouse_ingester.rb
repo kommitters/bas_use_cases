@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+##
+# Google Documents Warehouse Ingester
+#
+# This script processes Google Documents data tagged for warehouse synchronization.
+# It reads unprocessed records with specific tags from the
+# warehouse_sync table and processes them through the WarehouseIngester implementation.
+#
+
 require 'logger'
 require 'bas/shared_storage/postgres'
 
