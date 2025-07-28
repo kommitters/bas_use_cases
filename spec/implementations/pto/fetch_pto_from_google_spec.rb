@@ -82,8 +82,6 @@ RSpec.describe Routes::Pto do
 
     it 'returns 500 if shared storage write fails' do
       allow(mocked_shared_storage_writer).to receive(:write).and_raise(StandardError.new('boom'))
-      puts 'Simulating shared storage write failure'
-      puts "Payload: #{valid_payload}"
 
       post_pto(valid_payload)
 
