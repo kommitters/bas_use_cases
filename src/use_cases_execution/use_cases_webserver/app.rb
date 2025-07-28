@@ -3,6 +3,7 @@
 require 'sinatra/base'
 require_relative '../pto/fetch_pto_from_google_for_workspace'
 require_relative '../birthday/fetch_birthdays_from_google'
+require_relative '../google_documents/listen_to_google_docs_updates'
 
 # The WebServer class defines the main Sinatra application responsible for
 # handling incoming webhooks from Google services.
@@ -12,8 +13,12 @@ require_relative '../birthday/fetch_birthdays_from_google'
 # for all available endpoints.
 # WebServer is the main Sinatra application class.
 class WebServer < Sinatra::Base
+  set :host_authorization, { permitted_hosts: [] }
   use Routes::Pto
   use Routes::Birthdays
+  use Routes::GoogleDocuments
+
+  get('/') { 'OK' }
 end
 
 if $PROGRAM_NAME == __FILE__
