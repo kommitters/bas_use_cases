@@ -6,12 +6,23 @@ require 'rspec'
 require 'rack/test'
 require 'json'
 require 'sinatra/base'
+require 'bas/shared_storage/postgres'
+require 'bas/shared_storage/default'
+
+module Config
+  CONNECTION = { mocked: true }.freeze
+end
+
 require_relative '../../../src/use_cases_execution/pto/fetch_pto_from_google_for_workspace'
 
 RSpec.describe Routes::Pto do
   include Rack::Test::Methods
 
-  let(:app) { described_class.new }
+  def app
+    described_class.new
+  end
+
+  let(:mocked_shared_storage_writer) { instance_double(Bas::SharedStorage::Postgres) }
 
   let(:valid_payload) do
     {
@@ -27,9 +38,10 @@ RSpec.describe Routes::Pto do
   end
 
   before do
-    allow_any_instance_of(Bas::SharedStorage::Postgres)
-      .to receive(:write)
-      .and_return(true)
+    allow(Bas::SharedStorage::Postgres).to receive(:new).and_return(mocked_shared_storage_writer)
+    allow(mocked_shared_storage_writer).to receive(:write).and_return(true)
+
+    allow_any_instance_of(Routes::Pto).to receive(:logger).and_return(double('logger').as_null_object)
   end
 
   context 'POST /pto' do
@@ -66,6 +78,17 @@ RSpec.describe Routes::Pto do
 
       expect(last_response.status).to eq(200)
       expect(JSON.parse(last_response.body)).to include('message' => 'PTOs stored successfully')
+    end
+
+    it 'returns 500 if shared storage write fails' do
+      allow(mocked_shared_storage_writer).to receive(:write).and_raise(StandardError.new('boom'))
+      puts 'Simulating shared storage write failure'
+      puts "Payload: #{valid_payload}"
+
+      post_pto(valid_payload)
+
+      expect(last_response.status).to eq(500)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error')
     end
   end
 end

@@ -2,7 +2,6 @@
 
 require 'sinatra/base'
 require 'json'
-require 'time'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
 require_relative 'config'
@@ -14,34 +13,31 @@ module Routes
       connection: Config::CONNECTION,
       db_table: 'pto',
       tag: 'FetchPtosFromGoogle'
-    }.freeze
-
-    shared_storage_writter = Bas::SharedStorage::Postgres.new(write_options: write_options)
+    }
 
     post '/pto' do
-      body = request.body.read.strip
-      halt 400, json(error: 'Empty request body') if body.empty?
-
-      data = begin
-        JSON.parse(body)
-      rescue StandardError
-        halt(400, json(error: 'Invalid JSON format'))
-      end
-      halt 400, json(error: 'Missing or invalid "ptos" array') unless data.is_a?(Hash) && data['ptos'].is_a?(Array)
-
-      shared_storage_writter.write(success: { ptos: data['ptos'] })
-      status 200
-      json(message: 'PTOs stored successfully')
-    rescue StandardError => e
-      logger.error "Failed to process PTO data: #{e.message}\n#{e.backtrace.join("\n")}"
-      halt 500, json(error: 'Internal Server Error')
-    end
-
-    private
-
-    def json(payload)
       content_type :json
-      payload.to_json
+
+      begin
+        request_body = request.body.read
+        halt 400, { error: 'Empty request body' }.to_json if request_body.strip.empty?
+
+        data = JSON.parse(request_body)
+        halt 400, { error: 'Invalid JSON format' }.to_json unless data.is_a?(Hash) && !data.empty?
+        halt 400, { error: 'Missing or invalid "ptos" array' }.to_json unless data['ptos'].is_a?(Array)
+      rescue StandardError
+        halt 400, { error: 'Invalid JSON format' }.to_json
+      end
+
+      begin
+        shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
+        shared_storage.write(success: { ptos: data['ptos'] })
+      rescue StandardError
+        halt 500, { error: 'Internal Server Error' }.to_json
+      end
+
+      status 200
+      { message: 'PTOs stored successfully' }.to_json
     end
   end
 end
