@@ -45,7 +45,7 @@ RSpec.describe Routes::Birthdays do
   end
 
   describe 'POST /birthday' do
-    context 'when request is invalid' do
+    context 'when the request is malformed, incomplete, or causes storage errors' do
       it 'returns 400 for empty request body' do
         post '/birthday', '', { 'CONTENT_TYPE' => 'application/json' }
 
@@ -73,15 +73,6 @@ RSpec.describe Routes::Birthdays do
         expect(last_response.status).to eq(400)
         expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid "birthdays" array')
       end
-    end
-
-    context 'when request is valid' do
-      it 'returns 200 and success message for valid birthday data' do
-        post_birthday(valid_payload)
-
-        expect(last_response.status).to eq(200)
-        expect(JSON.parse(last_response.body)).to include('message' => 'Birthdays stored successfully')
-      end
 
       it 'returns 500 if shared storage write fails' do
         allow(mocked_shared_storage_writer).to receive(:write).and_raise(StandardError.new('boom'))
@@ -90,6 +81,15 @@ RSpec.describe Routes::Birthdays do
 
         expect(last_response.status).to eq(500)
         expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error')
+      end
+    end
+
+    context 'when the request contains valid birthday data and storage succeeds' do
+      it 'returns 200 and success message for valid birthday data' do
+        post_birthday(valid_payload)
+
+        expect(last_response.status).to eq(200)
+        expect(JSON.parse(last_response.body)).to include('message' => 'Birthdays stored successfully')
       end
     end
   end
