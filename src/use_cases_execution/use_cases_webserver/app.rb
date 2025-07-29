@@ -3,6 +3,7 @@
 require 'sinatra/base'
 require_relative '../pto/fetch_pto_from_google_for_workspace'
 require_relative '../website_contact_form/form_submissions_webhook'
+require_relative '../birthday/fetch_birthdays_from_google'
 
 # The WebServer class defines the main Sinatra application responsible for
 # handling incoming webhooks from Google services.
@@ -14,6 +15,7 @@ require_relative '../website_contact_form/form_submissions_webhook'
 class WebServer < Sinatra::Base
   use Routes::Pto
   use Routes::FormSubmissions
+  use Routes::Birthdays
 end
 
 if $PROGRAM_NAME == __FILE__
