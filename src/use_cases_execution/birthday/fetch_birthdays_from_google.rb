@@ -17,38 +17,30 @@ module Routes
       connection: Config::CONNECTION,
       db_table: 'birthday',
       tag: 'FetchBirthdaysFromGoogle'
-    }
-
-    shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+    }.freeze
 
     post '/birthday' do
-      request_body = request.body.read.to_s
+      content_type :json
 
-      if request_body.strip.empty?
-        status 400
-        return { error: 'Empty request body' }.to_json
+      begin
+        request_body = request.body.read
+        halt 400, { error: 'Empty request body' }.to_json if request_body.strip.empty?
+
+        data = JSON.parse(request_body)
+        halt 400, { error: 'Invalid JSON format' }.to_json unless data.is_a?(Hash) && !data.empty?
+        halt 400, { error: 'Missing or invalid "birthdays" array' }.to_json unless data['birthdays'].is_a?(Array)
+      rescue StandardError
+        halt 400, { error: 'Invalid JSON format' }.to_json
       end
 
-      data = JSON.parse(request_body)
-      birthdays = data['birthdays']
-
-      unless birthdays.is_a?(Array)
-        status 400
-        return { error: 'Missing or invalid "birthdays" array' }.to_json
+      begin
+        shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
+        shared_storage.write(success: data)
+      rescue StandardError
+        halt 500, { error: 'Internal Server Error' }.to_json
       end
-
-      shared_storage_writer.write(success: data) unless data.nil?
-
       status 200
-      { success: true }.to_json
-    rescue JSON::ParserError => e
-      logger.error "Invalid JSON format: #{e.message}"
-      status 400
-      { error: 'Invalid JSON format' }.to_json
-    rescue StandardError => e
-      logger.error "Failed to process birthdays: #{e.message}"
-      status 500
-      { error: 'Internal Server Error' }.to_json
+      { message: 'Birthdays stored successfully' }.to_json
     end
   end
 end
