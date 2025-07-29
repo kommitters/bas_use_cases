@@ -10,9 +10,8 @@ echo "WAREHOUSE DATABASE UPDATED"
 
 # INITIALIZE WEBHOOKS
 echo "INITIALIZE WEBHOOKS"
-RACK_ENV=production bundle exec ruby src/use_cases_execution/use_cases_webserver/app.rb &
+RACK_ENV=production ruby src/use_cases_execution/use_cases_webserver/app.rb &
 
 # UPDATE CRONJOBS
 echo "INITIALIZE CRONJOBS"
 ruby /app/scripts/execute_orchestrator.rb
-
