@@ -97,6 +97,18 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
+  def create_document_activity_logs_table(db)
+    db.create_table(:document_activity_logs) do
+      primary_key :id
+      foreign_key :document_id, :documents, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
+      String :action, size: 255, null: false
+      jsonb :details, null: false, default: '{}'
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
   def create_weekly_scopes_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:weekly_scopes) do
       primary_key :id
