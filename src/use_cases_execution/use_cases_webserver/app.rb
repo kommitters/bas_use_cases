@@ -3,7 +3,7 @@
 require 'sinatra/base'
 require_relative '../pto/fetch_pto_from_google_for_workspace'
 require_relative '../birthday/fetch_birthdays_from_google'
-require_relative '../google_documents/listen_to_google_docs_updates'
+require_relative '../warehouse/google_workspace/listen_to_google_docs_updates'
 
 # The WebServer class defines the main Sinatra application responsible for
 # handling incoming webhooks from Google services.

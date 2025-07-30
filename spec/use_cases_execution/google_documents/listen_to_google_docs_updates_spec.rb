@@ -13,7 +13,7 @@ module Config
   CONNECTION = { mocked: true }.freeze
 end
 
-require_relative '../../../src/use_cases_execution/google_documents/listen_to_google_docs_updates'
+require_relative '../../../src/use_cases_execution/warehouse/google_workspace/listen_to_google_docs_updates'
 
 RSpec.describe Routes::GoogleDocuments do
   include Rack::Test::Methods
