@@ -22,24 +22,20 @@ module Utils
         protected
 
         def extract_event_by_name(name)
-          @data.flat_map(&:events).find { |event| event.name == name }
+          @data.flat_map { |activity| activity['events'] || [] }.find { |event| event['name'] == name }
         end
 
         def extract_parameter_value(params, name)
-          params&.find { |p| p.name == name }&.value
+          params&.find { |p| p['name'] == name }&.dig('value')
         end
 
-        # Converts the param's int_value (assumed to be in seconds since the .NET epoch)
-        # into a Ruby DateTime object.
         def extract_time_from_param(param)
-          return nil unless param&.int_value
+          int_value = param&.dig('intValue')
+          return nil unless int_value
 
-          # Adding an integer to a Time object in Ruby treats the integer as seconds.
-          # We then convert the result to a DateTime.
-          (DOTNET_EPOCH + param.int_value).to_datetime
+          (DOTNET_EPOCH + int_value.to_i).to_datetime
         end
 
-        # Calculates the duration in minutes between two DateTime objects.
         def calculate_duration(start_time, end_time)
           return 0 unless start_time && end_time
 
@@ -47,7 +43,7 @@ module Utils
         end
 
         def extract_creation_timestamp
-          @data.first&.id&.time
+          @data.first&.dig('id', 'time')
         end
       end
     end

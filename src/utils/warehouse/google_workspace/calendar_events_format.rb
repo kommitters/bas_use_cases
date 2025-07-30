@@ -32,29 +32,25 @@ module Utils
         end
 
         def event_id
-          @event_id ||= extract_parameter_value(create_event&.parameters, 'event_id')
+          @event_id ||= extract_parameter_value(create_event&.dig('parameters'), 'event_id')
         end
 
         def start_time
-          @start_time ||= extract_time_from_param(
-            create_event.parameters.find { |p| %w[start_time start_date].include?(p.name) }
-          )
+          @start_time ||= find_time_param(%w[start_time start_date])
         end
 
         def end_time
-          @end_time ||= extract_time_from_param(
-            create_event.parameters.find { |p| %w[end_time end_date].include?(p.name) }
-          )
+          @end_time ||= find_time_param(%w[end_time end_date])
         end
 
         def summary
-          @summary ||= latest_title_change || extract_parameter_value(create_event.parameters, 'event_title')
+          @summary ||= latest_title_change || extract_parameter_value(create_event&.dig('parameters'), 'event_title')
         end
 
         def attendees
           @attendees ||= all_attendee_emails.map do |email|
             {
-              email: email,
+              email_address: email,
               response_status: attendee_status_map.fetch(email, 'needsAction')
             }
           end
@@ -63,38 +59,59 @@ module Utils
         def latest_title_change
           @latest_title_change ||= begin
             change_event = find_latest_title_change_event
-            extract_parameter_value(change_event&.parameters, 'event_title')
+            extract_parameter_value(change_event&.dig('parameters'), 'event_title')
           end
         end
 
         def find_latest_title_change_event
-          title_change_activities = @data.select do |activity|
-            activity.events&.any? { |event| event.name == 'change_event_title' }
-          end
+          latest_activity = @data
+                            .select { |activity| event_name?(activity, 'change_event_title') }
+                            .max_by { |activity| activity.dig('id', 'time') }
 
-          return nil if title_change_activities.empty?
+          return nil unless latest_activity
 
-          latest_activity = title_change_activities.max_by { |activity| activity.id.time }
-          latest_activity.events.find { |event| event.name == 'change_event_title' }
+          (latest_activity['events'] || []).find { |event| event['name'] == 'change_event_title' }
         end
 
         def all_attendee_emails
-          @all_attendee_emails ||= @data.flat_map do |activity|
-            activity.events.flat_map do |event|
-              event.parameters.select { |p| p.name == 'event_guest' }.map(&:value)
-            end
-          end.uniq
+          @all_attendee_emails ||= @data.flat_map { |activity| extract_guests_from(activity) }.uniq
         end
 
         def attendee_status_map
-          @attendee_status_map ||= @data.each_with_object({}) do |activity, map|
-            activity.events.select { |e| e.name == 'change_event_guest_response' }.each do |event|
-              params = event.parameters
-              email = extract_parameter_value(params, 'event_guest')
-              status = extract_parameter_value(params, 'event_response_status')
-              map[email] = status if email && status
-            end
+          @attendee_status_map ||= @data
+                                   .flat_map { |activity| activity['events'] || [] }
+                                   .select { |event| event['name'] == 'change_event_guest_response' }
+                                   .map { |event| extract_email_and_status_from(event) }
+                                   .compact
+                                   .to_h
+        end
+
+        def create_event_parameters
+          create_event&.dig('parameters') || []
+        end
+
+        def find_time_param(param_names)
+          param = create_event_parameters.find { |p| param_names.include?(p['name']) }
+          extract_time_from_param(param)
+        end
+
+        def event_name?(activity, event_name)
+          (activity['events'] || []).any? { |event| event['name'] == event_name }
+        end
+
+        def extract_guests_from(activity)
+          (activity['events'] || []).flat_map do |event|
+            (event['parameters'] || []).select { |p| p['name'] == 'event_guest' }.map { |p| p['value'] }
           end
+        end
+
+        def extract_email_and_status_from(event)
+          params = event['parameters']
+          email = extract_parameter_value(params, 'event_guest')
+          status = extract_parameter_value(params, 'event_response_status')
+          return nil unless email && status
+
+          [email, status]
         end
       end
     end
