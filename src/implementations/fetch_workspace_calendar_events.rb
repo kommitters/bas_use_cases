@@ -24,17 +24,19 @@ module Implementation
     private
 
     def normalize_response(activities)
-      activities_by_event_id = (activities || []).group_by do |activity|
-        event = activity.events.first
-        param = event.parameters.find { |p| p.name == 'event_id' }
-        param&.value
-      end
+      activities_by_event_id = (activities || []).group_by { |activity| extract_event_id_from(activity) }
 
       activities_by_event_id.delete(nil)
 
       activities_by_event_id.values.map do |activity_group|
         Utils::Warehouse::GoogleWorkspace::CalendarEventsFormatter.new(activity_group).format
       end.compact
+    end
+
+    def extract_event_id_from(activity)
+      event = activity.dig('events', 0)
+      param = event&.dig('parameters')&.find { |p| p['name'] == 'event_id' }
+      param&.dig('value')
     end
 
     def error_response(message)
