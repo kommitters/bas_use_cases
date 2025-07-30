@@ -15,13 +15,25 @@ x-common: &default-build
 services:
   bas_cronjobs:
     container_name: bas_cronjobs
+    restart: always
+    <<: *default-build
+    volumes:
+      - cronjobs:/app
+    command: ["bash", "/app/scripts/update_cronjobs_container.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
+  bas_webserver:
+    container_name: bas_webserver
     ports:
       - 4567:4567
     restart: always
     <<: *default-build
     volumes:
       - cronjobs:/app
-    command: ["bash", "/app/scripts/update_container.sh"]
+    command: ["bash", "/app/scripts/update_web_container.sh"]
     deploy:
       resources:
         limits:
