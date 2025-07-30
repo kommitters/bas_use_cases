@@ -2,7 +2,6 @@
 
 require 'sinatra/base'
 require_relative '../pto/fetch_pto_from_google_for_workspace'
-require_relative '../website_contact_form/form_submissions_webhook'
 require_relative '../birthday/fetch_birthdays_from_google'
 
 # The WebServer class defines the main Sinatra application responsible for
@@ -14,7 +13,6 @@ require_relative '../birthday/fetch_birthdays_from_google'
 # WebServer is the main Sinatra application class.
 class WebServer < Sinatra::Base
   use Routes::Pto
-  use Routes::FormSubmissions
   use Routes::Birthdays
 end
 
