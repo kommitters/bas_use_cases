@@ -2,7 +2,6 @@
 
 require 'sinatra/base'
 require 'json'
-require 'time'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
 require_relative 'config'

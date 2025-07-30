@@ -2,6 +2,11 @@
 
 ENV['RACK_ENV'] = 'test'
 
+# Set required environment variables for config loading
+ENV['WAREHOUSE_POSTGRES_DB'] = 'test_warehouse_db'
+ENV['GOOGLE_KEYFILE_PATH'] = '/tmp/test_keyfile.json'
+ENV['GOOGLE_ADMIN_EMAIL'] = 'test@example.com'
+
 require 'rspec'
 require 'rack/test'
 require 'json'
