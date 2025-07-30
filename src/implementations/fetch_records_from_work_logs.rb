@@ -43,9 +43,11 @@ module Implementation
   class FetchRecordsFromWorkLogs < Bas::Bot::Base
     RECORDS_PER_PAGE = 100
     PAGE_SIZE = 100
+    DEFAULT_START_DATE = Date.new(2023, 7, 10)
 
     def process
-      start_date = (read_response.inserted_at || Date.new(2023, 7, 10)).to_s
+      start_date = determine_start_date
+
       logs = fetch_all_logs(start_date)
       normalized_content = normalize_response(logs)
 
@@ -70,6 +72,12 @@ module Implementation
     end
 
     private
+
+    def determine_start_date
+      last_run_timestamp = read_response&.inserted_at
+      date_object = last_run_timestamp ? DateTime.parse(last_run_timestamp.to_s) : DEFAULT_START_DATE
+      date_object.strftime('%Y-%m-%d')
+    end
 
     def fetch_all_logs(start_date)
       all_logs = []
