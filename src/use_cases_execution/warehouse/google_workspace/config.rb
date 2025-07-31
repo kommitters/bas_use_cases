@@ -24,7 +24,4 @@ module Config
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  GOOGLE_KEYFILE_PATH = ENV.fetch('GOOGLE_KEYFILE_PATH')
-  GOOGLE_ADMIN_EMAIL = ENV.fetch('GOOGLE_ADMIN_EMAIL')
 end
