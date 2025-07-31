@@ -5,11 +5,11 @@ require_relative '../utils/warehouse/google_workspace/calendar_events_format'
 
 module Implementation
   ##
-  # FetchWorkspaceCalendarEvents bot implementation.
+  # FormatWorkspaceCalendarEvents bot implementation.
   # This bot fetches calendar events for all users in the Google Workspace domain.
   # It uses the Google Calendar API to retrieve events and formats them for storage.
   #
-  class FetchWorkspaceCalendarEvents < Bas::Bot::Base
+  class FormatWorkspaceCalendarEvents < Bas::Bot::Base
     def process
       all_activities = process_options[:calendar_events]
 

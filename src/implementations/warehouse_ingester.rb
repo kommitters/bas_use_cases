@@ -66,9 +66,7 @@ module Implementation
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
       'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
-      'github_pull_request' => {
-        service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id'
-      }
+      'github_pull_request' => { service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id' }
     }.freeze
 
     def process
