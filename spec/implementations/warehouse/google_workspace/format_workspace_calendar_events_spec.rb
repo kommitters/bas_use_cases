@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 require 'bas/shared_storage/postgres'
-require_relative '../../../../src/implementations/fetch_workspace_calendar_events'
+require_relative '../../../../src/implementations/format_workspace_calendar_events'
 require_relative '../../../../src/utils/warehouse/google_workspace/calendar_events_format'
 
-RSpec.describe Implementation::FetchWorkspaceCalendarEvents do
+RSpec.describe Implementation::FormatWorkspaceCalendarEvents do
   subject(:bot) { described_class.new(options, shared_storage) }
 
   let(:shared_storage) { instance_double(Bas::SharedStorage::Postgres) }
