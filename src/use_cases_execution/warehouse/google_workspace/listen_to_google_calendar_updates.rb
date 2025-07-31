@@ -44,7 +44,7 @@ module Routes
       { error: 'Invalid JSON format' }.to_json
     rescue StandardError => e
       logger.error "Failed to process calendar events data: #{e.message}\n#{e.backtrace.join("\n")}"
-      halt 500, { error: 'Internal Server Error:' }.to_json
+      halt 500, { error: 'Internal Server Error' }.to_json
     end
   end
 end

@@ -131,7 +131,7 @@ RSpec.describe Routes::CalendarEvents do
       allow(mocked_formatter).to receive(:execute).and_raise(StandardError.new('boom'))
       post_calendar_events(valid_payload)
       expect(last_response.status).to eq(500)
-      expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error:')
+      expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error')
     end
   end
 end

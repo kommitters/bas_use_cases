@@ -78,7 +78,7 @@ function postToWebhook(url, payload) {
 
 Set up this variable in the Script Properties section in the Google Apps Script editor.
 
-- **WEBHOOK_URL**: The backend URL that will receive the list of documents including the path (i.e it should end with /google_docs). For local development, you can expose the backend via a tunnel like Ngrok or Cloudflare Tunnels.
+- **WEBHOOK_URL**: The backend URL that will receive the calendar events including the path (i.e it should end with /calendar_events). For local development, you can expose the backend via a tunnel like Ngrok or Cloudflare Tunnels.
 
 ---
 
