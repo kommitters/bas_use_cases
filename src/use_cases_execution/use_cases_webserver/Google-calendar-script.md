@@ -13,8 +13,7 @@ This script is designed to fetch Google Calendar activity reports from the last 
  */
 function sendCalendarEventsToWebhook() {
   try {
-    const properties = PropertiesService.getScriptProperties();
-    const webhookUrl = properties.getProperty('WEBHOOK_URL');
+    const webhookUrl = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
     const startTime = getStartTime();
 
     const activities = fetchCalendarActivities(startTime);
