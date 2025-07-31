@@ -1,32 +1,14 @@
-# PTO Reporting Script
-
-This script is designed to **post daily PTO entries**, excluding weekends, from a Google Spreadsheet to a **webhook exposed**.
-
-It checks for PTO entries where:
-- The current day is within the start and end range.
-- The entry is categorized as `PTO`.
-- The day type is `'Full Day'`.
-- The current day is **not a weekend** (Saturday or Sunday).
-
-If conditions are met, the script formats a message and sends the data to a defined webhook (`WEBHOOK_URL` in Script Properties).
-
----
-
-## Script
-
-```javascript
 function sendSheetToWebhook() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
   const data = sheet.getDataRange().getValues();
-
   const headers = data[0];
   const rows = data.slice(1);
   const tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  console.log(today.getDay());
-
   const validDays = ['Full Day'];
+  const dayOfWeek = today.getDay()
+  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+  if(isWeekend) return false;
 
   const ptos = rows
     .map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])))
@@ -35,9 +17,6 @@ function sendSheetToWebhook() {
       const end = parseDate(entry['EndDateTime']);
       const isToday = start.toDateString() === today.toDateString();
       const inRange = start <= today && today <= end;
-      const dayOfWeek = today.getDay()
-      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-      if(isWeekend) return false;
       return (isToday || inRange)
         && entry['Category']?.includes('PTO')
         && validDays.includes(entry['Day']);
@@ -54,6 +33,7 @@ function sendSheetToWebhook() {
   if (!url || ptos.length === 0) return;
 
   const payload = JSON.stringify({ ptos });
+  console.log(ptos)
 
   try {
     const res = UrlFetchApp.fetch(url, {
@@ -103,4 +83,3 @@ function getNextWorkday(date) {
   return new Intl.DateTimeFormat('en-US', options).format(next);
 }
 
-```
