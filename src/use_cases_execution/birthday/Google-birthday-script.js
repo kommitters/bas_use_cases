@@ -6,9 +6,6 @@ function sendBirthdaysToWebhook() {
   const tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const dayOfWeek = today.getDay(); 
-  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-  if (isWeekend) return false;
 
   const birthdays = rows
     .map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])))
@@ -24,19 +21,15 @@ function sendBirthdaysToWebhook() {
     }));
 
   const url = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
-
   if (!url) {
     Logger.log("⚠️ No se encontró la URL del webhook.");
     return;
   }
-
   if (birthdays.length === 0) {
     Logger.log("ℹ️ No hay cumpleaños hoy.");
     return;
   }
-
   const payload = JSON.stringify({ birthdays });
-  console.log(birthdays)
   try {
     const res = UrlFetchApp.fetch(url, {
       method: 'post',
@@ -44,8 +37,8 @@ function sendBirthdaysToWebhook() {
       payload,
       muteHttpExceptions: true
     });
-    Logger.log('Status:', res.getResponseCode());
-    Logger.log('Body:', res.getContentText());
+    Logger.log('Status: ' + res.getResponseCode());
+    Logger.log('Body: ' + res.getContentText());
   } catch (err) {
     Logger.log('Error: ' + err.toString());
   }
@@ -62,6 +55,6 @@ function parseDate(val) {
 
 function format(date, timeZone = null) {
   const d = parseDate(date);
-  const tz = timezone || SpreadsheetApp.getActive().getSpreadsheetTimeZone();
+  const tz = timeZone || SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   return Utilities.formatDate(d, tz, "yyyy-MM-dd");
 }
