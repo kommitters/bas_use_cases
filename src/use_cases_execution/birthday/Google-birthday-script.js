@@ -14,7 +14,9 @@ function sendBirthdaysToWebhook() {
     .map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])))
     .filter(entry => {
       const birthday = parseDate(entry['Birthday']);
-      return birthday.getMonth() === today.getMonth() && birthday.getDate() === today.getDate();
+      const birthdayInTz = new Date(birthday.toLocaleString("en-US", {timeZone: tz}));
+      const todayInTz = new Date(today.toLocaleString("en-US", {timeZone: tz}));
+      return birthdayInTz.getMonth() === todayInTz.getMonth() && birthdayInTz.getDate() === todayInTz.getDate();
     })
     .map(entry => ({
       name: entry['Name'],
@@ -42,9 +44,10 @@ function sendBirthdaysToWebhook() {
       payload,
       muteHttpExceptions: true
     });
-
+    Logger.log('Status:', res.getResponseCode());
+    Logger.log('Body:', res.getContentText());
   } catch (err) {
-    Logger.log('💥 Error al hacer fetch: ' + err.toString());
+    Logger.log('Error: ' + err.toString());
   }
 }
 
@@ -57,7 +60,8 @@ function parseDate(val) {
   return new Date(val);
 }
 
-function format(date) {
+function format(date, timeZone = null) {
   const d = parseDate(date);
-  return Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd");
+  const tz = timezone || SpreadsheetApp.getActive().getSpreadsheetTimeZone();
+  return Utilities.formatDate(d, tz, "yyyy-MM-dd");
 }
