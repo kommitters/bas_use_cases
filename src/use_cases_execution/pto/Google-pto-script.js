@@ -3,33 +3,35 @@ function sendSheetToWebhook() {
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   const rows = data.slice(1);
-  const tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
+
   const today = new Date();
-  const validDays = ['Full Day'];
-  const dayOfWeek = today.getDay()
+  today.setHours(0, 0, 0, 0);
+
+  const dayOfWeek = today.getDay();
   const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-  if(isWeekend) return false;
+  if (isWeekend) return false;
 
   const ptos = rows
     .map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])))
     .filter(entry => {
-      const start = parseDate(entry['StartDateTime']);
-      const end = parseDate(entry['EndDateTime']);
-      const isToday = start.toDateString() === today.toDateString();
+      const start = toDateOnly(entry['StartDateTime']);
+      const end = toDateOnly(entry['EndDateTime']);
       const inRange = start <= today && today <= end;
-      return (isToday || inRange)
-        && entry['Category']?.includes('PTO')
-        && validDays.includes(entry['Day']);
+      const dayValue = entry['Day'];
+
+      return inRange &&
+        entry['Category']?.includes('PTO') &&
+        dayValue === 'Full Day';
     })
     .map(entry => {
       const name = entry['Person'];
-      const start = parseDate(entry['StartDateTime']);
-      const end = parseDate(entry['EndDateTime']);
-
+      const start = toDateOnly(entry['StartDateTime']);
+      const end = toDateOnly(entry['EndDateTime']);
       return formatMessage(name, start, end);
     });
 
   const url = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
+  const token = PropertiesService.getScriptProperties().getProperty('WEBHOOK_TOKEN');
   if (!url || ptos.length === 0) return;
 
   const payload = JSON.stringify({ ptos });
@@ -40,7 +42,10 @@ function sendSheetToWebhook() {
       method: 'post',
       contentType: 'application/json',
       payload,
-      muteHttpExceptions: true
+      muteHttpExceptions: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
     console.log('Status:', res.getResponseCode());
     console.log('Body:', res.getContentText());
@@ -49,13 +54,10 @@ function sendSheetToWebhook() {
   }
 }
 
-function parseDate(val) {
-  if (val instanceof Date) return val;
-  if (typeof val === 'string' && val.includes('/')) {
-    const [m, d, y] = val.split('/').map(Number);
-    return new Date(y, m - 1, d);
-  }
-  return new Date(val);
+function toDateOnly(val) {
+  const d = new Date(val);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
 function formatMessage(name, startDate, endDate) {
@@ -82,4 +84,3 @@ function getNextWorkday(date) {
   const options = { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric', timeZone: 'UTC' };
   return new Intl.DateTimeFormat('en-US', options).format(next);
 }
-
