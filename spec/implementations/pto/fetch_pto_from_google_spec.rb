@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 ENV['RACK_ENV'] = 'test'
+ENV['WEBHOOK_TOKEN'] = 'test_token'
 
 require 'rspec'
 require 'rack/test'
@@ -18,6 +19,8 @@ require_relative '../../../src/use_cases_execution/pto/fetch_pto_from_google_for
 RSpec.describe Routes::Pto do
   include Rack::Test::Methods
 
+  let(:auth_token) { 'Bearer test_token' }
+
   def app
     described_class.new
   end
@@ -33,27 +36,35 @@ RSpec.describe Routes::Pto do
     }
   end
 
-  def post_pto(payload)
-    post '/pto', payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  def post_pto(payload, token = auth_token)
+    post '/pto', payload.to_json, {
+      'CONTENT_TYPE' => 'application/json',
+      'HTTP_AUTHORIZATION' => token
+    }
   end
 
   before do
     allow(Bas::SharedStorage::Postgres).to receive(:new).and_return(mocked_shared_storage_writer)
     allow(mocked_shared_storage_writer).to receive(:write).and_return(true)
-
     allow_any_instance_of(Routes::Pto).to receive(:logger).and_return(double('logger').as_null_object)
   end
 
   context 'POST /pto' do
     it 'returns 400 for empty request body' do
-      post '/pto', '', { 'CONTENT_TYPE' => 'application/json' }
+      post '/pto', '', {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => auth_token
+      }
 
       expect(last_response.status).to eq(400)
       expect(JSON.parse(last_response.body)).to include('error' => 'Empty request body')
     end
 
     it 'returns 400 for invalid JSON' do
-      post '/pto', '{not valid json}', { 'CONTENT_TYPE' => 'application/json' }
+      post '/pto', '{not valid json}', {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => auth_token
+      }
 
       expect(last_response.status).to eq(400)
       expect(JSON.parse(last_response.body)).to include('error' => 'Invalid JSON format')
@@ -87,6 +98,20 @@ RSpec.describe Routes::Pto do
 
       expect(last_response.status).to eq(500)
       expect(JSON.parse(last_response.body)).to include('error' => 'Internal Server Error')
+    end
+
+    it 'returns 403 when token is invalid' do
+      post_pto(valid_payload, 'Bearer wrong_token')
+
+      expect(last_response.status).to eq(403)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Forbidden: invalid token')
+    end
+
+    it 'returns 401 when Authorization header is missing' do
+      post '/pto', valid_payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(401)
+      expect(JSON.parse(last_response.body)).to include('error' => 'Missing or invalid Authorization header')
     end
   end
 end

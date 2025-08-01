@@ -14,9 +14,18 @@ module Routes
       db_table: 'pto',
       tag: 'FetchPtosFromGoogle'
     }
+    TOKEN = ENV.fetch('WEBHOOK_TOKEN')
 
     post '/pto' do
       content_type :json
+
+      auth_header = request.env['HTTP_AUTHORIZATION']
+      if auth_header.nil? || !auth_header.start_with?('Bearer ')
+        halt 401, { error: 'Missing or invalid Authorization header' }.to_json
+      end
+
+      token = auth_header.split(' ').last
+      halt 403, { error: 'Forbidden: invalid token' }.to_json unless token == TOKEN
 
       begin
         request_body = request.body.read
