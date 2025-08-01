@@ -55,9 +55,9 @@ function sendSheetToWebhook() {
 }
 
 function toDateOnly(val) {
-  const d = new Date(val);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const date = new Date(val);
+  date.setHours(0, 0, 0, 0);
+  return date;
 }
 
 function formatMessage(name, startDate, endDate) {
