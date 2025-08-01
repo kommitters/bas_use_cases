@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.1 (1.08.25)
+- [PTO webhook integration with bearer token authentication](https://github.com/kommitters/bas_use_cases/pull/193)
+
 ## 1.10.0 (31.07.25)
 - [Implement Fetch issues events](https://github.com/kommitters/bas_use_cases/pull/157)
 - [Deployment of processes and creation of instances in Operaton](https://github.com/kommitters/bas_use_cases/pull/158)
