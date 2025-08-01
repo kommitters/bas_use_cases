@@ -4,11 +4,11 @@ require 'logger'
 require 'bas/shared_storage/postgres'
 
 require_relative '../../../implementations/fetch_records_from_notion_database'
-require_relative 'config'
+require_relative '../config'
 
 # Configuration
 read_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
@@ -16,14 +16,14 @@ read_options = {
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   tag: 'FetchDocumentsFromNotionDatabase'
 }
 
 options = {
-  database_id: Config::DOCUMENTS_NOTION_DATABASE_ID,
-  secret: Config::NOTION_SECRET,
+  database_id: Config::Notion::DOCUMENTS_DATABASE_ID,
+  secret: Config::Notion::SECRET,
   entity: 'document'
 }
 

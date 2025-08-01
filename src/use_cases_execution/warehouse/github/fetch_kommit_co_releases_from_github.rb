@@ -7,7 +7,7 @@ require_relative 'config'
 require_relative '../../../implementations/fetch_releases_from_github'
 
 read_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
@@ -15,15 +15,17 @@ read_options = {
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   tag: 'FetchReleasesFromGithub'
 }
 
+github_config = Config::Github.kommit_co
+
 options = {
-  private_pem: Config::KOMMIT_CO_GITHUB_PRIVATE_PEM,
-  app_id: Config::KOMMIT_CO_GITHUB_APP_ID,
-  organization: Config::KOMMIT_CO_ORGANIZATION
+  private_pem: github_config[:private_pem],
+  app_id: github_config[:app_id],
+  organization: github_config[:organization]
 }
 
 begin

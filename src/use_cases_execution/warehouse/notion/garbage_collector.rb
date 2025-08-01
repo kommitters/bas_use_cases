@@ -6,17 +6,17 @@ require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
 
 require_relative '../../implementations/garbage_collector'
-require_relative 'config'
+require_relative '../config'
 
 # Configuration
 write_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   tag: 'GarbageCollector'
 }
 
 options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync'
 }
 
