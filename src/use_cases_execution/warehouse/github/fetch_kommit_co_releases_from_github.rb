@@ -22,16 +22,10 @@ write_options = {
 
 github_config = Config::Github.kommit_co
 
-options = {
-  private_pem: github_config[:private_pem],
-  app_id: github_config[:app_id],
-  organization: github_config[:organization]
-}
-
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::FetchReleasesFromGithub.new(options, shared_storage).execute
+  Implementation::FetchReleasesFromGithub.new(github_config, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end

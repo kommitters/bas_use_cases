@@ -61,7 +61,7 @@ module Config
       {
         private_pem: File.read('./kommiters_private_key.pem'),
         app_id: ENV.fetch('KOMMITERS_GITHUB_APP_ID'),
-        organization: 'cammv21-organization'
+        organization: 'kommitters'
       }
     end
 
