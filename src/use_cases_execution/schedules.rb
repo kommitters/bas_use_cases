@@ -159,7 +159,7 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['06:10'] },
       { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['06:15'] },
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:20'] },
-      { path: "#{__dir__}/warehouse/notion/warehouse_ingester.rb", interval: 3_600_000 }
+      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
   end
 end

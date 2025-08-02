@@ -1,20 +1,9 @@
 # frozen_string_literal: true
 
-ENV['RACK_ENV'] = 'test'
-
-# Set required environment variables for config loading
-ENV['WAREHOUSE_POSTGRES_DB'] = 'test_warehouse_db'
-
-require 'rspec'
-require 'rack/test'
-require 'json'
-require 'sinatra/base'
+require 'spec_helper'
+require_relative 'env_helper'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-
-module Config
-  CONNECTION = { mocked: true }.freeze
-end
 
 require_relative '../../../src/use_cases_execution/warehouse/google_workspace/listen_to_google_calendar_updates'
 require_relative '../../../src/implementations/format_workspace_calendar_events'

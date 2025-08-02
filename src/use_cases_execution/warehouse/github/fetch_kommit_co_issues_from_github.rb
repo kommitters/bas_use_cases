@@ -3,11 +3,11 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-require_relative 'config'
+require_relative '../config'
 require_relative '../../../implementations/fetch_issues_from_github'
 
 read_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
@@ -15,21 +15,17 @@ read_options = {
 }
 
 write_options = {
-  connection: Config::CONNECTION,
+  connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
   tag: 'FetchIssuesFromGithub'
 }
 
-options = {
-  private_pem: Config::KOMMIT_CO_GITHUB_PRIVATE_PEM,
-  app_id: Config::KOMMIT_CO_GITHUB_APP_ID,
-  organization: Config::KOMMIT_CO_ORGANIZATION
-}
+github_config = Config::Github.kommit_co
 
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::FetchIssuesFromGithub.new(options, shared_storage).execute
+  Implementation::FetchIssuesFromGithub.new(github_config, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
