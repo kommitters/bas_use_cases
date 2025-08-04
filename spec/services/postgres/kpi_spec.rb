@@ -15,6 +15,9 @@ RSpec.describe Services::Postgres::Kpi do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
+  let(:domain1_id) { domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1') }
+  let(:domain2_id) { domain_service.insert(external_domain_id: 'dom-2', name: 'Domain2') }
+
   before(:each) do
     db.drop_table?(:kpis)
     db.drop_table?(:domains)
@@ -27,11 +30,10 @@ RSpec.describe Services::Postgres::Kpi do
 
   describe '#insert' do
     it 'creates a new kpi and returns its ID' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
       params = {
         external_kpi_id: 'ext-kpi-1',
         description: 'First KPI',
-        domain_id: domain_id
+        domain_id: domain1_id
       }
       id = service.insert(params)
       kpi = service.find(id)
@@ -40,7 +42,7 @@ RSpec.describe Services::Postgres::Kpi do
     end
 
     it 'assigns domain_id when given external_domain_id' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
+      domain_id = domain1_id
       params = {
         external_kpi_id: 'ext-kpi-2',
         description: 'KPI with Domain',
@@ -54,8 +56,7 @@ RSpec.describe Services::Postgres::Kpi do
 
   describe '#update' do
     it 'updates a kpi by ID' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      id = service.insert(external_kpi_id: 'ext-kpi-4', description: 'Old Description', domain_id: domain_id)
+      id = service.insert(external_kpi_id: 'ext-kpi-4', description: 'Old Description', domain_id: domain1_id)
       service.update(id, { description: 'Updated Description' })
       updated = service.find(id)
       expect(updated[:description]).to eq('Updated Description')
@@ -63,8 +64,7 @@ RSpec.describe Services::Postgres::Kpi do
     end
 
     it 'reassigns domain_id on update with external_domain_id' do
-      domain1_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      domain2_id = domain_service.insert(external_domain_id: 'dom-2', name: 'Domain2')
+      domain_id = domain2_id
       id = service.insert(
         external_kpi_id: 'ext-kpi-5',
         description: 'To Update Domain',
@@ -72,7 +72,7 @@ RSpec.describe Services::Postgres::Kpi do
       )
       service.update(id, { external_domain_id: 'dom-2' })
       updated = service.find(id)
-      expect(updated[:domain_id]).to eq(domain2_id)
+      expect(updated[:domain_id]).to eq(domain_id)
     end
 
     it 'raises error if no ID is provided' do
@@ -82,8 +82,7 @@ RSpec.describe Services::Postgres::Kpi do
 
   describe '#delete' do
     it 'deletes a kpi by ID' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      id = service.insert(external_kpi_id: 'ext-kpi-6', description: 'To Delete', domain_id: domain_id)
+      id = service.insert(external_kpi_id: 'ext-kpi-6', description: 'To Delete', domain_id: domain1_id)
       expect { service.delete(id) }.to change { service.query.size }.by(-1)
       expect(service.find(id)).to be_nil
     end
@@ -91,8 +90,7 @@ RSpec.describe Services::Postgres::Kpi do
 
   describe '#find' do
     it 'finds a kpi by ID' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      id = service.insert(external_kpi_id: 'ext-kpi-7', description: 'Find Me', domain_id: domain_id)
+      id = service.insert(external_kpi_id: 'ext-kpi-7', description: 'Find Me', domain_id: domain1_id)
       found = service.find(id)
       expect(found[:description]).to eq('Find Me')
       expect(found[:external_kpi_id]).to eq('ext-kpi-7')
@@ -101,17 +99,15 @@ RSpec.describe Services::Postgres::Kpi do
 
   describe '#query' do
     it 'queries kpis by condition' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      id = service.insert(external_kpi_id: 'ext-kpi-8', description: 'Query Me', domain_id: domain_id)
+      id = service.insert(external_kpi_id: 'ext-kpi-8', description: 'Query Me', domain_id: domain1_id)
       results = service.query(description: 'Query Me')
       expect(results.map { |k| k[:id] }).to include(id)
       expect(results.first[:external_kpi_id]).to eq('ext-kpi-8')
     end
 
     it 'returns all kpis with empty conditions' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
       count = service.query.size
-      service.insert(external_kpi_id: 'ext-kpi-9', description: 'Another', domain_id: domain_id)
+      service.insert(external_kpi_id: 'ext-kpi-9', description: 'Another', domain_id: domain1_id)
       expect(service.query.size).to eq(count + 1)
     end
   end
