@@ -255,4 +255,20 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :response_status, size: 50, null: false
     end
   end
+
+  def create_kpis_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:kpis) do
+      primary_key :id
+      String :external_kpi_id, size: 255, null: true
+      foreign_key :domain_id, :domains, type: :uuid, null: false, on_delete: :cascade
+      String :description, size: 255, null: true
+      String :status, size: 255, null: true
+      Float :current_value, null: true
+      Float :percentage, null: true
+      Float :target_value, null: true
+      jsonb :stats, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
 end
