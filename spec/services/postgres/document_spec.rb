@@ -11,12 +11,7 @@ RSpec.describe Services::Postgres::Document do
 
   # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
-  let(:config) do
-    {
-      adapter: 'sqlite',
-      database: ':memory:'
-    }
-  end
+  let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 

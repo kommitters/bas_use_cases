@@ -4,7 +4,7 @@ require 'sinatra/base'
 require 'json'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-require_relative 'config'
+require_relative '../config'
 require_relative '../../../implementations/format_workspace_calendar_events'
 
 module Routes
@@ -13,7 +13,7 @@ module Routes
     def initialize(args)
       super(args)
       write_options = {
-        connection: Config::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchCalendarEventsFromWebhook'
+        connection: Config::Database::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchCalendarEventsFromWebhook'
       }
       @shared_storage_reader = Bas::SharedStorage::Default.new
       @shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })

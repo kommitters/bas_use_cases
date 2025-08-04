@@ -4,7 +4,7 @@ require 'sinatra/base'
 require 'json'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-require_relative 'config'
+require_relative '../config'
 
 module Routes
   # Routes::GoogleDocuments defines the /google_documents endpoint that receives Google Documents data
@@ -12,7 +12,7 @@ module Routes
     def initialize(args)
       super(args)
       write_options = {
-        connection: Config::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchGoogleDocumentsFromWorkspace'
+        connection: Config::Database::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchGoogleDocumentsFromWorkspace'
       }
       @shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
     end

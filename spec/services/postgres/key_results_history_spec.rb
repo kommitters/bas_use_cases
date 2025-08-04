@@ -12,12 +12,7 @@ RSpec.describe Services::Postgres::KeyResultsHistory do
 
   # Use an in-memory SQLite database for testing
   let(:db) { Sequel.sqlite }
-  let(:config) do
-    {
-      adapter: 'sqlite',
-      database: ':memory:'
-    }
-  end
+  let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
   let(:key_result_service) { Services::Postgres::KeyResult.new(config) }
   let(:key_results_params) do
