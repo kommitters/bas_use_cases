@@ -6,6 +6,7 @@ require 'bas/shared_storage/postgres'
 require_relative 'config'
 
 module Routes
+  # Routes::PtoNextWeek defines the /pto-next-week endpoint that receives PTO data
   class PtoNextWeek < Sinatra::Base
     write_options = {
       connection: Config::CONNECTION,
