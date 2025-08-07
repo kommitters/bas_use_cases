@@ -53,7 +53,7 @@ module Routes
     # @success 200 { message: "Google documents activity logs stored successfully" }
     #
     post '/google_docs_activity_logs' do
-      halt 413, { error: PAYLOAD_SIZE_ERROR }.to_json if request.content_length && request.content_length > MAX_SIZE
+      validate_content_length!
 
       body = request.body.read.to_s
       halt 400, { error: 'Empty request body' }.to_json if body.strip.empty?
@@ -85,6 +85,14 @@ module Routes
       logger.error "Failed to process Google documents activity logs data: #{e.message}\n#{e.backtrace.join("\n")}"
       puts "ERROR: #{e.class}: #{e.message}"
       halt 500, { error: 'Internal Server Error' }.to_json
+    end
+
+    private
+
+    def validate_content_length!
+      return unless request.content_length && request.content_length.to_i > MAX_SIZE
+
+      halt 413, { error: PAYLOAD_SIZE_ERROR }.to_json
     end
   end
 end
