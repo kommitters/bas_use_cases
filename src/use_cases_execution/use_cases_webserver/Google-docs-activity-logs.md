@@ -106,6 +106,36 @@ function sendGoogleDocsActivityLogsToWebhook() {
 }
 ```
 
+Also, it is necessary to modify the `appscript.json` file to include the following:
+
+```json
+{
+  "timeZone": "America/Bogota",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "DriveActivity",
+        "version": "v2",
+        "serviceId": "driveactivity"
+      },
+      {
+        "userSymbol": "People",
+        "version": "v1",
+        "serviceId": "peopleapi"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/contacts.readonly",
+    "https://www.googleapis.com/auth/drive.readonly",
+    "https://www.googleapis.com/auth/drive.activity.readonly"
+  ]
+}
+```
+
 ---
 
 ## Environment Variables and Configuration
