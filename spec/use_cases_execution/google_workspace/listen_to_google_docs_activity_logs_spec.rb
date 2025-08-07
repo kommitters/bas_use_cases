@@ -119,7 +119,9 @@ RSpec.describe Routes::GoogleDocumentsActivityLogs do
       post_google_docs_activity_logs(valid_payload, token)
 
       expect(last_response.status).to eq(200)
-      expect(JSON.parse(last_response.body)).to(include('message' => 'Google documents activity logs stored successfully'))
+      expect(JSON.parse(last_response.body)).to(
+        include('message' => 'Google documents activity logs stored successfully')
+      )
     end
 
     it 'returns 500 if shared storage write fails' do
