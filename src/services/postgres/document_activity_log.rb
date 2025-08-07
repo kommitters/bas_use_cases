@@ -11,17 +11,17 @@ module Services
     #
     # Provides CRUD operations for the 'document_activity_logs' table using the Base service.
     class DocumentActivityLog < Services::Postgres::Base
-      ATTRIBUTES = %i[document_id person_id action details].freeze
+      ATTRIBUTES = %i[document_id person_id action details unique_identifier].freeze
       TABLE = :document_activity_logs
 
       RELATIONS = [
         { service: Document, external: :external_document_id, internal: :document_id },
-        { service: Person, external: :external_person_id, internal: :person_id }
+        { service: Person, external: :email_address, internal: :person_id }
       ].freeze
 
       def insert(params)
         assign_relations(params)
-        transaction { insert_item(TABLE, params) }
+        transaction { insert_item(TABLE, polished_attributes(params)) }
       rescue StandardError => e
         handle_error(e)
       end
@@ -30,7 +30,7 @@ module Services
         raise ArgumentError, 'DocumentActivityLog id is required to update' unless id
 
         assign_relations(params)
-        transaction { update_item(TABLE, id, params) }
+        transaction { update_item(TABLE, id, polished_attributes(params)) }
       rescue StandardError => e
         handle_error(e)
       end
@@ -50,6 +50,18 @@ module Services
       end
 
       private
+
+      def polished_attributes(params)
+        attributes = params.slice(*ATTRIBUTES)
+        return attributes unless attributes.key?(:details)
+
+        attributes[:details] = if db.adapter_scheme == :postgres
+                                 Sequel.pg_json(attributes[:details] || {})
+                               else
+                                 attributes[:details].to_json
+                               end
+        attributes
+      end
 
       def handle_error(error)
         puts "[DocumentActivityLog Service ERROR] #{error.class}: #{error.message}"

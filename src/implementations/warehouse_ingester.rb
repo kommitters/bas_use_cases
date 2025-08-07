@@ -3,6 +3,7 @@
 require 'bas/bot/base'
 require_relative '../services/postgres/activity'
 require_relative '../services/postgres/document'
+require_relative '../services/postgres/document_activity_log'
 require_relative '../services/postgres/domain'
 require_relative '../services/postgres/key_result'
 require_relative '../services/postgres/milestone'
@@ -56,6 +57,7 @@ module Implementation
     SERVICES = {
       'activity' => { service: Services::Postgres::Activity, external_key: 'external_activity_id' },
       'document' => { service: Services::Postgres::Document, external_key: 'external_document_id' },
+      'document_activity_log' => { service: Services::Postgres::DocumentActivityLog, external_key: 'unique_identifier' },
       'domain' => { service: Services::Postgres::Domain, external_key: 'external_domain_id' },
       'key_result' => { service: Services::Postgres::KeyResult, external_key: 'external_key_result_id' },
       'milestone' => { service: Services::Postgres::Milestone, external_key: 'external_milestone_id' },

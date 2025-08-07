@@ -25,6 +25,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchIssuesFromGithub
     FetchPullRequestsFromGithub
     FetchGoogleDocumentsFromWorkspace
+    FetchGoogleDocumentsActivityLogsFromWorkspace
     FetchCalendarEventsFromWebhook
   ]
 )

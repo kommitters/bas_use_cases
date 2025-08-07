@@ -7,10 +7,9 @@ This script is designed to fetch Google Docs activity logs and send them to a we
 ## Script
 
 ```javascript
-function extractUserDetails(user) {
-  const { knownUser } = user;
-  const userId = user.user.knownUser.personName;
-  const person = People.People.get(userId, { personFields: 'emailAddresses' });
+function extractUserDetails(userObject) {
+  const { user: { knownUser: { personName } } } = userObject;
+  const person = People.People.get(personName, { personFields: 'emailAddresses' });
   const { resourceName, emailAddresses: [{ value: email }] } = person;
 
   return { email, id: resourceName.replace('people/', '') };
@@ -33,9 +32,11 @@ function getDocumentChangelog(documentId) {
   const changelogs = []
 
   response.activities.forEach(activity => {
-    const { email, id } = extractUserDetails(activity.actors[0]);
+    const { timestamp } = activity;
+    const { email: email_address, id: userId } = extractUserDetails(activity.actors[0]);
     const { action, details } = extractActionDetails(activity.actions[0]);
-    changelogs.push({ document_id: documentId, person_id: id, person_email: email, action, details })
+    const uniqueIdentifier = `${documentId}-${timestamp}`;
+    changelogs.push({ external_document_id: documentId, person_id: userId, unique_identifier: uniqueIdentifier, email_address, action, details, timestamp })
   });
 
   return changelogs;
@@ -75,6 +76,7 @@ function sendGoogleDocsActivityLogsToWebhook() {
   // const rootFolderId = PropertiesService.getScriptProperties().getProperty('ROOT_FOLDER_ID');
   const rootFolderId = '1UMR1GlH3h9QpeJBqD5Wbhjh1dcEz-B7K';
   const url = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
+  const token = PropertiesService.getScriptProperties().getProperty('WEBHOOK_TOKEN');
 
   try {
     const rootFolder = DriveApp.getFolderById(rootFolderId);
@@ -88,14 +90,16 @@ function sendGoogleDocsActivityLogsToWebhook() {
   console.log(activityLogs.length, 'document activity logs fetched')
 
   try {
-    // const res = UrlFetchApp.fetch(url, {
-    console.log({
+    const res = UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/json',
       payload,
-      muteHttpExceptions: true
+      muteHttpExceptions: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
-    //console.log('Webhook status:', res.getResponseCode(), 'Body:', res.getContentText());
+    console.log('Webhook status:', res.getResponseCode(), 'Body:', res.getContentText());
   } catch (err) {
     console.error('Error:', err);
   }

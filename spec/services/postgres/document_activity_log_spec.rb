@@ -54,17 +54,17 @@ RSpec.describe Services::Postgres::DocumentActivityLog do
   describe '#insert' do
     it 'creates a new document activity log and returns its ID and assigns foreign keys' do
       params = { document_id: document_id, person_id: person_id, action: 'create',
-                 details: '{"date": "2025-01-01"}' }
+                 details: { date: '2025-01-01' } }
       id = service.insert(params)
       document_activity_log = service.find(id)
       expect(document_activity_log[:document_id]).to eq(document_id)
       expect(document_activity_log[:person_id]).to eq(person_id)
       expect(document_activity_log[:action]).to eq('create')
-      expect(document_activity_log[:details]).to eq('{"date": "2025-01-01"}')
+      expect(JSON.parse(document_activity_log[:details])).to eq({ 'date' => '2025-01-01' })
     end
 
     it 'does not assign person_id if it is not provided' do
-      params = { document_id: document_id, action: 'create', details: '{"date": "2025-01-01"}' }
+      params = { document_id: document_id, action: 'create', details: { date: '2025-01-01' } }
       id = service.insert(params)
       document_activity_log = service.find(id)
       expect(document_activity_log[:document_id]).to eq(document_id)
@@ -75,18 +75,18 @@ RSpec.describe Services::Postgres::DocumentActivityLog do
   describe '#update' do
     it 'updates a document activity log by ID' do
       id = service.insert(document_id: document_id, person_id: person_id, action: 'create',
-                          details: '{"date": "2025-01-01"}')
-      service.update(id, { action: 'update', details: '{"date": "2025-01-02"}' })
+                          details: { date: '2025-01-01' })
+      service.update(id, { action: 'update', details: { date: '2025-01-02' } })
       document_activity_log = service.find(id)
       expect(document_activity_log[:action]).to eq('update')
-      expect(document_activity_log[:details]).to eq('{"date": "2025-01-02"}')
+      expect(JSON.parse(document_activity_log[:details])).to eq({ 'date' => '2025-01-02' })
     end
 
     it 'reassigns person_id on update with external_person_id' do
       person_id2 = person_service.insert(external_person_id: 'person-2', full_name: 'Jane Doe',
                                          email_address: 'jane@example.com', external_domain_id: domain_id)
       id = service.insert(document_id: document_id, person_id: person_id, action: 'create',
-                          details: '{"date": "2025-01-01"}')
+                          details: { date: '2025-01-01' })
       service.update(id, { person_id: person_id2 })
       updated_document_activity_log = service.find(id)
       expect(updated_document_activity_log[:person_id]).to eq(person_id2)
@@ -100,7 +100,7 @@ RSpec.describe Services::Postgres::DocumentActivityLog do
   describe '#delete' do
     it 'deletes a document activity log by ID' do
       id = service.insert(document_id: document_id, person_id: person_id, action: 'create',
-                          details: '{"date": "2025-01-01"}')
+                          details: { date: '2025-01-01' })
       expect { service.delete(id) }.to change { service.query.size }.by(-1)
       expect(service.find(id)).to be_nil
     end
@@ -109,13 +109,13 @@ RSpec.describe Services::Postgres::DocumentActivityLog do
   describe '#find' do
     it 'finds a document activity log by ID' do
       id = service.insert(document_id: document_id, person_id: person_id, action: 'create',
-                          details: '{"date": "2025-01-01"}')
+                          details: { date: '2025-01-01' })
       document_activity_log = service.find(id)
       expect(document_activity_log[:id]).to eq(id)
       expect(document_activity_log[:document_id]).to eq(document_id)
       expect(document_activity_log[:person_id]).to eq(person_id)
       expect(document_activity_log[:action]).to eq('create')
-      expect(document_activity_log[:details]).to eq('{"date": "2025-01-01"}')
+      expect(JSON.parse(document_activity_log[:details])).to eq({ 'date' => '2025-01-01' })
     end
   end
 

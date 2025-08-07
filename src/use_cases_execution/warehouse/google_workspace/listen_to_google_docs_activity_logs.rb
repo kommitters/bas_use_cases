@@ -18,6 +18,7 @@ module Routes
         tag: 'FetchGoogleDocumentsActivityLogsFromWorkspace'
       }
       @shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
+      @token = ENV.fetch('WEBHOOK_TOKEN')
     end
 
     ##
@@ -52,11 +53,20 @@ module Routes
 
       data = JSON.parse(body)
 
+      auth_header = request.env['HTTP_AUTHORIZATION']
+      if auth_header.nil? || !auth_header.start_with?('Bearer ')
+        halt 401, { error: 'Missing or invalid Authorization header' }.to_json
+      end
+
+      token = auth_header.split(' ').last
+      halt 403, { error: 'Forbidden: invalid token' }.to_json unless token == @token
+
       unless data.is_a?(Hash) && data['google_docs_activity_logs'].is_a?(Array)
         halt 400, { error: 'Missing or invalid "google_docs_activity_logs" array' }.to_json
       end
 
-      @shared_storage_writer.write(success: { type: 'document_activity_log', content: data['google_docs_activity_logs'] })
+      @shared_storage_writer.write(success: { type: 'document_activity_log',
+                                              content: data['google_docs_activity_logs'] })
 
       status 200
       { message: 'Google documents activity logs stored successfully' }.to_json
@@ -66,6 +76,7 @@ module Routes
       { error: 'Invalid JSON format' }.to_json
     rescue StandardError => e
       logger.error "Failed to process Google documents activity logs data: #{e.message}\n#{e.backtrace.join("\n")}"
+      puts "ERROR: #{e.class}: #{e.message}"
       halt 500, { error: 'Internal Server Error' }.to_json
     end
   end
