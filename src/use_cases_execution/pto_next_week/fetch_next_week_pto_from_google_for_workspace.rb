@@ -43,7 +43,7 @@ module Routes
         shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
         shared_storage.write(success: { ptos: data['ptos'] })
       rescue StandardError => e
-        halt 500, { error: 'Internal Server Error', detail: e.message }.to_json
+        halt 500, { error: 'Internal Server Error' }.to_json
       end
 
       status 200
