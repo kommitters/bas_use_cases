@@ -10,6 +10,9 @@ module Routes
   # Routes::GoogleDocumentsActivityLogs defines the /google_docs_activity_logs endpoint that receives
   # Google Documents activity logs from external sources and stores it in the warehouse sync system.
   class GoogleDocumentsActivityLogs < Sinatra::Base
+    MAX_SIZE = 10_485_760 # 10MB
+    PAYLOAD_SIZE_ERROR = 'Request too large (10MB max)'
+
     def initialize(args)
       super(args)
       write_options = {
@@ -18,7 +21,9 @@ module Routes
         tag: 'FetchGoogleDocumentsActivityLogsFromWorkspace'
       }
       @shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
-      @token = ENV.fetch('WEBHOOK_TOKEN')
+      @token = ENV.fetch('WEBHOOK_TOKEN') do
+        raise ArgumentError, 'WEBHOOK_TOKEN environment variable is required to listed to google_docs_activity_logs'
+      end
     end
 
     ##
@@ -48,6 +53,8 @@ module Routes
     # @success 200 { message: "Google documents activity logs stored successfully" }
     #
     post '/google_docs_activity_logs' do
+      halt 413, { error: PAYLOAD_SIZE_ERROR }.to_json if request.content_length && request.content_length > MAX_SIZE
+
       body = request.body.read.to_s
       halt 400, { error: 'Empty request body' }.to_json if body.strip.empty?
 

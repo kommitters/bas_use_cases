@@ -35,7 +35,7 @@ function getDocumentChangelog(documentId) {
     const { timestamp } = activity;
     const { email: email_address, id: userId } = extractUserDetails(activity.actors[0]);
     const { action, details } = extractActionDetails(activity.actions[0]);
-    const uniqueIdentifier = `${documentId}-${timestamp}`;
+    const uniqueIdentifier = `${action}-${documentId}-${timestamp}`;
     changelogs.push({ external_document_id: documentId, person_id: userId, unique_identifier: uniqueIdentifier, email_address, action, details, timestamp })
   });
 
@@ -64,7 +64,6 @@ function processFolder(folder, domainId, level) {
     const file = files.next();
     const fileId = file.getId();
     const changelogs = getDocumentChangelog(fileId);
-    // fileSet.push({ external_document_id: fileId, name: file.getName(), domain_id: domainId });
     fileSet = fileSet.concat(changelogs)
   }
 
@@ -73,8 +72,7 @@ function processFolder(folder, domainId, level) {
 
 function sendGoogleDocsActivityLogsToWebhook() {
   let activityLogs;
-  // const rootFolderId = PropertiesService.getScriptProperties().getProperty('ROOT_FOLDER_ID');
-  const rootFolderId = '1UMR1GlH3h9QpeJBqD5Wbhjh1dcEz-B7K';
+  const rootFolderId = PropertiesService.getScriptProperties().getProperty('ROOT_FOLDER_ID');
   const url = PropertiesService.getScriptProperties().getProperty('WEBHOOK_URL');
   const token = PropertiesService.getScriptProperties().getProperty('WEBHOOK_TOKEN');
 
@@ -84,6 +82,7 @@ function sendGoogleDocsActivityLogsToWebhook() {
     activityLogs = processFolder(rootFolder, null, 1);
   } catch (e) {
     console.error(`Error: Failed to access folder ${rootFolderId}. Details: ${e.message}`);
+    return; // Exit early if folder access fails
   }
 
   const payload = JSON.stringify({ google_docs_activity_logs: activityLogs });
@@ -143,7 +142,7 @@ Also, it is necessary to modify the `appscript.json` file to include the followi
 Set up these variables in the script properties section in the Google Apps Script editor.
 
 - **ROOT_FOLDER_ID**: The ID of the root Google Drive folder you want to scan. It can be found in the URL of the folder.
-- **WEBHOOK_URL**: The backend URL that will receive the list of documents including the path (i.e it should end with /google_docs). For local development, you can expose the backend via a tunnel like Ngrok or Cloudflare Tunnels.
+- **WEBHOOK_URL**: The backend URL that will receive the list of documents including the path (i.e it should end with /google_docs_activity_logs). For local development, you can expose the backend via a tunnel like Ngrok or Cloudflare Tunnels.
 
 ---
 
