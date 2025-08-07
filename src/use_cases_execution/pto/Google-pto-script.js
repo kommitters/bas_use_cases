@@ -142,7 +142,16 @@ function formatMessage(name, startDate, endDate) {
 }
 
 function formatDateString(date) {
-  // yyyy-mm-dd
+/**
+ * Format a Date object as a 'dd-mm-yyyy' string.
+ *
+ * Converts a Date to the format 'year-month-day', using zero-padding
+ * for month and day.
+ *
+ * @param {Date} date - The date to format.
+ * @returns {string} The formatted date string in 'yyyy-mm-dd' format.
+ */
+
   const options = { timeZone: 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' };
   const [month, day, year] = new Intl.DateTimeFormat('en-US', options).format(date).split('/');
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -155,8 +164,6 @@ function getNextWorkday(date) {
     case 6: next.setDate(next.getDate() + 2); break; // Saturday → Monday
     default: next.setDate(next.getDate() + 1); break;
   }
-  // You can return just the date string or a more verbose string:
-  // const options = { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric', timeZone: 'UTC' };
-  // return new Intl.DateTimeFormat('en-US', options).format(next);
+
   return formatDateString(next);
 }
