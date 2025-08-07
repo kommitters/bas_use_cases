@@ -79,8 +79,7 @@ module Routes
       { message: 'Google documents activity logs stored successfully' }.to_json
     rescue JSON::ParserError => e
       logger.error "Invalid JSON format: #{e.message}"
-      status 400
-      { error: 'Invalid JSON format' }.to_json
+      halt 400, { error: 'Invalid JSON format' }.to_json
     rescue StandardError => e
       logger.error "Failed to process Google documents activity logs data: #{e.message}\n#{e.backtrace.join("\n")}"
       puts "ERROR: #{e.class}: #{e.message}"
