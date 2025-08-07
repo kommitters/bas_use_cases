@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'sequel'
-require 'byebug'
 
 module Services
   module Postgres
