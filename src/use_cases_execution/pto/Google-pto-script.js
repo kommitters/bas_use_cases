@@ -143,13 +143,13 @@ function formatMessage(name, startDate, endDate) {
 
 function formatDateString(date) {
 /**
- * Format a Date object as a 'dd-mm-yyyy' string.
- *
- * Converts a Date to the format 'year-month-day', using zero-padding
- * for month and day.
+ * Converts a Date object to a string in 'yyyy-mm-dd' format using UTC.
  *
  * @param {Date} date - The date to format.
- * @returns {string} The formatted date string in 'yyyy-mm-dd' format.
+ * @returns {string} The formatted date as 'yyyy-mm-dd'. Returns an empty string if input is invalid.
+ *
+ * @example
+ *   formatDateString(new Date(2025, 0, 4)); // Returns '2025-01-04'
  */
 
   const options = { timeZone: 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' };
