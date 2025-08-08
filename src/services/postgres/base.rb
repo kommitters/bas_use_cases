@@ -14,6 +14,8 @@ module Services
       attr_reader :config, :db
 
       def initialize(config_or_db)
+        Sequel.extension :pg_json
+
         if config_or_db.is_a?(Sequel::Database)
           @db = config_or_db
           @config = nil
