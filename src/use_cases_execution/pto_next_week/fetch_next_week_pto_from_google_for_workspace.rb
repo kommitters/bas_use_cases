@@ -3,25 +3,20 @@
 require 'sinatra/base'
 require 'json'
 require 'bas/shared_storage/postgres'
-require 'bas/shared_storage/default'
 require_relative 'config'
 
 module Routes
-  # Routes::Birthdays handles incoming birthday data from Google Workspace
-  #
-  # POST /birthday - Accepts JSON payload with birthday data
-  # Expected format: { "birthdays": [array of birthday objects] }
-  # Returns: 200 with success message or 400/500 with error details
-  class Birthdays < Sinatra::Base
+  # Routes::PtoNextWeek defines the /pto-next-week endpoint that receives PTO data
+  class PtoNextWeek < Sinatra::Base
     write_options = {
       connection: Config::CONNECTION,
-      db_table: 'birthday',
-      tag: 'FetchBirthdaysFromGoogle'
-    }.freeze
+      db_table: 'pto',
+      tag: 'FetchNextWeekPtosFromGoogle'
+    }
 
     TOKEN = ENV.fetch('WEBHOOK_TOKEN')
 
-    post '/birthday' do
+    post '/pto-next-week' do
       content_type :json
 
       auth_header = request.env['HTTP_AUTHORIZATION']
@@ -38,19 +33,21 @@ module Routes
 
         data = JSON.parse(request_body)
         halt 400, { error: 'Invalid JSON format' }.to_json unless data.is_a?(Hash) && !data.empty?
-        halt 400, { error: 'Missing or invalid "birthdays" array' }.to_json unless data['birthdays'].is_a?(Array)
+        halt 400, { error: 'Missing or invalid "ptos" array' }.to_json unless data['ptos'].is_a?(Array)
       rescue StandardError
         halt 400, { error: 'Invalid JSON format' }.to_json
       end
 
+      # Write to storage
       begin
         shared_storage = Bas::SharedStorage::Postgres.new(write_options: write_options)
-        shared_storage.write(success: data)
+        shared_storage.write(success: { ptos: data['ptos'] })
       rescue StandardError
         halt 500, { error: 'Internal Server Error' }.to_json
       end
+
       status 200
-      { message: 'Birthdays stored successfully' }.to_json
+      { message: 'PTOs stored successfully' }.to_json
     end
   end
 end

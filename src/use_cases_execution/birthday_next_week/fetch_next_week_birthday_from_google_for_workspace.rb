@@ -7,21 +7,21 @@ require 'bas/shared_storage/default'
 require_relative 'config'
 
 module Routes
-  # Routes::Birthdays handles incoming birthday data from Google Workspace
+  # Routes::NextWeekBirthdays handles incoming next week birthday data from Google Workspace
   #
-  # POST /birthday - Accepts JSON payload with birthday data
+  # POST /birthday_next_week - Accepts JSON payload with next week birthday data
   # Expected format: { "birthdays": [array of birthday objects] }
   # Returns: 200 with success message or 400/500 with error details
-  class Birthdays < Sinatra::Base
+  class NextWeekBirthdays < Sinatra::Base
     write_options = {
       connection: Config::CONNECTION,
       db_table: 'birthday',
-      tag: 'FetchBirthdaysFromGoogle'
+      tag: 'FetchNextWeekBirthdaysFromGoogle'
     }.freeze
 
     TOKEN = ENV.fetch('WEBHOOK_TOKEN')
 
-    post '/birthday' do
+    post '/birthday_next_week' do
       content_type :json
 
       auth_header = request.env['HTTP_AUTHORIZATION']
@@ -50,7 +50,7 @@ module Routes
         halt 500, { error: 'Internal Server Error' }.to_json
       end
       status 200
-      { message: 'Birthdays stored successfully' }.to_json
+      { message: 'Next week birthdays stored successfully' }.to_json
     end
   end
 end
