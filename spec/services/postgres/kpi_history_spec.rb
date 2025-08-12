@@ -18,21 +18,11 @@ RSpec.describe Services::Postgres::KpiHistory do
   let(:kpi_service) { Services::Postgres::Kpi.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
-  # --- Create dependencies ---
-  let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
-  let(:kpi_id) do
-    kpi_service.insert(
-      external_kpi_id: 'ext-kpi-1',
-      domain_id: domain_id,
-      description: 'A KPI to be historized'
-    )
-  end
-
   # --- Test parameters ---
   let(:valid_params) do
     {
-      kpi_id: kpi_id,
-      domain_id: domain_id,
+      kpi_id: @kpi_id,
+      domain_id: @domain_id,
       description: 'Initial KPI state',
       status: 'On Track',
       current_value: 10.0
@@ -53,6 +43,14 @@ RSpec.describe Services::Postgres::KpiHistory do
 
     # Mock the database connection so all services use the test DB
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
+
+    # Create dependencies as instance variables for explicit setup
+    @domain_id = domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1')
+    @kpi_id = kpi_service.insert(
+      external_kpi_id: 'ext-kpi-1',
+      domain_id: @domain_id,
+      description: 'A KPI to be historized'
+    )
   end
 
   # --- Test Blocks ---
@@ -63,7 +61,7 @@ RSpec.describe Services::Postgres::KpiHistory do
       result = service.find(id)
 
       expect(result).not_to be_nil
-      expect(result[:kpi_id]).to eq(kpi_id)
+      expect(result[:kpi_id]).to eq(@kpi_id)
       expect(result[:description]).to eq('Initial KPI state')
     end
   end
@@ -108,7 +106,7 @@ RSpec.describe Services::Postgres::KpiHistory do
       service.insert(valid_params)
       service.insert(valid_params.merge(description: 'Another state'))
 
-      results = service.query(kpi_id: kpi_id)
+      results = service.query(kpi_id: @kpi_id)
       expect(results.count).to eq(2)
       expect(results.first[:description]).to eq('Initial KPI state')
     end
