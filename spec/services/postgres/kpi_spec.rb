@@ -3,119 +3,104 @@
 require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
-require_relative '../../../src/services/postgres/kpi_history'
 require_relative '../../../src/services/postgres/kpi'
+require_relative '../../../src/services/postgres/kpi_history'
 require_relative '../../../src/services/postgres/domain'
 require_relative 'test_db_helpers'
 
-RSpec.describe Services::Postgres::KpiHistory do
+RSpec.describe Services::Postgres::Kpi do
   include TestDBHelpers
 
-  # --- Database and services setup ---
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:kpi_service) { Services::Postgres::Kpi.new(config) }
+  let(:history_service) { Services::Postgres::KpiHistory.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
-
-  # --- Create dependencies ---
   let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
-  let(:kpi_id) do
-    kpi_service.insert(
-      external_kpi_id: 'ext-kpi-1',
-      domain_id: domain_id,
-      description: 'A KPI to be historized'
-    )
-  end
 
-  # --- Test parameters ---
   let(:valid_params) do
     {
-      kpi_id: kpi_id,
+      external_kpi_id: 'ext-kpi-1',
       domain_id: domain_id,
-      description: 'Initial KPI state',
+      description: 'Track user engagement',
       status: 'On Track',
-      current_value: 10.0
+      current_value: 50.0,
+      percentage: 0.5,
+      target_value: 100.0,
+      stats: { trend: 'up' }.to_json
     }
   end
 
-  # --- Test environment setup ---
   before(:each) do
-    # Drop tables in reverse order of dependency
     db.drop_table?(:kpis_history)
     db.drop_table?(:kpis)
     db.drop_table?(:domains)
 
-    # Create tables
     create_domains_table(db)
     create_kpis_table(db)
     create_kpis_history_table(db)
 
-    # Mock the database connection so all services use the test DB
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
-  # --- Test Blocks ---
-
   describe '#insert' do
-    it 'creates a new kpi history record and returns its ID' do
+    it 'creates a new kpi record and returns its ID' do
       id = service.insert(valid_params)
       result = service.find(id)
 
       expect(result).not_to be_nil
-      expect(result[:kpi_id]).to eq(kpi_id)
-      expect(result[:description]).to eq('Initial KPI state')
+      expect(result[:description]).to eq('Track user engagement')
     end
   end
 
   describe '#update' do
-    let!(:history_id) { service.insert(valid_params) }
+    let!(:id) { service.insert(valid_params) }
 
-    it 'updates the kpi history record' do
-      service.update(history_id, description: 'Updated KPI state')
-      updated_record = service.find(history_id)
+    it 'updates the kpi record' do
+      service.update(id, description: 'Updated KPI state')
+      expect(service.find(id)[:description]).to eq('Updated KPI state')
+    end
 
-      expect(updated_record[:description]).to eq('Updated KPI state')
+    it 'creates a KpiHistory record on update' do
+      initial_count = history_service.query.count
+      service.update(id, description: 'Another state')
+      expect(history_service.query.count).to eq(initial_count + 1)
     end
 
     it 'raises an ArgumentError if the id is null' do
-      expect { service.update(nil, {}) }.to raise_error(ArgumentError, 'KpiHistory id is required to update')
+      expect do
+        service.update(nil, {})
+      end.to raise_error(ArgumentError, 'KPI id is required to update')
     end
   end
 
   describe '#delete' do
-    it 'removes a kpi history record by its ID' do
+    it 'removes a kpi by its ID' do
       id = service.insert(valid_params)
-
       expect { service.delete(id) }.to change { service.query.count }.by(-1)
       expect(service.find(id)).to be_nil
     end
   end
 
   describe '#find' do
-    it 'retrieves a kpi history record by its ID' do
+    it 'retrieves a kpi by its ID' do
       id = service.insert(valid_params)
       found = service.find(id)
-
-      expect(found).not_to be_nil
       expect(found[:id]).to eq(id)
-      expect(found[:description]).to eq('Initial KPI state')
     end
   end
 
   describe '#query' do
     it 'returns records based on a filter' do
-      service.insert(valid_params)
-      service.insert(valid_params.merge(description: 'Another state'))
-
-      results = service.query(kpi_id: kpi_id)
-      expect(results.count).to eq(2)
-      expect(results.first[:description]).to eq('Initial KPI state')
+      id = service.insert(valid_params)
+      results = service.query(status: 'On Track')
+      expect(results.first[:id]).to eq(id)
     end
 
-    it 'returns all history records if conditions are empty' do
+    it 'returns all kpi records if conditions are empty' do
       service.insert(valid_params)
-      expect(service.query.size).to eq(1)
+      service.insert(valid_params.merge(external_kpi_id: 'ext-kpi-2'))
+      expect(service.query.size).to eq(2)
     end
   end
 end

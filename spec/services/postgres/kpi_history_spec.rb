@@ -11,14 +11,12 @@ require_relative 'test_db_helpers'
 RSpec.describe Services::Postgres::KpiHistory do
   include TestDBHelpers
 
-  # --- Database and services setup ---
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
   let(:kpi_service) { Services::Postgres::Kpi.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
-  # --- Test parameters ---
   let(:valid_params) do
     {
       kpi_id: @kpi_id,
@@ -29,22 +27,17 @@ RSpec.describe Services::Postgres::KpiHistory do
     }
   end
 
-  # --- Test environment setup ---
   before(:each) do
-    # Drop tables in reverse order of dependency
     db.drop_table?(:kpis_history)
     db.drop_table?(:kpis)
     db.drop_table?(:domains)
 
-    # Create tables
     create_domains_table(db)
     create_kpis_table(db)
     create_kpis_history_table(db)
 
-    # Mock the database connection so all services use the test DB
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
-    # Create dependencies as instance variables for explicit setup
     @domain_id = domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1')
     @kpi_id = kpi_service.insert(
       external_kpi_id: 'ext-kpi-1',
@@ -52,8 +45,6 @@ RSpec.describe Services::Postgres::KpiHistory do
       description: 'A KPI to be historized'
     )
   end
-
-  # --- Test Blocks ---
 
   describe '#insert' do
     it 'creates a new kpi history record and returns its ID' do
