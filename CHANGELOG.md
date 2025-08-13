@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.11.0 (13.08.2025)
+## 1.11.0 (13.08.25)
 - [Centralize Config and unify Ingester Logic](https://github.com/kommitters/bas_use_cases/pull/196)
 - [Add kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/198)
 - [Replace the Notion PTO and birthday scripts with a Google Workspace implementation](https://github.com/kommitters/bas_use_cases/pull/200)
