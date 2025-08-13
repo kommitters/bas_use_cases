@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.11.0 (13.08.25)
+- [Centralize Config and unify Ingester Logic](https://github.com/kommitters/bas_use_cases/pull/196)
+- [Add kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/198)
+- [Replace the Notion PTO and birthday scripts with a Google Workspace implementation](https://github.com/kommitters/bas_use_cases/pull/200)
+- [Fetch docs activity logs](https://github.com/kommitters/bas_use_cases/pull/201)
+- [Add kpi history service](https://github.com/kommitters/bas_use_cases/pull/203)
+
 ## 1.10.1 (1.08.25)
 - [PTO webhook integration with bearer token authentication](https://github.com/kommitters/bas_use_cases/pull/193)
 
