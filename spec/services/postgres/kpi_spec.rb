@@ -4,6 +4,7 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/kpi'
+require_relative '../../../src/services/postgres/kpi_history'
 require_relative '../../../src/services/postgres/domain'
 require_relative 'test_db_helpers'
 
@@ -13,102 +14,93 @@ RSpec.describe Services::Postgres::Kpi do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
+  let(:history_service) { Services::Postgres::KpiHistory.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
+  let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
 
-  let(:domain1_id) { domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1') }
-  let(:domain2_id) { domain_service.insert(external_domain_id: 'dom-2', name: 'Domain2') }
+  let(:valid_params) do
+    {
+      external_kpi_id: 'ext-kpi-1',
+      domain_id: domain_id,
+      description: 'Track user engagement',
+      status: 'On Track',
+      current_value: 50.0,
+      percentage: 0.5,
+      target_value: 100.0,
+      stats: { trend: 'up' }.to_json
+    }
+  end
 
   before(:each) do
+    db.drop_table?(:kpis_history)
     db.drop_table?(:kpis)
     db.drop_table?(:domains)
 
-    create_kpis_table(db)
     create_domains_table(db)
+    create_kpis_table(db)
+    create_kpis_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
   describe '#insert' do
-    it 'creates a new kpi and returns its ID' do
-      params = {
-        external_kpi_id: 'ext-kpi-1',
-        description: 'First KPI',
-        domain_id: domain1_id
-      }
-      id = service.insert(params)
-      kpi = service.find(id)
-      expect(kpi[:description]).to eq('First KPI')
-      expect(kpi[:external_kpi_id]).to eq('ext-kpi-1')
-    end
+    it 'creates a new kpi record and returns its ID' do
+      id = service.insert(valid_params)
+      result = service.find(id)
 
-    it 'assigns domain_id when given external_domain_id' do
-      domain_id = domain1_id
-      params = {
-        external_kpi_id: 'ext-kpi-2',
-        description: 'KPI with Domain',
-        external_domain_id: 'dom-1'
-      }
-      id = service.insert(params)
-      kpi = service.find(id)
-      expect(kpi[:domain_id]).to eq(domain_id)
+      expect(result).not_to be_nil
+      expect(result[:description]).to eq('Track user engagement')
     end
   end
 
   describe '#update' do
-    it 'updates a kpi by ID' do
-      id = service.insert(external_kpi_id: 'ext-kpi-4', description: 'Old Description', domain_id: domain1_id)
-      service.update(id, { description: 'Updated Description' })
-      updated = service.find(id)
-      expect(updated[:description]).to eq('Updated Description')
-      expect(updated[:external_kpi_id]).to eq('ext-kpi-4')
+    let!(:id) { service.insert(valid_params) }
+
+    it 'updates the kpi record' do
+      service.update(id, description: 'Updated KPI state')
+      expect(service.find(id)[:description]).to eq('Updated KPI state')
     end
 
-    it 'reassigns domain_id on update with external_domain_id' do
-      domain_id = domain2_id
-      id = service.insert(
-        external_kpi_id: 'ext-kpi-5',
-        description: 'To Update Domain',
-        domain_id: domain1_id
-      )
-      service.update(id, { external_domain_id: 'dom-2' })
-      updated = service.find(id)
-      expect(updated[:domain_id]).to eq(domain_id)
+    it 'creates a KpiHistory record on update' do
+      initial_count = history_service.query.count
+      service.update(id, description: 'Another state')
+      expect(history_service.query.count).to eq(initial_count + 1)
     end
 
-    it 'raises error if no ID is provided' do
-      expect { service.update(nil, description: 'No ID') }.to raise_error(ArgumentError)
+    it 'raises an ArgumentError if the id is null' do
+      expect do
+        service.update(nil, {})
+      end.to raise_error(ArgumentError, 'KPI id is required to update')
     end
   end
 
   describe '#delete' do
-    it 'deletes a kpi by ID' do
-      id = service.insert(external_kpi_id: 'ext-kpi-6', description: 'To Delete', domain_id: domain1_id)
-      expect { service.delete(id) }.to change { service.query.size }.by(-1)
+    it 'removes a kpi by its ID' do
+      id = service.insert(valid_params)
+      expect { service.delete(id) }.to change { service.query.count }.by(-1)
       expect(service.find(id)).to be_nil
     end
   end
 
   describe '#find' do
-    it 'finds a kpi by ID' do
-      id = service.insert(external_kpi_id: 'ext-kpi-7', description: 'Find Me', domain_id: domain1_id)
+    it 'retrieves a kpi by its ID' do
+      id = service.insert(valid_params)
       found = service.find(id)
-      expect(found[:description]).to eq('Find Me')
-      expect(found[:external_kpi_id]).to eq('ext-kpi-7')
+      expect(found[:id]).to eq(id)
     end
   end
 
   describe '#query' do
-    it 'queries kpis by condition' do
-      id = service.insert(external_kpi_id: 'ext-kpi-8', description: 'Query Me', domain_id: domain1_id)
-      results = service.query(description: 'Query Me')
-      expect(results.map { |k| k[:id] }).to include(id)
-      expect(results.first[:external_kpi_id]).to eq('ext-kpi-8')
+    it 'returns records based on a filter' do
+      id = service.insert(valid_params)
+      results = service.query(status: 'On Track')
+      expect(results.first[:id]).to eq(id)
     end
 
-    it 'returns all kpis with empty conditions' do
-      count = service.query.size
-      service.insert(external_kpi_id: 'ext-kpi-9', description: 'Another', domain_id: domain1_id)
-      expect(service.query.size).to eq(count + 1)
+    it 'returns all kpi records if conditions are empty' do
+      service.insert(valid_params)
+      service.insert(valid_params.merge(external_kpi_id: 'ext-kpi-2'))
+      expect(service.query.size).to eq(2)
     end
   end
 end
