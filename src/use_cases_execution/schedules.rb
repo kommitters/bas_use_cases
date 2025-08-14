@@ -126,7 +126,8 @@ module UseCasesExecution
     EXPIRED_PROJECTS_SCHEDULES = [
       { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
       { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
-      { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] }
+      { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] },
+      { path: "#{__dir__}/expired_projects/garbage_collector.rb", time: ['00:00'] }
     ].freeze
 
     GITHUB_NOTION_ISSUES_SYNC_SCHEDULES = [
