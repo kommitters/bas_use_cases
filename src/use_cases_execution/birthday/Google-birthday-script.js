@@ -63,7 +63,10 @@ function sendBirthdaysNextWeekToWebhook() {
   const headers = data[0];
   const rows = data.slice(1);
   const tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
-  const { monday, sunday } = getNextWeekRange();
+
+  const targetDate = new Date();
+  targetDate.setHours(0, 0, 0, 0);
+  targetDate.setDate(targetDate.getDate() + 7);
 
   // Collect next week's birthdays
   const birthdays = rows
@@ -71,11 +74,9 @@ function sendBirthdaysNextWeekToWebhook() {
     .filter(entry => {
       const birthday = parseDate(entry['Birthday']);
       if (!birthday) return false;
-      // Check if birthday (in current year) falls between next week's monday and sunday
-      const year = monday.getFullYear();
-      const birthdayThisYear = new Date(year, birthday.getMonth(), birthday.getDate());
-      const birthdayInTz = new Date(birthdayThisYear.toLocaleString("en-US", { timeZone: tz }));
-      return birthdayInTz >= monday && birthdayInTz <= sunday;
+      const birthdayThisYear = new Date(targetDate.getFullYear(), birthday.getMonth(), birthday.getDate());
+      const tzBirthday = new Date(birthdayThisYear.toLocaleString("en-US", { timeZone: tz }));
+      return tzBirthday.getTime() === targetDate.getTime();
     })
     .map(entry => ({
       name: entry['Name'],
@@ -140,25 +141,4 @@ function format(date, timeZone = null) {
   if (!d) return '';
   const tz = timeZone || SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   return Utilities.formatDate(d, tz, "yyyy-MM-dd");
-}
-
-/**
- * Returns the next week's Monday and Sunday.
- * @return {{monday: Date, sunday: Date}}
- */
-function getNextWeekRange() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilNextMonday = day === 0 ? 1 : 8 - day;
-
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + daysUntilNextMonday);
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(0, 0, 0, 0);
-
-  return { monday, sunday };
 }
