@@ -11,6 +11,7 @@ require_relative '../utils/warehouse/notion/person_formatter'
 require_relative '../utils/warehouse/notion/project_formatter'
 require_relative '../utils/warehouse/notion/weekly_scope_formatter'
 require_relative '../utils/warehouse/notion/work_item_formatter'
+require_relative '../utils/warehouse/notion/kpi_formatter'
 
 module Implementation
   ##
@@ -57,7 +58,8 @@ module Implementation
       'person' => Utils::Warehouse::Notion::Formatter::PersonFormatter,
       'project' => Utils::Warehouse::Notion::Formatter::ProjectFormatter,
       'weekly_scope' => Utils::Warehouse::Notion::Formatter::WeeklyScopeFormatter,
-      'work_item' => Utils::Warehouse::Notion::Formatter::WorkItemFormatter
+      'work_item' => Utils::Warehouse::Notion::Formatter::WorkItemFormatter,
+      'kpi' => Utils::Warehouse::Notion::Formatter::KpiFormatter
     }.freeze
 
     PAGE_SIZE = 100
@@ -96,8 +98,11 @@ module Implementation
     def normalize_response(records)
       formatter_class = FORMATTERS[process_options[:entity]]
 
-      if process_options[:entity] == 'milestone'
+      case process_options[:entity]
+      when 'milestone'
         return formatter_class.fetch_for_projects(records, secret: process_options[:secret], filter_body: body)
+      when 'kpi'
+        return formatter_class.fetch_stats_for_kpis(records, secret: process_options[:secret], filter_body: body)
       end
 
       records.map { |record| formatter_class.new(record).format }
