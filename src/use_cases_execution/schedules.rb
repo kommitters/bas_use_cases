@@ -148,13 +148,14 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/notion/fetch_hired_persons.rb", time: ['05:35'] },
       { path: "#{__dir__}/warehouse/notion/fetch_weekly_scopes.rb", time: ['05:40'] },
       { path: "#{__dir__}/warehouse/notion/fetch_work_items.rb", time: ['05:45'] },
-      { path: "#{__dir__}/warehouse/worklogs/fetch_work_logs.rb", time: ['05:50'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_releases_from_github.rb", time: ['05:55'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_releases_from_github.rb", time: ['06:00'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_issues_from_github.rb", time: ['06:05'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['06:10'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['06:15'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:20'] },
+      { path: "#{__dir__}/warehouse/notion/fetch_kpis.rb", time: ['05:50'] },
+      { path: "#{__dir__}/warehouse/worklogs/fetch_work_logs.rb", time: ['05:55'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_releases_from_github.rb", time: ['06:00'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommitters_releases_from_github.rb", time: ['06:05'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_issues_from_github.rb", time: ['06:10'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['06:15'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['06:20'] },
+      { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:25'] },
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
   end
