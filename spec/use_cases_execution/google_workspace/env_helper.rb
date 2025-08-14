@@ -21,7 +21,8 @@ ENV.update(
   'WORK_LOGS_URL' => 'http://example.com/worklogs',
   'WORK_LOGS_API_SECRET' => 'log-secret',
   'KOMMITERS_GITHUB_APP_ID' => '1',
-  'KOMMIT_CO_GITHUB_APP_ID' => '2'
+  'KOMMIT_CO_GITHUB_APP_ID' => '2',
+  'KPIS_NOTION_DATABASE_ID' => 'kpi_db_id'
 )
 
 require 'rspec'

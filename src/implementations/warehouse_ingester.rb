@@ -15,6 +15,7 @@ require_relative '../services/postgres/work_log'
 require_relative '../services/postgres/github_release'
 require_relative '../services/postgres/github_issue'
 require_relative '../services/postgres/github_pull_request'
+require_relative '../services/postgres/kpi'
 
 module Implementation
   ##
@@ -72,7 +73,9 @@ module Implementation
       'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
       'github_pull_request' => {
         service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id'
-      }
+      },
+      'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' }
+
     }.freeze
 
     def process
