@@ -31,8 +31,7 @@ module Utils
               records.map do |kpi_record|
                 formatted_kpi = new(kpi_record).format
 
-                kpi_page_id = kpi_record['id']
-                stats_db_id = find_stats_database_id(kpi_page_id, secret: secret)
+                stats_db_id = find_stats_database_id(kpi_record['id'], secret: secret)
 
                 format_stats = fetch_and_format_stats_dynamically(stats_db_id, secret: secret, filter_body: filter_body)
                 stats = stats_db_id ? format_stats : []
@@ -42,15 +41,6 @@ module Utils
             end
 
             private
-
-            STATS_PROPERTY_EXTRACTORS = {
-              'title' => ->(data) { data.first&.dig('plain_text') },
-              'rich_text' => ->(data) { data.first&.dig('plain_text') },
-              'number' => ->(data) { data },
-              'formula' => lambda do |data|
-                data['number'] if data['type'] == 'number'
-              end
-            }.freeze
 
             def find_stats_database_id(kpi_page_id, secret:)
               top_level_blocks = fetch_child_blocks(kpi_page_id, secret: secret)
@@ -94,11 +84,9 @@ module Utils
               return [] unless response.code == 200
 
               response.parsed_response['results'].map do |stat_record|
-                properties_hash = {}
-                stat_record['properties'].each do |prop_name, prop_data|
-                  properties_hash[prop_name] = extract_stat_value(prop_data)
+                stat_record['properties'].transform_values do |prop_data|
+                  extract_stat_value(prop_data)
                 end
-                properties_hash
               end
             end
 
@@ -112,8 +100,23 @@ module Utils
               value_key = prop_data[type]
               return nil if value_key.nil?
 
-              extractor = STATS_PROPERTY_EXTRACTORS.fetch(type, ->(_) { 'unsupported_type' })
-              extractor.call(value_key)
+              dispatch_stat_extraction(type, value_key)
+            end
+
+            ##
+            # Dispatches the extraction logic based on the property type.
+            # This method handles different types of Notion properties.
+            def dispatch_stat_extraction(type, value_key)
+              case type
+              when 'title', 'rich_text'
+                value_key.first&.dig('plain_text')
+              when 'number'
+                value_key
+              when 'formula'
+                value_key['number'] if value_key['type'] == 'number'
+              else
+                'unsupported_type'
+              end
             end
 
             def notion_request(endpoint:, secret:, method: 'post', body: {})
