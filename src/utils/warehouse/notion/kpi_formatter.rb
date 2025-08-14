@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require 'json'
 require 'bas/utils/notion/request'
 
 module Utils
@@ -19,7 +20,7 @@ module Utils
               current_value: extract_number('Current Value'),
               percentage: extract_formula_number('Percentage'),
               target_value: extract_number('Target Value'),
-              external_domain_id: extract_relation('Domain')
+              external_domain_id: extract_relation('Domain').first
             }
           end
 
@@ -36,7 +37,7 @@ module Utils
                 format_stats = fetch_and_format_stats_dynamically(stats_db_id, secret: secret, filter_body: filter_body)
                 stats = stats_db_id ? format_stats : []
 
-                formatted_kpi.merge(stats: stats.to_json)
+                formatted_kpi.merge(stats: JSON.generate(stats))
               end
             end
 
@@ -67,7 +68,10 @@ module Utils
             # Finds the year block (Heading 1 with a 4-digit number) in a list of blocks.
             def find_year_block(blocks)
               blocks.find do |block|
-                block['type'] == 'heading_1' && block.dig('heading_1', 'rich_text', 0, 'plain_text')&.match?(/\d{4}/)
+                %w[heading_1 heading_2 heading_3].include?(block['type']) &&
+                  Array(block.dig(block['type'], 'rich_text')).any? do |rt|
+                    rt['plain_text']&.match?(/\b(19|20)\d{2}\b/)
+                  end
               end
             end
 
