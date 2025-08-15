@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.1 (15.08.25)
+-[Add fetch bot for Notion key performance](https://github.com/kommitters/bas_use_cases/pull/206)
+-[Add garbage collector to expired projects use case](https://github.com/kommitters/bas_use_cases/pull/207)
+
 ## 1.11.0 (13.08.25)
 - [Centralize Config and unify Ingester Logic](https://github.com/kommitters/bas_use_cases/pull/196)
 - [Add kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/198)
