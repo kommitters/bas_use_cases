@@ -2,6 +2,7 @@
 
 require 'logger'
 require 'bas/shared_storage/postgres'
+require 'dotenv/load'
 
 require_relative '../../implementations/notify_workspace_dm'
 require_relative 'config'
@@ -19,7 +20,19 @@ write_options = {
   tag: 'NotifyWorkspaceDm'
 }
 
-options = {}
+credentials_json = ENV.fetch('SERVICE_ACCOUNT_CREDENTIALS_JSON') do
+  raise 'SERVICE_ACCOUNT_CREDENTIALS_JSON environment variable is required'
+end
+
+begin
+  JSON.parse(credentials_json)
+rescue JSON::ParserError => e
+  raise "Invalid JSON in SERVICE_ACCOUNT_CREDENTIALS_JSON: #{e.message}"
+end
+
+options = {
+  credentials: credentials_json
+}
 
 # Process bot
 begin

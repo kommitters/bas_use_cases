@@ -13,9 +13,11 @@ module Utils
     class SendMessageToWorkspace
       Chat = Google::Apis::ChatV1
 
-      def initialize(space_id:, credentials_path: 'src/utils/credentials.json', debug: false)
+      def initialize(space_id:, service_account_credentials:, debug: false)
+        raise ArgumentError, 'service_account_credentials is required' if service_account_credentials.nil?
+
         @space = "spaces/#{space_id}"
-        @credentials_path = File.expand_path(credentials_path)
+        @service_account_credentials = service_account_credentials
         @scopes = ['https://www.googleapis.com/auth/chat.bot']
 
         Google::Apis.logger.level = Logger::DEBUG if debug
@@ -39,7 +41,7 @@ module Utils
 
       def setup_authentication
         @authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-          json_key_io: File.open(@credentials_path),
+          json_key_io: StringIO.new(@service_account_credentials),
           scope: @scopes
         )
         @authorization.fetch_access_token!
