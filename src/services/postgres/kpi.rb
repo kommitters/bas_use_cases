@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'domain' # Added to manage the relationship
+require_relative 'domain'
+require_relative 'kpi_history'
 
 module Services
   module Postgres
