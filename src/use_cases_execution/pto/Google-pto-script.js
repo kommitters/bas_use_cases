@@ -173,14 +173,14 @@ function notifyPendingStakeholders() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sh = ss.getActiveSheet();
   const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
-  const gi = n => headers.indexOf(n) + 1;
+  const getIndex = n => headers.indexOf(n) + 1;
 
-  const stakeholderCol = gi("Stakeholder");
-  const notificationCol = gi("Notification");
-  const personCol = gi("Person");
-  const projectCol = gi("Project");
-  const startCol = gi("StartDateTime");
-  const endCol = gi("EndDateTime");
+  const stakeholderCol = getIndex("Stakeholder");
+  const notificationCol = getIndex("Notification");
+  const personCol = getIndex("Person");
+  const projectCol = getIndex("Project");
+  const startCol = getIndex("StartDateTime");
+  const endCol = getIndex("EndDateTime");
 
   const lastRow = sh.getLastRow();
   const tz = ss.getSpreadsheetTimeZone();
@@ -211,6 +211,7 @@ function notifyPendingStakeholders() {
 
       sh.getRange(row, notificationCol).setValue(true);
       Logger.log(`✅ Notified: ${stakeholders.join(",")} for row ${row}`);
+      ss.toast(`${stakeholders.join(", ")} have been notified for ${person}.`, "Notification Sent", 5);
     }
   }
 }
