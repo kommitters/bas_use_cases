@@ -170,9 +170,9 @@ function getNextWorkday(date) {
 // ---------- Notify ----------
 
 function notifyPendingStakeholders() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sh = ss.getActiveSheet();
-  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadSheet.getActiveSheet();
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   const getIndex = n => headers.indexOf(n) + 1;
 
   const stakeholderCol = getIndex("Stakeholder");
@@ -182,13 +182,13 @@ function notifyPendingStakeholders() {
   const startCol = getIndex("StartDateTime");
   const endCol = getIndex("EndDateTime");
 
-  const lastRow = sh.getLastRow();
-  const tz = ss.getSpreadsheetTimeZone();
+  const lastRow = sheet.getLastRow();
+  const tz = spreadSheet.getSpreadsheetTimeZone();
   const fmt = d => Utilities.formatDate(new Date(d), tz, "yyyy-MM-dd");
 
   for (let row = 2; row <= lastRow; row++) {
-    const stakeholder = sh.getRange(row, stakeholderCol).getValue();
-    const notification = sh.getRange(row, notificationCol).getValue();
+    const stakeholder = sheet.getRange(row, stakeholderCol).getValue();
+    const notification = sheet.getRange(row, notificationCol).getValue();
 
     if (stakeholder && String(notification).toUpperCase() !== "TRUE") {
       const stakeholders = String(stakeholder)
@@ -196,10 +196,10 @@ function notifyPendingStakeholders() {
 
       if (!stakeholders.length) continue;
 
-      const person = sh.getRange(row, personCol).getValue();
-      const project = sh.getRange(row, projectCol).getValue();
-      const start = sh.getRange(row, startCol).getValue();
-      const end = sh.getRange(row, endCol).getValue();
+      const person = sheet.getRange(row, personCol).getValue();
+      const project = sheet.getRange(row, projectCol).getValue();
+      const start = sheet.getRange(row, startCol).getValue();
+      const end = sheet.getRange(row, endCol).getValue();
 
       const msg = `${person} will be on PTO from ${fmt(start)} to ${fmt(end)}.`;
 
@@ -209,9 +209,9 @@ function notifyPendingStakeholders() {
         msg
       );
 
-      sh.getRange(row, notificationCol).setValue(true);
+      sheet.getRange(row, notificationCol).setValue(true);
       Logger.log(`✅ Notified: ${stakeholders.join(",")} for row ${row}`);
-      ss.toast(`${stakeholders.join(", ")} have been notified for ${person}.`, "Notification Sent", 5);
+      spreadSheet.toast(`${stakeholders.join(", ")} have been notified for ${person}.`, "Notification Sent", 5);
     }
   }
 }
