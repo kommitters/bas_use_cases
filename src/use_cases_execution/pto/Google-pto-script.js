@@ -167,3 +167,50 @@ function getNextWorkday(date) {
 
   return formatDateString(next);
 }
+// ---------- Notify ----------
+
+function notifyPendingStakeholders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getActiveSheet();
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const gi = n => headers.indexOf(n) + 1;
+
+  const stakeholderCol = gi("Stakeholder");
+  const notificationCol = gi("Notification");
+  const personCol = gi("Person");
+  const projectCol = gi("Project");
+  const startCol = gi("StartDateTime");
+  const endCol = gi("EndDateTime");
+
+  const lastRow = sh.getLastRow();
+  const tz = ss.getSpreadsheetTimeZone();
+  const fmt = d => Utilities.formatDate(new Date(d), tz, "yyyy-MM-dd");
+
+  for (let row = 2; row <= lastRow; row++) {
+    const stakeholder = sh.getRange(row, stakeholderCol).getValue();
+    const notification = sh.getRange(row, notificationCol).getValue();
+
+    if (stakeholder && String(notification).toUpperCase() !== "TRUE") {
+      const stakeholders = String(stakeholder)
+        .split(/[;,]/).map(s => s.trim()).filter(s => /@/.test(s));
+
+      if (!stakeholders.length) continue;
+
+      const person = sh.getRange(row, personCol).getValue();
+      const project = sh.getRange(row, projectCol).getValue();
+      const start = sh.getRange(row, startCol).getValue();
+      const end = sh.getRange(row, endCol).getValue();
+
+      const msg = `${person} will be on PTO from ${fmt(start)} to ${fmt(end)}.`;
+
+      GmailApp.sendEmail(
+        stakeholders.join(","),
+        `PTO • ${person} • ${project}`,
+        msg
+      );
+
+      sh.getRange(row, notificationCol).setValue(true);
+      Logger.log(`✅ Notified: ${stakeholders.join(",")} for row ${row}`);
+    }
+  }
+}
