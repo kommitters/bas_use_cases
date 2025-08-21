@@ -28,6 +28,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchGoogleDocumentsActivityLogsFromWorkspace
     FetchCalendarEventsFromWebhook
     FetchKpisFromNotionDatabase
+    FetchKeyResultsFromWebhook
   ]
 )
 
