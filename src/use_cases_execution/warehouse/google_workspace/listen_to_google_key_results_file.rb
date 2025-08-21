@@ -13,10 +13,11 @@ module Routes
     def initialize(args)
       super(args)
       write_options = {
-        connection: Config::Database::CONNECTION, db_table: 'warehouse_sync', tag: 'FetchKeyResultsFromWebhook'
+        connection: Config::Database::CONNECTION,
+        db_table: 'warehouse_sync',
+        tag: 'FetchKeyResultsFromWebhook'
       }
-      @shared_storage_reader = Bas::SharedStorage::Default.new
-      @shared_storage_writer = Bas::SharedStorage::Postgres.new({ write_options: })
+      @shared_storage_writer = Bas::SharedStorage::Postgres.new(write_options: write_options)
     end
 
     ##

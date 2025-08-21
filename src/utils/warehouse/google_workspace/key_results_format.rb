@@ -12,17 +12,17 @@ module Utils
       #
       class KeyResultsFormatter < Base
         # Main method that returns a hash with formatted key result data.
-        def format
+        def format # rubocop:disable Metrics/MethodLength
           {
-            external_key_result_id: SecureRandom.uuid,
+            external_key_result_id: @data[1],
             okr: @data[0],
             key_result: @data[2],
             metric: @data[15],
             current: last_present_value,
             progress: last_present_value,
-            # progress: last_present_value.to_s.strip == '-' ? 0 : metric_value,
             period: Time.now.year.to_s,
-            objective: @data[0]
+            objective: @data[0],
+            tags: @data[-1]
           }
         end
 
