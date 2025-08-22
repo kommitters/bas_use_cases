@@ -15,7 +15,7 @@ module Services
       TABLE = :kpis
 
       RELATIONS = [
-        { service: Domain, external: :external_domain_id, internal: :domain_id }
+        { service: Domain, external: :name, internal: :domain_id }
       ].freeze
 
       def insert(params)
