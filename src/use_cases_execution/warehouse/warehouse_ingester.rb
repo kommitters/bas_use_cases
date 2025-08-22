@@ -29,6 +29,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchCalendarEventsFromWebhook
     FetchKpisFromNotionDatabase
     FetchKeyResultsFromWebhook
+    FetchKpisFromWebhook
   ]
 )
 
