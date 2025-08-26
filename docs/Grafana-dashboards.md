@@ -44,7 +44,9 @@ docker network create databases-local
 services:
   postgres:
     networks:
-      - databases-local
+      databases-local:
+        aliases:
+          - postgres.local
     hostname: postgres.local
 
 # On grafana-docker-compose.yml
