@@ -78,6 +78,32 @@ RSpec.describe Services::Postgres::WeeklyScope do
       expect(weekly_scope[:domain_id]).to be_nil
       expect(weekly_scope[:person_id]).to be_nil
     end
+
+    it 'creates a new historical record when inserting a weekly scope with the same external_id' do
+      params1 = {
+        external_weekly_scope_id: 'ws-hist-1',
+        description: 'Week 24 Scope - Initial Draft',
+        start_week_date: start_week_date,
+        end_week_date: end_week_date
+      }
+      service.insert(params1)
+
+      expect(service.query(external_weekly_scope_id: 'ws-hist-1').size).to eq(1)
+
+      params2 = {
+        external_weekly_scope_id: 'ws-hist-1',
+        description: 'Week 24 Scope - Final Version',
+        start_week_date: start_week_date,
+        end_week_date: end_week_date
+      }
+      service.insert(params2)
+
+      scopes = service.query(external_weekly_scope_id: 'ws-hist-1')
+      expect(scopes.size).to eq(2)
+
+      descriptions = scopes.map { |s| s[:description] }.sort
+      expect(descriptions).to eq(['Week 24 Scope - Final Version', 'Week 24 Scope - Initial Draft'])
+    end
   end
 
   describe '#update' do

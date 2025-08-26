@@ -93,6 +93,51 @@ RSpec.describe Services::Postgres::CalendarEvent do
       # Should either skip unknown attendees or handle gracefully
       expect { service.insert(params) }.not_to raise_error
     end
+
+    it 'creates a new historical record when inserting an event with the same external_id' do
+      person_service.insert(
+        external_person_id: 'ext-p-hist',
+        full_name: 'Hist Person',
+        email_address: 'hist@example.com'
+      )
+
+      params1 = {
+        external_calendar_event_id: 'evt-hist-1',
+        summary: 'Version 1: Meeting',
+        duration_minutes: 30,
+        start_time: Time.now,
+        end_time: Time.now + 3600,
+        creation_timestamp: Time.now - 86_400,
+        attendees: [
+          { email_address: 'hist@example.com', response_status: 'accepted' }
+        ]
+      }
+      event1_id = service.insert(params1)
+
+      params2 = {
+        external_calendar_event_id: 'evt-hist-1',
+        summary: 'Version 2: Meeting Rescheduled',
+        duration_minutes: 45,
+        start_time: Time.now,
+        end_time: Time.now + 3600,
+        creation_timestamp: Time.now - 86_400,
+        attendees: []
+      }
+      event2_id = service.insert(params2)
+
+      events = service.query(external_calendar_event_id: 'evt-hist-1')
+      expect(events.size).to eq(2)
+      expect(event1_id).not_to eq(event2_id)
+
+      summaries = events.map { |e| e[:summary] }.sort
+      expect(summaries).to eq(['Version 1: Meeting', 'Version 2: Meeting Rescheduled'])
+
+      attendees_v1 = attendee_service.query(calendar_event_id: event1_id)
+      attendees_v2 = attendee_service.query(calendar_event_id: event2_id)
+
+      expect(attendees_v1.size).to eq(1)
+      expect(attendees_v2.size).to eq(0)
+    end
   end
 
   describe '#update' do

@@ -61,10 +61,26 @@ RSpec.describe Services::Postgres::Kpi do
       expect(service.find(id)[:description]).to eq('Updated KPI state')
     end
 
-    it 'creates a KpiHistory record on update' do
-      initial_count = history_service.query.count
-      service.update(id, description: 'Another state')
-      expect(history_service.query.count).to eq(initial_count + 1)
+    it 'saves the correct previous state to the history table before updating' do
+      initial_kpi = service.find(id)
+      expect(initial_kpi[:status]).to eq('On Track')
+      expect(initial_kpi[:current_value]).to eq(50.0)
+
+      expect(history_service.query(kpi_id: id)).to be_empty
+
+      service.update(id, { status: 'At Risk', current_value: 55.0 })
+
+      updated_kpi = service.find(id)
+      expect(updated_kpi[:status]).to eq('At Risk')
+      expect(updated_kpi[:current_value]).to eq(55.0)
+
+      history_records = history_service.query(kpi_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:kpi_id]).to eq(id)
+      expect(historical_record[:status]).to eq('On Track')
+      expect(historical_record[:current_value]).to eq(50.0)
     end
 
     it 'raises an ArgumentError if the id is null' do

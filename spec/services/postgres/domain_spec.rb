@@ -34,6 +34,33 @@ RSpec.describe Services::Postgres::Domain do
       expect(domain[:external_domain_id]).to eq('ext-d-1')
       expect(domain[:archived]).to eq(false)
     end
+
+    it 'creates a new historical record when inserting a domain with the same external_id' do
+      params1 = {
+        external_domain_id: 'd-hist-1',
+        name: 'Domain State 1',
+        archived: false
+      }
+      service.insert(params1)
+
+      expect(service.query(external_domain_id: 'd-hist-1').size).to eq(1)
+
+      params2 = {
+        external_domain_id: 'd-hist-1',
+        name: 'Domain State 2',
+        archived: true
+      }
+      service.insert(params2)
+
+      domains = service.query(external_domain_id: 'd-hist-1')
+      expect(domains.size).to eq(2)
+
+      names = domains.map { |d| d[:name] }.sort
+      archives = domains.map { |d| d[:archived] }
+
+      expect(names).to eq(['Domain State 1', 'Domain State 2'])
+      expect(archives).to contain_exactly(false, true)
+    end
   end
 
   describe '#update' do

@@ -60,6 +60,28 @@ RSpec.describe Services::Postgres::Person do
       expect(person).not_to have_key(:external_domain_id)
       expect(person[:domain_id]).to be_nil
     end
+
+    it 'creates a new historical record when inserting a person with the same external_id' do
+      params1 = {
+        external_person_id: 'p-hist-1',
+        full_name: 'Jane Doe v1'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_person_id: 'p-hist-1').size).to eq(1)
+
+      params2 = {
+        external_person_id: 'p-hist-1',
+        full_name: 'Jane Doe v2 - Updated' # Changed data
+      }
+      service.insert(params2)
+
+      persons = service.query(external_person_id: 'p-hist-1')
+      expect(persons.size).to eq(2)
+
+      full_names = persons.map { |p| p[:full_name] }.sort
+      expect(full_names).to eq(['Jane Doe v1', 'Jane Doe v2 - Updated'])
+    end
   end
 
   describe '#update' do

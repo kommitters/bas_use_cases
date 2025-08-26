@@ -89,6 +89,39 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       expect(pr[:related_issue_ids]).to eq('[10,20]')
       expect(pr[:reviews_data]).to eq('{"state":"APPROVED","user":"test-user"}')
     end
+
+    it 'creates a new historical record when inserting a pull request with the same external_id' do
+      params1 = {
+        external_github_pull_request_id: 101,
+        repository_id: 200,
+        title: 'PR Version 1',
+        creation_date: Time.now,
+        external_github_release_id: 'ghr-1'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_github_pull_request_id: 101).size).to eq(1)
+
+      params2 = {
+        external_github_pull_request_id: 101,
+        repository_id: 200,
+        title: 'PR Version 2 - Updated Title',
+        creation_date: Time.now,
+        merge_date: Time.now + 86_400,
+        external_github_release_id: 'ghr-1'
+      }
+      service.insert(params2)
+
+      prs = service.query(external_github_pull_request_id: 101)
+      expect(prs.size).to eq(2)
+
+      titles = prs.map { |pr| pr[:title] }.sort
+      expect(titles).to eq(['PR Version 1', 'PR Version 2 - Updated Title'])
+
+      merge_dates = prs.map { |pr| pr[:merge_date] }
+      expect(merge_dates.one?(&:nil?)).to be true
+      expect(merge_dates.one? { |d| !d.nil? }).to be true
+    end
   end
 
   describe '#update' do

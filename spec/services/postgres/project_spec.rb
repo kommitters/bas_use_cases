@@ -64,6 +64,33 @@ RSpec.describe Services::Postgres::Project do
       expect(project).not_to have_key(:external_domain_id)
       expect(project[:domain_id]).to be_nil
     end
+
+    it 'creates a new historical record when inserting a project with the same external_id' do
+      params1 = {
+        external_project_id: 'proj-hist-1',
+        name: 'Project Version 1',
+        status: 'active'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_project_id: 'proj-hist-1').size).to eq(1)
+
+      params2 = {
+        external_project_id: 'proj-hist-1',
+        name: 'Project Version 2',
+        status: 'archived'
+      }
+      service.insert(params2)
+
+      projects = service.query(external_project_id: 'proj-hist-1')
+      expect(projects.size).to eq(2)
+
+      names = projects.map { |p| p[:name] }.sort
+      statuses = projects.map { |p| p[:status] }
+
+      expect(names).to eq(['Project Version 1', 'Project Version 2'])
+      expect(statuses).to contain_exactly('active', 'archived')
+    end
   end
 
   describe '#update' do
