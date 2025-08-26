@@ -75,6 +75,37 @@ RSpec.describe Services::Postgres::GithubIssue do
       expect(issue[:labels]).to eq('["bug","critical"]')
       expect(issue[:assignees]).to eq('["user1","user2"]')
     end
+
+    it 'creates a new historical record when inserting an issue with the same external_id' do
+      params1 = {
+        external_github_issue_id: 99,
+        repository_id: 500,
+        milestone_id: 10,
+        external_person_id: 'person-123',
+        labels: JSON.generate(['documentation'])
+      }
+      service.insert(params1)
+
+      expect(service.query(external_github_issue_id: 99).size).to eq(1)
+
+      params2 = {
+        external_github_issue_id: 99,
+        repository_id: 500,
+        milestone_id: 20,
+        external_person_id: 'person-123',
+        labels: JSON.generate(%w[bug critical])
+      }
+      service.insert(params2)
+
+      issues = service.query(external_github_issue_id: 99)
+      expect(issues.size).to eq(2)
+
+      milestone_ids = issues.map { |i| i[:milestone_id] }.sort
+      labels = issues.map { |i| i[:labels] }.sort
+
+      expect(milestone_ids).to eq([10, 20])
+      expect(labels).to eq(['["bug","critical"]', '["documentation"]'])
+    end
   end
 
   describe '#update' do

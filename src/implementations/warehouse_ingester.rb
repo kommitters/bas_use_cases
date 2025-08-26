@@ -63,7 +63,8 @@ module Implementation
         service: Services::Postgres::DocumentActivityLog, external_key: 'unique_identifier'
       },
       'domain' => { service: Services::Postgres::Domain, external_key: 'external_domain_id' },
-      'key_result' => { service: Services::Postgres::KeyResult, external_key: 'external_key_result_id' },
+      'key_result' => { service: Services::Postgres::KeyResult, external_key: 'external_key_result_id',
+                        has_history: true },
       'milestone' => { service: Services::Postgres::Milestone, external_key: 'external_milestone_id' },
       'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
       'project' => { service: Services::Postgres::Project, external_key: 'external_project_id' },
@@ -72,10 +73,9 @@ module Implementation
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
       'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
-      'github_pull_request' => {
-        service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id'
-      },
-      'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' },
+      'github_pull_request' => { service: Services::Postgres::GithubPullRequest,
+                                 external_key: 'external_github_pull_request_id' },
+      'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id', has_history: true },
       'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' }
 
     }.freeze
@@ -89,6 +89,7 @@ module Implementation
       config = SERVICES[@type]
       @external_key = config[:external_key]
       @service = config[:service].new(process_options[:db])
+      @history = config[:has_history] || false
 
       process_items
     end
@@ -98,22 +99,30 @@ module Implementation
     def process_items
       processed = 0
       read_response.data['content'].each do |item|
-        upsert(item)
+        persist(item)
         processed += 1
       end
 
       { success: { processed: processed } }
+    rescue StandardError => e
+      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e}"
+      { error: { message: e.message, type: @type } }
+    end
+
+    def persist(item)
+      if @history
+        upsert(item)
+      else
+        @service.insert(item)
+      end
     end
 
     def upsert(item)
       external_id = item[@external_key]
-      found = @service.query({ @external_key.to_sym => external_id }).first
-      persist(found, item)
-    rescue StandardError => e
-      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e.message}"
-    end
+      return unless external_id
 
-    def persist(found, item)
+      found = @service.query({ @external_key.to_sym => external_id }).first
+
       if found
         @service.update(found[:id], item)
       else

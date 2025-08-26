@@ -99,6 +99,41 @@ RSpec.describe Services::Postgres::WorkLog do
       log = service.find(id)
       expect(log[:tags]).to include('urgent', 'backend')
     end
+
+    it 'creates a new historical record when inserting a work log with the same external_id' do
+      person_id = person_service.insert(external_person_id: 'p-hist-1', full_name: 'Hist Person')
+
+      params1 = {
+        external_work_log_id: 'log-hist-1',
+        duration_minutes: 30,
+        creation_date: Time.now,
+        person_id: person_id,
+        started_at: Time.now,
+        tags: JSON.generate(['initial'])
+      }
+      service.insert(params1)
+
+      expect(service.query(external_work_log_id: 'log-hist-1').size).to eq(1)
+
+      params2 = {
+        external_work_log_id: 'log-hist-1',
+        duration_minutes: 45,
+        creation_date: Time.now,
+        person_id: person_id,
+        started_at: Time.now,
+        tags: JSON.generate(['revised'])
+      }
+      service.insert(params2)
+
+      logs = service.query(external_work_log_id: 'log-hist-1')
+      expect(logs.size).to eq(2)
+
+      durations = logs.map { |log| log[:duration_minutes] }.sort
+      tags = logs.map { |log| log[:tags] }.sort
+
+      expect(durations).to eq([30, 45])
+      expect(tags).to eq(['["initial"]', '["revised"]'])
+    end
   end
 
   describe '#update' do

@@ -112,6 +112,33 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(work_item[:person_id]).to be_nil
       expect(work_item[:weekly_scope_id]).to be_nil
     end
+
+    it 'creates a new historical record when inserting a work item with the same external_id' do
+      params1 = {
+        external_work_item_id: 'wi-hist-1',
+        name: 'Work Item - Draft',
+        status: 'To Do'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_work_item_id: 'wi-hist-1').size).to eq(1)
+
+      params2 = {
+        external_work_item_id: 'wi-hist-1',
+        name: 'Work Item - In Progress',
+        status: 'In Progress'
+      }
+      service.insert(params2)
+
+      work_items = service.query(external_work_item_id: 'wi-hist-1')
+      expect(work_items.size).to eq(2)
+
+      names = work_items.map { |wi| wi[:name] }.sort
+      statuses = work_items.map { |wi| wi[:status] }
+
+      expect(names).to eq(['Work Item - Draft', 'Work Item - In Progress'])
+      expect(statuses).to contain_exactly('To Do', 'In Progress')
+    end
   end
 
   describe '#update' do

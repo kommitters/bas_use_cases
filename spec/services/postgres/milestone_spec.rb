@@ -66,6 +66,33 @@ RSpec.describe Services::Postgres::Milestone do
       expect(milestone).not_to have_key(:external_project_id)
       expect(milestone[:project_id]).to be_nil
     end
+
+    it 'creates a new historical record when inserting a milestone with the same external_id' do
+      params1 = {
+        external_milestone_id: 'm-hist-1',
+        name: 'Milestone V1',
+        status: 'open'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_milestone_id: 'm-hist-1').size).to eq(1)
+
+      params2 = {
+        external_milestone_id: 'm-hist-1',
+        name: 'Milestone V2 - Closed',
+        status: 'closed'
+      }
+      service.insert(params2)
+
+      milestones = service.query(external_milestone_id: 'm-hist-1')
+      expect(milestones.size).to eq(2)
+
+      names = milestones.map { |m| m[:name] }.sort
+      statuses = milestones.map { |m| m[:status] }
+
+      expect(names).to eq(['Milestone V1', 'Milestone V2 - Closed'])
+      expect(statuses).to contain_exactly('open', 'closed')
+    end
   end
 
   describe '#update' do

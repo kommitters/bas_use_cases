@@ -84,6 +84,29 @@ RSpec.describe Services::Postgres::Activity do
       relations = akr_service.query(activity_id: id)
       expect(relations.size).to eq(2)
     end
+
+    it 'creates a new historical record on a second insert for the same external_id' do
+      params1 = {
+        external_activity_id: 'hist-1',
+        name: 'Version 1'
+      }
+      service.insert(params1)
+
+      expect(service.query(external_activity_id: 'hist-1').size).to eq(1)
+
+      params2 = {
+        external_activity_id: 'hist-1',
+        name: 'Version 2'
+      }
+      service.insert(params2)
+
+      activities = service.query(external_activity_id: 'hist-1')
+
+      expect(activities.size).to eq(2)
+
+      names = activities.map { |a| a[:name] }.sort
+      expect(names).to eq(['Version 1', 'Version 2'])
+    end
   end
 
   describe '#update' do

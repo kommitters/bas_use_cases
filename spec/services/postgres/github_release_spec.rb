@@ -43,6 +43,39 @@ RSpec.describe Services::Postgres::GithubRelease do
       expect(release[:tag_name]).to eq('v1.0.0')
       expect(release[:name]).to eq('First Release')
     end
+
+    it 'creates a new historical record when inserting a release with the same external_id' do
+      params1 = {
+        external_github_release_id: 10,
+        repository_id: 1000,
+        tag_name: 'v1.0-hist',
+        name: 'Historical Release v1',
+        is_prerelease: true,
+        creation_timestamp: Time.now
+      }
+      service.insert(params1)
+
+      expect(service.query(external_github_release_id: 10).size).to eq(1)
+
+      params2 = {
+        external_github_release_id: 10,
+        repository_id: 1000,
+        tag_name: 'v1.0-hist',
+        name: 'Historical Release v2 - Final',
+        is_prerelease: false,
+        creation_timestamp: Time.now
+      }
+      service.insert(params2)
+
+      releases = service.query(external_github_release_id: 10)
+      expect(releases.size).to eq(2)
+
+      names = releases.map { |r| r[:name] }.sort
+      prerelease_statuses = releases.map { |r| r[:is_prerelease] }
+
+      expect(names).to eq(['Historical Release v1', 'Historical Release v2 - Final'])
+      expect(prerelease_statuses).to contain_exactly(true, false)
+    end
   end
 
   describe '#update' do

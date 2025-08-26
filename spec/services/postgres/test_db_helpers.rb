@@ -205,7 +205,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_github_issues_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:github_issues) do
       primary_key :id
-      BigInt :external_github_issue_id, null: false, unique: true
+      BigInt :external_github_issue_id, null: false
       foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
       BigInt :repository_id, null: false
       BigInt :milestone_id, null: true
@@ -219,7 +219,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_github_pull_requests_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:github_pull_requests) do
       primary_key :id
-      BigInt :external_github_pull_request_id, null: false, unique: true
+      BigInt :external_github_pull_request_id, null: false
       BigInt :repository_id, null: false
       foreign_key :release_id, :github_releases, type: :uuid, null: false, on_delete: :cascade
       foreign_key :issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade
