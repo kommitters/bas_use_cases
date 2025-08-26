@@ -6,10 +6,23 @@ Create a read-only role first for Grafana to connect safely to the database.
 
 ```sql
 CREATE ROLE read_only_access;
-GRANT CONNECT ON DATABASE postgres TO read_only_access;
+GRANT CONNECT ON DATABASE warehouse TO read_only_access;
+
+-- In the target DB context:
+-- \c warehouse
 GRANT USAGE ON SCHEMA public TO read_only_access;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO read_only_access;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO read_only_access;
 
+-- Ensure future tables/sequences are readable
+-- must be executed by the owner that creates future objects.
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO read_only_access;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON SEQUENCES TO read_only_access;
+```
+
+Create a user for Grafana to connect with:
+
+```sql
 CREATE USER read_only_user WITH PASSWORD 'changeme';
 GRANT read_only_access TO read_only_user;
 ```
