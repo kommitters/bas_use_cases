@@ -8,9 +8,8 @@ This script is designed to fetch all data from the "KPIs Tracking" Google Sheet 
 
 ```javascript
 /**
- * Main function: fetches the raw data from the Google Sheet,
- * enriches it with IDs, formats it, and sends it to the configured webhook.
- * This is the function that should be triggered to run automatically.
+ * Main function: orchestrates fetching the raw data from the Google Sheet,
+ * enriching it with IDs, and sending it to the configured webhook.
  */
 function sendKpisToWebhook() {
   try {
@@ -21,9 +20,8 @@ function sendKpisToWebhook() {
     }
 
     const sheetDataWithIds = fetchSheetDataWithIds();
-    console.log(sheetDataWithIds);
 
-    if (!sheetDataWithIds || sheetDataWithIds.length <= 1) { // <= 1 to account for header-only sheets
+    if (!sheetDataWithIds || sheetDataWithIds.length <= 1) {
       console.log('No data found in the sheet to send.');
       return;
     }
@@ -39,8 +37,8 @@ function sendKpisToWebhook() {
 }
 
 /**
- * Fetches all raw data from the "KPIs Tracking" Google Sheet, reverses the order
- * of the rows, and appends a column with the external_kpi_id from a Google Doc.
+ * Fetches all raw data from the KPIs Tracking Google Sheet and appends
+ * a column with the external_kpi_id found from the Google Doc.
  */
 function fetchSheetDataWithIds() {
   const spreadsheetId = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
@@ -52,7 +50,6 @@ function fetchSheetDataWithIds() {
 
   try {
     const listItemMap = getListItemMapFromDoc(documentId);
-
     const sheetName = 'KPIs Tracking'; // Make sure this is the exact name of your sheet
     const sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(sheetName);
 
@@ -61,16 +58,36 @@ function fetchSheetDataWithIds() {
     }
 
     const values = sheet.getDataRange().getValues();
-    const headers = values[0];
+    const headers = values[0] || [];
 
-    // Reverse the order of the rows (excluding the header) so they are stored chronologically.
-    const reversedRows = values.slice(1).reverse();
+    // Reverse the order of the rows (excluding the header) so they are stored chronologically,
+    // and drop fully empty rows.
+    const dataRows = values.slice(1)
+      .filter(r => r && r.some(c => String(c).trim() !== ''))
+      .reverse();
 
-    const newHeaders = [...headers, "external_kpi_id"];
+    // Ensure we don't duplicate the external_kpi_id column.
+    const EXTERNAL_KEY = 'external_kpi_id';
+    const hasExternalHeader = headers.includes('external_kpi_id');
+    const externalIdx = hasExternalHeader ? headers.indexOf(EXTERNAL_KEY) : headers.length;
+    const newHeaders = hasExternalHeader ? headers : [...headers, EXTERNAL_KEY];
 
-    const rowsWithIds = reversedRows.map(row => {
-      const kpiName = row[0].toString().split(',')[0].trim();
-      const externalId = listItemMap[kpiName] || "";
+    // Choose lookup key: prefer 'Description', fallback to 'Name'.
+    const keyIdx = headers.indexOf('KPI');
+    if (keyIdx < 0) {
+      throw new Error("Expected a 'KPI' column to build KPI ID mappings.");
+    }
+
+    const rowsWithIds = dataRows.map(row => {
+      const kpiKey = String(row[keyIdx] || '').trim();
+      const externalId = listItemMap[kpiKey] || '';
+
+      if (hasExternalHeader) {
+        const out = row.slice();
+        out[externalIdx] = externalId;
+        return out;
+      }
+      
       return [...row, externalId];
     });
 
@@ -87,17 +104,13 @@ function fetchSheetDataWithIds() {
 function getListItemMapFromDoc(documentId) {
   const doc = DocumentApp.openById(documentId);
   const tabs = doc.getTabs();
-  const listItemMap = {};
 
+  
   console.log(`Found ${tabs.length} tab(s) to process.`);
 
-  tabs.forEach(function(tab) {
-    const tabId = tab.getId();
-    const name = tab.getTitle().trim();
-    listItemMap[name] = tabId;
-  });
-
-  return listItemMap;
+  return Object.fromEntries(
+    tabs.map((tab) => [tab.getTitle().trim(), tab.getId()])
+  );
 }
 
 /**
@@ -113,6 +126,7 @@ function postToWebhook(url, payload) {
 
   return UrlFetchApp.fetch(url, options);
 }
+
 
 ```
 

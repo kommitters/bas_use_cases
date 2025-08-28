@@ -39,9 +39,7 @@ module Routes
 
       data_rows = raw_data.slice(1..-1)
 
-      ordered_data_rows = order_by_month(data_rows)
-
-      formatted_kpis = ordered_data_rows.map do |row|
+      formatted_kpis = data_rows.map do |row|
         Utils::Warehouse::GoogleWorkspace::KpisFormatter.new(row).format
       end.compact
 
@@ -57,19 +55,6 @@ module Routes
     rescue StandardError => e
       logger.error "Failed to process KPIs data: #{e.message}\n#{e.backtrace.join("\n")}"
       halt 500, { error: 'Internal Server Error' }.to_json
-    end
-
-    private
-
-    ##
-    # Orders rows by the month column (index 5 = 6th column).
-    #
-    def order_by_month(rows)
-      month_order = %w[January February March April May June July August September October November December]
-      rows.sort_by do |row|
-        month = row[5].to_s.strip
-        month_order.index(month) || 99
-      end
     end
   end
 end
