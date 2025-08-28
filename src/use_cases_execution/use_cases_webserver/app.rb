@@ -9,6 +9,7 @@ require_relative '../warehouse/google_workspace/listen_to_google_docs_updates'
 require_relative '../warehouse/google_workspace/listen_to_google_calendar_updates'
 require_relative '../warehouse/google_workspace/listen_to_google_docs_activity_logs'
 require_relative '../warehouse/google_workspace/listen_to_google_key_results_file'
+require_relative '../warehouse/google_workspace/listen_to_google_kpis_file'
 
 # The WebServer class defines the main Sinatra application responsible for
 # handling incoming webhooks from Google services.
@@ -26,6 +27,7 @@ class WebServer < Sinatra::Base
   use Routes::CalendarEvents
   use Routes::GoogleDocumentsActivityLogs
   use Routes::KeyResults
+  use Routes::Kpis
 
   get('/') { 'OK' }
 end
