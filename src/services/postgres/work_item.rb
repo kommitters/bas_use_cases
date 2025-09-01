@@ -17,7 +17,10 @@ module Services
     class WorkItem < Services::Postgres::Base
       ATTRIBUTES = %i[name external_work_item_id project_id activity_id status completion_date weekly_scope_id
                       description domain_id person_id github_issue_id].freeze
+
       TABLE = :work_items
+      HISTORY_TABLE = :work_items_history
+      HISTORY_FOREIGN_KEY = :work_item_id
 
       RELATIONS = [
         { service: Project, external: :external_project_id, internal: :project_id },

@@ -2,7 +2,6 @@
 
 require_relative 'base'
 require_relative 'domain'
-require_relative 'kpi_history'
 
 module Services
   module Postgres
@@ -12,7 +11,10 @@ module Services
     # Provides CRUD operations for the 'kpis' table using the Base service.
     class Kpi < Services::Postgres::Base
       ATTRIBUTES = %i[external_kpi_id domain_id description status current_value percentage target_value stats].freeze
+
       TABLE = :kpis
+      HISTORY_TABLE = :kpis_history
+      HISTORY_FOREIGN_KEY = :kpi_id
 
       RELATIONS = [
         { service: Domain, external: :external_domain_id, internal: :domain_id }
@@ -29,10 +31,7 @@ module Services
         raise ArgumentError, 'KPI id is required to update' unless id
 
         assign_relations(params)
-        transaction do
-          save_history(id)
-          update_item(TABLE, id, params)
-        end
+        transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
       end
@@ -52,13 +51,6 @@ module Services
       end
 
       private
-
-      def save_history(id)
-        kpi = find(id).merge(kpi_id: id)
-        kpi.delete(:id)
-
-        KpiHistory.new(db).insert(kpi)
-      end
 
       def handle_error(error)
         puts "[Kpi Service ERROR] #{error.class}: #{error.message}"

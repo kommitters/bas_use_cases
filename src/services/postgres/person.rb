@@ -14,6 +14,9 @@ module Services
                       notion_user_id worklogs_user_id domain_id].freeze
       TABLE = :persons
 
+      HISTORY_TABLE = :persons_history
+      HISTORY_FOREIGN_KEY = :person_id
+
       RELATIONS = [
         { service: Domain, external: :external_domain_id, internal: :domain_id }
       ].freeze

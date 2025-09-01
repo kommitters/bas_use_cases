@@ -20,6 +20,8 @@ module Services
       ].freeze
 
       TABLE = :work_logs
+      HISTORY_TABLE = :work_logs_history
+      HISTORY_FOREIGN_KEY = :work_log_id
 
       RELATIONS = [
         { service: Person, external: :external_person_id, internal: :person_id },

@@ -12,7 +12,11 @@ module Services
     # Provides CRUD operations for the 'activities' table using the Base service.
     class Activity < Services::Postgres::Base
       ATTRIBUTES = %i[external_activity_id name domain_id].freeze
+
       TABLE = :activities
+      HISTORY_TABLE = :activities_history
+      HISTORY_FOREIGN_KEY = :activity_id
+
       RELATIONS = [
         { service: Domain, external: :external_domain_id, internal: :domain_id }
       ].freeze

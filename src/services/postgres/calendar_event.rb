@@ -11,7 +11,10 @@ module Services
     # Provides CRUD operations for the 'calendar_events' table using the Base service.
     class CalendarEvent < Services::Postgres::Base
       ATTRIBUTES = %i[external_calendar_event_id summary duration_minutes start_time end_time creation_timestamp].freeze
+
       TABLE = :calendar_events
+      HISTORY_TABLE = :calendar_events_history
+      HISTORY_FOREIGN_KEY = :calendar_event_id
 
       def insert(params)
         transaction do

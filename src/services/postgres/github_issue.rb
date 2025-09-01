@@ -13,6 +13,8 @@ module Services
       ATTRIBUTES = %i[external_github_issue_id person_id repository_id milestone_id assignees labels].freeze
 
       TABLE = :github_issues
+      HISTORY_TABLE = :github_issues_history
+      HISTORY_FOREIGN_KEY = :issue_id
 
       RELATIONS = [
         { service: Person, external: :external_person_id, internal: :person_id }

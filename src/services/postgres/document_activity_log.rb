@@ -12,6 +12,7 @@ module Services
     # Provides CRUD operations for the 'document_activity_logs' table using the Base service.
     class DocumentActivityLog < Services::Postgres::Base
       ATTRIBUTES = %i[document_id person_id action details unique_identifier].freeze
+
       TABLE = :document_activity_logs
 
       RELATIONS = [

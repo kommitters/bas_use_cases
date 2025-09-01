@@ -11,6 +11,7 @@ module Services
     # Provides CRUD operations for the 'activities_key_results' table using the Base service.
     class ActivitiesKeyResults < Services::Postgres::Base
       ATTRIBUTES = %i[activity_id key_result_id].freeze
+
       TABLE = :activities_key_results
       RELATIONS = [
         { service: KeyResult, external: :external_key_result_id, internal: :key_result_id }
