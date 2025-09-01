@@ -17,7 +17,10 @@ RSpec.describe Services::Postgres::CalendarEvent do
   let(:attendee_service) { Services::Postgres::CalendarEventAttendee.new(service.db) }
   let(:person_service) { Services::Postgres::Person.new(service.db) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :calendar_events_history, :calendar_event_id) }
+
   before(:each) do
+    db.drop_table?(:calendar_events_history)
     db.drop_table?(:calendar_event_attendees)
     db.drop_table?(:persons)
     db.drop_table?(:domains)
@@ -27,6 +30,7 @@ RSpec.describe Services::Postgres::CalendarEvent do
     create_calendar_event_attendees_table(db)
     create_persons_table(db)
     create_domains_table(db)
+    create_calendar_events_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -201,6 +205,35 @@ RSpec.describe Services::Postgres::CalendarEvent do
       expect(attendees.first[:response_status]).to eq('tentative')
 
       expect(attendees.first[:person_id]).to eq(person_three_id)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      person_service.insert(external_person_id: 'p-1', full_name: 'Test Person', email_address: 'test@test.com')
+      id = service.insert(
+        external_calendar_event_id: 'evt-hist-1',
+        summary: 'Initial Summary',
+        duration_minutes: 30,
+        start_time: Time.now,
+        end_time: Time.now + 1800,
+        creation_timestamp: Time.now - 86_400,
+        attendees: [{ email_address: 'test@test.com', response_status: 'accepted' }]
+      )
+
+      expect(history_service.query(calendar_event_id: id)).to be_empty
+
+      service.update(id, { summary: 'Updated Summary', duration_minutes: 45 })
+
+      updated_record = service.find(id)
+      expect(updated_record[:summary]).to eq('Updated Summary')
+      expect(updated_record[:duration_minutes]).to eq(45)
+
+      history_records = history_service.query(calendar_event_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:calendar_event_id]).to eq(id)
+      expect(historical_record[:summary]).to eq('Initial Summary')
+      expect(historical_record[:duration_minutes]).to eq(30)
     end
 
     it 'raises an error if no ID is provided' do

@@ -15,12 +15,16 @@ RSpec.describe Services::Postgres::Person do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :persons_history, :person_id) }
+
   before(:each) do
+    db.drop_table?(:persons_history)
     db.drop_table?(:persons)
     db.drop_table?(:domains)
 
     create_persons_table(db)
     create_domains_table(db)
+    create_persons_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -60,28 +64,6 @@ RSpec.describe Services::Postgres::Person do
       expect(person).not_to have_key(:external_domain_id)
       expect(person[:domain_id]).to be_nil
     end
-
-    it 'creates a new historical record when inserting a person with the same external_id' do
-      params1 = {
-        external_person_id: 'p-hist-1',
-        full_name: 'Jane Doe v1'
-      }
-      service.insert(params1)
-
-      expect(service.query(external_person_id: 'p-hist-1').size).to eq(1)
-
-      params2 = {
-        external_person_id: 'p-hist-1',
-        full_name: 'Jane Doe v2 - Updated' # Changed data
-      }
-      service.insert(params2)
-
-      persons = service.query(external_person_id: 'p-hist-1')
-      expect(persons.size).to eq(2)
-
-      full_names = persons.map { |p| p[:full_name] }.sort
-      expect(full_names).to eq(['Jane Doe v1', 'Jane Doe v2 - Updated'])
-    end
   end
 
   describe '#update' do
@@ -103,6 +85,24 @@ RSpec.describe Services::Postgres::Person do
       service.update(id, { external_domain_id: 'dom-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain2)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_person_id: 'p-hist-1', full_name: 'Initial Name')
+
+      expect(history_service.query(person_id: id)).to be_empty
+
+      service.update(id, { full_name: 'Updated Name' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:full_name]).to eq('Updated Name')
+
+      history_records = history_service.query(person_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:person_id]).to eq(id)
+      expect(historical_record[:full_name]).to eq('Initial Name')
     end
 
     it 'raises error if no ID is provided' do

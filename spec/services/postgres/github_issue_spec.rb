@@ -20,9 +20,12 @@ RSpec.describe Services::Postgres::GithubIssue do
   let(:service) { described_class.new(config) }
   let(:person_service) { Services::Postgres::Person.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_issues_history, :issue_id) }
+
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
+    db.drop_table?(:github_issues_history)
     db.drop_table?(:github_issues)
     db.drop_table?(:persons)
     db.drop_table?(:domains)
@@ -30,6 +33,7 @@ RSpec.describe Services::Postgres::GithubIssue do
     create_persons_table(db)
     create_domains_table(db)
     create_github_issues_table(db)
+    create_github_issues_history_table(db)
 
     @person_id = person_service.insert(external_person_id: 'person-123', full_name: 'Test Person')
   end
@@ -75,37 +79,6 @@ RSpec.describe Services::Postgres::GithubIssue do
       expect(issue[:labels]).to eq('["bug","critical"]')
       expect(issue[:assignees]).to eq('["user1","user2"]')
     end
-
-    it 'creates a new historical record when inserting an issue with the same external_id' do
-      params1 = {
-        external_github_issue_id: 99,
-        repository_id: 500,
-        milestone_id: 10,
-        external_person_id: 'person-123',
-        labels: JSON.generate(['documentation'])
-      }
-      service.insert(params1)
-
-      expect(service.query(external_github_issue_id: 99).size).to eq(1)
-
-      params2 = {
-        external_github_issue_id: 99,
-        repository_id: 500,
-        milestone_id: 20,
-        external_person_id: 'person-123',
-        labels: JSON.generate(%w[bug critical])
-      }
-      service.insert(params2)
-
-      issues = service.query(external_github_issue_id: 99)
-      expect(issues.size).to eq(2)
-
-      milestone_ids = issues.map { |i| i[:milestone_id] }.sort
-      labels = issues.map { |i| i[:labels] }.sort
-
-      expect(milestone_ids).to eq([10, 20])
-      expect(labels).to eq(['["bug","critical"]', '["documentation"]'])
-    end
   end
 
   describe '#update' do
@@ -113,7 +86,8 @@ RSpec.describe Services::Postgres::GithubIssue do
       service.insert(
         external_github_issue_id: 4,
         repository_id: 200,
-        external_person_id: 'person-123'
+        external_person_id: 'person-123',
+        labels: JSON.generate(%w[issue initial])
       )
     end
 
@@ -131,6 +105,25 @@ RSpec.describe Services::Postgres::GithubIssue do
       updated_issue = service.find(issue_id)
 
       expect(updated_issue[:person_id]).to eq(person2_id)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(history_service.query(issue_id: issue_id)).to be_empty
+
+      service.update(issue_id, { repository_id: 300, labels: JSON.generate(%w[bug critical]) })
+
+      updated_record = service.find(issue_id)
+      expect(updated_record[:repository_id]).to eq(300)
+      expect(updated_record[:labels]).to eq('["bug","critical"]')
+
+      history_records = history_service.query(issue_id: issue_id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:issue_id]).to eq(issue_id)
+
+      expect(historical_record[:repository_id]).to eq(200)
+      expect(historical_record[:labels]).to eq('["issue","initial"]')
     end
 
     it 'raises an ArgumentError if no ID is provided' do

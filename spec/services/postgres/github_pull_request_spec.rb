@@ -23,9 +23,12 @@ RSpec.describe Services::Postgres::GithubPullRequest do
   let(:issue_service) { Services::Postgres::GithubIssue.new(config) }
   let(:person_service) { Services::Postgres::Person.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_pull_requests_history, :pull_request_id) }
+
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
+    db.drop_table?(:github_pull_requests_history)
     db.drop_table?(:github_pull_requests, :github_releases, :github_issues, :persons, :domains)
 
     create_domains_table(db)
@@ -33,6 +36,7 @@ RSpec.describe Services::Postgres::GithubPullRequest do
     create_github_issues_table(db)
     create_github_releases_table(db)
     create_github_pull_requests_table(db)
+    create_github_pull_requests_history_table(db)
 
     @person_id = person_service.insert(external_person_id: 'person-1', full_name: 'Test User')
     @release_id = release_service.insert(external_github_release_id: 'ghr-1', repository_id: 1, tag_name: 'v1.0-test',
@@ -89,39 +93,6 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       expect(pr[:related_issue_ids]).to eq('[10,20]')
       expect(pr[:reviews_data]).to eq('{"state":"APPROVED","user":"test-user"}')
     end
-
-    it 'creates a new historical record when inserting a pull request with the same external_id' do
-      params1 = {
-        external_github_pull_request_id: 101,
-        repository_id: 200,
-        title: 'PR Version 1',
-        creation_date: Time.now,
-        external_github_release_id: 'ghr-1'
-      }
-      service.insert(params1)
-
-      expect(service.query(external_github_pull_request_id: 101).size).to eq(1)
-
-      params2 = {
-        external_github_pull_request_id: 101,
-        repository_id: 200,
-        title: 'PR Version 2 - Updated Title',
-        creation_date: Time.now,
-        merge_date: Time.now + 86_400,
-        external_github_release_id: 'ghr-1'
-      }
-      service.insert(params2)
-
-      prs = service.query(external_github_pull_request_id: 101)
-      expect(prs.size).to eq(2)
-
-      titles = prs.map { |pr| pr[:title] }.sort
-      expect(titles).to eq(['PR Version 1', 'PR Version 2 - Updated Title'])
-
-      merge_dates = prs.map { |pr| pr[:merge_date] }
-      expect(merge_dates.one?(&:nil?)).to be true
-      expect(merge_dates.one? { |d| !d.nil? }).to be true
-    end
   end
 
   describe '#update' do
@@ -149,6 +120,24 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       updated_pr = service.find(pr_id)
 
       expect(updated_pr[:issue_id]).to eq(new_issue_id)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(history_service.query(pull_request_id: pr_id)).to be_empty
+
+      service.update(pr_id, { title: 'Updated Title', merge_date: Time.now })
+
+      updated_record = service.find(pr_id)
+      expect(updated_record[:title]).to eq('Updated Title')
+      expect(updated_record[:merge_date]).not_to be_nil
+
+      history_records = history_service.query(pull_request_id: pr_id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:pull_request_id]).to eq(pr_id)
+      expect(historical_record[:title]).to eq('Initial Title')
+      expect(historical_record[:merge_date]).to be_nil
     end
 
     it 'raises an ArgumentError if no ID is provided' do

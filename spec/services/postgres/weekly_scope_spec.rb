@@ -21,8 +21,11 @@ RSpec.describe Services::Postgres::WeeklyScope do
     { external_weekly_scope_id: 'ws-1', description: 'engineering-week-1', start_week_date:, end_week_date: }
   end
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :weekly_scopes_history, :weekly_scope_id) }
+
   # Create the table structure before each test
   before(:each) do
+    db.drop_table?(:weekly_scopes_history)
     db.drop_table?(:domains)
     db.drop_table?(:persons)
     db.drop_table?(:weekly_scopes)
@@ -30,6 +33,7 @@ RSpec.describe Services::Postgres::WeeklyScope do
     create_domains_table(db)
     create_persons_table(db)
     create_weekly_scopes_table(db)
+    create_weekly_scopes_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -78,32 +82,6 @@ RSpec.describe Services::Postgres::WeeklyScope do
       expect(weekly_scope[:domain_id]).to be_nil
       expect(weekly_scope[:person_id]).to be_nil
     end
-
-    it 'creates a new historical record when inserting a weekly scope with the same external_id' do
-      params1 = {
-        external_weekly_scope_id: 'ws-hist-1',
-        description: 'Week 24 Scope - Initial Draft',
-        start_week_date: start_week_date,
-        end_week_date: end_week_date
-      }
-      service.insert(params1)
-
-      expect(service.query(external_weekly_scope_id: 'ws-hist-1').size).to eq(1)
-
-      params2 = {
-        external_weekly_scope_id: 'ws-hist-1',
-        description: 'Week 24 Scope - Final Version',
-        start_week_date: start_week_date,
-        end_week_date: end_week_date
-      }
-      service.insert(params2)
-
-      scopes = service.query(external_weekly_scope_id: 'ws-hist-1')
-      expect(scopes.size).to eq(2)
-
-      descriptions = scopes.map { |s| s[:description] }.sort
-      expect(descriptions).to eq(['Week 24 Scope - Final Version', 'Week 24 Scope - Initial Draft'])
-    end
   end
 
   describe '#update' do
@@ -130,6 +108,28 @@ RSpec.describe Services::Postgres::WeeklyScope do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(
+        external_weekly_scope_id: 'ws-hist-1',
+        description: 'Initial Draft',
+        start_week_date: start_week_date
+      )
+
+      expect(history_service.query(weekly_scope_id: id)).to be_empty
+
+      service.update(id, { description: 'Final Version' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:description]).to eq('Final Version')
+
+      history_records = history_service.query(weekly_scope_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:weekly_scope_id]).to eq(id)
+      expect(historical_record[:description]).to eq('Initial Draft')
     end
 
     it 'raises error if no ID is provided' do

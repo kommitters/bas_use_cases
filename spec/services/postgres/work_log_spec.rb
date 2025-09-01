@@ -24,7 +24,10 @@ RSpec.describe Services::Postgres::WorkLog do
   let(:person_service) { Services::Postgres::Person.new(config) }
   let(:work_item_service) { Services::Postgres::WorkItem.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :work_logs_history, :work_log_id) }
+
   before(:each) do
+    db.drop_table?(:work_logs_history)
     db.drop_table?(:work_logs)
     db.drop_table?(:projects)
     db.drop_table?(:activities)
@@ -42,6 +45,7 @@ RSpec.describe Services::Postgres::WorkLog do
     create_work_logs_table(db)
     create_weekly_scopes_table(db)
     create_github_issues_table(db)
+    create_work_logs_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -99,47 +103,11 @@ RSpec.describe Services::Postgres::WorkLog do
       log = service.find(id)
       expect(log[:tags]).to include('urgent', 'backend')
     end
-
-    it 'creates a new historical record when inserting a work log with the same external_id' do
-      person_id = person_service.insert(external_person_id: 'p-hist-1', full_name: 'Hist Person')
-
-      params1 = {
-        external_work_log_id: 'log-hist-1',
-        duration_minutes: 30,
-        creation_date: Time.now,
-        person_id: person_id,
-        started_at: Time.now,
-        tags: JSON.generate(['initial'])
-      }
-      service.insert(params1)
-
-      expect(service.query(external_work_log_id: 'log-hist-1').size).to eq(1)
-
-      params2 = {
-        external_work_log_id: 'log-hist-1',
-        duration_minutes: 45,
-        creation_date: Time.now,
-        person_id: person_id,
-        started_at: Time.now,
-        tags: JSON.generate(['revised'])
-      }
-      service.insert(params2)
-
-      logs = service.query(external_work_log_id: 'log-hist-1')
-      expect(logs.size).to eq(2)
-
-      durations = logs.map { |log| log[:duration_minutes] }.sort
-      tags = logs.map { |log| log[:tags] }.sort
-
-      expect(durations).to eq([30, 45])
-      expect(tags).to eq(['["initial"]', '["revised"]'])
-    end
   end
 
   describe '#update' do
-    it 'updates duration_minutes and tags' do
-      person_id = person_service.insert(external_person_id: 'person-4', full_name: 'Updater')
-      id = service.insert(
+    let(:work_log_id) do
+      service.insert(
         external_work_log_id: 'ext-log-4',
         duration_minutes: 45,
         creation_date: Time.now,
@@ -147,10 +115,33 @@ RSpec.describe Services::Postgres::WorkLog do
         person_id: person_id,
         started_at: Time.now
       )
-      service.update(id, duration_minutes: 75, tags: JSON.generate(%w[revised important]))
-      log = service.find(id)
+    end
+
+    let(:person_id) { person_service.insert(external_person_id: 'person-4', full_name: 'Updater') }
+
+    it 'updates duration_minutes and tags' do
+      service.update(work_log_id, duration_minutes: 75, tags: JSON.generate(%w[revised important]))
+      log = service.find(work_log_id)
       expect(log[:duration_minutes]).to eq(75)
       expect(log[:tags]).to include('revised', 'important')
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(history_service.query(work_log_id: work_log_id)).to be_empty
+
+      service.update(work_log_id, { duration_minutes: 75, tags: JSON.generate(['revised']) })
+
+      updated_record = service.find(work_log_id)
+      expect(updated_record[:duration_minutes]).to eq(75)
+      expect(updated_record[:tags]).to eq('["revised"]')
+
+      history_records = history_service.query(work_log_id: work_log_id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:work_log_id]).to eq(work_log_id)
+      expect(historical_record[:duration_minutes]).to eq(45)
+      expect(historical_record[:tags]).to eq('["init"]')
     end
   end
 

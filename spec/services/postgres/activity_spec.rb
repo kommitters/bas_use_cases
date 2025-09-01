@@ -20,7 +20,10 @@ RSpec.describe Services::Postgres::Activity do
   let(:key_results_service) { Services::Postgres::KeyResult.new(config) }
   let(:akr_service) { Services::Postgres::ActivitiesKeyResults.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :activities_history, :activity_id) }
+
   before(:each) do
+    db.drop_table?(:activities_history)
     db.drop_table?(:activities_key_results)
     db.drop_table?(:key_results)
     db.drop_table?(:activities)
@@ -30,6 +33,7 @@ RSpec.describe Services::Postgres::Activity do
     create_activities_table(db)
     create_key_results_table(db)
     create_activities_key_results_table(db)
+    create_activities_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -84,29 +88,6 @@ RSpec.describe Services::Postgres::Activity do
       relations = akr_service.query(activity_id: id)
       expect(relations.size).to eq(2)
     end
-
-    it 'creates a new historical record on a second insert for the same external_id' do
-      params1 = {
-        external_activity_id: 'hist-1',
-        name: 'Version 1'
-      }
-      service.insert(params1)
-
-      expect(service.query(external_activity_id: 'hist-1').size).to eq(1)
-
-      params2 = {
-        external_activity_id: 'hist-1',
-        name: 'Version 2'
-      }
-      service.insert(params2)
-
-      activities = service.query(external_activity_id: 'hist-1')
-
-      expect(activities.size).to eq(2)
-
-      names = activities.map { |a| a[:name] }.sort
-      expect(names).to eq(['Version 1', 'Version 2'])
-    end
   end
 
   describe '#update' do
@@ -142,6 +123,24 @@ RSpec.describe Services::Postgres::Activity do
       service.update(id, { external_key_results_ids: ['kr3'] })
       expect(akr_service.query(activity_id: id).size).to eq(1)
       expect(akr_service.query(activity_id: id).first[:key_result_id]).to eq(kr3)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_activity_id: 'hist-act-1', name: 'Initial State')
+
+      expect(history_service.query(activity_id: id)).to be_empty
+
+      service.update(id, { name: 'Updated State' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated State')
+
+      history_records = history_service.query(activity_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:activity_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial State')
     end
 
     it 'raises error if no ID is provided' do

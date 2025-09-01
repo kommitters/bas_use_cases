@@ -4,7 +4,6 @@ require 'sequel'
 require 'rspec'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/kpi'
-require_relative '../../../src/services/postgres/kpi_history'
 require_relative '../../../src/services/postgres/domain'
 require_relative 'test_db_helpers'
 
@@ -14,9 +13,10 @@ RSpec.describe Services::Postgres::Kpi do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:history_service) { Services::Postgres::KpiHistory.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
   let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
+
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :kpis_history, :kpi_id) }
 
   let(:valid_params) do
     {

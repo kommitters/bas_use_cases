@@ -15,13 +15,17 @@ RSpec.describe Services::Postgres::Document do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :documents_history, :document_id) }
+
   # Create the table structure before each test
   before(:each) do
+    db.drop_table?(:documents_history)
     db.drop_table?(:documents)
     db.drop_table?(:domains)
 
     create_domains_table(db)
     create_documents_table(db)
+    create_documents_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -58,28 +62,6 @@ RSpec.describe Services::Postgres::Document do
       expect(document).not_to have_key(:external_domain_id)
       expect(document[:domain_id]).to be_nil
     end
-
-    it 'creates a new historical record when inserting a document with the same external_id' do
-      params1 = {
-        external_document_id: 'doc-hist-1',
-        name: 'Document Version 1'
-      }
-      service.insert(params1)
-
-      expect(service.query(external_document_id: 'doc-hist-1').size).to eq(1)
-
-      params2 = {
-        external_document_id: 'doc-hist-1',
-        name: 'Document Version 2 - Updated'
-      }
-      service.insert(params2)
-
-      documents = service.query(external_document_id: 'doc-hist-1')
-      expect(documents.size).to eq(2)
-
-      names = documents.map { |d| d[:name] }.sort
-      expect(names).to eq(['Document Version 1', 'Document Version 2 - Updated'])
-    end
   end
 
   describe '#update' do
@@ -97,6 +79,24 @@ RSpec.describe Services::Postgres::Document do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_document_id: 'doc-hist-1', name: 'Initial Version')
+
+      expect(history_service.query(document_id: id)).to be_empty
+
+      service.update(id, { name: 'Updated Version' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated Version')
+
+      history_records = history_service.query(document_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:document_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial Version')
     end
 
     it 'raises error if no ID is provided' do

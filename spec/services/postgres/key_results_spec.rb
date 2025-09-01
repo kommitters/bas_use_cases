@@ -12,7 +12,8 @@ RSpec.describe Services::Postgres::KeyResult do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:history_service) { Services::Postgres::KeyResultsHistory.new(config) }
+
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :key_results_history, :key_result_id) }
 
   let(:valid_params) do
     {

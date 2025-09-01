@@ -13,10 +13,14 @@ RSpec.describe Services::Postgres::Domain do
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :domains_history, :domain_id) }
+
   before(:each) do
+    db.drop_table?(:domains_history)
     db.drop_table?(:domains)
 
     create_domains_table(db)
+    create_domains_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -34,33 +38,6 @@ RSpec.describe Services::Postgres::Domain do
       expect(domain[:external_domain_id]).to eq('ext-d-1')
       expect(domain[:archived]).to eq(false)
     end
-
-    it 'creates a new historical record when inserting a domain with the same external_id' do
-      params1 = {
-        external_domain_id: 'd-hist-1',
-        name: 'Domain State 1',
-        archived: false
-      }
-      service.insert(params1)
-
-      expect(service.query(external_domain_id: 'd-hist-1').size).to eq(1)
-
-      params2 = {
-        external_domain_id: 'd-hist-1',
-        name: 'Domain State 2',
-        archived: true
-      }
-      service.insert(params2)
-
-      domains = service.query(external_domain_id: 'd-hist-1')
-      expect(domains.size).to eq(2)
-
-      names = domains.map { |d| d[:name] }.sort
-      archives = domains.map { |d| d[:archived] }
-
-      expect(names).to eq(['Domain State 1', 'Domain State 2'])
-      expect(archives).to contain_exactly(false, true)
-    end
   end
 
   describe '#update' do
@@ -71,6 +48,26 @@ RSpec.describe Services::Postgres::Domain do
       expect(updated[:name]).to eq('Updated Name')
       expect(updated[:archived]).to eq(true)
       expect(updated[:external_domain_id]).to eq('ext-d-2')
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_domain_id: 'd-hist-1', name: 'Initial State', archived: false)
+
+      expect(history_service.query(domain_id: id)).to be_empty
+
+      service.update(id, { name: 'Updated State', archived: true })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated State')
+      expect(updated_record[:archived]).to be true
+
+      history_records = history_service.query(domain_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:domain_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial State')
+      expect(historical_record[:archived]).to be false
     end
 
     it 'raises error if no ID is provided' do

@@ -16,12 +16,16 @@ RSpec.describe Services::Postgres::Project do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :projects_history, :project_id) }
+
   before(:each) do
+    db.drop_table?(:projects_history)
     db.drop_table?(:projects)
     db.drop_table?(:domains)
 
     create_projects_table(db)
     create_domains_table(db)
+    create_projects_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -64,33 +68,6 @@ RSpec.describe Services::Postgres::Project do
       expect(project).not_to have_key(:external_domain_id)
       expect(project[:domain_id]).to be_nil
     end
-
-    it 'creates a new historical record when inserting a project with the same external_id' do
-      params1 = {
-        external_project_id: 'proj-hist-1',
-        name: 'Project Version 1',
-        status: 'active'
-      }
-      service.insert(params1)
-
-      expect(service.query(external_project_id: 'proj-hist-1').size).to eq(1)
-
-      params2 = {
-        external_project_id: 'proj-hist-1',
-        name: 'Project Version 2',
-        status: 'archived'
-      }
-      service.insert(params2)
-
-      projects = service.query(external_project_id: 'proj-hist-1')
-      expect(projects.size).to eq(2)
-
-      names = projects.map { |p| p[:name] }.sort
-      statuses = projects.map { |p| p[:status] }
-
-      expect(names).to eq(['Project Version 1', 'Project Version 2'])
-      expect(statuses).to contain_exactly('active', 'archived')
-    end
   end
 
   describe '#update' do
@@ -110,6 +87,26 @@ RSpec.describe Services::Postgres::Project do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain2)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_project_id: 'proj-hist-1', name: 'Initial Project', status: 'active')
+
+      expect(history_service.query(project_id: id)).to be_empty
+
+      service.update(id, { name: 'Updated Project', status: 'archived' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated Project')
+      expect(updated_record[:status]).to eq('archived')
+
+      history_records = history_service.query(project_id: id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:project_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial Project')
+      expect(historical_record[:status]).to eq('active')
     end
 
     it 'raises error if no ID is provided' do

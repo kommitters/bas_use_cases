@@ -17,10 +17,14 @@ RSpec.describe Services::Postgres::GithubRelease do
 
   let(:service) { described_class.new(config) }
 
+  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_releases_history, :release_id) }
+
   before(:each) do
+    db.drop_table?(:github_releases_history)
     db.drop_table?(:github_releases)
 
     create_github_releases_table(db)
+    create_github_releases_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -42,39 +46,6 @@ RSpec.describe Services::Postgres::GithubRelease do
       expect(release[:repository_id]).to eq(12_345)
       expect(release[:tag_name]).to eq('v1.0.0')
       expect(release[:name]).to eq('First Release')
-    end
-
-    it 'creates a new historical record when inserting a release with the same external_id' do
-      params1 = {
-        external_github_release_id: 10,
-        repository_id: 1000,
-        tag_name: 'v1.0-hist',
-        name: 'Historical Release v1',
-        is_prerelease: true,
-        creation_timestamp: Time.now
-      }
-      service.insert(params1)
-
-      expect(service.query(external_github_release_id: 10).size).to eq(1)
-
-      params2 = {
-        external_github_release_id: 10,
-        repository_id: 1000,
-        tag_name: 'v1.0-hist',
-        name: 'Historical Release v2 - Final',
-        is_prerelease: false,
-        creation_timestamp: Time.now
-      }
-      service.insert(params2)
-
-      releases = service.query(external_github_release_id: 10)
-      expect(releases.size).to eq(2)
-
-      names = releases.map { |r| r[:name] }.sort
-      prerelease_statuses = releases.map { |r| r[:is_prerelease] }
-
-      expect(names).to eq(['Historical Release v1', 'Historical Release v2 - Final'])
-      expect(prerelease_statuses).to contain_exactly(true, false)
     end
   end
 
@@ -103,6 +74,24 @@ RSpec.describe Services::Postgres::GithubRelease do
       updated_release = service.find(release_id)
 
       expect(updated_release[:repository_id]).to eq(99_999)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(history_service.query(release_id: release_id)).to be_empty
+
+      service.update(release_id, { name: 'Updated Release Name', is_prerelease: true })
+
+      updated_record = service.find(release_id)
+      expect(updated_record[:name]).to eq('Updated Release Name')
+      expect(updated_record[:is_prerelease]).to be true
+
+      history_records = history_service.query(release_id: release_id)
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:release_id]).to eq(release_id)
+      expect(historical_record[:name]).to eq('Initial Release')
+      expect(historical_record[:is_prerelease]).to be false
     end
 
     it 'raises an ArgumentError if no ID is provided' do
