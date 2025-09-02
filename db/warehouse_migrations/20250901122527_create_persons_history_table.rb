@@ -5,7 +5,7 @@ Sequel.migration do
     create_table(:persons_history) do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
       String :external_person_id, size: 255, null: false
-      foreign_key :person_id, :persons, null: false, on_delete: :cascade, type: :uuid
+      foreign_key :person_id, :persons, null: true, on_delete: :set_null, type: :uuid
       foreign_key :domain_id, :domains, type: :uuid, null: false
       String :full_name, size: 255, null: false
       String :email_address, size: 255, null: false

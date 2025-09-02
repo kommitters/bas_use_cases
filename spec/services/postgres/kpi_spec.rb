@@ -2,6 +2,7 @@
 
 require 'sequel'
 require 'rspec'
+require 'json'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/kpi'
 require_relative '../../../src/services/postgres/domain'

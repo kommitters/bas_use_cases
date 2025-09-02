@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'date'
 require 'securerandom'
+
 module TestDBHelpers # rubocop:disable Metrics/ModuleLength
   def create_projects_table(db)
     db.create_table(:projects) do
