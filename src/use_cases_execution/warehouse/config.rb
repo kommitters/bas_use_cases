@@ -21,11 +21,11 @@ module Config
     }.freeze
 
     WAREHOUSE_CONNECTION = {
-      host: ENV.fetch('DB_HOST'),
-      port: ENV.fetch('DB_PORT'),
+      host: ENV.fetch('DB_HOST_WAREHOUSE'),
+      port: ENV.fetch('DB_PORT_WAREHOUSE'),
       dbname: ENV.fetch('WAREHOUSE_POSTGRES_DB'),
-      user: ENV.fetch('POSTGRES_USER'),
-      password: ENV.fetch('POSTGRES_PASSWORD')
+      user: ENV.fetch('POSTGRES_USER_WAREHOUSE'),
+      password: ENV.fetch('POSTGRES_PASSWORD_WAREHOUSE')
     }.freeze
   end
 
