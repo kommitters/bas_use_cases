@@ -17,8 +17,6 @@ RSpec.describe Services::Postgres::Kpi do
   let(:domain_service) { Services::Postgres::Domain.new(config) }
   let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :kpis_history, :kpi_id) }
-
   let(:valid_params) do
     {
       external_kpi_id: 'ext-kpi-1',
@@ -67,7 +65,7 @@ RSpec.describe Services::Postgres::Kpi do
       expect(initial_kpi[:status]).to eq('On Track')
       expect(initial_kpi[:current_value]).to eq(50.0)
 
-      expect(history_service.query(kpi_id: id)).to be_empty
+      expect(db[:kpis_history].where(kpi_id: id).all).to be_empty
 
       service.update(id, { status: 'At Risk', current_value: 55.0 })
 
@@ -75,7 +73,7 @@ RSpec.describe Services::Postgres::Kpi do
       expect(updated_kpi[:status]).to eq('At Risk')
       expect(updated_kpi[:current_value]).to eq(55.0)
 
-      history_records = history_service.query(kpi_id: id)
+      history_records = db[:kpis_history].where(kpi_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

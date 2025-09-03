@@ -20,8 +20,6 @@ RSpec.describe Services::Postgres::Activity do
   let(:key_results_service) { Services::Postgres::KeyResult.new(config) }
   let(:akr_service) { Services::Postgres::ActivitiesKeyResults.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :activities_history, :activity_id) }
-
   before(:each) do
     db.drop_table?(:activities_history)
     db.drop_table?(:activities_key_results)
@@ -128,14 +126,14 @@ RSpec.describe Services::Postgres::Activity do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_activity_id: 'hist-act-1', name: 'Initial State')
 
-      expect(history_service.query(activity_id: id)).to be_empty
+      expect(db[:activities_history].where(activity_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated State' })
 
       updated_record = service.find(id)
       expect(updated_record[:name]).to eq('Updated State')
 
-      history_records = history_service.query(activity_id: id)
+      history_records = db[:activities_history].where(activity_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

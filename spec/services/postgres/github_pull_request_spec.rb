@@ -23,8 +23,6 @@ RSpec.describe Services::Postgres::GithubPullRequest do
   let(:issue_service) { Services::Postgres::GithubIssue.new(config) }
   let(:person_service) { Services::Postgres::Person.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_pull_requests_history, :pull_request_id) }
-
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
@@ -123,7 +121,7 @@ RSpec.describe Services::Postgres::GithubPullRequest do
     end
 
     it 'saves the previous state to the history table before updating' do
-      expect(history_service.query(pull_request_id: pr_id)).to be_empty
+      expect(db[:github_pull_requests_history].where(pull_request_id: pr_id).all).to be_empty
 
       service.update(pr_id, { title: 'Updated Title', merge_date: Time.now })
 
@@ -131,7 +129,7 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       expect(updated_record[:title]).to eq('Updated Title')
       expect(updated_record[:merge_date]).not_to be_nil
 
-      history_records = history_service.query(pull_request_id: pr_id)
+      history_records = db[:github_pull_requests_history].where(pull_request_id: pr_id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

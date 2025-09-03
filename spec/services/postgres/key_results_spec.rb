@@ -13,8 +13,6 @@ RSpec.describe Services::Postgres::KeyResult do
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :key_results_history, :key_result_id) }
-
   let(:valid_params) do
     {
       external_key_result_id: 'ad3dcdfc-24e9-4008-a026-0e7958655aa9',
@@ -78,7 +76,7 @@ RSpec.describe Services::Postgres::KeyResult do
         initial_params = valid_params.merge(progress: 50, key_result: 'Initial State')
         id = service.insert(initial_params)
 
-        expect(history_service.query(key_result_id: id)).to be_empty
+        expect(db[:key_results_history].where(key_result_id: id).all).to be_empty
 
         update_params = { progress: 75, key_result: 'Updated State' }
         service.update(id, update_params)
@@ -87,7 +85,7 @@ RSpec.describe Services::Postgres::KeyResult do
         expect(updated_record[:progress]).to eq(75)
         expect(updated_record[:key_result]).to eq('Updated State')
 
-        history_records = history_service.query(key_result_id: id)
+        history_records = db[:key_results_history].where(key_result_id: id).all
         expect(history_records.size).to eq(1)
 
         historical_record = history_records.first

@@ -21,8 +21,6 @@ RSpec.describe Services::Postgres::WeeklyScope do
     { external_weekly_scope_id: 'ws-1', description: 'engineering-week-1', start_week_date:, end_week_date: }
   end
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :weekly_scopes_history, :weekly_scope_id) }
-
   # Create the table structure before each test
   before(:each) do
     db.drop_table?(:weekly_scopes_history)
@@ -117,14 +115,14 @@ RSpec.describe Services::Postgres::WeeklyScope do
         start_week_date: start_week_date
       )
 
-      expect(history_service.query(weekly_scope_id: id)).to be_empty
+      expect(db[:weekly_scopes_history].where(weekly_scope_id: id).all).to be_empty
 
       service.update(id, { description: 'Final Version' })
 
       updated_record = service.find(id)
       expect(updated_record[:description]).to eq('Final Version')
 
-      history_records = history_service.query(weekly_scope_id: id)
+      history_records = db[:weekly_scopes_history].where(weekly_scope_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

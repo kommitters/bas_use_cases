@@ -17,8 +17,6 @@ RSpec.describe Services::Postgres::GithubRelease do
 
   let(:service) { described_class.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_releases_history, :release_id) }
-
   before(:each) do
     db.drop_table?(:github_releases_history)
     db.drop_table?(:github_releases)
@@ -77,7 +75,7 @@ RSpec.describe Services::Postgres::GithubRelease do
     end
 
     it 'saves the previous state to the history table before updating' do
-      expect(history_service.query(release_id: release_id)).to be_empty
+      expect(db[:github_releases_history].where(release_id: release_id).all).to be_empty
 
       service.update(release_id, { name: 'Updated Release Name', is_prerelease: true })
 
@@ -85,7 +83,7 @@ RSpec.describe Services::Postgres::GithubRelease do
       expect(updated_record[:name]).to eq('Updated Release Name')
       expect(updated_record[:is_prerelease]).to be true
 
-      history_records = history_service.query(release_id: release_id)
+      history_records = db[:github_releases_history].where(release_id: release_id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

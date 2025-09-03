@@ -10,6 +10,7 @@ module Services
     # A foundational service class that provides common database operations
     # using Sequel ORM. This class serves as a base for other service classes
     # that need to interact with PostgreSQL databases.
+    # rubocop:disable Metrics/ClassLength
     class Base
       attr_reader :config, :db
 
@@ -131,20 +132,36 @@ module Services
       # - HISTORY_FOREIGN_KEY: The name of the foreign key column (e.g., :activity_id).
       #
       def save_history(id)
-        return unless self.class.const_defined?(:HISTORY_TABLE) && self.class.const_defined?(:HISTORY_FOREIGN_KEY)
+        return unless history_enabled?
 
-        require_relative 'history_service'
-
-        table_name = self.class::TABLE
-        history_table = self.class::HISTORY_TABLE
-        foreign_key = self.class::HISTORY_FOREIGN_KEY
-
-        current_record = find_item(table_name, id)
+        current_record = find_item(self.class::TABLE, id)
         return unless current_record
 
-        history_service = HistoryService.new(db, history_table, foreign_key)
-        history_service.save(id, current_record)
+        history_params = prepare_history_params(id, current_record)
+        insert_history_record(history_params)
+      rescue StandardError => e
+        table = self.class.const_defined?(:HISTORY_TABLE) ? self.class::HISTORY_TABLE : 'unknown'
+        puts "[save_history ERROR][#{table}] #{error.class}: #{error.message}"
+        raise e
       end
+
+      def history_enabled?
+        self.class.const_defined?(:HISTORY_TABLE) && self.class.const_defined?(:HISTORY_FOREIGN_KEY)
+      end
+
+      def prepare_history_params(parent_id, record_data)
+        foreign_key = self.class::HISTORY_FOREIGN_KEY
+        record_data.dup.tap do |params|
+          params.delete(:id)
+          params[foreign_key] = parent_id
+        end
+      end
+
+      def insert_history_record(params)
+        history_table = self.class::HISTORY_TABLE
+        transaction { db[history_table].insert(params) }
+      end
+      # rubocop:enable Metrics/ClassLength
     end
   end
 end

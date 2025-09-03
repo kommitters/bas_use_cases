@@ -16,8 +16,6 @@ RSpec.describe Services::Postgres::Project do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :projects_history, :project_id) }
-
   before(:each) do
     db.drop_table?(:projects_history)
     db.drop_table?(:projects)
@@ -92,7 +90,7 @@ RSpec.describe Services::Postgres::Project do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_project_id: 'proj-hist-1', name: 'Initial Project', status: 'active')
 
-      expect(history_service.query(project_id: id)).to be_empty
+      expect(db[:projects_history].where(project_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated Project', status: 'archived' })
 
@@ -100,7 +98,7 @@ RSpec.describe Services::Postgres::Project do
       expect(updated_record[:name]).to eq('Updated Project')
       expect(updated_record[:status]).to eq('archived')
 
-      history_records = history_service.query(project_id: id)
+      history_records = db[:projects_history].where(project_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

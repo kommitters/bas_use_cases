@@ -24,8 +24,6 @@ RSpec.describe Services::Postgres::WorkLog do
   let(:person_service) { Services::Postgres::Person.new(config) }
   let(:work_item_service) { Services::Postgres::WorkItem.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :work_logs_history, :work_log_id) }
-
   before(:each) do
     db.drop_table?(:work_logs_history)
     db.drop_table?(:work_logs)
@@ -127,7 +125,7 @@ RSpec.describe Services::Postgres::WorkLog do
     end
 
     it 'saves the previous state to the history table before updating' do
-      expect(history_service.query(work_log_id: work_log_id)).to be_empty
+      expect(db[:work_logs_history].where(work_log_id: work_log_id).all).to be_empty
 
       service.update(work_log_id, { duration_minutes: 75, tags: JSON.generate(['revised']) })
 
@@ -135,7 +133,7 @@ RSpec.describe Services::Postgres::WorkLog do
       expect(updated_record[:duration_minutes]).to eq(75)
       expect(updated_record[:tags]).to eq('["revised"]')
 
-      history_records = history_service.query(work_log_id: work_log_id)
+      history_records = db[:work_logs_history].where(work_log_id: work_log_id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

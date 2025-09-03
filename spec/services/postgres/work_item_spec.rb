@@ -25,8 +25,6 @@ RSpec.describe Services::Postgres::WorkItem do
   let(:weekly_scope_service) { Services::Postgres::WeeklyScope.new(config) }
   let(:github_issue_service) { Services::Postgres::GithubIssue.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :work_items_history, :work_item_id) }
-
   before(:each) do
     db.drop_table?(:work_items_history)
     db.drop_table?(:work_items)
@@ -144,7 +142,7 @@ RSpec.describe Services::Postgres::WorkItem do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_work_item_id: 'wi-hist-1', name: 'Initial Task', status: 'To Do')
 
-      expect(history_service.query(work_item_id: id)).to be_empty
+      expect(db[:work_items_history].where(work_item_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated Task', status: 'In Progress' })
 
@@ -152,7 +150,7 @@ RSpec.describe Services::Postgres::WorkItem do
       expect(updated_record[:name]).to eq('Updated Task')
       expect(updated_record[:status]).to eq('In Progress')
 
-      history_records = history_service.query(work_item_id: id)
+      history_records = db[:work_items_history].where(work_item_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

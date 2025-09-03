@@ -15,8 +15,6 @@ RSpec.describe Services::Postgres::Document do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :documents_history, :document_id) }
-
   # Create the table structure before each test
   before(:each) do
     db.drop_table?(:documents_history)
@@ -84,14 +82,14 @@ RSpec.describe Services::Postgres::Document do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_document_id: 'doc-hist-1', name: 'Initial Version')
 
-      expect(history_service.query(document_id: id)).to be_empty
+      expect(db[:documents_history].where(document_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated Version' })
 
       updated_record = service.find(id)
       expect(updated_record[:name]).to eq('Updated Version')
 
-      history_records = history_service.query(document_id: id)
+      history_records = db[:documents_history].where(document_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

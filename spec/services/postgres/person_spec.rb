@@ -15,8 +15,6 @@ RSpec.describe Services::Postgres::Person do
   let(:service) { described_class.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :persons_history, :person_id) }
-
   before(:each) do
     db.drop_table?(:persons_history)
     db.drop_table?(:persons)
@@ -90,14 +88,14 @@ RSpec.describe Services::Postgres::Person do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_person_id: 'p-hist-1', full_name: 'Initial Name')
 
-      expect(history_service.query(person_id: id)).to be_empty
+      expect(db[:persons_history].where(person_id: id).all).to be_empty
 
       service.update(id, { full_name: 'Updated Name' })
 
       updated_record = service.find(id)
       expect(updated_record[:full_name]).to eq('Updated Name')
 
-      history_records = history_service.query(person_id: id)
+      history_records = db[:persons_history].where(person_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

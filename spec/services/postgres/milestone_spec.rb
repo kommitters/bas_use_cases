@@ -15,8 +15,6 @@ RSpec.describe Services::Postgres::Milestone do
   let(:service) { described_class.new(config) }
   let(:project_service) { Services::Postgres::Project.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :milestones_history, :milestone_id) }
-
   before(:each) do
     db.drop_table?(:milestones_history)
     db.drop_table?(:milestones)
@@ -98,7 +96,7 @@ RSpec.describe Services::Postgres::Milestone do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_milestone_id: 'm-hist-1', name: 'Initial State', status: 'open')
 
-      expect(history_service.query(milestone_id: id)).to be_empty
+      expect(db[:milestones_history].where(milestone_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated State', status: 'closed' })
 
@@ -106,7 +104,7 @@ RSpec.describe Services::Postgres::Milestone do
       expect(updated_record[:name]).to eq('Updated State')
       expect(updated_record[:status]).to eq('closed')
 
-      history_records = history_service.query(milestone_id: id)
+      history_records = db[:milestones_history].where(milestone_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

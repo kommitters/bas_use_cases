@@ -5,7 +5,6 @@ require 'rspec'
 require 'securerandom'
 require 'json'
 
-# Adjust the relative paths as per your project structure
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/github_issue'
 require_relative '../../../src/services/postgres/person'
@@ -19,8 +18,6 @@ RSpec.describe Services::Postgres::GithubIssue do
 
   let(:service) { described_class.new(config) }
   let(:person_service) { Services::Postgres::Person.new(config) }
-
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :github_issues_history, :issue_id) }
 
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
@@ -108,7 +105,7 @@ RSpec.describe Services::Postgres::GithubIssue do
     end
 
     it 'saves the previous state to the history table before updating' do
-      expect(history_service.query(issue_id: issue_id)).to be_empty
+      expect(db[:github_issues_history].where(issue_id: issue_id).all).to be_empty
 
       service.update(issue_id, { repository_id: 300, labels: JSON.generate(%w[bug critical]) })
 
@@ -116,7 +113,7 @@ RSpec.describe Services::Postgres::GithubIssue do
       expect(updated_record[:repository_id]).to eq(300)
       expect(updated_record[:labels]).to eq('["bug","critical"]')
 
-      history_records = history_service.query(issue_id: issue_id)
+      history_records = db[:github_issues_history].where(issue_id: issue_id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

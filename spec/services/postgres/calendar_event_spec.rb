@@ -17,8 +17,6 @@ RSpec.describe Services::Postgres::CalendarEvent do
   let(:attendee_service) { Services::Postgres::CalendarEventAttendee.new(service.db) }
   let(:person_service) { Services::Postgres::Person.new(service.db) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :calendar_events_history, :calendar_event_id) }
-
   before(:each) do
     db.drop_table?(:calendar_events_history)
     db.drop_table?(:calendar_event_attendees)
@@ -219,7 +217,7 @@ RSpec.describe Services::Postgres::CalendarEvent do
         attendees: [{ email_address: 'test@test.com', response_status: 'accepted' }]
       )
 
-      expect(history_service.query(calendar_event_id: id)).to be_empty
+      expect(db[:calendar_events_history].where(calendar_event_id: id).all).to be_empty
 
       service.update(id, { summary: 'Updated Summary', duration_minutes: 45 })
 
@@ -227,7 +225,7 @@ RSpec.describe Services::Postgres::CalendarEvent do
       expect(updated_record[:summary]).to eq('Updated Summary')
       expect(updated_record[:duration_minutes]).to eq(45)
 
-      history_records = history_service.query(calendar_event_id: id)
+      history_records = db[:calendar_events_history].where(calendar_event_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first

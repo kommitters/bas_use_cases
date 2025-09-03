@@ -13,8 +13,6 @@ RSpec.describe Services::Postgres::Domain do
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
 
-  let(:history_service) { Services::Postgres::HistoryService.new(config, :domains_history, :domain_id) }
-
   before(:each) do
     db.drop_table?(:domains_history)
     db.drop_table?(:domains)
@@ -53,7 +51,7 @@ RSpec.describe Services::Postgres::Domain do
     it 'saves the previous state to the history table before updating' do
       id = service.insert(external_domain_id: 'd-hist-1', name: 'Initial State', archived: false)
 
-      expect(history_service.query(domain_id: id)).to be_empty
+      expect(db[:domains_history].where(domain_id: id).all).to be_empty
 
       service.update(id, { name: 'Updated State', archived: true })
 
@@ -61,7 +59,7 @@ RSpec.describe Services::Postgres::Domain do
       expect(updated_record[:name]).to eq('Updated State')
       expect(updated_record[:archived]).to be true
 
-      history_records = history_service.query(domain_id: id)
+      history_records = db[:domains_history].where(domain_id: id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first
