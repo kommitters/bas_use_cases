@@ -16,11 +16,13 @@ RSpec.describe Services::Postgres::Person do
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
   before(:each) do
+    db.drop_table?(:persons_history)
     db.drop_table?(:persons)
     db.drop_table?(:domains)
 
     create_persons_table(db)
     create_domains_table(db)
+    create_persons_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -81,6 +83,24 @@ RSpec.describe Services::Postgres::Person do
       service.update(id, { external_domain_id: 'dom-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain2)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_person_id: 'p-hist-1', full_name: 'Initial Name')
+
+      expect(db[:persons_history].where(person_id: id).all).to be_empty
+
+      service.update(id, { full_name: 'Updated Name' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:full_name]).to eq('Updated Name')
+
+      history_records = db[:persons_history].where(person_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:person_id]).to eq(id)
+      expect(historical_record[:full_name]).to eq('Initial Name')
     end
 
     it 'raises error if no ID is provided' do

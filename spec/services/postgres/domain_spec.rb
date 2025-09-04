@@ -14,9 +14,11 @@ RSpec.describe Services::Postgres::Domain do
   let(:service) { described_class.new(config) }
 
   before(:each) do
+    db.drop_table?(:domains_history)
     db.drop_table?(:domains)
 
     create_domains_table(db)
+    create_domains_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -44,6 +46,26 @@ RSpec.describe Services::Postgres::Domain do
       expect(updated[:name]).to eq('Updated Name')
       expect(updated[:archived]).to eq(true)
       expect(updated[:external_domain_id]).to eq('ext-d-2')
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_domain_id: 'd-hist-1', name: 'Initial State', archived: false)
+
+      expect(db[:domains_history].where(domain_id: id).all).to be_empty
+
+      service.update(id, { name: 'Updated State', archived: true })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated State')
+      expect(updated_record[:archived]).to be true
+
+      history_records = db[:domains_history].where(domain_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:domain_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial State')
+      expect(historical_record[:archived]).to be false
     end
 
     it 'raises error if no ID is provided' do

@@ -23,6 +23,7 @@ RSpec.describe Services::Postgres::WeeklyScope do
 
   # Create the table structure before each test
   before(:each) do
+    db.drop_table?(:weekly_scopes_history)
     db.drop_table?(:domains)
     db.drop_table?(:persons)
     db.drop_table?(:weekly_scopes)
@@ -30,6 +31,7 @@ RSpec.describe Services::Postgres::WeeklyScope do
     create_domains_table(db)
     create_persons_table(db)
     create_weekly_scopes_table(db)
+    create_weekly_scopes_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -104,6 +106,28 @@ RSpec.describe Services::Postgres::WeeklyScope do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(
+        external_weekly_scope_id: 'ws-hist-1',
+        description: 'Initial Draft',
+        start_week_date: start_week_date
+      )
+
+      expect(db[:weekly_scopes_history].where(weekly_scope_id: id).all).to be_empty
+
+      service.update(id, { description: 'Final Version' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:description]).to eq('Final Version')
+
+      history_records = db[:weekly_scopes_history].where(weekly_scope_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:weekly_scope_id]).to eq(id)
+      expect(historical_record[:description]).to eq('Initial Draft')
     end
 
     it 'raises error if no ID is provided' do

@@ -15,6 +15,8 @@ module Services
                       title creation_date merge_date].freeze
 
       TABLE = :github_pull_requests
+      HISTORY_TABLE = :github_pull_requests_history
+      HISTORY_FOREIGN_KEY = :pull_request_id
 
       RELATIONS = [
         { service: GithubRelease, external: :external_github_release_id, internal: :release_id },

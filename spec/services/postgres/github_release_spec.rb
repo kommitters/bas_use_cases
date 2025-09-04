@@ -18,9 +18,11 @@ RSpec.describe Services::Postgres::GithubRelease do
   let(:service) { described_class.new(config) }
 
   before(:each) do
+    db.drop_table?(:github_releases_history)
     db.drop_table?(:github_releases)
 
     create_github_releases_table(db)
+    create_github_releases_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -70,6 +72,24 @@ RSpec.describe Services::Postgres::GithubRelease do
       updated_release = service.find(release_id)
 
       expect(updated_release[:repository_id]).to eq(99_999)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(db[:github_releases_history].where(release_id: release_id).all).to be_empty
+
+      service.update(release_id, { name: 'Updated Release Name', is_prerelease: true })
+
+      updated_record = service.find(release_id)
+      expect(updated_record[:name]).to eq('Updated Release Name')
+      expect(updated_record[:is_prerelease]).to be true
+
+      history_records = db[:github_releases_history].where(release_id: release_id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:release_id]).to eq(release_id)
+      expect(historical_record[:name]).to eq('Initial Release')
+      expect(historical_record[:is_prerelease]).to be false
     end
 
     it 'raises an ArgumentError if no ID is provided' do

@@ -17,11 +17,13 @@ RSpec.describe Services::Postgres::Document do
 
   # Create the table structure before each test
   before(:each) do
+    db.drop_table?(:documents_history)
     db.drop_table?(:documents)
     db.drop_table?(:domains)
 
     create_domains_table(db)
     create_documents_table(db)
+    create_documents_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -75,6 +77,24 @@ RSpec.describe Services::Postgres::Document do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_document_id: 'doc-hist-1', name: 'Initial Version')
+
+      expect(db[:documents_history].where(document_id: id).all).to be_empty
+
+      service.update(id, { name: 'Updated Version' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated Version')
+
+      history_records = db[:documents_history].where(document_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:document_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial Version')
     end
 
     it 'raises error if no ID is provided' do

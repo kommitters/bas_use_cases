@@ -5,7 +5,6 @@ require 'rspec'
 require 'securerandom'
 require 'json'
 
-# Adjust the relative paths as per your project structure
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/github_issue'
 require_relative '../../../src/services/postgres/person'
@@ -23,6 +22,7 @@ RSpec.describe Services::Postgres::GithubIssue do
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
+    db.drop_table?(:github_issues_history)
     db.drop_table?(:github_issues)
     db.drop_table?(:persons)
     db.drop_table?(:domains)
@@ -30,6 +30,7 @@ RSpec.describe Services::Postgres::GithubIssue do
     create_persons_table(db)
     create_domains_table(db)
     create_github_issues_table(db)
+    create_github_issues_history_table(db)
 
     @person_id = person_service.insert(external_person_id: 'person-123', full_name: 'Test Person')
   end
@@ -82,7 +83,8 @@ RSpec.describe Services::Postgres::GithubIssue do
       service.insert(
         external_github_issue_id: 4,
         repository_id: 200,
-        external_person_id: 'person-123'
+        external_person_id: 'person-123',
+        labels: JSON.generate(%w[issue initial])
       )
     end
 
@@ -100,6 +102,25 @@ RSpec.describe Services::Postgres::GithubIssue do
       updated_issue = service.find(issue_id)
 
       expect(updated_issue[:person_id]).to eq(person2_id)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(db[:github_issues_history].where(issue_id: issue_id).all).to be_empty
+
+      service.update(issue_id, { repository_id: 300, labels: JSON.generate(%w[bug critical]) })
+
+      updated_record = service.find(issue_id)
+      expect(updated_record[:repository_id]).to eq(300)
+      expect(updated_record[:labels]).to eq('["bug","critical"]')
+
+      history_records = db[:github_issues_history].where(issue_id: issue_id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:issue_id]).to eq(issue_id)
+
+      expect(historical_record[:repository_id]).to eq(200)
+      expect(historical_record[:labels]).to eq('["issue","initial"]')
     end
 
     it 'raises an ArgumentError if no ID is provided' do

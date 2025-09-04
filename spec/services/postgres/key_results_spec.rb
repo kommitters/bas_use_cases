@@ -71,6 +71,28 @@ RSpec.describe Services::Postgres::KeyResult do
 
         expect(updated[:key_result]).to eq('Updated result')
       end
+
+      it 'saves the previous state to the history table before updating' do
+        initial_params = valid_params.merge(progress: 50, key_result: 'Initial State')
+        id = service.insert(initial_params)
+
+        expect(db[:key_results_history].where(key_result_id: id).all).to be_empty
+
+        update_params = { progress: 75, key_result: 'Updated State' }
+        service.update(id, update_params)
+
+        updated_record = service.find(id)
+        expect(updated_record[:progress]).to eq(75)
+        expect(updated_record[:key_result]).to eq('Updated State')
+
+        history_records = db[:key_results_history].where(key_result_id: id).all
+        expect(history_records.size).to eq(1)
+
+        historical_record = history_records.first
+        expect(historical_record[:key_result_id]).to eq(id)
+        expect(historical_record[:progress]).to eq(50)
+        expect(historical_record[:key_result]).to eq('Initial State')
+      end
     end
 
     context 'without ID' do

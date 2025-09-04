@@ -13,6 +13,8 @@ module Services
                       published_timestamp].freeze
 
       TABLE = :github_releases
+      HISTORY_TABLE = :github_releases_history
+      HISTORY_FOREIGN_KEY = :release_id
 
       def insert(params)
         transaction { insert_item(TABLE, params) }

@@ -25,6 +25,7 @@ RSpec.describe Services::Postgres::WorkLog do
   let(:work_item_service) { Services::Postgres::WorkItem.new(config) }
 
   before(:each) do
+    db.drop_table?(:work_logs_history)
     db.drop_table?(:work_logs)
     db.drop_table?(:projects)
     db.drop_table?(:activities)
@@ -42,6 +43,7 @@ RSpec.describe Services::Postgres::WorkLog do
     create_work_logs_table(db)
     create_weekly_scopes_table(db)
     create_github_issues_table(db)
+    create_work_logs_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -102,9 +104,8 @@ RSpec.describe Services::Postgres::WorkLog do
   end
 
   describe '#update' do
-    it 'updates duration_minutes and tags' do
-      person_id = person_service.insert(external_person_id: 'person-4', full_name: 'Updater')
-      id = service.insert(
+    let(:work_log_id) do
+      service.insert(
         external_work_log_id: 'ext-log-4',
         duration_minutes: 45,
         creation_date: Time.now,
@@ -112,10 +113,33 @@ RSpec.describe Services::Postgres::WorkLog do
         person_id: person_id,
         started_at: Time.now
       )
-      service.update(id, duration_minutes: 75, tags: JSON.generate(%w[revised important]))
-      log = service.find(id)
+    end
+
+    let(:person_id) { person_service.insert(external_person_id: 'person-4', full_name: 'Updater') }
+
+    it 'updates duration_minutes and tags' do
+      service.update(work_log_id, duration_minutes: 75, tags: JSON.generate(%w[revised important]))
+      log = service.find(work_log_id)
       expect(log[:duration_minutes]).to eq(75)
       expect(log[:tags]).to include('revised', 'important')
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(db[:work_logs_history].where(work_log_id: work_log_id).all).to be_empty
+
+      service.update(work_log_id, { duration_minutes: 75, tags: JSON.generate(['revised']) })
+
+      updated_record = service.find(work_log_id)
+      expect(updated_record[:duration_minutes]).to eq(75)
+      expect(updated_record[:tags]).to eq('["revised"]')
+
+      history_records = db[:work_logs_history].where(work_log_id: work_log_id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:work_log_id]).to eq(work_log_id)
+      expect(historical_record[:duration_minutes]).to eq(45)
+      expect(historical_record[:tags]).to eq('["init"]')
     end
   end
 

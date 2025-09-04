@@ -17,11 +17,13 @@ RSpec.describe Services::Postgres::Project do
   let(:domain_service) { Services::Postgres::Domain.new(config) }
 
   before(:each) do
+    db.drop_table?(:projects_history)
     db.drop_table?(:projects)
     db.drop_table?(:domains)
 
     create_projects_table(db)
     create_domains_table(db)
+    create_projects_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -83,6 +85,26 @@ RSpec.describe Services::Postgres::Project do
       service.update(id, { external_domain_id: 'domain-2' })
       updated = service.find(id)
       expect(updated[:domain_id]).to eq(domain2)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_project_id: 'proj-hist-1', name: 'Initial Project', status: 'active')
+
+      expect(db[:projects_history].where(project_id: id).all).to be_empty
+
+      service.update(id, { name: 'Updated Project', status: 'archived' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated Project')
+      expect(updated_record[:status]).to eq('archived')
+
+      history_records = db[:projects_history].where(project_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:project_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial Project')
+      expect(historical_record[:status]).to eq('active')
     end
 
     it 'raises error if no ID is provided' do

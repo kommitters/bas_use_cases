@@ -26,6 +26,7 @@ RSpec.describe Services::Postgres::GithubPullRequest do
   before(:each) do
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
+    db.drop_table?(:github_pull_requests_history)
     db.drop_table?(:github_pull_requests, :github_releases, :github_issues, :persons, :domains)
 
     create_domains_table(db)
@@ -33,6 +34,7 @@ RSpec.describe Services::Postgres::GithubPullRequest do
     create_github_issues_table(db)
     create_github_releases_table(db)
     create_github_pull_requests_table(db)
+    create_github_pull_requests_history_table(db)
 
     @person_id = person_service.insert(external_person_id: 'person-1', full_name: 'Test User')
     @release_id = release_service.insert(external_github_release_id: 'ghr-1', repository_id: 1, tag_name: 'v1.0-test',
@@ -116,6 +118,24 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       updated_pr = service.find(pr_id)
 
       expect(updated_pr[:issue_id]).to eq(new_issue_id)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      expect(db[:github_pull_requests_history].where(pull_request_id: pr_id).all).to be_empty
+
+      service.update(pr_id, { title: 'Updated Title', merge_date: Time.now })
+
+      updated_record = service.find(pr_id)
+      expect(updated_record[:title]).to eq('Updated Title')
+      expect(updated_record[:merge_date]).not_to be_nil
+
+      history_records = db[:github_pull_requests_history].where(pull_request_id: pr_id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:pull_request_id]).to eq(pr_id)
+      expect(historical_record[:title]).to eq('Initial Title')
+      expect(historical_record[:merge_date]).to be_nil
     end
 
     it 'raises an ArgumentError if no ID is provided' do

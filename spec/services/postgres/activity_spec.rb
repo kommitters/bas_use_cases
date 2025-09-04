@@ -21,6 +21,7 @@ RSpec.describe Services::Postgres::Activity do
   let(:akr_service) { Services::Postgres::ActivitiesKeyResults.new(config) }
 
   before(:each) do
+    db.drop_table?(:activities_history)
     db.drop_table?(:activities_key_results)
     db.drop_table?(:key_results)
     db.drop_table?(:activities)
@@ -30,6 +31,7 @@ RSpec.describe Services::Postgres::Activity do
     create_activities_table(db)
     create_key_results_table(db)
     create_activities_key_results_table(db)
+    create_activities_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -119,6 +121,24 @@ RSpec.describe Services::Postgres::Activity do
       service.update(id, { external_key_results_ids: ['kr3'] })
       expect(akr_service.query(activity_id: id).size).to eq(1)
       expect(akr_service.query(activity_id: id).first[:key_result_id]).to eq(kr3)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_activity_id: 'hist-act-1', name: 'Initial State')
+
+      expect(db[:activities_history].where(activity_id: id).all).to be_empty
+
+      service.update(id, { name: 'Updated State' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated State')
+
+      history_records = db[:activities_history].where(activity_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:activity_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial State')
     end
 
     it 'raises error if no ID is provided' do

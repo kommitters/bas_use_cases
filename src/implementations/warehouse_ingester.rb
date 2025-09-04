@@ -72,9 +72,8 @@ module Implementation
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
       'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
-      'github_pull_request' => {
-        service: Services::Postgres::GithubPullRequest, external_key: 'external_github_pull_request_id'
-      },
+      'github_pull_request' => { service: Services::Postgres::GithubPullRequest,
+                                 external_key: 'external_github_pull_request_id' },
       'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' },
       'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' }
 
@@ -103,17 +102,17 @@ module Implementation
       end
 
       { success: { processed: processed } }
+    rescue StandardError => e
+      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e}"
+      { error: { message: e.message, type: @type } }
     end
 
     def upsert(item)
       external_id = item[@external_key]
-      found = @service.query({ @external_key.to_sym => external_id }).first
-      persist(found, item)
-    rescue StandardError => e
-      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e.message}"
-    end
+      return unless external_id
 
-    def persist(found, item)
+      found = @service.query({ @external_key.to_sym => external_id }).first
+
       if found
         @service.update(found[:id], item)
       else

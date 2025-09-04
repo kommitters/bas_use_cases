@@ -26,6 +26,7 @@ RSpec.describe Services::Postgres::WorkItem do
   let(:github_issue_service) { Services::Postgres::GithubIssue.new(config) }
 
   before(:each) do
+    db.drop_table?(:work_items_history)
     db.drop_table?(:work_items)
     db.drop_table?(:projects)
     db.drop_table?(:activities)
@@ -41,6 +42,7 @@ RSpec.describe Services::Postgres::WorkItem do
     create_work_items_table(db)
     create_weekly_scopes_table(db)
     create_github_issues_table(db)
+    create_work_items_history_table(db)
 
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
@@ -135,6 +137,26 @@ RSpec.describe Services::Postgres::WorkItem do
       service.update(id, { external_project_id: 'proj-2' })
       updated = service.find(id)
       expect(updated[:project_id]).to eq(project2)
+    end
+
+    it 'saves the previous state to the history table before updating' do
+      id = service.insert(external_work_item_id: 'wi-hist-1', name: 'Initial Task', status: 'To Do')
+
+      expect(db[:work_items_history].where(work_item_id: id).all).to be_empty
+
+      service.update(id, { name: 'Updated Task', status: 'In Progress' })
+
+      updated_record = service.find(id)
+      expect(updated_record[:name]).to eq('Updated Task')
+      expect(updated_record[:status]).to eq('In Progress')
+
+      history_records = db[:work_items_history].where(work_item_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:work_item_id]).to eq(id)
+      expect(historical_record[:name]).to eq('Initial Task')
+      expect(historical_record[:status]).to eq('To Do')
     end
 
     it 'raises error if no ID is provided' do

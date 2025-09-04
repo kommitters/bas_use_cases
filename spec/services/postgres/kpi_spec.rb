@@ -2,9 +2,9 @@
 
 require 'sequel'
 require 'rspec'
+require 'json'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/kpi'
-require_relative '../../../src/services/postgres/kpi_history'
 require_relative '../../../src/services/postgres/domain'
 require_relative 'test_db_helpers'
 
@@ -14,7 +14,6 @@ RSpec.describe Services::Postgres::Kpi do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:history_service) { Services::Postgres::KpiHistory.new(config) }
   let(:domain_service) { Services::Postgres::Domain.new(config) }
   let(:domain_id) { domain_service.insert(name: 'Test Domain', external_domain_id: 'ext-dom-1') }
 
@@ -61,10 +60,26 @@ RSpec.describe Services::Postgres::Kpi do
       expect(service.find(id)[:description]).to eq('Updated KPI state')
     end
 
-    it 'creates a KpiHistory record on update' do
-      initial_count = history_service.query.count
-      service.update(id, description: 'Another state')
-      expect(history_service.query.count).to eq(initial_count + 1)
+    it 'saves the correct previous state to the history table before updating' do
+      initial_kpi = service.find(id)
+      expect(initial_kpi[:status]).to eq('On Track')
+      expect(initial_kpi[:current_value]).to eq(50.0)
+
+      expect(db[:kpis_history].where(kpi_id: id).all).to be_empty
+
+      service.update(id, { status: 'At Risk', current_value: 55.0 })
+
+      updated_kpi = service.find(id)
+      expect(updated_kpi[:status]).to eq('At Risk')
+      expect(updated_kpi[:current_value]).to eq(55.0)
+
+      history_records = db[:kpis_history].where(kpi_id: id).all
+      expect(history_records.size).to eq(1)
+
+      historical_record = history_records.first
+      expect(historical_record[:kpi_id]).to eq(id)
+      expect(historical_record[:status]).to eq('On Track')
+      expect(historical_record[:current_value]).to eq(50.0)
     end
 
     it 'raises an ArgumentError if the id is null' do

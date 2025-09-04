@@ -11,7 +11,9 @@ module Services
     # Provides CRUD operations for the 'calendar_event_attendees' table.
     class CalendarEventAttendee < Services::Postgres::Base
       ATTRIBUTES = %i[calendar_event_id person_id response_status].freeze
+
       TABLE = :calendar_event_attendees
+
       RELATIONS = [
         { service: Person, external: :email_address, internal: :person_id }
       ].freeze
