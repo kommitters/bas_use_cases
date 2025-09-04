@@ -73,7 +73,7 @@ module Services
 
       def update_item(table_name, id, params)
         # Automatically saves the current state to the history table before updating.
-        save_history(id)
+        save_history(table_name, id)
 
         params = symbolize_keys(params)
         params[:updated_at] = Time.now if timestamp?(table_name)
@@ -131,10 +131,10 @@ module Services
       # - HISTORY_TABLE: The name of the history table (e.g., :activities_history).
       # - HISTORY_FOREIGN_KEY: The name of the foreign key column (e.g., :activity_id).
       #
-      def save_history(id)
+      def save_history(table_name, id)
         return unless history_enabled?
 
-        current_record = find_item(self.class::TABLE, id)
+        current_record = find_item(table_name, id)
         return unless current_record
 
         history_params = prepare_history_params(id, current_record)
