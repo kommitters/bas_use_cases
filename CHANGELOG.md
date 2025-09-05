@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12.0 (05.09.25)
+- [Fix library import problem in kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/210)
+- [Resolve data saving issue in Warehouse Ingester](https://github.com/kommitters/bas_use_cases/pull/212)
+- [Notify Stakeholder](https://github.com/kommitters/bas_use_cases/pull/214)
+- [Migrate Key Results bot to Google Workspace](https://github.com/kommitters/bas_use_cases/pull/216)
+- [Implement kpi app script](https://github.com/kommitters/bas_use_cases/pull/219)
+- [Update ingester to save historical records](https://github.com/kommitters/bas_use_cases/pull/222)
+- [Update warehouse db connection env variables](https://github.com/kommitters/bas_use_cases/pull/223)
+
 ## 1.11.1 (15.08.25)
 - [Add fetch bot for Notion key performance](https://github.com/kommitters/bas_use_cases/pull/206)
 - [Add garbage collector to expired projects use case](https://github.com/kommitters/bas_use_cases/pull/207)
