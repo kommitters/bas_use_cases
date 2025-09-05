@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.12.0 (04.09.25)
+## 1.12.0 (05.09.25)
 - [Fix library import problem in kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/210)
 - [Resolve data saving issue in Warehouse Ingester](https://github.com/kommitters/bas_use_cases/pull/212)
 - [Notify Stakeholder](https://github.com/kommitters/bas_use_cases/pull/214)
