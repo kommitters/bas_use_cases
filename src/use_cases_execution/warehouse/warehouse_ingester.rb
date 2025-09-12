@@ -30,6 +30,11 @@ array = PG::TextEncoder::Array.new.encode(
     FetchKpisFromNotionDatabase
     FetchKeyResultsFromWebhook
     FetchKpisFromWebhook
+    FetchActivitiesFromApex
+    FetchDomainsFromApex
+    FetchPersonsFromApex
+    FetchProjectsFromApex
+    FetchWorkItemsFromApex
   ]
 )
 
