@@ -73,8 +73,8 @@ module Implementation
       while current_response.parsed_response['hasMore']
         response = fetch_next_page(current_response, base_params)
 
-        # Stop if a paginated request fails
-        break unless response&.success?
+        # Fail fast if a paginated request fails (suggestion from the bot)
+        raise "APEX pagination error: #{response&.code} - #{response&.parsed_response}" unless response&.success?
 
         all_records.concat(response.parsed_response['items'] || [])
         current_response = response

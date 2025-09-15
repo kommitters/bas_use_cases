@@ -9,14 +9,15 @@ module Utils
     # Encapsulates API calls to the APEX service.
     class Request
       include HTTParty
-      base_uri ENV.fetch('APEX_API_BASE_URI') # e.g., https://<server>/ords/<schema>
+      base_uri ENV['APEX_API_BASE_URI'] if ENV['APEX_API_BASE_URI'] # e.g., https://<server>/ords/<schema>
 
       def self.execute(endpoint:, params: {})
         access_token = token
 
         options = {
           headers: { 'Authorization' => "Bearer #{access_token}" },
-          query: params
+          query: params,
+          timeout: 20
         }
 
         get("/api/v1/#{endpoint}", options)
@@ -29,7 +30,8 @@ module Utils
         response = post('/oauth/token', {
                           basic_auth: { username: client_id, password: client_secret },
                           headers: { 'Content-Type' => 'application/x-www-form-urlencoded' },
-                          body: 'grant_type=client_credentials'
+                          body: 'grant_type=client_credentials',
+                          timeout: 20
                         })
 
         raise "Error obtaining APEX token: #{response.body}" unless response.success?
