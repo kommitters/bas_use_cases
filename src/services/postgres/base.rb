@@ -111,7 +111,7 @@ module Services
 
       #  Fetches the foreign ID based on the external ID and relation definition.
       def fetch_foreign_id(external_id, relation)
-        record = relation[:service].new(db).query(relation[:external] => external_id).first
+        record = relation[:service].new(db).query(relation[:external] => external_id.to_s).first
         record ? record[:id] : nil
       end
 
