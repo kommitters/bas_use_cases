@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module Utils
   module Warehouse
     module WorkLogs
@@ -12,7 +14,7 @@ module Utils
         end
 
         def format_tags(tags)
-          tags ? "{#{tags.join(',')}}" : nil
+          tags ? JSON.generate(tags) : nil
         end
       end
     end

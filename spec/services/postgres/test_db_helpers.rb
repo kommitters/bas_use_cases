@@ -173,7 +173,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       String :external_work_log_id, size: 255, null: false
       Integer :duration_minutes, null: false
-      column :tags, 'text[]', null: true
+      jsonb :tags, null: true
       foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
       foreign_key :project_id, :projects, type: :uuid, null: true, on_delete: :cascade
       foreign_key :activity_id, :activities, type: :uuid, null: true, on_delete: :cascade
@@ -478,7 +478,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :external_work_log_id, size: 255, null: false
       foreign_key :work_log_id, :work_logs, type: :uuid, null: false, on_delete: :cascade
       Integer :duration_minutes, null: false
-      column :tags, 'text[]', null: true
+      jsonb :tags, null: true
       foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
       foreign_key :project_id, :projects, type: :uuid, null: true, on_delete: :cascade
       foreign_key :activity_id, :activities, type: :uuid, null: true, on_delete: :cascade
