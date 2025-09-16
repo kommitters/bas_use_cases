@@ -3,25 +3,63 @@
 # rubocop:disable Metrics/BlockLength
 Sequel.migration do
   up do
-    # Convert work_logs.tags from text[] to jsonb
+    # work_logs
+    alter_table(:work_logs) do
+      add_column :tags_jsonb, :jsonb
+    end
+
     run <<~SQL
-      ALTER TABLE work_logs
-      ALTER COLUMN tags TYPE jsonb
-      USING CASE
+      UPDATE work_logs
+      SET tags_jsonb = CASE
         WHEN tags IS NULL THEN NULL
-        ELSE to_jsonb(tags)
+        ELSE (
+          SELECT jsonb_agg(jsonb_build_object('id', e, 'name', 'UNKNOWN'))
+          FROM unnest(tags) AS e
+        )
       END;
     SQL
 
-    # Convert work_logs_history.tags from text[] to jsonb
+    alter_table(:work_logs) do
+      drop_column :tags
+      add_column :tags, :jsonb
+    end
+
     run <<~SQL
-      ALTER TABLE work_logs_history
-      ALTER COLUMN tags TYPE jsonb
-      USING CASE
+      UPDATE work_logs SET tags = tags_jsonb;
+    SQL
+
+    alter_table(:work_logs) do
+      drop_column :tags_jsonb
+    end
+
+    # work_logs_history
+    alter_table(:work_logs_history) do
+      add_column :tags_jsonb, :jsonb
+    end
+
+    run <<~SQL
+      UPDATE work_logs_history
+      SET tags_jsonb = CASE
         WHEN tags IS NULL THEN NULL
-        ELSE to_jsonb(tags)
+        ELSE (
+          SELECT jsonb_agg(jsonb_build_object('id', e, 'name', 'UNKNOWN'))
+          FROM unnest(tags) AS e
+        )
       END;
     SQL
+
+    alter_table(:work_logs_history) do
+      drop_column :tags
+      add_column :tags, :jsonb
+    end
+
+    run <<~SQL
+      UPDATE work_logs_history SET tags = tags_jsonb;
+    SQL
+
+    alter_table(:work_logs_history) do
+      drop_column :tags_jsonb
+    end
   end
 
   down do
