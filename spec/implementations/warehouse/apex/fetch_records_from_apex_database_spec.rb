@@ -6,7 +6,6 @@ require 'ostruct'
 ENV['APEX_API_BASE_URI'] ||= 'https://example.test'
 ENV['APEX_CLIENT_ID'] ||= 'test-client'
 ENV['APEX_CLIENT_SECRET'] ||= 'test-secret'
-# Adjust these paths to match your project structure
 require_relative '../../../../src/implementations/fetch_records_from_apex_database'
 require_relative '../../../../src/utils/warehouse/apex/request'
 require_relative '../../../../src/utils/warehouse/apex/work_item_formatter'
