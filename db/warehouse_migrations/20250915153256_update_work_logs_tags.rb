@@ -13,7 +13,10 @@ Sequel.migration do
       SET tags_jsonb = CASE
         WHEN tags IS NULL THEN NULL
         ELSE (
-          SELECT jsonb_agg(jsonb_build_object('id', e, 'name', 'UNKNOWN'))
+          SELECT COALESCE(
+            jsonb_agg(jsonb_build_object('id', e, 'name', 'UNKNOWN')),
+            '[]'::jsonb
+          )
           FROM unnest(tags) AS e
         )
       END;
@@ -68,14 +71,15 @@ Sequel.migration do
       RETURNS text[]
       LANGUAGE SQL
       IMMUTABLE
+      STRICT
       AS $$
-        SELECT CASE
-          WHEN _tags IS NULL THEN NULL
-          ELSE (
-            SELECT array_agg(COALESCE(elem->>'id', trim(both '"' from elem::text)))
+        SELECT COALESCE(
+          ARRAY(
+            SELECT COALESCE(elem->>'id', trim(both '"' from elem::text))
             FROM jsonb_array_elements(_tags) AS elem
-          )
-        END
+          ),
+          ARRAY[]::text[]
+        )
       $$;
     SQL
 
