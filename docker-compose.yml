@@ -27,7 +27,7 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "${GRAFANA_LOKI_FULL_URL:?missing GRAFANA_LOKI_FULL_URL}"
+        loki-url: "${GRAFANA_LOKI_FULL_URL}"
         loki-retries: 10
         loki-max-backoff: 8s
         loki-timeout: 10s
@@ -50,7 +50,7 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "${GRAFANA_LOKI_FULL_URL:?missing GRAFANA_LOKI_FULL_URL}"
+        loki-url: "${GRAFANA_LOKI_FULL_URL}"
         loki-retries: 10
         loki-max-backoff: 8s
         loki-timeout: 10s

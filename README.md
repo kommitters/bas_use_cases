@@ -202,3 +202,15 @@ You should create a similar migration for each table you need (see the migration
 ### Using Claude Code
 
 Claude Code can be used to implement new use cases, just follow the instructions on `CLAUDE_USAGE.md`
+
+## Logging
+
+The project uses the `loki` logging driver to send logs to the Grafana Loki instance.
+
+To configure the logging driver, you need to set the `GRAFANA_LOKI_FULL_URL` environment variable.
+
+```bash
+GRAFANA_LOKI_FULL_URL="http://username:password@IP:3100/loki/api/v1/push"
+```
+
+Replace `username`, `password`, `IP` with the actual values. Escape any special characters or spaces.
