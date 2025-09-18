@@ -24,6 +24,15 @@ services:
       resources:
         limits:
           memory: 100M
+    logging:
+      driver: loki
+      options:
+        loki-url: "${GRAFANA_LOKI_FULL_URL}"
+        loki-retries: 10
+        loki-max-backoff: 8s
+        loki-timeout: 10s
+        keep-file: "true"
+        mode: "non-blocking"
 
   bas_webserver:
     container_name: bas_webserver
@@ -38,3 +47,12 @@ services:
       resources:
         limits:
           memory: 100M
+    logging:
+      driver: loki
+      options:
+        loki-url: "${GRAFANA_LOKI_FULL_URL}"
+        loki-retries: 10
+        loki-max-backoff: 8s
+        loki-timeout: 10s
+        keep-file: "true"
+        mode: "non-blocking"
