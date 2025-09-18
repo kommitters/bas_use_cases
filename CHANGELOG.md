@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.1. (18.09.25)
+- [Quote all Grafana loki parameters](https://github.com/kommitters/bas_use_cases/pull/230)
+- [Send logs to grafana](https://github.com/kommitters/bas_use_cases/pull/229)
+- [Format worklogs tags](https://github.com/kommitters/bas_use_cases/pull/228)
+- [Implement APEX Fetch Bot for Data Warehouse Ingestion](https://github.com/kommitters/bas_use_cases/pull/226)
+
 ## 1.12.0 (05.09.25)
 - [Fix library import problem in kpi postgres service](https://github.com/kommitters/bas_use_cases/pull/210)
 - [Resolve data saving issue in Warehouse Ingester](https://github.com/kommitters/bas_use_cases/pull/212)
