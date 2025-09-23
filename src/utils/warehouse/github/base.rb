@@ -111,6 +111,17 @@ module Utils
           formatted_reviews.to_json
         end
 
+        def format_repository_owner_as_json
+          return nil if @data[:owner].nil?
+
+          {
+            id: @data[:owner][:id],
+            login: @data[:owner][:login], # Likely the name in most cases
+            type: @data[:owner][:type],
+            html_url: @data[:owner][:html_url]
+          }.to_json
+        end
+
         def format_pg_array(array)
           return nil if array.nil? || array.empty?
 

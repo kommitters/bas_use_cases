@@ -6,14 +6,15 @@ module Utils
   module Warehouse
     module Github
       ##
-      # This class formats Github release records into a standardized hash format,
+      # This class formats Github repositories records into a standardized hash format,
       # inheriting extraction logic from the Base class, to match the database schema.
       #
       class RepositoriesFormatter < Base
         ##
-        # Formats the release data by calling the extraction methods from the Base class.
+        # Formats the repositories data by calling the extraction methods from the Base class.
         #
         def format # rubocop:disable Metrics/MethodLength
+          puts "RepositoriesFormatter. Formatting data: #{@data.inspect}"
           {
             external_github_repository_id: extract_id,
             name: extract_name,
@@ -29,6 +30,7 @@ module Utils
             watchers_count: extract_number(:watchers_count),
             stargazers_count: extract_number(:stargazers_count),
             forks_count: extract_number(:forks_count),
+            owner: format_repository_owner_as_json,
 
             created_at: extract_created_at
           }
