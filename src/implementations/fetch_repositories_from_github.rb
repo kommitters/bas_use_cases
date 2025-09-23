@@ -15,7 +15,7 @@ module Implementation
   # <b>Usage Example</b>
   #
   #   read_options = {
-  #     connection: Config::CONNECTION,
+  #     connection: Config::Database::CONNECTION,
   #     db_table: 'warehouse_sync',
   #     avoid_process: true,
   #     where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
@@ -23,16 +23,12 @@ module Implementation
   #   }
   #
   #   write_options = {
-  #     connection: Config::CONNECTION,
+  #     connection: Config::Database::CONNECTION,
   #     db_table: 'warehouse_sync',
   #     tag: 'FetchRepositoriesFromGithub'
   #   }
   #
-  #   options = {
-  #     private_pem: Config::GITHUB_PRIVATE_PEM,
-  #     app_id: Config::GITHUB_APP_ID,
-  #     organization: Config::KOMMITERS_ORGANIZATION
-  #   }
+  #   options = Config::Github.kommit_co
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
@@ -48,6 +44,7 @@ module Implementation
       return error_response(client_response) if client_response[:error]
 
       client = client_response[:client]
+      client.auto_paginate = true
       repositories = fetch_repositories(client)
 
       { success: { type: 'github_repository', content: repositories } }
@@ -105,6 +102,8 @@ module Implementation
     end
 
     def normalize_response(repositories)
+      return [] if repositories.respond_to?(:empty?) && repositories.empty?
+
       repositories.map { |repository| Utils::Warehouse::Github::RepositoriesFormatter.new(repository, nil).format }
     end
 
