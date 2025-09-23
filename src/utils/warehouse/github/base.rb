@@ -74,6 +74,18 @@ module Utils
           @data[:title]
         end
 
+        def extract_boolean(key)
+          @data[key.to_s] || false
+        end
+
+        def extract_number(key)
+          @data[key.to_s] || 0
+        end
+
+        def extract_string(key)
+          @data[key.to_s] || ''
+        end
+
         def extract_related_issues
           return [] if @related_issues.nil? || @related_issues.empty?
 

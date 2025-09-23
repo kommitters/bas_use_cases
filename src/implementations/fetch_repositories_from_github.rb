@@ -3,7 +3,7 @@
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require_relative '../../src/utils/warehouse/github/repositories_format'
+require_relative '../../src/utils/warehouse/github/repositories_formatter'
 
 module Implementation
   ##
@@ -66,14 +66,6 @@ module Implementation
 
     private
 
-    # Fetches the timestamp of the last successful run from shared storage.
-    def fetch_last_run_timestamp
-      read_result = @shared_storage_reader.read
-      return if read_result.inserted_at.nil?
-
-      Time.parse(read_result.inserted_at.to_s)
-    end
-
     # Initializes the Octokit client and handles authentication.
     def initialize_client
       client_response = Utils::Github::OctokitClient.new(client_params).execute
@@ -85,30 +77,9 @@ module Implementation
 
     # Fetches all repositories for the configured organization.
     def fetch_repositories(client)
-      client.organization_repositories(process_options[:organization])
-    end
+      repositories = client.organization_repositories(process_options[:organization])
 
-    # Processes a single repository to fetch and format its issues.
-    def process_repository(client, repo)
-      raw_issues = fetch_all_pages_for_repo(client, repo)
-      normalize_response(raw_issues, repo)
-    end
-
-    # Fetches all pages of issues for a single repository, handling pagination manually.
-    def fetch_all_pages_for_repo(client, repo)
-      api_params = {
-        state: 'all', per_page: PER_PAGE, since: fetch_last_run_timestamp&.iso8601
-      }.compact
-
-      issues = client.issues(repo.full_name, api_params)
-      last_response = client.last_response
-
-      while last_response&.rels&.[](:next)
-        last_response = last_response.rels[:next].get
-        issues.concat(last_response.data)
-      end
-
-      issues
+      normalize_response(repositories)
     end
 
     # Paginates content and writes each page to the shared storage.
@@ -133,14 +104,14 @@ module Implementation
       }
     end
 
-    def normalize_response(issues, repo)
-      issues.map { |issue| Utils::Warehouse::Github::RepositoriesFormatter.new(issue, repo).format }
+    def normalize_response(repositories)
+      repositories.map { |repository| Utils::Warehouse::Github::RepositoriesFormatter.new(repository, nil).format }
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: 'github_issue',
+          type: 'github_repository',
           content: content,
           page_index: page_index,
           total_pages: total_pages,

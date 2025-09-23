@@ -3,7 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
-require_relative 'config'
+require_relative '../config'
 require_relative '../../../implementations/fetch_repositories_from_github'
 
 read_options = {
@@ -27,5 +27,6 @@ begin
 
   Implementation::FetchRepositoriesFromGithub.new(github_config, shared_storage).execute
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  # Logger.new($stdout).info(e.message)
+  raise e
 end
