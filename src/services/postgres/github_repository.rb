@@ -16,29 +16,38 @@ module Services
       TABLE = :github_repositories
 
       def insert(params)
-        puts "Inserting Github Repository: #{params}"
+        transaction { insert_item(TABLE, params) }
+      rescue StandardError => e
+        handle_error(e)
       end
 
       def update(id, params)
-        puts "Updating Github Repository: #{params}"
+        raise ArgumentError, 'GithubRepository id is required to update' unless id
+
+        transaction { update_item(TABLE, id, params) }
+      rescue StandardError => e
+        handle_error(e)
       end
 
       def delete(id)
-        puts "Deleting Github Repository: #{id}"
+        transaction { delete_item(TABLE, id) }
+      rescue StandardError => e
+        handle_error(e)
       end
 
       def find(id)
-        puts "Finding Github Repository: #{id}"
+        find_item(TABLE, id)
       end
 
       def query(conditions = {})
-        puts "Querying Github Repository: #{conditions}"
+        query_item(TABLE, conditions)
       end
 
       private
 
       def handle_error(error)
         puts "[GithubRepository Service ERROR] #{error.class}: #{error.message}"
+        puts "Backtrace: #{error.backtrace.join("\n")}"
         raise error
       end
     end
