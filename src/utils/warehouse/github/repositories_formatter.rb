@@ -14,7 +14,6 @@ module Utils
         # Formats the repositories data by calling the extraction methods from the Base class.
         #
         def format # rubocop:disable Metrics/MethodLength
-          puts "RepositoriesFormatter. Formatting data: #{@data.inspect}"
           {
             external_github_repository_id: extract_id,
             name: extract_name,

@@ -27,6 +27,5 @@ begin
 
   Implementation::FetchRepositoriesFromGithub.new(github_config, shared_storage).execute
 rescue StandardError => e
-  # Logger.new($stdout).info(e.message)
-  raise e
+  Logger.new($stdout).info(e.message)
 end
