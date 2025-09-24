@@ -9,7 +9,9 @@ module Services
     #
     # Provides CRUD operations for the 'github_repositories' table using the Base service.
     class GithubRepository < Services::Postgres::Base
-      ATTRIBUTES = %i[external_github_repository_id name].freeze
+      ATTRIBUTES = %i[external_github_repository_id name owner language description html_url
+                      is_private is_fork is_archived is_disabled watchers_count stargazers_count forks_count
+                      creation_timestamp].freeze
 
       TABLE = :github_repositories
 
