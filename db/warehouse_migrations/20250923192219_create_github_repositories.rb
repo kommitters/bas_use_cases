@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Sequel.migration do
+Sequel.migration do # rubocop:disable Metrics/BlockLength
   up do
     create_table(:github_repositories) do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
@@ -25,6 +25,10 @@ Sequel.migration do
 
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+
+      index :external_github_repository_id, unique: true
+      index :name
+      index :creation_timestamp
     end
   end
 

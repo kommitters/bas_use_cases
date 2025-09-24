@@ -75,15 +75,24 @@ module Utils
         end
 
         def extract_boolean(key)
-          @data[key.to_s] || false
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          false
         end
 
         def extract_number(key)
-          @data[key.to_s] || 0
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          0
         end
 
         def extract_string(key)
-          @data[key.to_s] || ''
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          ''
         end
 
         def extract_related_issues
@@ -112,13 +121,14 @@ module Utils
         end
 
         def format_repository_owner_as_json
-          return nil if @data[:owner].nil?
+          owner = @data[:owner] || @data['owner']
+          return nil if owner.nil?
 
           {
-            id: @data[:owner][:id],
-            login: @data[:owner][:login], # Likely the name in most cases
-            type: @data[:owner][:type],
-            html_url: @data[:owner][:html_url]
+            id: owner[:id] || owner['id'],
+            login: owner[:login] || owner['login'], # Likely the name in most cases
+            type: owner[:type] || owner['type'],
+            html_url: owner[:html_url] || owner['html_url']
           }.to_json
         end
 
