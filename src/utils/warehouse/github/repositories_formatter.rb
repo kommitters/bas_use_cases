@@ -31,7 +31,7 @@ module Utils
             forks_count: extract_number(:forks_count),
             owner: format_repository_owner_as_json,
 
-            created_at: extract_created_at
+            creation_timestamp: extract_created_at
           }
         end
       end

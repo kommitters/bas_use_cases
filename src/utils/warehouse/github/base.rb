@@ -13,7 +13,7 @@ module Utils
       # GitHub API responses (as hashes) into a standardized structure. It is designed
       # to be inherited by more specific formatters (e.g., for Pull Requests, Issues).
       #
-      class Base
+      class Base # rubocop:disable Metrics/ClassLength
         ##
         # Initializes the formatter with the main GitHub data object and an optional context hash.
         #
