@@ -13,7 +13,7 @@ module Utils
       # GitHub API responses (as hashes) into a standardized structure. It is designed
       # to be inherited by more specific formatters (e.g., for Pull Requests, Issues).
       #
-      class Base
+      class Base # rubocop:disable Metrics/ClassLength
         ##
         # Initializes the formatter with the main GitHub data object and an optional context hash.
         #
@@ -74,6 +74,27 @@ module Utils
           @data[:title]
         end
 
+        def extract_boolean(key)
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          false
+        end
+
+        def extract_number(key)
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          0
+        end
+
+        def extract_string(key)
+          return @data[key] if @data.key?(key)
+          return @data[key.to_s] if @data.key?(key.to_s)
+
+          ''
+        end
+
         def extract_related_issues
           return [] if @related_issues.nil? || @related_issues.empty?
 
@@ -97,6 +118,18 @@ module Utils
             build_review_hash(review, review_comments)
           end
           formatted_reviews.to_json
+        end
+
+        def format_repository_owner_as_json
+          owner = @data[:owner] || @data['owner']
+          return nil if owner.nil?
+
+          {
+            id: owner[:id] || owner['id'],
+            login: owner[:login] || owner['login'], # Likely the name in most cases
+            type: owner[:type] || owner['type'],
+            html_url: owner[:html_url] || owner['html_url']
+          }.to_json
         end
 
         def format_pg_array(array)
