@@ -37,14 +37,17 @@ module Implementation
   #   Implementation::SaveBackupInR2.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class SaveBackupInR2 < Bas::Bot::Base
-    def process
+    def process # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
       dump_result = create_backup
       return dump_result if dump_result[:error]
 
       upload_result = save_dump_in_r2
       result_status = upload_result[:success] ? 'backup uploaded to R2 correctly' : upload_result[:error]
+      return { error: result_status } unless upload_result[:success]
+
       delete_result = upload_result[:success] ? delete_backup : { error: 'local backup not uploaded, so not deleted' }
       delete_status = delete_result[:success] ? 'local backup deleted correctly' : delete_result[:error]
+      return { error: "#{result_status}. #{delete_status}" } unless delete_result[:success]
 
       { success: { result: "#{result_status}. #{delete_status}" } }
     rescue Aws::S3::Errors::ServiceError => e
