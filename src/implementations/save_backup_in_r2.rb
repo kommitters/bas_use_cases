@@ -73,7 +73,7 @@ module Implementation
 
     def delete_backup
       File.delete(output_file) == 1 ? { success: true } : { error: 'local dump file not deleted' }
-    rescue Errno::ENOENT => e
+    rescue SystemCallError => e
       Logger.new($stdout).error("#{e.class}: #{e.message}")
       { error: "#{e.class}: #{e.message}" }
     end
