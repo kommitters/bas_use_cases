@@ -159,5 +159,12 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:25'] },
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
+
+    WORKLOG_SCHEDULES = [
+      { path: "#{__dir__}/worklog/fetch_worklog_from_notion.rb", time: ['22:00'] },
+      { path: "#{__dir__}/worklog/format_worklog.rb", time: ['22:05'] },
+      { path: "#{__dir__}/worklog/notify_worklog_in_discord_dm.rb", time: ['22:10'] },
+      { path: "#{__dir__}/worklog/garbage_collector.rb", time: ['00:00'] }
+    ].freeze
   end
 end
