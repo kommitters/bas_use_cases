@@ -6,7 +6,7 @@ require 'time'
 module Implementation
   ##
   # This bot implements the logic to fetch records from an Operaton database's
-  # endpoints, handles pagination, and stores it into the shared storage.
+  # endpoints, handles pagination, and saves them into the shared storage.
   #
   class FetchRecordsFromOperaton < Bas::Bot::Base
     FORMATTERS = {
@@ -15,60 +15,46 @@ module Implementation
 
     PAGE_SIZE = 100
 
-    ##
-    # Main method that fetches all data, handling pagination.
-    #
     def process
-      initial_records = fetch_page
-      return initial_records if initial_records.is_a?(Hash) && initial_records[:error]
-
-      all_records = initial_records.concat(fetch_remaining_pages)
-      entities = normalize_response(all_records)
-
-      { success: { type: process_options[:entity], content: entities } }
+      { success: true }
     end
 
-    ##
-    # Writes the processed data to the warehouse.
-    # This method remains unchanged and will handle batching correctly.
-    #
     def write
-      return @shared_storage_writer.write(process_response) if process_response[:error]
+      page_number = 0
+      loop do
+        is_last_page = process_and_write_page(page_number)
+        break if is_last_page
 
-      content = process_response.dig(:success, :content) || []
-      paged_entities = content.each_slice(PAGE_SIZE).to_a
-
-      paged_entities.each_with_index do |page, idx|
-        record = build_record(
-          content: page, page_index: idx + 1,
-          total_pages: paged_entities.size, total_records: content.size
-        )
-        @shared_storage_writer.write(record)
+        page_number += 1
       end
     end
 
     private
 
-    def fetch_remaining_pages
-      all_records = []
-      page_number = 1
-      loop do
-        page_records = fetch_page(page_number)
-        break if page_records.empty?
+    def process_and_write_page(page_number)
+      response = fetch_operaton_data(query_params: build_request_params(page_number * PAGE_SIZE))
+      raise "Operaton pagination error: #{response&.code} - #{response&.parsed_response}" unless response&.success?
 
-        all_records.concat(page_records)
-        page_number += 1
-      end
-      all_records
+      records = response.parsed_response
+      entities = normalize_response(records)
+      write_entities(entities, page_number) if entities.any?
+
+      records.empty? || records.size < PAGE_SIZE
     end
 
-    def fetch_page(page_number = 0)
-      response = fetch_operaton_data(query_params: build_request_params(PAGE_SIZE * page_number))
-      return error_response(response) unless response.success?
-
-      response.parsed_response
+    def write_entities(entities, page_number)
+      record_to_write = build_record(
+        content: entities,
+        page_index: page_number,
+        total_pages: -1,
+        total_records: -1
+      )
+      @shared_storage_writer.write(record_to_write)
     end
 
+    ##
+    # Builds the initial parameter hash for the request.
+    #
     def build_request_params(first_result = 0)
       {
         first_result: first_result,
