@@ -35,6 +35,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchPersonsFromApex
     FetchProjectsFromApex
     FetchWorkItemsFromApex
+    FetchProcessesFromOperaton
   ]
 )
 
