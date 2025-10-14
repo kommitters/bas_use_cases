@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'httparty'
+require 'json'
 require_relative '../../../use_cases_execution/warehouse/config'
 
 module Utils
@@ -9,41 +10,30 @@ module Utils
     # Encapsulates API calls to the Operaton service.
     class Request
       include HTTParty
-      base_uri Config::Operaton::BASE_URI if Config::Operaton::BASE_URI
+      basic_auth Config::Operaton::USER_ID, Config::Operaton::PASSWORD_SECRET
 
       def self.execute(endpoint:, method: :get, query_params: {}, body: {})
-        options = build_options(method: method, query_params: query_params, body: body)
-        send(method, "/engine-rest/#{endpoint}", options)
+        url = "#{Config::Operaton::BASE_URI}/engine-rest/#{endpoint}"
+        options = build_request_options(method: method, query: query_params, body: body)
+        HTTParty.public_send(method, url, options)
       end
 
-      def self.build_options(method:, query_params:, body:)
-        options = default_options(query_params)
+      class << self
+        private
 
-        if %i[post put patch].include?(method)
-          options[:body] = body.to_json
-          options[:headers] = { 'Content-Type' => 'application/json' }
+        def build_request_options(method:, query:, body:)
+          options = {
+            query: query,
+            timeout: 20
+          }
+
+          if %i[post put patch].include?(method)
+            options[:body] = body.to_json
+            options[:headers] = { 'Content-Type' => 'application/json' }
+          end
+
+          options
         end
-
-        options
-      end
-
-      def self.default_options(query_params)
-        {
-          basic_auth: credentials,
-          query: query_params,
-          timeout: 20
-        }
-      end
-
-      ##
-      # Fetches and returns Operaton credentials from environment variables.
-      # Will raise an error if any variable is not set.
-      #
-      def self.credentials
-        {
-          username: Config::Operaton::USER_ID,
-          password: Config::Operaton::PASSWORD_SECRET
-        }
       end
     end
   end
