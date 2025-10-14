@@ -159,5 +159,12 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:25'] },
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
+
+    OPERATON_WAREHOUSE_SYNC_SCHEDULES = [
+      { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", custom_rule: {
+        type: 'last_day_of_month',
+        time: ['07:00']
+      } }
+    ].freeze
   end
 end

@@ -3,6 +3,7 @@
 require 'bas/bot/base'
 require 'time'
 require_relative '../utils/warehouse/operaton/process_formatter'
+require_relative '../utils/warehouse/operaton/request'
 
 module Implementation
   ##
@@ -68,7 +69,7 @@ module Implementation
     #
     def fetch_operaton_data(query_params: {})
       Utils::Operaton::Request.execute(
-        endpoint: process_options[:entity],
+        endpoint: process_options[:endpoint],
         query_params: query_params,
         method: process_options[:method],
         body: process_options[:body]

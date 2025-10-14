@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'date'
 require 'logger'
 require 'bas/shared_storage/postgres'
 
 require_relative '../config'
+require_relative '../../../implementations/fetch_records_from_operaton'
 
 read_options = {
   connection: Config::Database::CONNECTION,
@@ -19,11 +21,19 @@ write_options = {
   tag: 'FetchProcessesFromOperaton'
 }
 
+first_day_of_current_month = DateTime.new(
+  Date.today.year,
+  Date.today.month, 1, 0, 0, 0, '+0'
+).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
+
 process_options = {
   entity: 'process',
   endpoint: 'history/process-instance',
   method: :post,
-  body: { finished: true, startedAfter: Date.today.prev_month.beginning_of_day }
+  body: {
+    finished: true,
+    startedAfter: first_day_of_current_month
+  }
 }
 
 begin
