@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'dotenv/load'
 require 'httparty'
+require_relative '../../../use_cases_execution/warehouse/config'
 
 module Utils
   module Operaton
@@ -9,7 +9,7 @@ module Utils
     # Encapsulates API calls to the Operaton service.
     class Request
       include HTTParty
-      base_uri ENV['OPERATON_API_BASE_URI'] if ENV['OPERATON_API_BASE_URI'] # e.g., https://<server>/ords/<schema>
+      base_uri Config::Operaton::BASE_URI if Config::Operaton::BASE_URI
 
       def self.execute(endpoint:, method: :get, query_params: {}, body: {})
         options = build_options(method: method, query_params: query_params, body: body)
@@ -41,12 +41,8 @@ module Utils
       #
       def self.credentials
         {
-          username: ENV.fetch('OPERATON_USER_ID') do
-            raise KeyError, 'OPERATON_USER_ID is not set in environment variables'
-          end,
-          password: ENV.fetch('OPERATON_PASSWORD_SECRET') do
-            raise KeyError, 'OPERATON_PASSWORD_SECRET is not set in environment variables'
-          end
+          username: Config::Operaton::USER_ID,
+          password: Config::Operaton::PASSWORD_SECRET
         }
       end
     end

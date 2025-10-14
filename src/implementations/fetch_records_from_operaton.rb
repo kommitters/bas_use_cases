@@ -2,6 +2,7 @@
 
 require 'bas/bot/base'
 require 'time'
+require_relative '../utils/warehouse/operaton/process_formatter'
 
 module Implementation
   ##
