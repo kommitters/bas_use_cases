@@ -493,4 +493,57 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
   end
+
+  def create_operaton_processes_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:operaton_processes) do
+      primary_key :id
+      String :external_process_id, null: false
+      String :business_key
+      String :process_definition_key
+      String :process_definition_name
+      DateTime :start_time
+      DateTime :end_time
+      Integer :duration_in_millis
+      String :process_definition_version
+      String :state
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_operaton_activities_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:operaton_activities) do
+      primary_key :id
+      String :external_activity_id, null: false
+      String :external_process_id, type: :uuid
+      String :process_definition_key
+      String :activity_id
+      String :activity_name
+      String :activity_type
+      String :task_id
+      String :assignee
+      DateTime :start_time
+      DateTime :end_time
+      Integer :duration_in_millis
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_operaton_incidents_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:operaton_incidents) do
+      primary_key :id
+      String :external_incident_id, null: false
+      String :external_process_id, type: :uuid
+      String :process_definition_key
+      String :activity_id
+      String :incident_type
+      String :incident_message
+      TrueClass :resolved
+      DateTime :create_time
+      DateTime :end_time
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
 end
