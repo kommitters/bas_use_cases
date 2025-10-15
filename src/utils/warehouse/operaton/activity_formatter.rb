@@ -6,8 +6,8 @@ module Utils
   module Warehouse
     module Operaton
       module Formatter
-        # This class formats APEX domain records.
-        class ActivitiesFormatter < Base
+        # This class formats Operaton activities records.
+        class ActivityFormatter < Base
           def format
             {
               external_activity_id: @data['id'], external_process_id: @data['processInstanceId'],

@@ -2,7 +2,9 @@
 
 require 'bas/bot/base'
 require 'time'
+require_relative '../utils/warehouse/operaton/activity_formatter'
 require_relative '../utils/warehouse/operaton/process_formatter'
+require_relative '../utils/warehouse/operaton/incident_formatter'
 require_relative '../utils/warehouse/operaton/request'
 
 module Implementation
@@ -13,7 +15,8 @@ module Implementation
   class FetchRecordsFromOperaton < Bas::Bot::Base
     FORMATTERS = {
       'operaton_process' => Utils::Warehouse::Operaton::Formatter::ProcessFormatter,
-      'operaton_activity' => Utils::Warehouse::Operaton::Formatter::ActivitiesFormatter
+      'operaton_activity' => Utils::Warehouse::Operaton::Formatter::ActivityFormatter,
+      'operaton_incident' => Utils::Warehouse::Operaton::Formatter::IncidentFormatter
     }.freeze
 
     PAGE_SIZE = 100
@@ -56,10 +59,12 @@ module Implementation
     # Builds the initial parameter hash for the request.
     #
     def build_request_params(first_result = 0)
-      {
+      default_params = {
         first_result: first_result,
         max_results: PAGE_SIZE
       }
+      custom_params = process_options.fetch(:params, {})
+      default_params.merge(custom_params)
     end
 
     ##

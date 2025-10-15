@@ -6,7 +6,7 @@ module Utils
   module Warehouse
     module Operaton
       module Formatter
-        # This class formats APEX domain records.
+        # This class formats Operaton process records.
         class ProcessFormatter < Base
           def format
             {
