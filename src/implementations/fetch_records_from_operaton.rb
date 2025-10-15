@@ -12,8 +12,8 @@ module Implementation
   #
   class FetchRecordsFromOperaton < Bas::Bot::Base
     FORMATTERS = {
-      'process' => Utils::Warehouse::Operaton::Formatter::ProcessFormatter,
-      'activity' => Utils::Warehouse::Operaton::Formatter::ActivitiesFormatter
+      'operaton_process' => Utils::Warehouse::Operaton::Formatter::ProcessFormatter,
+      'operaton_activity' => Utils::Warehouse::Operaton::Formatter::ActivitiesFormatter
     }.freeze
 
     PAGE_SIZE = 100

@@ -69,7 +69,7 @@ module Implementation
       'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
       'project' => { service: Services::Postgres::Project, external_key: 'external_project_id' },
       'operaton_process' => { service: Services::Postgres::OperatonProcess, external_key: 'external_process_id' },
-      'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_process_id' },
+      'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_activity_id' },
       'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
       'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },

@@ -16,8 +16,6 @@ module Services
       ].freeze
 
       TABLE = :operaton_processes
-      HISTORY_TABLE = :processes_history
-      HISTORY_FOREIGN_KEY = :process_id
 
       def insert(params)
         transaction { insert_item(TABLE, params) }

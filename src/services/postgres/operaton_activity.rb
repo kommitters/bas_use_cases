@@ -17,8 +17,6 @@ module Services
       ].freeze
 
       TABLE = :operaton_activities
-      HISTORY_TABLE = :operaton_activities_history
-      HISTORY_FOREIGN_KEY = :operaton_activity_id
 
       RELATIONS = [
         { service: OperatonProcess, external: :external_process_id, internal: :process_id, key: :external_process_id }

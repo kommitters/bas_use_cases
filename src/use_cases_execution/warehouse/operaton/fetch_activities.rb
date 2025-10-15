@@ -27,7 +27,7 @@ first_day_of_current_month = DateTime.new(
 ).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
 
 process_options = {
-  entity: 'activity',
+  entity: 'operaton_activity',
   endpoint: 'history/activity-instance',
   method: :post,
   body: {
