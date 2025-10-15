@@ -8,11 +8,16 @@ module Services
     # Process Service for PostgreSQL
     #
     # Provides CRUD operations for the 'processes' table using the Base service.
-    class Process < Services::Postgres::Base
-      ATTRIBUTES = %i[external_process_id business_key process_definition_key process_definition_name start_time
-                      end_time duration_in_millis process_definition_version state].freeze
+    class OperatonProcess < Services::Postgres::Base
+      ATTRIBUTES = %i[
+        external_process_id business_key process_definition_key
+        process_definition_name start_time end_time duration_in_millis
+        process_definition_version state
+      ].freeze
 
-      TABLE = :processes
+      TABLE = :operaton_processes
+      HISTORY_TABLE = :processes_history
+      HISTORY_FOREIGN_KEY = :process_id
 
       def insert(params)
         transaction { insert_item(TABLE, params) }

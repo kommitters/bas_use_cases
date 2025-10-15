@@ -10,12 +10,12 @@ module Utils
         class ActivitiesFormatter < Base
           def format
             {
-              external_activity_id: @data['id'], process_definition_key: @data['processDefinitionKey'],
-              process_instance_id: @data['processInstanceId'],
-              task_definition_key: @data['taskDefinitionKey'],
-              name: @data['name'], assignee: @data['assignee'],
-              owner: @data['owner'], group: @data['group'],
-              task_state: @data['taskState'],
+              external_activity_id: @data['id'], external_process_id: @data['processInstanceId'],
+              process_definition_key: @data['processDefinitionKey'],
+              activity_id: @data['activityId'], activity_name: @data['activityName'],
+              activity_type: @data['activityType'],
+              task_id: @data['taskId'],
+              assignee: @data['assignee'],
               start_time: @data['startTime'], end_time: @data['endTime'],
               duration_in_millis: @data['durationInMillis']
             }
