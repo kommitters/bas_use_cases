@@ -40,7 +40,7 @@ begin
 
   Implementation::FetchRecordsFromOperaton.new(process_options, shared_storage).execute
 
-  Logger.new($stdout).info('Successfully fetched processes from Operaton.')
+  Logger.new($stdout).info('Successfully fetched activities from Operaton.')
 rescue StandardError => e
-  Logger.new($stdout).error("Failed to fetch processes from Operaton: #{e.message}")
+  Logger.new($stdout).error("Failed to fetch activities from Operaton: #{e.message}")
 end
