@@ -12,7 +12,8 @@ module Implementation
   #
   class FetchRecordsFromOperaton < Bas::Bot::Base
     FORMATTERS = {
-      'process' => Utils::Warehouse::Operaton::Formatter::ProcessFormatter
+      'process' => Utils::Warehouse::Operaton::Formatter::ProcessFormatter,
+      'activity' => Utils::Warehouse::Operaton::Formatter::ActivitiesFormatter
     }.freeze
 
     PAGE_SIZE = 100
@@ -22,12 +23,9 @@ module Implementation
     end
 
     def write
-      page_number = 0
-      loop do
+      (0..).each do |page_number|
         is_last_page = process_and_write_page(page_number)
         break if is_last_page
-
-        page_number += 1
       end
     end
 

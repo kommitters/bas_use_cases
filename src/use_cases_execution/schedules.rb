@@ -164,6 +164,10 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", custom_rule: {
         type: 'last_day_of_month',
         time: ['07:00']
+      } },
+      { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", custom_rule: {
+        type: 'last_day_of_month',
+        time: ['07:10']
       } }
     ].freeze
   end
