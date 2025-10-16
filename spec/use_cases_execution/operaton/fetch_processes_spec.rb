@@ -52,7 +52,7 @@ RSpec.describe Implementation::FetchRecordsFromOperaton do
     it 'calls the API and writes formatted records to storage' do
       expect(Utils::Operaton::Request).to receive(:execute).with(
         endpoint: 'history/process-instance',
-        query_params: { first_result: 0, max_results: 100 },
+        query_params: { firstResult: 0, maxResults: 100 },
         method: :post,
         body: { finished: true }
       )
@@ -83,9 +83,9 @@ RSpec.describe Implementation::FetchRecordsFromOperaton do
 
       it 'makes multiple API calls and writes to storage for each page' do
         expect(Utils::Operaton::Request)
-          .to receive(:execute).with(hash_including(query_params: { first_result: 0, max_results: 100 })).ordered
+          .to receive(:execute).with(hash_including(query_params: { firstResult: 0, maxResults: 100 })).ordered
         expect(Utils::Operaton::Request)
-          .to receive(:execute).with(hash_including(query_params: { first_result: 100, max_results: 100 })).ordered
+          .to receive(:execute).with(hash_including(query_params: { firstResult: 100, maxResults: 100 })).ordered
 
         expect(shared_storage).to receive(:write).twice
 

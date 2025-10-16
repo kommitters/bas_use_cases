@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'operaton_process'
 
 module Services
   module Postgres
@@ -19,7 +18,6 @@ module Services
       TABLE = :operaton_activities
 
       def insert(params)
-        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -28,7 +26,6 @@ module Services
       def update(id, params)
         raise ArgumentError, 'Activity id is required to update' unless id
 
-        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
