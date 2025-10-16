@@ -60,8 +60,8 @@ module Implementation
     #
     def build_request_params(first_result = 0)
       default_params = {
-        first_result: first_result,
-        max_results: PAGE_SIZE
+        firstResult: first_result,
+        maxResults: PAGE_SIZE
       }
       custom_params = process_options.fetch(:params, {})
       default_params.merge(custom_params)

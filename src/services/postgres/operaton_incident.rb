@@ -18,10 +18,6 @@ module Services
 
       TABLE = :operaton_incidents
 
-      RELATIONS = [
-        { service: OperatonProcess, external: :external_process_id, internal: :process_id, key: :external_process_id }
-      ].freeze
-
       def insert(params)
         assign_relations(params)
         transaction { insert_item(TABLE, params) }
