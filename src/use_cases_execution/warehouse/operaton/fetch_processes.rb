@@ -23,7 +23,7 @@ write_options = {
 
 first_day_of_current_month = DateTime.new(
   Date.today.year,
-  Date.today.month, 1, 0, 0, 0, '+0'
+  Date.today.month, 1, 0, 0, 0, '-0'
 ).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
 
 process_options = {
