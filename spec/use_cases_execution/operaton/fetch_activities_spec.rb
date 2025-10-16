@@ -4,9 +4,7 @@ require 'spec_helper'
 require 'bas/shared_storage/postgres'
 require 'ostruct'
 
-ENV['OPERATON_API_BASE_URI'] ||= 'https://example.test'
-ENV['OPERATON_USER_ID'] ||= 'test-user'
-ENV['OPERATON_PASSWORD_SECRET'] ||= 'test-secret'
+require_relative 'env_helper'
 
 require_relative '../../../src/implementations/fetch_records_from_operaton'
 require_relative '../../../src/utils/warehouse/operaton/request'

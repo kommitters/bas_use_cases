@@ -515,7 +515,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     db.create_table(:operaton_activities) do
       primary_key :id
       String :external_activity_id, null: false
-      String :external_process_id, type: :uuid
+      String :external_process_id
       String :process_definition_key
       String :activity_id
       String :activity_name
@@ -534,7 +534,7 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     db.create_table(:operaton_incidents) do
       primary_key :id
       String :external_incident_id, null: false
-      String :external_process_id, type: :uuid
+      String :external_process_id
       String :process_definition_key
       String :activity_id
       String :incident_type
