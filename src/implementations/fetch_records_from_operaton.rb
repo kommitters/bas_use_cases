@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'time'
 require_relative '../utils/warehouse/operaton/activity_formatter'
 require_relative '../utils/warehouse/operaton/process_formatter'
 require_relative '../utils/warehouse/operaton/incident_formatter'
@@ -102,13 +101,6 @@ module Implementation
           total_records: total_records
         }
       }
-    end
-
-    ##
-    # Formats an error response.
-    #
-    def error_response(response)
-      { error: { message: response.parsed_response, status_code: response.code } }
     end
   end
 end

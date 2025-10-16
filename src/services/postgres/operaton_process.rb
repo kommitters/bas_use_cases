@@ -7,7 +7,7 @@ module Services
     ##
     # Process Service for PostgreSQL
     #
-    # Provides CRUD operations for the 'processes' table using the Base service.
+    # Provides CRUD operations for the 'operaton_processes' table using the Base service.
     class OperatonProcess < Services::Postgres::Base
       ATTRIBUTES = %i[
         external_process_id business_key process_definition_key
@@ -50,7 +50,7 @@ module Services
       private
 
       def handle_error(error)
-        puts "[Process Service ERROR] #{error.class}: #{error.message}"
+        puts "[Operaton Process Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end
