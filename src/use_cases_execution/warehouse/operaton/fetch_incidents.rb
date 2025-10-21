@@ -4,6 +4,7 @@ require 'date'
 require 'logger'
 require 'bas/shared_storage/postgres'
 
+require_relative '../helper'
 require_relative '../config'
 require_relative '../../../implementations/fetch_records_from_operaton'
 
@@ -21,23 +22,18 @@ write_options = {
   tag: 'FetchIncidentsFromOperaton'
 }
 
-first_day_of_current_month = DateTime.new(
-  Date.today.year,
-  Date.today.month, 1, 0, 0, 0, '-0'
-).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
-
 process_options = {
   entity: 'operaton_incident',
   endpoint: 'history/incident',
   method: :get,
   params: {
-    startedAfter: first_day_of_current_month
+    createTimeAfter: nil
   }
 }
 
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
-
+  process_options[:params][:createTimeAfter] = Warehouse::Helper.get_last_execution_date(shared_storage)
   Implementation::FetchRecordsFromOperaton.new(process_options, shared_storage).execute
 
   Logger.new($stdout).info('Successfully fetched incidents from Operaton.')

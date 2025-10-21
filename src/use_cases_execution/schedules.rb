@@ -161,18 +161,9 @@ module UseCasesExecution
     ].freeze
 
     OPERATON_WAREHOUSE_SYNC_SCHEDULES = [
-      { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", custom_rule: {
-        type: 'last_day_of_month',
-        time: ['07:00']
-      } },
-      { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", custom_rule: {
-        type: 'last_day_of_month',
-        time: ['07:10']
-      } },
-      { path: "#{__dir__}/warehouse/operaton/fetch_incidents.rb", custom_rule: {
-        type: 'last_day_of_month',
-        time: ['07:20']
-      } }
+      { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/warehouse/operaton/fetch_incidents.rb", interval: 3_600_000 }
     ].freeze
   end
 end

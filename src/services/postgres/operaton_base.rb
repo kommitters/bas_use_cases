@@ -31,6 +31,8 @@ module Services
 
       def find(id)
         find_item(self.class::TABLE, id)
+      rescue StandardError => e
+        handle_error(e)
       end
 
       def query(conditions = {})
