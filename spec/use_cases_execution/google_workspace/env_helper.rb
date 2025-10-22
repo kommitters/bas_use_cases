@@ -26,7 +26,10 @@ ENV.update(
   'WORK_LOGS_API_SECRET' => 'log-secret',
   'KOMMITERS_GITHUB_APP_ID' => '1',
   'KOMMIT_CO_GITHUB_APP_ID' => '2',
-  'KPIS_NOTION_DATABASE_ID' => 'kpi_db_id'
+  'KPIS_NOTION_DATABASE_ID' => 'kpi_db_id',
+  'OPERATON_API_BASE_URI' => 'https://operaton.test',
+  'OPERATON_USER_ID' => 'test-user',
+  'OPERATON_PASSWORD_SECRET' => 'test-secret'
 )
 
 require 'rspec'

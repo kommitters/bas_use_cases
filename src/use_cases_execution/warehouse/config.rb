@@ -8,6 +8,17 @@ require 'dotenv/load'
 # loaded from environment variables.
 #
 module Config
+  # A dedicated, reusable place for helper methods.
+  module Helpers
+    module_function
+
+    def fetch_required_env(key)
+      ENV.fetch(key) do
+        raise KeyError, "#{key} is not set in environment variables"
+      end
+    end
+  end
+
   ##
   # Contains configuration for database connections.
   #
@@ -73,5 +84,16 @@ module Config
         organization: 'kommit-co'
       }
     end
+  end
+
+  ##
+  # Contains configuration specific to the Operaton integration.
+  #
+  module Operaton
+    extend Helpers
+
+    BASE_URI = fetch_required_env('OPERATON_API_BASE_URI')
+    USER_ID = fetch_required_env('OPERATON_USER_ID')
+    PASSWORD_SECRET = fetch_required_env('OPERATON_PASSWORD_SECRET')
   end
 end
