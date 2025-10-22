@@ -5,25 +5,31 @@ require_relative 'base'
 module Services
   module Postgres
     ##
-    # Weekly scope Service for PostgreSQL
+    # OrganizationalUnit Service for PostgreSQL
     #
-    # Provides CRUD operations for the 'weekly_scopes' table using the Base service.
-    class WeeklyScope < Services::Postgres::Base
-      ATTRIBUTES = %i[external_weekly_scope_id description start_week_date end_week_date].freeze
+    # Provides CRUD operations for the 'organizational_units' table using the Base service.
+    class OrganizationalUnit < Services::Postgres::Base
+      ATTRIBUTES = %i[external_org_unit_id parent_org_id name status].freeze
 
-      TABLE = :weekly_scopes
-      HISTORY_TABLE = :weekly_scopes_history
-      HISTORY_FOREIGN_KEY = :weekly_scope_id
+      TABLE = :organizational_units
+      HISTORY_TABLE = :organizational_units_history
+      HISTORY_FOREIGN_KEY = :organizational_unit_id
+
+      RELATIONS = [
+        { service: OrganizationalUnit, external: :name, internal: :parent_org_id }
+      ].freeze
 
       def insert(params)
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
       end
 
       def update(id, params)
-        raise ArgumentError, 'WeeklyScope id is required to update' unless id
+        raise ArgumentError, 'OrganizationalUnit id is required to update' unless id
 
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
@@ -46,7 +52,7 @@ module Services
       private
 
       def handle_error(error)
-        puts "[WeeklyScope Service ERROR] #{error.class}: #{error.message}"
+        puts "[OrganizationalUnit Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end
