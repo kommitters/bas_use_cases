@@ -9,18 +9,13 @@ module Services
     #
     # Provides CRUD operations for the 'organizational_units' table using the Base service.
     class OrganizationalUnit < Services::Postgres::Base
-      ATTRIBUTES = %i[external_org_unit_id parent_org_id name status].freeze
+      ATTRIBUTES = %i[external_org_unit_id name status].freeze
 
       TABLE = :organizational_units
       HISTORY_TABLE = :organizational_units_history
       HISTORY_FOREIGN_KEY = :organizational_unit_id
 
-      RELATIONS = [
-        { service: OrganizationalUnit, external: :name, internal: :parent_org_id }
-      ].freeze
-
       def insert(params)
-        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
@@ -29,7 +24,6 @@ module Services
       def update(id, params)
         raise ArgumentError, 'OrganizationalUnit id is required to update' unless id
 
-        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)

@@ -110,7 +110,6 @@ RSpec.describe Services::Postgres::Task do
     @milestone_id = apex_milestone_service.insert(
       external_apex_milestone_id: 'ext-m-1',
       external_kr_id: 'kr-uuid-456',
-      name: 'Milestone One',
       description: 'First milestone description',
       milestone_order: 1,
       percentage: 0.5,

@@ -6,7 +6,7 @@ Sequel.migration do
       uuid :id, primary_key: true, default: Sequel.lit('gen_random_uuid()')
       String :external_task_id, size: 255, null: false
       foreign_key :process_id, :processes, null: true, on_delete: :cascade, type: :uuid
-      foreign_key :milestone_id, :milestones, null: true, on_delete: :cascade, type: :uuid
+      foreign_key :milestone_id, :apex_milestones, null: true, on_delete: :cascade, type: :uuid
       String :name, size: 255, null: false
       String :description, size: 2000, null: true
       String :assigned_to, size: 255, null: true

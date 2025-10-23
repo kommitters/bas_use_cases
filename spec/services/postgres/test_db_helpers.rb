@@ -599,7 +599,6 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     db.create_table(:organizational_units) do
       primary_key :id
       String :external_org_unit_id, size: 255, null: false
-      foreign_key :parent_org_id, :organizational_units, type: :uuid, on_delete: :cascade
       String :name, size: 255, null: false
       String :status
       String :external_id
@@ -608,12 +607,11 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def create_organizational_units_history_table(db) # rubocop:disable Metrics/MethodLength
+  def create_organizational_units_history_table(db)
     db.create_table(:organizational_units_history) do
       primary_key :id
       String :external_org_unit_id, size: 255, null: false
       foreign_key :organizational_unit_id, :organizational_units, type: :uuid
-      foreign_key :parent_org_id, :organizational_units, type: :uuid, on_delete: :cascade
       String :name, size: 255, null: false
       String :status
       String :external_id

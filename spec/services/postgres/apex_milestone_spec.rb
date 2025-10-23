@@ -2,6 +2,7 @@
 
 require 'sequel'
 require 'rspec'
+require 'date'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/apex_milestone'
 require_relative '../../../src/services/postgres/kr'

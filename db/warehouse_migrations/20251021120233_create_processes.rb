@@ -8,7 +8,7 @@ Sequel.migration do
       foreign_key :org_unit_id, :organizational_units, type: :uuid, on_delete: :cascade
       String :name, size: 255, null: false
       String :description, size: 2000, null: true
-      String :status
+      String :status, size: 50, null: true
       Date :start_date, null: true
       Date :end_date, null: true
       Date :deadline, null: true
