@@ -1,29 +1,36 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'okr'
 
 module Services
   module Postgres
     ##
-    # Weekly scope Service for PostgreSQL
+    # Kr Service for PostgreSQL
     #
-    # Provides CRUD operations for the 'weekly_scopes' table using the Base service.
-    class WeeklyScope < Services::Postgres::Base
-      ATTRIBUTES = %i[external_weekly_scope_id description start_week_date end_week_date].freeze
+    # Provides CRUD operations for the 'krs' table using the Base service.
+    class Kr < Services::Postgres::Base
+      ATTRIBUTES = %i[external_kr_id okr_id description status code].freeze
 
-      TABLE = :weekly_scopes
-      HISTORY_TABLE = :weekly_scopes_history
-      HISTORY_FOREIGN_KEY = :weekly_scope_id
+      TABLE = :krs
+      HISTORY_TABLE = :krs_history
+      HISTORY_FOREIGN_KEY = :kr_id
+
+      RELATIONS = [
+        { service: Okr, external: :external_okr_id, internal: :okr_id }
+      ].freeze
 
       def insert(params)
+        assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
         handle_error(e)
       end
 
       def update(id, params)
-        raise ArgumentError, 'WeeklyScope id is required to update' unless id
+        raise ArgumentError, 'Kr id is required to update' unless id
 
+        assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
         handle_error(e)
@@ -46,7 +53,7 @@ module Services
       private
 
       def handle_error(error)
-        puts "[WeeklyScope Service ERROR] #{error.class}: #{error.message}"
+        puts "[Kr Service ERROR] #{error.class}: #{error.message}"
         raise error
       end
     end
