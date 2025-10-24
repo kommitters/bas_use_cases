@@ -10,10 +10,14 @@ module Utils
     # Encapsulates API calls to the Operaton service.
     class Request
       include HTTParty
-      basic_auth Config::Operaton::USER_ID, Config::Operaton::PASSWORD_SECRET
+      @base_url = "#{Config::Operaton::BASE_URI}/engine-rest"
+      @basic_auth = {
+        username: Config::Operaton::USER_ID,
+        password: Config::Operaton::PASSWORD_SECRET
+      }
 
       def self.execute(endpoint:, method: :get, query_params: {}, body: {})
-        url = "#{Config::Operaton::BASE_URI}/engine-rest/#{endpoint}"
+        url = "#{@base_url}/#{endpoint}"
         options = build_request_options(method: method, query: query_params, body: body)
         HTTParty.public_send(method, url, options)
       end
@@ -24,7 +28,8 @@ module Utils
         def build_request_options(method:, query:, body:)
           options = {
             query: query,
-            timeout: 20
+            timeout: 20,
+            basic_auth: @basic_auth
           }
 
           if %i[post put patch].include?(method)
