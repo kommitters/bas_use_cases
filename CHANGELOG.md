@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.0 (30.10.25)
+- [Fix Operaton API request to use instance variables for base URL and auth](https://github.com/kommitters/bas_use_cases/pull/239)
+- [Operaton warehouse data collection](https://github.com/kommitters/bas_use_cases/pull/235)
+
 ## 1.12.1. (18.09.25)
 - [Quote all Grafana loki parameters](https://github.com/kommitters/bas_use_cases/pull/230)
 - [Send logs to grafana](https://github.com/kommitters/bas_use_cases/pull/229)
