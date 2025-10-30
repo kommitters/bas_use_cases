@@ -111,13 +111,11 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def create_weekly_scopes_table(db) # rubocop:disable Metrics/MethodLength
+  def create_weekly_scopes_table(db)
     db.create_table(:weekly_scopes) do
       primary_key :id
       String :external_weekly_scope_id, null: false
       String :description, null: false
-      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
-      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       DateTime :start_week_date
       DateTime :end_week_date
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
@@ -438,14 +436,12 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def create_weekly_scopes_history_table(db) # rubocop:disable Metrics/MethodLength
+  def create_weekly_scopes_history_table(db)
     db.create_table(:weekly_scopes_history) do
       primary_key :id
       String :external_weekly_scope_id, null: false
       foreign_key :weekly_scope_id, :weekly_scopes, type: :uuid, null: false, on_delete: :cascade
       String :description, null: false
-      foreign_key :domain_id, :domains, type: :uuid, null: true, on_delete: :cascade
-      foreign_key :person_id, :persons, type: :uuid, null: true, on_delete: :cascade
       DateTime :start_week_date
       DateTime :end_week_date
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
@@ -511,6 +507,18 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
+  def create_okrs_table(db)
+    db.create_table(:okrs) do
+      primary_key :id
+      String :external_okr_id, size: 255, null: false
+      String :code, size: 20, null: true
+      String :status, size: 50, null: true
+      String :objective, size: 2000, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
   def create_operaton_activities_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:operaton_activities) do
       primary_key :id
@@ -530,6 +538,32 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
+  def create_okrs_history_table(db)
+    db.create_table(:okrs_history) do
+      primary_key :id
+      foreign_key :okr_id, :okrs, type: :uuid
+      String :external_okr_id, size: 255, null: false
+      String :code, size: 20, null: true
+      String :status, size: 50, null: true
+      String :objective, size: 2000, null: true
+      DateTime :created_at, null: false
+      DateTime :updated_at, null: false
+    end
+  end
+
+  def create_krs_table(db)
+    db.create_table(:krs) do
+      primary_key :id
+      String :external_kr_id, size: 255, null: false
+      foreign_key :okr_id, :okrs, null: false, on_delete: :cascade, type: :uuid
+      String :description, size: 2000, null: true
+      String :status, size: 50, null: true
+      String :code, size: 20, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
   def create_operaton_incidents_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:operaton_incidents) do
       primary_key :id
@@ -542,6 +576,171 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       TrueClass :resolved
       DateTime :create_time
       DateTime :end_time
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_krs_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:krs_history) do
+      primary_key :id
+      foreign_key :kr_id, :krs, type: :uuid
+      String :external_kr_id, size: 255, null: false
+      foreign_key :okr_id, :okrs, null: false, on_delete: :cascade, type: :uuid
+      String :description, size: 2000, null: true
+      String :status, size: 50, null: true
+      String :code, size: 20, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_organizational_units_table(db)
+    db.create_table(:organizational_units) do
+      primary_key :id
+      String :external_org_unit_id, size: 255, null: false
+      String :name, size: 255, null: false
+      String :status
+      String :external_id
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_organizational_units_history_table(db)
+    db.create_table(:organizational_units_history) do
+      primary_key :id
+      String :external_org_unit_id, size: 255, null: false
+      foreign_key :organizational_unit_id, :organizational_units, type: :uuid
+      String :name, size: 255, null: false
+      String :status
+      String :external_id
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_apex_processes_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:processes) do
+      primary_key :id
+      String :external_process_id, size: 255, null: false
+      foreign_key :org_unit_id, :organizational_units, type: :uuid
+      String :name, size: 255, null: false
+      String :description, size: 2000, null: true
+      Date :start_date, null: true
+      Date :end_date, null: true
+      Date :deadline, null: true
+      String :status
+      String :external_id
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_apex_processes_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:processes_history) do
+      primary_key :id
+      foreign_key :process_id, :processes, type: :uuid
+      String :external_process_id, size: 255, null: false
+      foreign_key :org_unit_id, :organizational_units, type: :uuid
+      String :name, size: 255, null: false
+      String :description, size: 2000, null: true
+      Date :start_date, null: true
+      Date :end_date, null: true
+      Date :deadline, null: true
+      String :status
+      String :external_id
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_apex_milestones_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:apex_milestones) do
+      primary_key :id
+      String :external_apex_milestone_id, size: 255, null: false
+      foreign_key :kr_id, :krs, null: false, on_delete: :cascade, type: :uuid
+      String :description, size: 2000, null: false
+      Integer :milestone_order, null: false
+      Float :percentage, null: true
+      Date :completion_date, null: true
+      Boolean :is_completed, default: false
+      DateTime :created_at, null: false
+      DateTime :updated_at, null: false
+    end
+  end
+
+  def create_apex_milestones_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:apex_milestones_history) do
+      primary_key :id
+      foreign_key :apex_milestone_id, :apex_milestones, type: :uuid
+      String :external_apex_milestone_id, size: 255, null: false
+      foreign_key :kr_id, :krs, null: false, on_delete: :cascade, type: :uuid
+      String :description, size: 2000, null: false
+      Integer :milestone_order, null: false
+      Float :percentage, null: true
+      Date :completion_date, null: true
+      Boolean :is_completed, default: false
+      DateTime :created_at, null: false
+      DateTime :updated_at, null: false
+    end
+  end
+
+  def create_tasks_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:tasks) do
+      primary_key :id
+      String :external_task_id, size: 255, null: false
+      foreign_key :process_id, :processes, null: true, on_delete: :cascade, type: :uuid
+      foreign_key :milestone_id, :apex_milestones, null: true, on_delete: :cascade, type: :uuid
+      String :name, size: 255, null: false
+      String :description, size: 2000, null: true
+      String :assigned_to, size: 255, null: true
+      String :status, size: 50, null: true
+      Date :start_date, null: true
+      Date :end_date, null: true
+      Date :deadline, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_tasks_history_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table(:tasks_history) do
+      primary_key :id
+      foreign_key :task_id, :tasks, type: :uuid
+      String :external_task_id, size: 255, null: false
+      foreign_key :process_id, :processes, null: true, on_delete: :cascade, type: :uuid
+      foreign_key :milestone_id, :apex_milestones, null: true, on_delete: :cascade, type: :uuid
+      String :name, size: 255, null: false
+      String :description, size: 2000, null: true
+      String :assigned_to, size: 255, null: true
+      String :status, size: 50, null: true
+      Date :start_date, null: true
+      Date :end_date, null: true
+      Date :deadline, null: true
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_weekly_scope_tasks_table(db)
+    db.create_table(:weekly_scope_tasks) do
+      primary_key :id
+      String :external_weekly_scope_task_id, size: 255, null: false
+      foreign_key :task_id, :tasks, null: false, on_delete: :cascade, type: :uuid
+      foreign_key :weekly_scope_id, :weekly_scopes, null: false, on_delete: :cascade, type: :uuid
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_weekly_scope_tasks_history_table(db)
+    db.create_table(:weekly_scope_tasks_history) do
+      primary_key :id
+      foreign_key :weekly_scope_task_id, :weekly_scope_tasks, type: :uuid
+      String :external_weekly_scope_task_id, size: 255, null: false
+      foreign_key :task_id, :tasks, null: false, on_delete: :cascade, type: :uuid
+      foreign_key :weekly_scope_id, :weekly_scopes, null: false, on_delete: :cascade, type: :uuid
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end

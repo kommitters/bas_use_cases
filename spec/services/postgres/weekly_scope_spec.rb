@@ -13,8 +13,6 @@ RSpec.describe Services::Postgres::WeeklyScope do
   let(:db) { Sequel.sqlite }
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
   let(:service) { described_class.new(config) }
-  let(:domain_service) { Services::Postgres::Domain.new(config) }
-  let(:person_service) { Services::Postgres::Person.new(config) }
   let(:start_week_date) { Date.new(2024, 6, 13) }
   let(:end_week_date) { Date.new(2024, 6, 19) }
   let(:params) do
@@ -24,12 +22,8 @@ RSpec.describe Services::Postgres::WeeklyScope do
   # Create the table structure before each test
   before(:each) do
     db.drop_table?(:weekly_scopes_history)
-    db.drop_table?(:domains)
-    db.drop_table?(:persons)
     db.drop_table?(:weekly_scopes)
 
-    create_domains_table(db)
-    create_persons_table(db)
     create_weekly_scopes_table(db)
     create_weekly_scopes_history_table(db)
 
@@ -46,40 +40,6 @@ RSpec.describe Services::Postgres::WeeklyScope do
       expect(weekly_scope[:start_week_date]).to eq(start_week_date.to_time)
       expect(weekly_scope[:end_week_date]).to eq(end_week_date.to_time)
     end
-
-    it 'assigns all foreign keys when given their external ids' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Dom1')
-      person_id = person_service.insert(external_person_id: 'per-1', full_name: 'Person1')
-      params = {
-        external_weekly_scope_id: 'ext-ws-2',
-        description: 'WeeklyScope with FKs',
-        start_week_date: start_week_date,
-        end_week_date: end_week_date,
-        external_domain_id: 'dom-1',
-        external_person_id: 'per-1'
-      }
-      id = service.insert(params)
-      weekly_scope = service.find(id)
-      expect(weekly_scope[:domain_id]).to eq(domain_id)
-      expect(weekly_scope[:person_id]).to eq(person_id)
-    end
-
-    it 'removes all external ids from params even if nil' do
-      params = {
-        external_weekly_scope_id: 'ext-ws-3',
-        description: 'WeeklyScope with FKs',
-        start_week_date: start_week_date,
-        end_week_date: end_week_date,
-        external_domain_id: nil,
-        external_person_id: nil
-      }
-      id = service.insert(params)
-      weekly_scope = service.find(id)
-      expect(weekly_scope).not_to have_key(:external_domain_id)
-      expect(weekly_scope).not_to have_key(:external_person_id)
-      expect(weekly_scope[:domain_id]).to be_nil
-      expect(weekly_scope[:person_id]).to be_nil
-    end
   end
 
   describe '#update' do
@@ -92,20 +52,6 @@ RSpec.describe Services::Postgres::WeeklyScope do
       expect(updated[:description]).to eq('Updated Description')
       expect(updated[:start_week_date]).to eq(start_week_date.to_time)
       expect(updated[:end_week_date]).to eq(end_week_date.to_time)
-    end
-
-    it 'reassigns foreign keys on update with external ids' do
-      domain = domain_service.insert(external_domain_id: 'domain-2', name: 'domain2', archived: false)
-      id = service.insert(
-        external_weekly_scope_id: 'ext-ws-5',
-        description: 'WeeklyScope with FKs',
-        start_week_date: start_week_date,
-        end_week_date: end_week_date,
-        external_domain_id: 'domain-1'
-      )
-      service.update(id, { external_domain_id: 'domain-2' })
-      updated = service.find(id)
-      expect(updated[:domain_id]).to eq(domain)
     end
 
     it 'saves the previous state to the history table before updating' do
