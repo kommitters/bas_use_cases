@@ -233,6 +233,32 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
+  def create_github_repositories_table(db) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    db.create_table(:github_repositories) do
+      primary_key :id
+      BigInt :external_github_repository_id, null: false
+      String :name, null: false
+      String :language, null: true
+      String :description, null: true
+      String :html_url, null: true
+
+      Boolean :is_private, null: false, default: false
+      Boolean :is_fork, null: false, default: false
+      Boolean :is_archived, null: false, default: false
+      Boolean :is_disabled, null: false, default: false
+
+      Integer :watchers_count, null: false, default: 0
+      Integer :stargazers_count, null: false, default: 0
+      Integer :forks_count, null: false, default: 0
+
+      jsonb :owner, null: true
+
+      DateTime :creation_timestamp, null: false
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
   def create_calendar_events_table(db) # rubocop:disable Metrics/MethodLength
     db.create_table(:calendar_events) do
       primary_key :id
