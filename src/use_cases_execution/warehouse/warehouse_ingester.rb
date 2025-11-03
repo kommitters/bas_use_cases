@@ -38,6 +38,11 @@ array = PG::TextEncoder::Array.new.encode(
     FetchProcessesFromOperaton
     FetchActivitiesFromOperaton
     FetchIncidentsFromOperaton
+    FetchOkrsFromApex
+    FetchKrsFromApex
+    FetchMilestonesFromApex
+    FetchOrganizationalUnitsFromApex
+    FetchProcessesFromApex
   ]
 )
 

@@ -20,6 +20,11 @@ require_relative '../services/postgres/calendar_event'
 require_relative '../services/postgres/operaton_process'
 require_relative '../services/postgres/operaton_activity'
 require_relative '../services/postgres/operaton_incident'
+require_relative '../services/postgres/okr'
+require_relative '../services/postgres/kr'
+require_relative '../services/postgres/apex_milestone'
+require_relative '../services/postgres/organizational_unit'
+require_relative '../services/postgres/apex_process'
 
 module Implementation
   ##
@@ -81,7 +86,13 @@ module Implementation
       'github_pull_request' => { service: Services::Postgres::GithubPullRequest,
                                  external_key: 'external_github_pull_request_id' },
       'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' },
-      'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' }
+      'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' },
+      'okr' => { service: Services::Postgres::Okr, external_key: 'external_okr_id' },
+      'kr' => { service: Services::Postgres::Kr, external_key: 'external_kr_id' },
+      'apex_milestone' => { service: Services::Postgres::ApexMilestone, external_key: 'external_apex_milestone_id' },
+      'organizational_unit' => { service: Services::Postgres::OrganizationalUnit,
+                                 external_key: 'external_org_unit_id' },
+      'process' => { service: Services::Postgres::ApexProcess, external_key: 'external_process_id' }
 
     }.freeze
 
