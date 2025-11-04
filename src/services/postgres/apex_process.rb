@@ -2,6 +2,7 @@
 
 require_relative 'base'
 require_relative 'organizational_unit'
+require_relative '../../../log/BasLogger'
 
 module Services
   module Postgres
@@ -25,7 +26,7 @@ module Services
         assign_relations(params)
         transaction { insert_item(TABLE, params) }
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'insert', params: params })
       end
 
       def update(id, params)
@@ -34,13 +35,13 @@ module Services
         assign_relations(params)
         transaction { update_item(TABLE, id, params) }
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'update', id: id, params: params })
       end
 
       def delete(id)
         transaction { delete_item(TABLE, id) }
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'delete', id: id })
       end
 
       def find(id)
@@ -53,8 +54,12 @@ module Services
 
       private
 
-      def handle_error(error)
-        puts "[ApexProcess Service ERROR] #{error.class}: #{error.message}"
+      def handle_error(error, context: {})
+        BAS_LOGGER.error({
+          service: 'ApexProcess_service',
+          error: "#{error.class}: #{error.message}",
+          context: context
+        })
         raise error
       end
     end

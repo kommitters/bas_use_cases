@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'base_abstract'
 require_relative 'key_result'
 require_relative '../../../log/BasLogger'
 
@@ -8,8 +8,8 @@ module Services
   module Postgres
     ##
     # Activity Service for PostgreSQL
-    # Provides CRUD operations for the 'activities_key_results' table using the Base service.
-    class ActivitiesKeyResults < Services::Postgres::Base
+    # Provides CRUD operations for the 'activities_key_results' table using the BaseAbstract service.
+    class ActivitiesKeyResults < Services::Postgres::BaseAbstract
       ATTRIBUTES = %i[activity_id key_result_id].freeze
 
       TABLE = :activities_key_results

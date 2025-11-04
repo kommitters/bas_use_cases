@@ -3,6 +3,7 @@
 require_relative 'base'
 require_relative 'domain'
 require_relative 'activities_key_results'
+require_relative '../../../log/BasLogger'
 
 module Services
   module Postgres
@@ -31,7 +32,7 @@ module Services
           activity_id
         end
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'insert', params: params })
       end
 
       def update(id, params)
@@ -43,13 +44,13 @@ module Services
           update_item(TABLE, id, params)
         end
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'update', id: id, params: params })
       end
 
       def delete(id)
         transaction { delete_item(TABLE, id) }
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'delete', id: id })
       end
 
       def find(id)
@@ -59,13 +60,17 @@ module Services
       def query(conditions = {})
         query_item(TABLE, conditions)
       rescue StandardError => e
-        handle_error(e)
+        handle_error(e, context: { action: 'query', conditions: conditions })
       end
 
       private
 
-      def handle_error(error)
-        puts "[Activity Service ERROR] #{error.class}: #{error.message}"
+      def handle_error(error, context: {})
+        BAS_LOGGER.error({
+          service: 'Activity_service',
+          error: "#{error.class}: #{error.message}",
+          context: context
+        })
         raise error
       end
 
