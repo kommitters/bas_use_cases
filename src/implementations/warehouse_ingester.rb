@@ -9,7 +9,6 @@ require_relative '../services/postgres/key_result'
 require_relative '../services/postgres/milestone'
 require_relative '../services/postgres/person'
 require_relative '../services/postgres/project'
-require_relative '../services/postgres/weekly_scope'
 require_relative '../services/postgres/work_item'
 require_relative '../services/postgres/work_log'
 require_relative '../services/postgres/github_release'
@@ -25,6 +24,9 @@ require_relative '../services/postgres/kr'
 require_relative '../services/postgres/apex_milestone'
 require_relative '../services/postgres/organizational_unit'
 require_relative '../services/postgres/apex_process'
+require_relative '../services/postgres/task'
+require_relative '../services/postgres/weekly_scope'
+require_relative '../services/postgres/weekly_scope_task'
 
 module Implementation
   ##
@@ -78,7 +80,6 @@ module Implementation
       'operaton_process' => { service: Services::Postgres::OperatonProcess, external_key: 'external_process_id' },
       'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_activity_id' },
       'operaton_incident' => { service: Services::Postgres::OperatonIncident, external_key: 'external_incident_id' },
-      'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
       'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
@@ -92,8 +93,10 @@ module Implementation
       'apex_milestone' => { service: Services::Postgres::ApexMilestone, external_key: 'external_apex_milestone_id' },
       'organizational_unit' => { service: Services::Postgres::OrganizationalUnit,
                                  external_key: 'external_org_unit_id' },
-      'process' => { service: Services::Postgres::ApexProcess, external_key: 'external_process_id' }
-
+      'process' => { service: Services::Postgres::ApexProcess, external_key: 'external_process_id' },
+      'task' => { service: Services::Postgres::Task, external_key: 'external_task_id' },
+      'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
+      'weekly_scope_task' => { service: Services::Postgres::WeeklyScopeTask, external_key: 'external_weekly_scope_task_id' }
     }.freeze
 
     def process

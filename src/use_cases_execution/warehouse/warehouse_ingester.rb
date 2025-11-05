@@ -43,6 +43,9 @@ array = PG::TextEncoder::Array.new.encode(
     FetchMilestonesFromApex
     FetchOrganizationalUnitsFromApex
     FetchProcessesFromApex
+    FetchTasksFromApex
+    FetchWeeklyScopesFromApex
+    FetchWeeklyScopesTasksFromApex
   ]
 )
 

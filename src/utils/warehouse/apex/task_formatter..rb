@@ -6,19 +6,20 @@ module Utils
   module Warehouse
     module Apex
       module Formatter
-        # This class formats APEX Processes records.
-        class ProcessFormatter < Base
+        # This class formats APEX Tasks records.
+        class TaskFormatter < Base
           def format # rubocop:disable Metrics/MethodLength
             {
-              external_process_id: @data['process_id'].to_s,
-              external_org_unit_id: @data['owner_org_unit_id'],
+              external_task_id: @data['task_id'].to_s,
+              external_process_id: @data['process_id'],
+              external_milestone_id: @data['milestone_id'],
               name: @data['name'],
               description: @data['description'],
-              objective: @data['objective'],
+              status: @data['status'],
+              assigned_to: @data['assigned_to'],
               start_date: @data['start_date'],
               end_date: @data['end_date'],
-              deadline: @data['deadline'],
-              status: @data['status']
+              deadline: @data['deadline']
             }
           end
         end
