@@ -157,6 +157,14 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['06:15'] },
       { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['06:20'] },
       { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['06:25'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_okrs.rb", time: ['06:30'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_krs.rb", time: ['06:35'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_milestones.rb", time: ['06:40'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_organizational_units.rb", time: ['06:45'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_processes.rb", time: ['06:50'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_tasks.rb", time: ['06:55'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes.rb", time: ['07:00'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['07:05'] },
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 3_600_000 }
     ].freeze
 
