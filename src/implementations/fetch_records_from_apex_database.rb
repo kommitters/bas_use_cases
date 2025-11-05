@@ -13,7 +13,7 @@ require_relative '../utils/warehouse/apex/kr_formatter'
 require_relative '../utils/warehouse/apex/milestone_formatter'
 require_relative '../utils/warehouse/apex/organizational_unit_formatter'
 require_relative '../utils/warehouse/apex/process_formatter'
-require_relative '../utils/warehouse/apex/task_formatter.'
+require_relative '../utils/warehouse/apex/task_formatter'
 require_relative '../utils/warehouse/apex/weekly_scope_formatter'
 require_relative '../utils/warehouse/apex/weekly_scope_task_formatter'
 
