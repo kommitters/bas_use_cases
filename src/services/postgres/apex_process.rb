@@ -10,8 +10,7 @@ module Services
     #
     # Provides CRUD operations for the 'processes' table using the Base service.
     class ApexProcess < Services::Postgres::Base
-      ATTRIBUTES = %i[external_process_id org_unit_id name description start_date end_date deadline status
-                      external_id].freeze
+      ATTRIBUTES = %i[external_process_id org_unit_id name description start_date end_date deadline status].freeze
 
       TABLE = :processes
       HISTORY_TABLE = :processes_history

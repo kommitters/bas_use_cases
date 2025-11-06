@@ -8,6 +8,14 @@ require_relative '../utils/warehouse/apex/domain_formatter'
 require_relative '../utils/warehouse/apex/person_formatter'
 require_relative '../utils/warehouse/apex/project_formatter'
 require_relative '../utils/warehouse/apex/work_item_formatter'
+require_relative '../utils/warehouse/apex/okr_formatter'
+require_relative '../utils/warehouse/apex/kr_formatter'
+require_relative '../utils/warehouse/apex/milestone_formatter'
+require_relative '../utils/warehouse/apex/organizational_unit_formatter'
+require_relative '../utils/warehouse/apex/process_formatter'
+require_relative '../utils/warehouse/apex/task_formatter'
+require_relative '../utils/warehouse/apex/weekly_scope_formatter'
+require_relative '../utils/warehouse/apex/weekly_scope_task_formatter'
 
 module Implementation
   ##
@@ -20,7 +28,15 @@ module Implementation
       'activity' => Utils::Warehouse::Apex::Formatter::ActivityFormatter,
       'person' => Utils::Warehouse::Apex::Formatter::PersonFormatter,
       'project' => Utils::Warehouse::Apex::Formatter::ProjectFormatter,
-      'work_item' => Utils::Warehouse::Apex::Formatter::WorkItemFormatter
+      'work_item' => Utils::Warehouse::Apex::Formatter::WorkItemFormatter,
+      'okr' => Utils::Warehouse::Apex::Formatter::OkrFormatter,
+      'kr' => Utils::Warehouse::Apex::Formatter::KrFormatter,
+      'apex_milestone' => Utils::Warehouse::Apex::Formatter::MilestoneFormatter,
+      'organizational_unit' => Utils::Warehouse::Apex::Formatter::OrganizationalUnitFormatter,
+      'process' => Utils::Warehouse::Apex::Formatter::ProcessFormatter,
+      'task' => Utils::Warehouse::Apex::Formatter::TaskFormatter,
+      'weekly_scope' => Utils::Warehouse::Apex::Formatter::WeeklyScopeFormatter,
+      'weekly_scope_task' => Utils::Warehouse::Apex::Formatter::WeeklyScopeTaskFormatter
     }.freeze
 
     PAGE_SIZE = 100
