@@ -12,7 +12,7 @@ module Utils
             {
               external_task_id: @data['task_id'].to_s,
               external_process_id: @data['process_id'],
-              external_milestone_id: @data['milestone_id'],
+              external_milestone_id: @data['milestone_id_raw'],
               name: @data['name'],
               description: @data['description'],
               status: @data['status'],
