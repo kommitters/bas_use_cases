@@ -11,6 +11,7 @@
 /tmp/
 package-lock.json
 /logs
+/log/logs/*
 .env
 *.pem
 /discord_bot/vendor

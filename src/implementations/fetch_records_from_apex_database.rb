@@ -162,6 +162,7 @@ module Implementation
     #
     def error_response(response)
       { error: { message: response.parsed_response, status_code: response.code } }
+      raise ArgumentError, { message: response.message, status_code: response.code }
     end
   end
 end

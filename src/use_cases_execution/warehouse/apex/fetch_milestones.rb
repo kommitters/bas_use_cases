@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'bas/shared_storage/postgres'
 
 require_relative '../../../implementations/fetch_records_from_apex_database'
+require_relative '../../../../log/bas_logger'
 require_relative '../config'
 
 read_options = {
@@ -30,7 +30,16 @@ begin
 
   Implementation::FetchRecordsFromApexDatabase.new(process_options, shared_storage).execute
 
-  Logger.new($stdout).info('Successfully fetched milestones from APEX.')
+  BAS_LOGGER.info({
+                    invoker: 'FetchMilestonesFromApex',
+                    message: 'Process completed successfully.',
+                    context: { action: 'fetch', entity: 'Milestones' }
+                  })
 rescue StandardError => e
-  Logger.new($stdout).error("Failed to fetch milestones from APEX: #{e.message}")
+  BAS_LOGGER.error({
+                     invoker: 'FetchMilestonesFromApex',
+                     message: 'Error during fetching Milestones from Apex.',
+                     context: { action: 'fetch', entity: 'Milestones' },
+                     error: e.message
+                   })
 end

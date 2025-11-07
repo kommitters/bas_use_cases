@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'bas/shared_storage/postgres'
 
 require_relative '../../../implementations/fetch_records_from_apex_database'
+require_relative '../../../../log/bas_logger'
 require_relative '../config'
 
 read_options = {
@@ -30,7 +30,16 @@ begin
 
   Implementation::FetchRecordsFromApexDatabase.new(process_options, shared_storage).execute
 
-  Logger.new($stdout).info('Successfully fetched weekly_scopes_tasks from APEX.')
+  BAS_LOGGER.info({
+                    invoker: 'FetchWeeklyScopesTasksFromApex',
+                    message: 'Process completed successfully.',
+                    context: { action: 'fetch', entity: 'Weekly Scopes Tasks' }
+                  })
 rescue StandardError => e
-  Logger.new($stdout).error("Failed to fetch weekly_scopes_tasks from APEX: #{e.message}")
+  BAS_LOGGER.error({
+                     invoker: 'FetchWeeklyScopesTasksFromApex',
+                     message: 'Error during fetching Weekly Scopes Tasks from Apex.',
+                     context: { action: 'fetch', entity: 'Weekly Scopes Tasks' },
+                     error: e.message
+                   })
 end
