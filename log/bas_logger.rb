@@ -14,8 +14,7 @@ require 'time'
 # Logs messages to both a file and the console.
 # Optionally sends logs to a Grafana Loki instance if the URL is provided.
 class BasLogger
-  LOG_DATE = Time.now.strftime('%d-%m-%Y')
-  DEFAULT_LOG_FILE = File.expand_path("logs/bas_#{LOG_DATE}.log", __dir__)
+  DEFAULT_LOG_FILE = File.expand_path('logs/bas.log', __dir__)
   MAX_LOG_FILES = 10
   MAX_LOG_SIZE  = 10 * 1024 * 1024
   BASE_LOGGER_INFO = { # rubocop:disable Style/MutableConstant

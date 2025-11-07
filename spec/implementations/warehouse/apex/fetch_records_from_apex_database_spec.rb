@@ -43,7 +43,7 @@ RSpec.describe Implementation::FetchRecordsFromApexDatabase do
       end
 
       it 'raises an ArgumentError' do
-        expected_error_payload = { message: 'Internal Server Error', status_code: 500 }.to_s
+        expected_error_payload = "APEX API error (#{error_response.code}): #{error_response.message}"
 
         expect { bot.process }.to raise_error(ArgumentError, expected_error_payload)
       end
