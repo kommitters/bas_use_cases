@@ -30,17 +30,22 @@ RSpec.describe Implementation::FetchRecordsFromApexDatabase do
 
   describe '#process' do
     context 'when the APEX API call fails' do
-      let(:error_response) { double('HTTParty::Response', success?: false, code: 500, parsed_response: { 'message' => 'Server Error' }) }
+      let(:error_response) do
+        double('HTTParty::Response',
+               success?: false,
+               code: 500,
+               message: 'Internal Server Error',
+               parsed_response: { 'error' => 'Detail' })
+      end
 
       before do
         allow(Utils::Apex::Request).to receive(:execute).and_return(error_response)
       end
 
-      it 'returns an error hash' do
-        result = bot.process
-        expect(result).to have_key(:error)
-        expect(result.dig(:error, :status_code)).to eq(500)
-        expect(result.dig(:error, :message)).to eq({ 'message' => 'Server Error' })
+      it 'raises an ArgumentError' do
+        expected_error_payload = "APEX API error (#{error_response.code}): #{error_response.message}"
+
+        expect { bot.process }.to raise_error(ArgumentError, expected_error_payload)
       end
     end
 
