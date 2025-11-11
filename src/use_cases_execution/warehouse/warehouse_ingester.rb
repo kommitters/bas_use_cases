@@ -10,15 +10,6 @@ require 'pg'
 
 array = PG::TextEncoder::Array.new.encode(
   %w[
-    FetchDomainsFromNotionDatabase
-    FetchDocumentsFromNotionDatabase
-    FetchWeeklyScopesFromNotionDatabase
-    FetchKeyResultsFromNotionDatabase
-    FetchProjectsFromNotionDatabase
-    FetchActivitiesFromNotionDatabase
-    FetchPersonsFromNotionDatabase
-    FetchWorkItemsFromNotionDatabase
-    FetchMilestonesFromNotionDatabase
     FetchRecordsFromWorkLogs
     FetchHiredPersonsFromNotionDatabase
     FetchReleasesFromGithub
@@ -30,11 +21,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchKpisFromNotionDatabase
     FetchKeyResultsFromWebhook
     FetchKpisFromWebhook
-    FetchActivitiesFromApex
-    FetchDomainsFromApex
     FetchPersonsFromApex
-    FetchProjectsFromApex
-    FetchWorkItemsFromApex
     FetchOkrsFromApex
     FetchKrsFromApex
     FetchMilestonesFromApex
@@ -43,6 +30,8 @@ array = PG::TextEncoder::Array.new.encode(
     FetchTasksFromApex
     FetchWeeklyScopesFromApex
     FetchWeeklyScopesTasksFromApex
+    FetchProcessesFromOperaton
+    FetchIncidentsFromOperaton
   ]
 )
 

@@ -154,13 +154,13 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/apex/fetch_tasks.rb", time: ['06:00'] },
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes.rb", time: ['06:05'] },
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
-      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 300_000 }
+      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 }
     ].freeze
 
-    # OPERATON_WAREHOUSE_SYNC_SCHEDULES = [
-    #   { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", interval: 3_600_000 },
-    #   { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", interval: 3_600_000 },
-    #   { path: "#{__dir__}/warehouse/operaton/fetch_incidents.rb", interval: 3_600_000 }
-    # ].freeze
+    OPERATON_WAREHOUSE_SYNC_SCHEDULES = [
+      { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", interval: 7_200_000 },
+      # { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", interval: 3_600_000 },
+      { path: "#{__dir__}/warehouse/operaton/fetch_incidents.rb", interval: 7_200_000 }
+    ].freeze
   end
 end
