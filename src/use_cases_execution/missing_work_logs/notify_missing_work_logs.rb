@@ -19,7 +19,9 @@ write_options = {
   tag: 'NotifyWorkspace'
 }
 
-options = {}
+options = {
+  webhook: Config::MISSING_WORK_LOGS_WORKSPACE_WEBHOOK
+}
 
 # Process bot
 begin

@@ -18,10 +18,7 @@ options = {
   secret: Config::WORK_LOGS_API_SECRET,
   work_logs_url: "#{Config::WORK_LOGS_URL}/api/v1/users/last_work_logs",
   days: 7,
-  admin_workspace_webhook: Config::MISSING_WORK_LOGS_ADMIN_WORKSPACE_WEBHOOK,
-  ops_workspace_webhook: Config::MISSING_WORK_LOGS_OPS_WORKSPACE_WEBHOOK,
-  engineering_workspace_webhook: Config::MISSING_WORK_LOGS_ENGINEERING_WORKSPACE_WEBHOOK,
-  bizdev_workspace_webhook: Config::MISSING_WORK_LOGS_BIZDEV_WORKSPACE_WEBHOOK
+  workspace_webhook: Config::MISSING_WORK_LOGS_WORKSPACE_WEBHOOK
 }
 
 # Process bot
