@@ -53,11 +53,12 @@ module Implementation
     end
 
     def create_notifications(response)
-      with_missing_logs(response).group_by { |person| person['domain'] }.map do |domain, people|
-        notification = format_notification(domain, people)
+      people_with_missing_logs = with_missing_logs(response)
+      return if people_with_missing_logs.empty?
 
-        create_notification(domain, notification)
-      end
+      notification = format_notification(people_with_missing_logs)
+
+      create_notification(notification)
     end
 
     def with_missing_logs(people)
@@ -68,10 +69,10 @@ module Implementation
       end
     end
 
-    def format_notification(domain, people)
+    def format_notification(people)
       people = people.map { |person| "- #{person['name']} (#{last_recorded(person)})" }
 
-      "⚠️⏰ Hello director of *#{domain}*,\nThis is a notification regarding team members with "\
+      "⚠️⏰ Hello team,\nThis is a notification regarding team members with "\
       "missing work-logs in the past #{process_options[:days]} days along with the date of their most recent entry:"\
       " \n\n#{people.join("\n")}\n\n" \
     end
@@ -82,19 +83,10 @@ module Implementation
       date.strftime('%d/%m/%Y')
     end
 
-    def create_notification(domain, notification)
-      write_data = { success: { notification:, dm_id: directors_dms(domain) } }
+    def create_notification(notification)
+      write_data = { success: { notification:, webhook: process_options[:workspace_webhook] } }
 
       shared_storage_writer.write(write_data)
-    end
-
-    def directors_dms(domain)
-      case domain
-      when /kommit\.admin/ then process_options[:admin_dm_id]
-      when /kommit\.ops/ then process_options[:ops_dm_id]
-      when /kommit\.engineering/ then process_options[:engineering_dm_id]
-      when /kommit\.bizdev/ then process_options[:bizdev_dm_id]
-      end
     end
   end
 end

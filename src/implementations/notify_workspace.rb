@@ -38,8 +38,16 @@ module Implementation
       return { success: {} } if unprocessable_response
 
       notification_data = read_response.data['notification']
+      webhook_url = extract_webhook_url
+      return { success: {} } unless webhook_url
 
-      sender = Utils::GoogleChat::SendMessageWebhookWorkspace.new(process_options[:webhook])
+      send_notification(notification_data, webhook_url)
+    end
+
+    private
+
+    def send_notification(notification_data, webhook_url)
+      sender = Utils::GoogleChat::SendMessageWebhookWorkspace.new(webhook_url)
       response = sender.send_message(notification_data)
 
       if response[:code] == 200
@@ -47,6 +55,14 @@ module Implementation
       else
         { error: { message: response[:body], status_code: response[:code] } }
       end
+    end
+
+    def extract_webhook_url
+      stored_webhook = read_response.data['webhook']
+      stored_webhook = stored_webhook.strip if stored_webhook.respond_to?(:strip)
+      stored_webhook = nil if stored_webhook.respond_to?(:empty?) && stored_webhook.empty?
+
+      stored_webhook || process_options[:webhook]
     end
   end
 end
