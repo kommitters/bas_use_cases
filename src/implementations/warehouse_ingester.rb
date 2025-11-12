@@ -111,8 +111,7 @@ module Implementation
     def process_items
       processed = 0
       read_response.data['content'].each do |item|
-        upsert(item)
-        processed += 1
+        processed += 1 if upsert(item)
       end
 
       { success: { processed: processed } }
@@ -123,7 +122,7 @@ module Implementation
 
     def upsert(item)
       external_id = item[@external_key]
-      return unless external_id
+      return false unless external_id
 
       found = @service.query({ @external_key.to_sym => external_id }).first
 
@@ -132,6 +131,8 @@ module Implementation
       else
         @service.insert(item)
       end
+
+      true
     end
 
     def log_ingestion(level, message, processed: nil, error: nil)
@@ -143,7 +144,7 @@ module Implementation
 
       payload[:context][:processed] = processed unless processed.nil?
 
-      payload[:message] = "#{message}: #{error.message}" if error
+      payload.merge!(format_error_payload(error, message)) if error
 
       BAS_LOGGER.send(level, payload)
     end
@@ -161,6 +162,14 @@ module Implementation
       end
 
       true
+    end
+
+    def format_error_payload(error, original_message)
+      {
+        message: "#{original_message}: #{error.message}",
+        error_class: error.class.to_s,
+        backtrace: error.backtrace.first(5)
+      }
     end
   end
 end
