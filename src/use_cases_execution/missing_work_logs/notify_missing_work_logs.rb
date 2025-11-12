@@ -3,7 +3,7 @@
 require 'logger'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../implementations/notify_workspace_dm'
+require_relative '../../implementations/notify_workspace'
 require_relative 'config'
 
 # Configuration
@@ -16,7 +16,7 @@ read_options = {
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'missing_work_logs',
-  tag: 'NotifyWorkspaceDm'
+  tag: 'NotifyWorkspace'
 }
 
 options = {}
@@ -25,7 +25,7 @@ options = {}
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  Implementation::NotifyWorkspaceDm.new(options, shared_storage).execute
+  Implementation::NotifyWorkspace.new(options, shared_storage).execute
 rescue StandardError => e
   Logger.new($stdout).info(e.message)
 end
