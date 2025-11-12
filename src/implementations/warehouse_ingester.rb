@@ -2,27 +2,7 @@
 
 require 'bas/bot/base'
 require_relative '../../log/bas_logger'
-require_relative '../services/postgres/activity'
-require_relative '../services/postgres/document'
-require_relative '../services/postgres/document_activity_log'
-require_relative '../services/postgres/person'
-require_relative '../services/postgres/work_log'
-require_relative '../services/postgres/github_release'
-require_relative '../services/postgres/github_issue'
-require_relative '../services/postgres/github_pull_request'
-require_relative '../services/postgres/kpi'
-require_relative '../services/postgres/calendar_event'
-require_relative '../services/postgres/operaton_process'
-require_relative '../services/postgres/operaton_activity'
-require_relative '../services/postgres/operaton_incident'
-require_relative '../services/postgres/okr'
-require_relative '../services/postgres/kr'
-require_relative '../services/postgres/apex_milestone'
-require_relative '../services/postgres/organizational_unit'
-require_relative '../services/postgres/apex_process'
-require_relative '../services/postgres/task'
-require_relative '../services/postgres/weekly_scope'
-require_relative '../services/postgres/weekly_scope_task'
+require_relative '../utils/warehouse/service_registry'
 
 module Implementation
   ##
@@ -62,33 +42,14 @@ module Implementation
   #   Implementation::WarehouseIngester.new(options, shared_storage).execute
   #
   class WarehouseIngester < Bas::Bot::Base
-    SERVICES = {
-      'document' => { service: Services::Postgres::Document, external_key: 'external_document_id' },
-      'document_activity_log' => {
-        service: Services::Postgres::DocumentActivityLog, external_key: 'unique_identifier'
-      },
-      'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
-      'operaton_process' => { service: Services::Postgres::OperatonProcess, external_key: 'external_process_id' },
-      'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_activity_id' },
-      'operaton_incident' => { service: Services::Postgres::OperatonIncident, external_key: 'external_incident_id' },
-      'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
-      'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
-      'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
-      'github_pull_request' => { service: Services::Postgres::GithubPullRequest,
-                                 external_key: 'external_github_pull_request_id' },
-      'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' },
-      'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' },
-      'okr' => { service: Services::Postgres::Okr, external_key: 'external_okr_id' },
-      'kr' => { service: Services::Postgres::Kr, external_key: 'external_kr_id' },
-      'apex_milestone' => { service: Services::Postgres::ApexMilestone, external_key: 'external_apex_milestone_id' },
-      'organizational_unit' => { service: Services::Postgres::OrganizationalUnit,
-                                 external_key: 'external_org_unit_id' },
-      'process' => { service: Services::Postgres::ApexProcess, external_key: 'external_process_id' },
-      'task' => { service: Services::Postgres::Task, external_key: 'external_task_id' },
-      'weekly_scope' => { service: Services::Postgres::WeeklyScope, external_key: 'external_weekly_scope_id' },
-      'weekly_scope_task' => { service: Services::Postgres::WeeklyScopeTask, external_key: 'external_weekly_scope_task_id' }
-    }.freeze
+    # Pulls in the central mapping of entity types to their service classes.
+    SERVICES = Utils::Warehouse::ServiceRegistry::SERVICES
 
+    ##
+    # The main entry point for the bot.
+    # It validates the incoming data, configures the correct service,
+    # processes the items, and logs the outcome.
+    #
     def process
       return { success: { processed: 0 } } unless ingestion_ready?
 
@@ -108,6 +69,10 @@ module Implementation
 
     private
 
+    ##
+    # Iterates over all records from the `read_response` and
+    # attempts to upsert each one.
+    #
     def process_items
       processed = 0
       read_response.data['content'].each do |item|
@@ -120,6 +85,11 @@ module Implementation
       { error: { message: e.message, type: @type } }
     end
 
+    ##
+    # Performs an "upsert" (update or insert) for a single item.
+    # It finds the item by its external ID. If it exists, it updates it.
+    # If not, it inserts it.
+    #
     def upsert(item)
       external_id = item[@external_key]
       return false unless external_id
@@ -135,6 +105,10 @@ module Implementation
       true
     end
 
+    ##
+    # Centralized logging helper.
+    # Formats and sends a structured log message to the `BAS_LOGGER`.
+    #
     def log_ingestion_event(level, message, processed: nil, error: nil)
       payload = {
         invoker: 'WarehouseIngester',
@@ -149,6 +123,11 @@ module Implementation
       BAS_LOGGER.send(level, payload)
     end
 
+    ##
+    # Guard clause method to check if ingestion should proceed.
+    # It validates the `read_response` and ensures a serviceable
+    # entity type (`@type`) is set.
+    #
     def ingestion_ready?
       if unprocessable_response
         log_ingestion_event(:info, 'Ingestion skipped: unprocessable response.', processed: 0)
@@ -164,6 +143,9 @@ module Implementation
       true
     end
 
+    ##
+    # Builds the error-specific part of the log payload.
+    #
     def format_error_payload(error, original_message)
       {
         message: "#{original_message}: #{error.message}",
