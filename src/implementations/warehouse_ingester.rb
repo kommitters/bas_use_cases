@@ -90,7 +90,7 @@ module Implementation
     }.freeze
 
     def process
-      return { success: { processed: 0 } } unless setup_ingestion_valid
+      return { success: { processed: 0 } } unless ingestion_ready?
 
       config = SERVICES[@type]
       @external_key = config[:external_key]
@@ -100,7 +100,7 @@ module Implementation
 
       if result[:success]
         count = result.dig(:success, :processed)
-        log_ingestion(:info, "Ingestion complete. Processed #{count} items.", processed: count)
+        log_ingestion_event(:info, "Ingestion complete. Processed #{count} items.", processed: count)
       end
 
       result
@@ -116,7 +116,7 @@ module Implementation
 
       { success: { processed: processed } }
     rescue StandardError => e
-      log_ingestion(:error, 'Ingestion failed during upsert', error: e)
+      log_ingestion_event(:error, 'Ingestion failed during upsert', error: e)
       { error: { message: e.message, type: @type } }
     end
 
@@ -135,7 +135,7 @@ module Implementation
       true
     end
 
-    def log_ingestion(level, message, processed: nil, error: nil)
+    def log_ingestion_event(level, message, processed: nil, error: nil)
       payload = {
         invoker: 'WarehouseIngester',
         message: message,
@@ -149,15 +149,15 @@ module Implementation
       BAS_LOGGER.send(level, payload)
     end
 
-    def setup_ingestion_valid
+    def ingestion_ready?
       if unprocessable_response
-        log_ingestion(:info, 'Ingestion skipped: unprocessable response.', processed: 0)
+        log_ingestion_event(:info, 'Ingestion skipped: unprocessable response.', processed: 0)
         return false
       end
 
       @type = read_response.data['type']
       unless @type && SERVICES[@type]
-        log_ingestion(:warn, "Ingestion skipped: type '#{@type}' not serviceable.", processed: 0)
+        log_ingestion_event(:warn, "Ingestion skipped: type '#{@type}' not serviceable.", processed: 0)
         return false
       end
 
