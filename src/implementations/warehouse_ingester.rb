@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
+require_relative '../../log/bas_logger'
 require_relative '../services/postgres/activity'
 require_relative '../services/postgres/document'
 require_relative '../services/postgres/document_activity_log'
@@ -67,20 +68,14 @@ module Implementation
   #
   class WarehouseIngester < Bas::Bot::Base
     SERVICES = {
-      'activity' => { service: Services::Postgres::Activity, external_key: 'external_activity_id' },
       'document' => { service: Services::Postgres::Document, external_key: 'external_document_id' },
       'document_activity_log' => {
         service: Services::Postgres::DocumentActivityLog, external_key: 'unique_identifier'
       },
-      'domain' => { service: Services::Postgres::Domain, external_key: 'external_domain_id' },
-      'key_result' => { service: Services::Postgres::KeyResult, external_key: 'external_key_result_id' },
-      'milestone' => { service: Services::Postgres::Milestone, external_key: 'external_milestone_id' },
       'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
-      'project' => { service: Services::Postgres::Project, external_key: 'external_project_id' },
       'operaton_process' => { service: Services::Postgres::OperatonProcess, external_key: 'external_process_id' },
       'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_activity_id' },
       'operaton_incident' => { service: Services::Postgres::OperatonIncident, external_key: 'external_incident_id' },
-      'work_item' => { service: Services::Postgres::WorkItem, external_key: 'external_work_item_id' },
       'work_log' => { service: Services::Postgres::WorkLog, external_key: 'external_work_log_id' },
       'github_release' => { service: Services::Postgres::GithubRelease, external_key: 'external_github_release_id' },
       'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
@@ -100,16 +95,20 @@ module Implementation
     }.freeze
 
     def process
-      return { success: { processed: 0 } } if unprocessable_response
-
-      @type = read_response.data['type']
-      return { success: { processed: 0 } } unless @type && SERVICES[@type]
+      return { success: { processed: 0 } } unless setup_ingestion_valid
 
       config = SERVICES[@type]
       @external_key = config[:external_key]
       @service = config[:service].new(process_options[:db])
 
-      process_items
+      result = process_items
+
+      if result[:success]
+        count = result.dig(:success, :processed)
+        log_ingestion(:info, "Ingestion complete. Processed #{count} items.", processed: count)
+      end
+
+      result
     end
 
     private
@@ -123,7 +122,7 @@ module Implementation
 
       { success: { processed: processed } }
     rescue StandardError => e
-      puts "[WarehouseIngester ERROR][#{@type}] #{e.class}: #{e}"
+      log_ingestion(:error, 'Ingestion failed during upsert', error: e)
       { error: { message: e.message, type: @type } }
     end
 
@@ -138,6 +137,35 @@ module Implementation
       else
         @service.insert(item)
       end
+    end
+
+    def log_ingestion(level, message, processed: nil, error: nil)
+      payload = {
+        invoker: 'WarehouseIngester',
+        message: message,
+        context: { action: 'ingest', entity_type: @type }
+      }
+
+      payload[:context][:processed] = processed unless processed.nil?
+
+      payload[:message] = "#{message}: #{error.message}" if error
+
+      BAS_LOGGER.send(level, payload)
+    end
+
+    def setup_ingestion_valid
+      if unprocessable_response
+        log_ingestion(:info, 'Ingestion skipped: unprocessable response.', processed: 0)
+        return false
+      end
+
+      @type = read_response.data['type']
+      unless @type && SERVICES[@type]
+        log_ingestion(:warn, "Ingestion skipped: type '#{@type}' not serviceable.", processed: 0)
+        return false
+      end
+
+      true
     end
   end
 end
