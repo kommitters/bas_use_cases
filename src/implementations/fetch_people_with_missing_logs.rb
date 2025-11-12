@@ -83,17 +83,17 @@ module Implementation
     end
 
     def create_notification(domain, notification)
-      write_data = { success: { notification:, dm_id: directors_dms(domain) } }
+      write_data = { success: { notification:, webhook: domain_webhook(domain) } }
 
       shared_storage_writer.write(write_data)
     end
 
-    def directors_dms(domain)
+    def domain_webhook(domain)
       case domain
-      when /kommit\.admin/ then process_options[:admin_dm_id]
-      when /kommit\.ops/ then process_options[:ops_dm_id]
-      when /kommit\.engineering/ then process_options[:engineering_dm_id]
-      when /kommit\.bizdev/ then process_options[:bizdev_dm_id]
+      when /kommit\.admin/ then process_options[:admin_workspace_webhook]
+      when /kommit\.ops/ then process_options[:ops_workspace_webhook]
+      when /kommit\.engineering/ then process_options[:engineering_workspace_webhook]
+      when /kommit\.bizdev/ then process_options[:bizdev_workspace_webhook]
       end
     end
   end
