@@ -39,9 +39,14 @@ module Implementation
 
       notification_data = read_response.data['notification']
       webhook_url = extract_webhook_url
-
       return { success: {} } unless webhook_url
 
+      send_notification(notification_data, webhook_url)
+    end
+
+    private
+
+    def send_notification(notification_data, webhook_url)
       sender = Utils::GoogleChat::SendMessageWebhookWorkspace.new(webhook_url)
       response = sender.send_message(notification_data)
 
@@ -51,8 +56,6 @@ module Implementation
         { error: { message: response[:body], status_code: response[:code] } }
       end
     end
-
-    private
 
     def extract_webhook_url
       stored_webhook = read_response.data['webhook']
