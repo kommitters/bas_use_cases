@@ -10,7 +10,9 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'do_billing',
-  tag: 'FetchBillingFromDigitalOcean'
+  tag: 'FetchBillingFromDigitalOcean',
+  where: 'tag=$1 ORDER BY archived ASC, inserted_at DESC',
+  params: ['FetchBillingFromDigitalOcean']
 }
 
 write_options = {

@@ -12,8 +12,8 @@ read_options = {
   db_table: 'do_billing',
   tag: 'FetchBillingFromDigitalOcean',
   avoid_process: true,
-  where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  params: [false, 'FetchBillingFromDigitalOcean']
+  where: 'tag=$1 ORDER BY archived ASC, inserted_at DESC',
+  params: ['FetchBillingFromDigitalOcean']
 }
 
 write_options = {

@@ -10,7 +10,9 @@ require_relative 'config'
 read_options = {
   connection: Config::CONNECTION,
   db_table: 'do_billing',
-  tag: 'FormatDoBillAlert'
+  tag: 'FormatDoBillAlert',
+  where: 'tag=$1 ORDER BY archived ASC, inserted_at DESC',
+  params: ['FormatDoBillAlert']
 }
 
 write_options = {
