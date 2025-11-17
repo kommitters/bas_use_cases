@@ -133,7 +133,7 @@ RSpec.describe Implementation::WarehouseIngester do
           expect(service).not_to have_received(:query)
 
           expect(BAS_LOGGER).to have_received(:info).with(hash_including(
-                                                            message: 'Ingestion skipped: unprocessable response.'
+                                                            message: 'Ingestion skipped: No data found.'
                                                           )).once
         end
       end
