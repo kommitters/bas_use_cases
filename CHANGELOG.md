@@ -1,7 +1,18 @@
 # Changelog
 
+## 1.14.0 (17.11.25)
+- [Update ambiguous message to "No data found"](https://github.com/kommitters/bas_use_cases/pull/257)
+- [Integrate BasLogger into Ingester and remove deprecated code](https://github.com/kommitters/bas_use_cases/pull/253)
+- [Send missing work log alerts via per-domain workspace webhooks](https://github.com/kommitters/bas_use_cases/pull/251)
+- [Enable data collection for Operaton processes and incidents](https://github.com/kommitters/bas_use_cases/pull/250)
+- [Temporarily disable Operaton bots and increase ingester frequency](https://github.com/kommitters/bas_use_cases/pull/248)
+- [Implement BasLogger for structured JSON logging](https://github.com/kommitters/bas_use_cases/pull/246)
+- [Remove deprecated Notion bots from cron schedule](https://github.com/kommitters/bas_use_cases/pull/244)
+- [Implement warehouse bots to track entities from APEX](https://github.com/kommitters/bas_use_cases/pull/242)
+
 ## 1.13.0 (30.10.25)
 - [Fix Operaton API request to use instance variables for base URL and auth](https://github.com/kommitters/bas_use_cases/pull/239)
+- [Warehouse data logic](https://github.com/kommitters/bas_use_cases/pull/237)
 - [Operaton warehouse data collection](https://github.com/kommitters/bas_use_cases/pull/235)
 
 ## 1.12.1. (18.09.25)
