@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.14.0 (17.11.25)
+- [Update ambiguous message to "No data found"](https://github.com/kommitters/bas_use_cases/pull/257)
 - [Integrate BasLogger into Ingester and remove deprecated code](https://github.com/kommitters/bas_use_cases/pull/253)
 - [Send missing work log alerts via per-domain workspace webhooks](https://github.com/kommitters/bas_use_cases/pull/251)
 - [Enable data collection for Operaton processes and incidents](https://github.com/kommitters/bas_use_cases/pull/250)
