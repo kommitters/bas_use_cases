@@ -130,7 +130,7 @@ module Implementation
     #
     def ingestion_ready?
       if unprocessable_response
-        log_ingestion_event(:info, 'Ingestion skipped: No data found.', processed: 0)
+        log_ingestion_event(:warn, 'Ingestion skipped: No data found.', processed: 0)
         return false
       end
 
