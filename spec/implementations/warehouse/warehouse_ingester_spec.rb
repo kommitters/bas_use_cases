@@ -126,13 +126,13 @@ RSpec.describe Implementation::WarehouseIngester do
           allow(subject).to receive(:unprocessable_response).and_return(true)
         end
 
-        it 'skips processing and logs info' do
+        it 'skips processing and logs warning' do
           result = subject.process
 
           expect(result).to eq({ success: { processed: 0 } })
           expect(service).not_to have_received(:query)
 
-          expect(BAS_LOGGER).to have_received(:info).with(hash_including(
+          expect(BAS_LOGGER).to have_received(:warn).with(hash_including(
                                                             message: 'Ingestion skipped: No data found.'
                                                           )).once
         end
