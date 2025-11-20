@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.1 (20.11.25)
+- [Fix database connection in migration file](https://github.com/kommitters/bas_use_cases/pull/262)
+- [Organize labels for better understanding of logs, and add new vars to connect with Loki.](https://github.com/kommitters/bas_use_cases/pull/260)
+
 ## 1.14.0 (17.11.25)
 - [Update ambiguous message to "No data found"](https://github.com/kommitters/bas_use_cases/pull/257)
 - [Integrate BasLogger into Ingester and remove deprecated code](https://github.com/kommitters/bas_use_cases/pull/253)
