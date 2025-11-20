@@ -2,8 +2,8 @@
 
 ## 1.14.1 (20.11.25)
 
-* [Fix database connection in migration file](https://github.com/kommitters/bas_use_cases/pull/262)
-* [Organize labels for better understanding of logs, and add new vars to connect with Loki.](https://github.com/kommitters/bas_use_cases/pull/260)
+- [Fix database connection in migration file](https://github.com/kommitters/bas_use_cases/pull/262)
+- [Organize labels for better understanding of logs, and add new vars to connect with Loki.](https://github.com/kommitters/bas_use_cases/pull/260)
 
 ## 1.14.0 (17.11.25)
 
