@@ -17,11 +17,11 @@ shared_storage_config = {
 
 warehouse_config = {
   adapter: 'postgres',
-  host: ENV.fetch('DB_HOST'),
+  host: ENV.fetch('DB_HOST_WAREHOUSE'),
   database: ENV.fetch('WAREHOUSE_POSTGRES_DB'),
-  user: ENV.fetch('POSTGRES_USER'),
-  password: ENV.fetch('POSTGRES_PASSWORD'),
-  port: ENV.fetch('DB_PORT')
+  user: ENV.fetch('POSTGRES_USER_WAREHOUSE'),
+  password: ENV.fetch('POSTGRES_PASSWORD_WAREHOUSE'),
+  port: ENV.fetch('DB_PORT_WAREHOUSE')
 }
 
 SHARED_STORAGE_DB = MigrationOperations.new(shared_storage_config, :bas_use_cases_schema_migrations, '../db/migrations')
