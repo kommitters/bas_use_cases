@@ -8,6 +8,8 @@ require 'fileutils'
 require 'socket'
 require 'time'
 
+require_relative '../src/utils/logger/loki_line_builder'
+
 ##
 # Bas Logger Class
 #
@@ -16,16 +18,13 @@ require 'time'
 # Optionally sends logs to a Grafana Loki instance if the URL is provided.
 class BasLogger
   DEFAULT_LOG_FILE = File.expand_path('logs/bas.log', __dir__)
-  MAX_LOG_FILES = 10
-  MAX_LOG_SIZE  = 10 * 1024 * 1024
+  MAX_LOG_FILES    = 10
+  MAX_LOG_SIZE     = 10 * 1024 * 1024
+  MAX_LOKI_ENTRY_BYTES = (ENV['LOKI_MAX_ENTRY_BYTES'] || 200_000).to_i
 
-  BASE_LOGGER_INFO = {
-    app: 'bas_use_cases',
-    env: ENV.fetch('APP_ENV', 'development'),
-    pid: Process.pid,
-    logger: 'BasLogger',
-    host: Socket.gethostname
-  }.freeze
+  BASE_LOGGER_INFO = { app: 'bas_use_cases', env: ENV.fetch('APP_ENV', 'development'),
+                       pid: Process.pid, logger: 'BasLogger',
+                       host: Socket.gethostname }.freeze
 
   def initialize(log_file: DEFAULT_LOG_FILE, loki_url: ENV['LOKI_URL'], loki_user: ENV['LOKI_USER'],
                  loki_password: ENV['LOKI_PASSWORD'])
@@ -33,8 +32,8 @@ class BasLogger
 
     @file_logger = Logger.new(log_file, MAX_LOG_FILES, MAX_LOG_SIZE)
     @console_logger = Logger.new($stdout)
-    @loki_url = loki_url
-    @loki_user = loki_user
+    @loki_url      = loki_url
+    @loki_user     = loki_user
     @loki_password = loki_password
 
     formatter = proc do |_severity, _datetime, _progname, msg|
@@ -44,9 +43,9 @@ class BasLogger
     config_logger(formatter)
   end
 
-  def info(msg) = log(:info, msg)
-  def error(msg) = log(:error, msg)
-  def warn(msg) = log(:warn, msg)
+  def info(msg, send_to_manager: true)  = log(:info,  msg, send_to_manager: send_to_manager)
+  def error(msg, send_to_manager: true) = log(:error, msg, send_to_manager: send_to_manager)
+  def warn(msg, send_to_manager: true)  = log(:warn,  msg, send_to_manager: send_to_manager)
 
   private
 
@@ -57,12 +56,12 @@ class BasLogger
     @console_logger.level = Logger::DEBUG
   end
 
-  def log(level, msg)
+  def log(level, msg, send_to_manager: true)
     serialized = serialize_to_structured_json(level, msg)
     @file_logger.send(level, serialized)
     @console_logger.send(level, serialized)
 
-    return unless @loki_url
+    return unless @loki_url && send_to_manager
 
     log_to_manager = configure_log_message_event(msg, level, serialized)
     send_to_log_manager(log_to_manager)
@@ -83,11 +82,10 @@ class BasLogger
   end
 
   def send_to_log_manager(content)
-    response = HTTParty.post(
-      @loki_url, body: content.to_json,
-                 headers: { 'Content-Type' => 'application/json' },
-                 basic_auth: { username: @loki_user, password: @loki_password }
-    )
+    response = HTTParty.post(@loki_url, body: content.to_json,
+                                        headers: { 'Content-Type' => 'application/json' },
+                                        basic_auth: { username: @loki_user, password: @loki_password })
+
     log_error_manager_response(response) unless response.success?
   rescue StandardError => e
     error_msg = "Error sending log to Loki: #{e.message}"
@@ -96,15 +94,14 @@ class BasLogger
   end
 
   def configure_log_message_event(original_msg, level, serialized)
+    loki_line = Utils::Logger::LokiLineBuilder.build(serialized, MAX_LOKI_ENTRY_BYTES)
+
     labels = { app: BASE_LOGGER_INFO[:app], env: BASE_LOGGER_INFO[:env],
                host: BASE_LOGGER_INFO[:host], level: level.to_s.upcase }
-
     labels[:invoker] = original_msg[:invoker] if original_msg.is_a?(Hash) && original_msg[:invoker]
 
     {
-      streams: [
-        { stream: labels, values: [[(Time.now.to_f * 1_000_000_000).to_i.to_s, serialized]] }
-      ]
+      streams: [{ stream: labels, values: [[(Time.now.to_f * 1_000_000_000).to_i.to_s, loki_line]] }]
     }
   end
 
