@@ -109,7 +109,7 @@ module Implementation
     # Centralized logging helper.
     # Formats and sends a structured log message to the `BAS_LOGGER`.
     #
-    def log_ingestion_event(level, message, processed: nil, error: nil)
+    def log_ingestion_event(level, message, processed: nil, error: nil, send_to_manager: true)
       payload = {
         invoker: 'WarehouseIngester',
         message: message,
@@ -117,10 +117,9 @@ module Implementation
       }
 
       payload[:context][:processed] = processed unless processed.nil?
-
       payload.merge!(format_error_payload(error, message)) if error
 
-      BAS_LOGGER.send(level, payload)
+      BAS_LOGGER.send(level, payload, send_to_manager: send_to_manager)
     end
 
     ##
@@ -130,7 +129,7 @@ module Implementation
     #
     def ingestion_ready?
       if unprocessable_response
-        log_ingestion_event(:warn, 'Ingestion skipped: No data found.', processed: 0)
+        log_ingestion_event(:warn, 'Ingestion skipped: No data found.', processed: 0, send_to_manager: false)
         return false
       end
 
