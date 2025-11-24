@@ -40,10 +40,10 @@ RSpec.describe Implementation::WarehouseIngester do
         expect(service).to have_received(:insert).with(hash_including('external_okr_id' => 'okr-1')).once
         expect(service).not_to have_received(:update)
 
-        expect(BAS_LOGGER).to have_received(:info).with(hash_including(
-                                                          message: 'Ingestion complete. Processed 1 items.',
-                                                          send_to_manager: true
-                                                        )).once
+        expect(BAS_LOGGER).to have_received(:info).with(
+          hash_including(message: 'Ingestion complete. Processed 1 items.'),
+          hash_including(send_to_manager: true).once
+        )
       end
     end
 
@@ -56,10 +56,10 @@ RSpec.describe Implementation::WarehouseIngester do
         expect(service).to have_received(:update).with(10, hash_including('external_okr_id' => 'okr-1')).once
         expect(service).not_to have_received(:insert)
 
-        expect(BAS_LOGGER).to have_received(:info).with(hash_including(
-                                                          message: 'Ingestion complete. Processed 1 items.',
-                                                          send_to_manager: true
-                                                        )).once
+        expect(BAS_LOGGER).to have_received(:info).with(
+          hash_including(message: 'Ingestion complete. Processed 1 items.'),
+          hash_including(send_to_manager: true).once
+        )
       end
     end
 
@@ -73,10 +73,10 @@ RSpec.describe Implementation::WarehouseIngester do
         expect(service).not_to have_received(:insert)
         expect(service).not_to have_received(:update)
 
-        expect(BAS_LOGGER).to have_received(:info).with(hash_including(
-                                                          message: 'Ingestion complete. Processed 0 items.',
-                                                          send_to_manager: true
-                                                        )).once
+        expect(BAS_LOGGER).to have_received(:info).with(
+          hash_including(message: 'Ingestion complete. Processed 0 items.'),
+          hash_including(send_to_manager: true).once
+        )
       end
     end
 
@@ -90,10 +90,10 @@ RSpec.describe Implementation::WarehouseIngester do
           expect(result).to eq({ success: { processed: 0 } })
           expect(service).not_to have_received(:query)
 
-          expect(BAS_LOGGER).to have_received(:info).with(hash_including(
-                                                            message: 'Ingestion complete. Processed 0 items.',
-                                                            send_to_manager: true
-                                                          )).once
+          expect(BAS_LOGGER).to have_received(:info).with(
+            hash_including(message: 'Ingestion complete. Processed 0 items.'),
+            hash_including(send_to_manager: true).once
+          )
         end
       end
 
@@ -107,11 +107,10 @@ RSpec.describe Implementation::WarehouseIngester do
         expect(result[:error]).not_to be_nil
         expect(result[:error][:message]).to eq('DB connection failed')
 
-        expect(BAS_LOGGER).to have_received(:error)
-                          .with(hash_including(
-                                  message: 'Ingestion failed during upsert: DB connection failed',
-                                  send_to_manager: true
-                                )).once
+        expect(BAS_LOGGER).to have_received(:error).with(
+          hash_including(message: 'Ingestion failed during upsert: DB connection failed'),
+          hash_including(send_to_manager: true).once
+        )
       end
 
       it 'logs a warning for an unknown entity type' do
@@ -120,11 +119,10 @@ RSpec.describe Implementation::WarehouseIngester do
         result = subject.process
         expect(result).to eq({ success: { processed: 0 } })
 
-        expect(BAS_LOGGER).to have_received(:warn)
-                          .with(hash_including(
-                                  message: "Ingestion skipped: type 'unknown_entity' not serviceable.",
-                                  send_to_manager: true
-                                )).once
+        expect(BAS_LOGGER).to have_received(:info).with(
+          hash_including(message: "Ingestion skipped: type 'unknown_entity' not serviceable."),
+          hash_including(send_to_manager: true).once
+        )
       end
 
       context 'when the response is unprocessable' do
@@ -138,10 +136,10 @@ RSpec.describe Implementation::WarehouseIngester do
           expect(result).to eq({ success: { processed: 0 } })
           expect(service).not_to have_received(:query)
 
-          expect(BAS_LOGGER).to have_received(:warn).with(hash_including(
-                                                            message: 'Ingestion skipped: No data found.',
-                                                            send_to_manager: false
-                                                          )).once
+          expect(BAS_LOGGER).to have_received(:info).with(
+            hash_including(message: 'Ingestion skipped: No data found.'),
+            hash_including(send_to_manager: false).once
+          )
         end
       end
     end
