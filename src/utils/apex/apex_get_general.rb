@@ -1,50 +1,47 @@
 # frozen_string_literal: true
 
-# Simple OAuth2 Client Credentials GET wrapper
-
 require 'httparty'
 require 'json'
-require_relative 'config'
+require 'dotenv/load'
 
+# OAuth2 Client Credentials helper for calling APEX REST APIs.
+# Provides token retrieval and sanitized GET requests.
 module ApexClient
   APEX_OAUTH_BASE    = ENV.fetch('APEX_OAUTH_BASE')
   APEX_API_BASE      = ENV.fetch('APEX_API_BASE')
   APEX_CLIENT_ID     = ENV.fetch('APEX_CLIENT_ID')
   APEX_CLIENT_SECRET = ENV.fetch('APEX_CLIENT_SECRET')
 
-  # Request OAuth2 token
-  def self.get_token
+  # Internal helpers
+  def self.request_token
     url = "#{APEX_OAUTH_BASE}/oauth/token"
 
-    res = HTTParty.post(
+    HTTParty.post(
       url,
       basic_auth: { username: APEX_CLIENT_ID, password: APEX_CLIENT_SECRET },
       headers: {
         'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
         'Accept' => 'application/json; charset=UTF-8'
       },
-      body: 'grant_type=client_credentials'.encode('UTF-8')
+      body: 'grant_type=client_credentials'
     )
-
-    body = res.body.to_s.force_encoding('UTF-8')
-    unless body.valid_encoding?
-      body = res.body.encode('UTF-8', 'binary', invalid: :replace, undef: :replace,
-                                                replace: '?')
-    end
-
-    raise "Token error (#{res.code}): #{body}" unless res.code == 200
-
-    res.parsed_response['access_token']
   end
 
-  # Execute GET request
-  def self.apex_get(token, endpoint, params = {})
-    raise 'Missing endpoint' if endpoint.nil? || endpoint.strip.empty?
+  def self.sanitize_encoding(raw)
+    decoded = raw.dup.force_encoding('UTF-8')
+    return decoded if decoded.valid_encoding?
 
-    clean_endpoint = endpoint.gsub(%r{^/}, '')
-    url = "#{APEX_API_BASE}/#{clean_endpoint}"
+    raw.encode(
+      'UTF-8',
+      'binary',
+      invalid: :replace,
+      undef: :replace,
+      replace: '?'
+    )
+  end
 
-    res = HTTParty.get(
+  def self.perform_get(url, token, params)
+    HTTParty.get(
       url,
       query: params,
       headers: {
@@ -52,26 +49,44 @@ module ApexClient
         'Accept' => 'application/json; charset=UTF-8'
       }
     )
+  end
 
-    raw = res.body.to_s
-    decoded = raw.dup.force_encoding('UTF-8')
-    unless decoded.valid_encoding?
-      raw.encode('UTF-8', 'binary', invalid: :replace, undef: :replace,
-                                    replace: '?')
-    end
+  def self.clean_endpoint(endpoint)
+    raise 'Missing endpoint' if endpoint.nil? || endpoint.strip.empty?
 
+    endpoint.gsub(%r{^/}, '')
+  end
+
+  def self.sanitize_response(res)
+    cleaned = sanitize_encoding(res.body.to_s)
+    res.body.replace(cleaned)
     res
   end
 
-  # Public API
+  # Public interface
+  def self.token
+    res = request_token
+    body = sanitize_encoding(res.body.to_s)
+
+    raise "Token error (#{res.code}): #{body}" unless res.code == 200
+
+    res.parsed_response['access_token']
+  end
+
+  def self.apex_get(token, endpoint, params = {})
+    clean = clean_endpoint(endpoint)
+    url   = "#{APEX_API_BASE}/#{clean}"
+    res   = perform_get(url, token, params)
+    sanitize_response(res)
+  end
+
   def self.get(endpoint:, params: {})
-    token = get_token
     apex_get(token, endpoint, params)
   end
 end
 
 # CLI mode
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   endpoint = ARGV.shift.to_s
 
   if endpoint.strip.empty?

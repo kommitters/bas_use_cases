@@ -14,7 +14,7 @@ require_relative 'config'
 write_options = {
   connection: Config::CONNECTION,
   db_table: 'pto',
-  tag: 'FetchPtosFromGoogle'
+  tag: 'FetchPtosFromApex'
 }
 
 # Fetch APEX
@@ -41,12 +41,10 @@ begin
   json = JSON.parse(decoded)
 rescue StandardError => e
   puts "JSON ERROR: #{e.message}"
-  puts decoded
   exit
 end
 
 items = json['items'] || []
-puts "TOTAL PTOs: #{items.length}"
 
 # Filter TODAY
 today_ptos = PtoFilter.filter_today(items)
@@ -56,9 +54,6 @@ messages = today_ptos.map { |entry| PtoFilter.format_message(entry) }
 
 # Build output
 result = { 'ptos' => messages }
-
-puts "\n=== PTOs TODAY (formatted) ==="
-puts JSON.pretty_generate(result)
 
 # WRITE result to Shared Storage
 begin

@@ -16,9 +16,4 @@ module Config
     user: ENV.fetch('POSTGRES_USER'),
     password: ENV.fetch('POSTGRES_PASSWORD')
   }.freeze
-
-  APEX_OAUTH_BASE    = ENV.fetch('APEX_OAUTH_BASE')
-  APEX_API_BASE      = ENV.fetch('APEX_API_BASE')
-  APEX_CLIENT_ID     = ENV.fetch('APEX_CLIENT_ID')
-  APEX_CLIENT_SECRET = ENV.fetch('APEX_CLIENT_SECRET')
 end
