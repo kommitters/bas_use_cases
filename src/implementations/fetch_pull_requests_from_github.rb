@@ -38,7 +38,7 @@ module Implementation
   #
   #   Implementation::FetchPullRequestsFromGithub.new(options, shared_storage).execute
   #
-  class FetchPullRequestsFromGithub < Bas::Bot::Base
+  class FetchPullRequestsFromGithub < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
     # The number of items to fetch per page from the GitHub API.
     PER_PAGE = 100
 
@@ -46,15 +46,11 @@ module Implementation
     # Orchestrates the fetching and formatting of records from GitHub.
     #
     def process
-      client_response = initialize_client
-      return error_response(client_response) if client_response[:error]
+      response = initialize_client
+      return error_response(response) if response[:error]
 
-      client = client_response[:client]
-      repositories = fetch_repositories(client)
-      releases_by_repo = fetch_and_organize_releases(client, repositories)
-      all_pull_requests = fetch_all_pull_requests(client, repositories, releases_by_repo)
-
-      { success: { type: 'github_pull_request', content: all_pull_requests } }
+      content = fetch_organization_content(response[:client])
+      { success: { type: 'github_pull_request', content: content } }
     end
 
     ##
@@ -72,68 +68,108 @@ module Implementation
     private
 
     ##
+    # Fetches all pull requests across all repositories in the organization.
+    #
+    def fetch_organization_content(client)
+      last_run = fetch_last_run_timestamp
+      repositories = client.organization_repositories(process_options[:organization])
+      releases_map = fetch_releases_map(client, repositories)
+
+      repositories.flat_map do |repo|
+        fetch_repo_prs(client, repo, last_run).map do |pr|
+          format_pr(client, pr, repo, releases_map[repo[:id]] || [])
+        end
+      end
+    end
+
+    ##
+    # Fetches the timestamp of the last successful run from shared storage.
+    #
+    def fetch_last_run_timestamp
+      read_result = @shared_storage_reader.read
+      Time.parse(read_result.inserted_at.to_s) if read_result.inserted_at
+    end
+
+    ##
     # Initializes the Octokit client and handles authentication.
     #
     def initialize_client
-      client_response = Utils::Github::OctokitClient.new(client_params).execute
-      return client_response if client_response[:error]
+      response = Utils::Github::OctokitClient.new(client_params).execute
+      return response if response[:error]
 
-      client = client_response[:client]
-      client.auto_paginate = true
-      { client: client }
+      response[:client].auto_paginate = false
+      response
     end
 
     ##
-    # Fetches all repositories for the configured organization.
+    # Fetches a map of releases for each repository.
     #
-    def fetch_repositories(client)
-      client.organization_repositories(process_options[:organization])
-    end
-
-    ##
-    # Fetches all releases for the given repositories and organizes them by repository ID.
-    #
-    def fetch_and_organize_releases(client, repositories)
+    def fetch_releases_map(client, repositories)
       repositories.to_h do |repo|
         releases = client.releases(repo[:full_name])
-        sorted_releases = releases.sort_by { |r| r[:published_at] }.reverse
-        [repo[:id], sorted_releases]
+        [repo[:id], releases.sort_by { |r| r[:published_at] }.reverse]
       end
     end
 
     ##
-    # Fetches all pull requests and their associated data for a list of repositories.
+    # Fetches all pull requests for a given repository, considering the last run timestamp.
     #
-    def fetch_all_pull_requests(client, repositories, releases_by_repo)
-      repositories.flat_map do |repo|
-        pull_requests = client.pull_requests(repo[:full_name], state: 'all', per_page: PER_PAGE)
-        repo_releases = releases_by_repo[repo[:id]] || []
+    def fetch_repo_prs(client, repo, last_run)
+      data = client.pull_requests(repo[:full_name], prs_api_params)
+      last_resp = client.last_response
 
-        pull_requests.map { |pr| process_pull_request(client, pr, repo, repo_releases) }
+      [].tap do |prs|
+        loop do
+          break if data.empty?
+
+          prs.concat(filter_data(data, last_run))
+          break if stop_fetching?(data, last_run, last_resp)
+
+          last_resp, data = fetch_next_page(last_resp)
+        end
       end
     end
 
-    def process_pull_request(client, pull_request, repo, repo_releases)
+    def stop_fetching?(data, last_run, last_resp)
+      !page_is_fresh?(data, last_run) || !last_resp.rels[:next]
+    end
+
+    def fetch_next_page(last_resp)
+      resp = last_resp.rels[:next].get
+      [resp, resp.data]
+    end
+
+    def filter_data(data, last_run)
+      return data if page_is_fresh?(data, last_run)
+
+      data.select { |pr| pr[:updated_at] > last_run }
+    end
+
+    def prs_api_params
+      { state: 'all', sort: 'updated', direction: 'desc', per_page: PER_PAGE }
+    end
+
+    def page_is_fresh?(data, last_run)
+      last_run.nil? || data.last[:updated_at] > last_run
+    end
+
+    def format_pr(client, pull_request, repo, releases)
       context = {
         reviews: client.pull_request_reviews(repo[:full_name], pull_request[:number]),
         comments: client.pull_request_comments(repo[:full_name], pull_request[:number]),
-        related_issues: fetch_related_issues(client, repo[:full_name], pull_request[:body]),
-        releases: repo_releases
+        related_issues: extract_related_issues(pull_request[:body]),
+        releases: releases
       }
-
       Utils::Warehouse::Github::PullRequestsFormat.new(pull_request, repo, context).format
     end
 
     ##
     # Extracts issue numbers from a PR body and fetches the full issue objects.
     #
-    def fetch_related_issues(client, repo_full_name, pr_body)
-      return [] if pr_body.nil?
+    def extract_related_issues(body)
+      return [] if body.nil?
 
-      issue_numbers = pr_body.scan(/(?:closes|fixes|resolves|fix)\s+#(\d+)/i).flatten.map(&:to_i)
-      return [] if issue_numbers.empty?
-
-      issue_numbers.map { |n| find_issue(client, repo_full_name, n) }.compact
+      body.scan(/(?:closes|fixes|resolves|fix|related)\s+#(\d+)/i).flatten.map(&:to_i)
     end
 
     def paginate_and_write(content)
@@ -162,12 +198,6 @@ module Implementation
           total_pages: total_pages, total_records: total_records
         }
       }
-    end
-
-    def find_issue(client, repo_full_name, number)
-      client.issue(repo_full_name, number)
-    rescue Octokit::NotFound
-      nil
     end
 
     def error_response(response)

@@ -20,7 +20,7 @@ module Services
 
       RELATIONS = [
         { service: GithubRelease, external: :external_github_release_id, internal: :release_id },
-        { service: GithubIssue, external: :external_github_issue_id, internal: :issue_id }
+        { service: GithubIssue, external: :number, internal: :issue_id } # Linking via issue number
       ].freeze
 
       def insert(params)

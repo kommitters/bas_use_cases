@@ -142,7 +142,9 @@ module Implementation
     end
 
     def normalize_response(issues, repo)
-      issues.map { |issue| Utils::Warehouse::Github::IssuesFormatter.new(issue, repo).format }
+      issues.filter_map do |issue_data|
+        Utils::Warehouse::Github::IssuesFormatter.new(issue_data, repo).format if issue?(issue_data)
+      end
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
@@ -159,6 +161,10 @@ module Implementation
 
     def error_response(response)
       { error: { message: response[:error] } }
+    end
+
+    def issue?(issue_data)
+      issue_data[:pull_request].nil?
     end
   end
 end

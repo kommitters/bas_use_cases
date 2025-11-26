@@ -44,14 +44,11 @@ module Implementation
     # Orchestrates the fetching and formatting of records from GitHub.
     #
     def process
-      client_response = initialize_client
-      return error_response(client_response) if client_response[:error]
+      response = initialize_client
+      return error_response(response) if response[:error]
 
-      client = client_response[:client]
-      repositories = fetch_repositories(client)
-      all_releases = fetch_all_releases(client, repositories)
-
-      { success: { type: 'github_release', content: all_releases } }
+      content = fetch_organization_content(response[:client])
+      { success: { type: 'github_release', content: content } }
     end
 
     # Orchestrates the writing of processed data to the configured shared storage.
@@ -67,29 +64,81 @@ module Implementation
 
     private
 
-    # Initializes the Octokit client and handles authentication.
-    def initialize_client
-      client_response = Utils::Github::OctokitClient.new(client_params).execute
-      return client_response if client_response[:error]
+    ##
+    # Fetches releases from all repositories in the specified organization.
+    #
+    def fetch_organization_content(client)
+      last_run = fetch_last_run_timestamp
+      repositories = client.organization_repositories(process_options[:organization])
 
-      client = client_response[:client]
-      client.auto_paginate = true
-      { client: client }
-    end
-
-    # Fetches all repositories for the configured organization.
-    def fetch_repositories(client)
-      client.organization_repositories(process_options[:organization])
-    end
-
-    # Fetches all releases for a given list of repositories.
-    def fetch_all_releases(client, repositories)
-      all_releases = []
-      repositories.each do |repo|
-        releases = client.releases(repo.full_name, per_page: PER_PAGE)
-        all_releases.concat(normalize_response(releases, repo))
+      repositories.flat_map do |repo|
+        fetch_repo_releases(client, repo, last_run).map do |release|
+          format_release(release, repo)
+        end
       end
-      all_releases
+    end
+
+    def fetch_last_run_timestamp
+      read_result = @shared_storage_reader.read
+      Time.parse(read_result.inserted_at.to_s) if read_result.inserted_at
+    end
+
+    ##
+    # Initializes the GitHub client using provided credentials.
+    #
+    def initialize_client
+      response = Utils::Github::OctokitClient.new(client_params).execute
+      return response if response[:error]
+
+      response[:client].auto_paginate = false
+      response
+    end
+
+    ##
+    # Fetches releases for a specific repository, considering the last run timestamp.
+    #
+    def fetch_repo_releases(client, repo, last_run)
+      data = client.releases(repo.full_name, per_page: PER_PAGE)
+      last_resp = client.last_response
+
+      [].tap do |releases|
+        loop do
+          break if data.empty?
+
+          releases.concat(filter_data(data, last_run))
+          break if stop_fetching?(data, last_run, last_resp)
+
+          last_resp, data = fetch_next_page(last_resp)
+        end
+      end
+    end
+
+    def stop_fetching?(data, last_run, last_resp)
+      !page_is_fresh?(data, last_run) || !last_resp.rels[:next]
+    end
+
+    def fetch_next_page(last_resp)
+      resp = last_resp.rels[:next].get
+      [resp, resp.data]
+    end
+
+    # Selecciona solo los registros nuevos de la página actual
+    def filter_data(data, last_run)
+      return data if page_is_fresh?(data, last_run)
+
+      data.select { |r| release_date(r) > last_run }
+    end
+
+    def page_is_fresh?(data, last_run)
+      last_run.nil? || release_date(data.last) > last_run
+    end
+
+    def release_date(release)
+      release[:published_at] || release[:created_at]
+    end
+
+    def format_release(release, repo)
+      Utils::Warehouse::Github::ReleasesFormat.new(release, repo).format
     end
 
     # Paginates content and writes each page to the shared storage.
@@ -97,10 +146,8 @@ module Implementation
       paged_entities = content.each_slice(PER_PAGE).to_a
       paged_entities.each_with_index do |page, idx|
         record = build_record(
-          content: page,
-          page_index: idx + 1,
-          total_pages: paged_entities.size,
-          total_records: content.size
+          content: page, page_index: idx + 1,
+          total_pages: paged_entities.size, total_records: content.size
         )
         @shared_storage_writer.write(record)
       end
@@ -121,11 +168,8 @@ module Implementation
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: 'github_release',
-          content: content,
-          page_index: page_index,
-          total_pages: total_pages,
-          total_records: total_records
+          type: 'github_release', content: content, page_index: page_index,
+          total_pages: total_pages, total_records: total_records
         }
       }
     end
