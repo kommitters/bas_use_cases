@@ -10,14 +10,15 @@ module Services
     #
     # Provides CRUD operations for the 'github_issues' table using the Base service.
     class GithubIssue < Services::Postgres::Base
-      ATTRIBUTES = %i[external_github_issue_id person_id repository_id milestone_id assignees labels].freeze
+      ATTRIBUTES = %i[external_github_issue_id person_id title state number repository_id milestone_id assignees
+                      labels].freeze
 
       TABLE = :github_issues
       HISTORY_TABLE = :github_issues_history
       HISTORY_FOREIGN_KEY = :issue_id
 
       RELATIONS = [
-        { service: Person, external: :external_person_id, internal: :person_id }
+        { service: Person, external: :github_user, internal: :person_id }
       ].freeze
 
       def insert(params)

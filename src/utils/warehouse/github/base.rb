@@ -74,10 +74,18 @@ module Utils
           @data[:title]
         end
 
+        def extract_state
+          @data[:state]
+        end
+
+        def extract_number
+          @data[:number]
+        end
+
         def extract_related_issues
           return [] if @related_issues.nil? || @related_issues.empty?
 
-          @related_issues.map { |issue| issue[:id] }
+          @related_issues
         end
 
         def extract_release_id
