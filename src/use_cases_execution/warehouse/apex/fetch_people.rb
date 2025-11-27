@@ -11,17 +11,17 @@ read_options = {
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  params: [false, 'FetchPersonsFromApex']
+  params: [false, 'FetchPeopleFromApex']
 }
 
 write_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchPersonsFromApex'
+  tag: 'FetchPeopleFromApex'
 }
 
 process_options = {
-  entity: 'person',
+  entity: 'people',
   endpoint: 'people'
 }
 
@@ -30,7 +30,7 @@ begin
 
   Implementation::FetchRecordsFromApexDatabase.new(process_options, shared_storage).execute
 
-  Logger.new($stdout).info('Successfully fetched persons from APEX.')
+  Logger.new($stdout).info('Successfully fetched people from APEX.')
 rescue StandardError => e
-  Logger.new($stdout).error("Failed to fetch persons from APEX: #{e.message}")
+  Logger.new($stdout).error("Failed to fetch people from APEX: #{e.message}")
 end
