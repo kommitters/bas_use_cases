@@ -15,7 +15,7 @@ module Utils
         #
         def format
           {
-            external_github_release_id: extract_id,
+            external_github_release_id: extract_id.to_s,
             repository_id: extract_repository_id,
             name: extract_name,
             tag_name: extract_tag_name,

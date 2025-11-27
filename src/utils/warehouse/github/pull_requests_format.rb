@@ -16,14 +16,14 @@ module Utils
           {
             external_github_pull_request_id: extract_id,
             repository_id: extract_repository_id,
-            external_github_issue_id: extract_related_issues&.first,
+            number: extract_related_issues&.first, # Acting like external_github_issue_id
             external_github_release_id: extract_release_id,
             related_issue_ids: format_pg_array(extract_related_issues),
             reviews_data: format_reviews_as_json,
             title: extract_title,
             creation_date: extract_created_at,
             merge_date: extract_merged_at
-          }
+          }.compact
         end
       end
     end

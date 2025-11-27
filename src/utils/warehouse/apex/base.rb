@@ -10,6 +10,10 @@ module Utils
         def initialize(apex_data)
           @data = apex_data
         end
+
+        def person_status
+          @data['status'].strip == 'Active'
+        end
       end
     end
   end

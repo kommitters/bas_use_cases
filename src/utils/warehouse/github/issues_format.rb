@@ -14,15 +14,17 @@ module Utils
         # Formats the issue data by calling the extraction methods from the Base class.
         def format # rubocop:disable Metrics/MethodLength
           {
-            external_github_issue_id: extract_id,
-            github_user: extract_assignees_logins&.first, # Acting like external_person_id
+            external_github_issue_id: extract_id.to_s,
+            github_username: extract_assignees_logins&.first, # Acting like external_person_id
             repository_id: extract_repository_id,
             milestone_id: extract_milestone_id,
             title: extract_title,
-            state: extract_state,
+            status: extract_state,
             number: extract_number,
             assignees: format_pg_array(extract_assignees_logins),
-            labels: format_pg_array(extract_labels_names)
+            labels: format_pg_array(extract_labels_names),
+            github_created_at: extract_created_at,
+            github_updated_at: extract_updated_at
           }
         end
       end
