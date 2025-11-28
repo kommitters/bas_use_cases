@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-+##
-+# Configuration for APEX API integration.
-+# Exposes constants for the OAuth base URL, API base URL, and client credentials,
-+# all sourced from environment variables (see .env.example).
-+##
+##
+# Configuration for APEX API integration.
+# Exposes constants for the OAuth base URL, API base URL, and client credentials,
+# all sourced from environment variables (see .env.example).
+##
 
 require 'dotenv/load'
 
