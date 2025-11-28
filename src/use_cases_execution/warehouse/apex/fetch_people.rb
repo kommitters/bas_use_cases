@@ -31,15 +31,15 @@ begin
   Implementation::FetchRecordsFromApexDatabase.new(process_options, shared_storage).execute
 
   BAS_LOGGER.info({
-                    invoker: 'FetchPersonsFromApex',
+                    invoker: 'FetchPeopleFromApex',
                     message: 'Successfully fetched people from APEX.',
-                    context: { action: 'fetch', entity: 'Persons' }
+                    context: { action: 'fetch', entity: 'People' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
-                     invoker: 'FetchPersonsFromApex',
-                     message: 'Error during fetching persons from APEX',
-                     context: { action: 'fetch', entity: 'Persons' },
+                     invoker: 'FetchPeopleFromApex',
+                     message: 'Error during fetching people from APEX',
+                     context: { action: 'fetch', entity: 'People' },
                      error: e.message
                    })
 end

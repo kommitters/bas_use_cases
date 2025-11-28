@@ -19,7 +19,7 @@ Sequel.migration do # rubocop:disable Metrics/BlockLength
 
     alter_table(:github_issues_history) do
       add_column :status, String, size: 50, null: true
-      add_column :title, String, size: 255, null: false
+      add_column :title, String, size: 255, null: true
       add_column :number, Integer, null: true
       add_column :github_created_at, DateTime, null: true
       add_column :github_updated_at, DateTime, null: true

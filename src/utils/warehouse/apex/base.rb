@@ -12,7 +12,7 @@ module Utils
         end
 
         def person_status
-          @data['status'].strip == 'Active'
+          @data['status']&.strip == 'Active'
         end
       end
     end

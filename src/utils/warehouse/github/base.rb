@@ -2,6 +2,7 @@
 
 require 'sequel'
 require 'json'
+require 'time'
 
 module Utils
   module Warehouse
