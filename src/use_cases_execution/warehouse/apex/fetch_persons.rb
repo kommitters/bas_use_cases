@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'bas/shared_storage/postgres'
 
-require_relative '../../../implementations/fetch_records_from_apex_database'
 require_relative '../config'
+require_relative '../../../../log/bas_logger'
+require_relative '../../../implementations/fetch_records_from_apex_database'
 
 read_options = {
   connection: Config::Database::CONNECTION,
@@ -30,7 +30,16 @@ begin
 
   Implementation::FetchRecordsFromApexDatabase.new(process_options, shared_storage).execute
 
-  Logger.new($stdout).info('Successfully fetched persons from APEX.')
+  BAS_LOGGER.info({
+                    invoker: 'FetchPersonsFromApex',
+                    message: 'Process completed successfully',
+                    context: { action: 'fetch', entity: 'Persons' }
+                  })
 rescue StandardError => e
-  Logger.new($stdout).error("Failed to fetch persons from APEX: #{e.message}")
+  BAS_LOGGER.error({
+                     invoker: 'FetchPersonsFromApex',
+                     message: 'Error during fetching persons from APEX',
+                     context: { action: 'fetch', entity: 'Persons' },
+                     error: e.message
+                   })
 end

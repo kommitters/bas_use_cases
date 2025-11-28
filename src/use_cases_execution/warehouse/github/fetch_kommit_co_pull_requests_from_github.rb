@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'bas/shared_storage/postgres'
 require 'bas/shared_storage/default'
+
 require_relative '../config'
+require_relative '../../../../log/bas_logger'
 require_relative '../../../implementations/fetch_pull_requests_from_github'
 
 read_options = {
@@ -26,6 +27,16 @@ begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Implementation::FetchPullRequestsFromGithub.new(github_config, shared_storage).execute
+  BAS_LOGGER.info({
+                    invoker: 'FetchPullRequestsFromGithub',
+                    message: 'Process completed successfully from Kommit Co.',
+                    context: { action: 'fetch', entity: 'PullRequests' }
+                  })
 rescue StandardError => e
-  Logger.new($stdout).info(e.message)
+  BAS_LOGGER.error({
+                     invoker: 'FetchPullRequestsFromGithub',
+                     message: 'Error during fetching PullRequests from GitHub Kommit Co.',
+                     context: { action: 'fetch', entity: 'PullRequests' },
+                     error: e.message
+                   })
 end
