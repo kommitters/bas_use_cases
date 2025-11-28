@@ -2,6 +2,7 @@
 
 require 'json'
 require 'date'
+require 'logger'
 
 require 'bas/bot/base'
 require_relative '../utils/apex/apex_get_general'
@@ -34,21 +35,35 @@ module Implementation
   class FetchPtosFromApex < Bas::Bot::Base
     # Process function to execute the APEX utility to fetch PTO's from the APEX endpoint
     def process
-      response = ApexClient.get(endpoint: process_options[:apex_endpoint])
-
-      if response.code == 200
-        items = parse_items(response.body)
-        ptos  = normalize_response(items)
-
-        { success: { ptos: ptos } }
-      else
-        { error: { status_code: response.code, body: response.body.to_s } }
-      end
+      response = fetch_ptos
+      Logger.new($stdout).info("[FetchPtosFromApex] HTTP #{response.code}")
+      return handle_success(response) if response.code == 200
+      handle_failure(response)
     rescue StandardError => e
+      log_unexpected_error(e)
       { error: { message: e.message } }
     end
 
     private
+
+    def fetch_ptos
+      ApexClient.get(endpoint: process_options[:apex_endpoint])
+    end
+
+    def handle_success(response)
+      items = parse_items(response.body)
+      ptos  = normalize_response(items)
+      { success: { ptos: ptos } }
+    end
+
+    def handle_failure(response)
+      Logger.new($stdout).error("[FetchPtosFromApex] Failed with status #{response.code}")
+      { error: { status_code: response.code, body: response.body.to_s } }
+    end
+
+    def log_unexpected_error(error)
+      Logger.new($stdout).error("[FetchPtosFromApex] Unexpected error: #{error.message}")
+    end
 
     def parse_items(body)
       json = JSON.parse(body)
@@ -100,7 +115,7 @@ module Implementation
       finish_s = format_date(finish)
       return_s = next_workday(finish)
 
-      "#{name} will not be working between #{start_s} and #{finish_s}. And returns the #{return_s}"
+      "#{name} will not be working between #{start_s} and #{finish_s}. And returns on #{return_s}"
     end
 
     def extract_name(entry)
@@ -131,10 +146,9 @@ module Implementation
     def next_workday(date)
       return nil if date.nil?
 
-      d = date + 1
-      d += 2 if d.saturday?
-      d += 1 if d.sunday?
-      d.strftime('%Y-%m-%d')
+      next_day = date + 1
+      next_day += 1 while weekend?(next_day)
+      next_day.strftime('%Y-%m-%d')
     end
   end
 end
