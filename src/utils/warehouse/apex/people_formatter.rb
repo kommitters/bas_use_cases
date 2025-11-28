@@ -7,14 +7,15 @@ module Utils
     module Apex
       module Formatter
         # This class formats APEX person records.
-        class PersonFormatter < Base
+        class PeopleFormatter < Base
           def format
             {
               external_person_id: @data['person_id'].to_s,
               full_name: @data['name'],
               email_address: @data['email'],
-              role: @data['work_role_id'],
-              external_domain_id: @data['domain_id']
+              job_title: @data['job_title'],
+              is_active: person_status,
+              github_username: @data['ghuser']
             }
           end
         end

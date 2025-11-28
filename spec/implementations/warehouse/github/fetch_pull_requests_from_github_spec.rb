@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
+require 'ostruct'
 require_relative '../../../../src/implementations/fetch_pull_requests_from_github'
 require_relative '../../../../src/utils/warehouse/github/pull_requests_format'
 
@@ -21,11 +22,42 @@ RSpec.describe Implementation::FetchPullRequestsFromGithub do
   let(:octokit_client_wrapper) { instance_double(Utils::Github::OctokitClient) }
   let(:octokit_client) { instance_double(Octokit::Client) }
 
+  # Data Mocks
+  let(:repo1) { OpenStruct.new(id: 1, full_name: 'fake-org/repo1') }
+  let(:formatter) { instance_double(Utils::Warehouse::Github::PullRequestsFormat) }
+
+  # Helper timestamps
+  let(:now) { Time.now }
+  let(:old_time) { now - 86_400 } # 1 day ago
+
+  # Mock Objects
+  let(:release1) { OpenStruct.new(id: 101, published_at: now) }
+  let(:review1) { OpenStruct.new(id: 301) }
+  let(:comment1) { OpenStruct.new(id: 401) }
+
+  # PR with related issue in body
+  let(:pr1) do
+    OpenStruct.new(
+      id: 201,
+      number: 42,
+      body: 'closes #123',
+      updated_at: now,
+      created_at: now
+    )
+  end
+
   before do
     allow(Utils::Github::OctokitClient).to receive(:new).and_return(octokit_client_wrapper)
+    allow(octokit_client_wrapper).to receive(:execute).and_return({ client: octokit_client })
     allow(octokit_client).to receive(:auto_paginate=)
-    # Mock read_response to avoid dependency on actual storage reads in tests
-    allow(bot).to receive(:read_response).and_return({ success: { content: [] } })
+    allow(octokit_client).to receive(:organization_repositories).with('fake-org').and_return([repo1])
+
+    # Releases Map Setup
+    allow(octokit_client).to receive(:releases).with('fake-org/repo1').and_return([release1])
+
+    # Formatter Setup
+    allow(Utils::Warehouse::Github::PullRequestsFormat).to receive(:new).and_return(formatter)
+    allow(formatter).to receive(:format).and_return({ normalized_pr: true })
   end
 
   describe '#process' do
@@ -41,50 +73,111 @@ RSpec.describe Implementation::FetchPullRequestsFromGithub do
       end
     end
 
-    context 'when API calls are successful' do
-      let(:repo1) { { id: 1, full_name: 'fake-org/repo1' } }
-      let(:release1) { { id: 101, published_at: Time.now + 1 } }
-      let(:pr1) { { id: 201, number: 42, body: 'closes #123', merged_at: Time.now } }
-      let(:review1) { { id: 301 } }
-      let(:comment1) { { id: 401 } }
-      let(:related_issue1) { { id: 501 } }
-      let(:formatter) { instance_double(Utils::Warehouse::Github::PullRequestsFormat) }
-      let(:context_matcher) do
-        {
-          reviews: [review1],
-          comments: [comment1],
-          related_issues: [related_issue1],
-          releases: [release1].sort_by { |r| r[:published_at] }.reverse
-        }
+    context 'when fetching pull requests successfully' do
+      let(:last_response) { double('last_response', rels: { next: nil }) }
+
+      # Correct params as per implementation
+      let(:pr_api_params) do
+        { state: 'all', sort: 'updated', direction: 'desc', per_page: 100 }
       end
 
       before do
-        allow(octokit_client_wrapper).to receive(:execute).and_return({ client: octokit_client })
-        allow(octokit_client).to receive(:organization_repositories).with('fake-org').and_return([repo1])
-        allow(octokit_client).to receive(:releases).with('fake-org/repo1').and_return([release1])
-        allow(octokit_client).to receive(:pull_requests).with('fake-org/repo1', state: 'all', per_page: 100)
-                             .and_return([pr1])
+        allow(octokit_client).to receive(:last_response).and_return(last_response)
+
+        # Sub-resources mocks
         allow(octokit_client).to receive(:pull_request_reviews).with('fake-org/repo1', 42).and_return([review1])
         allow(octokit_client).to receive(:pull_request_comments).with('fake-org/repo1', 42).and_return([comment1])
-        allow(octokit_client).to receive(:issue).with('fake-org/repo1', 123).and_return(related_issue1)
-
-        # Mock the formatter instantiation and its format call
-        allow(Utils::Warehouse::Github::PullRequestsFormat).to receive(:new).with(pr1, repo1, context_matcher)
-                                                           .and_return(formatter)
-        allow(formatter).to receive(:format).and_return({ normalized_pr: true })
       end
 
-      it 'fetches all related PR data and formats it' do
-        result = bot.process
-        expect(result).to have_key(:success)
-        expect(result.dig(:success, :type)).to eq('github_pull_request')
-        expect(result.dig(:success, :content)).to eq([{ normalized_pr: true }])
+      context 'on the first run (no last_run_timestamp)' do
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          allow(octokit_client).to receive(:pull_requests)
+            .with('fake-org/repo1', pr_api_params)
+            .and_return([pr1])
+        end
+
+        it 'fetches PRs, builds the context with related issues, and formats them' do
+          # Expectation for context
+          expected_context = {
+            reviews: [review1],
+            comments: [comment1],
+            related_issues: [123], # Implementation extracts IDs, not objects
+            releases: [release1]   # Sorted releases
+          }
+
+          expect(Utils::Warehouse::Github::PullRequestsFormat).to receive(:new)
+            .with(pr1, repo1, expected_context)
+            .and_return(formatter)
+
+          result = bot.process
+          expect(result[:success][:content]).to eq([{ normalized_pr: true }])
+        end
+      end
+
+      context 'on an incremental run (last_run_timestamp exists)' do
+        let(:last_run) { now - 3600 } # 1 hour ago
+        let(:pr_new) { OpenStruct.new(id: 1, number: 1, updated_at: now, body: '') }
+        let(:pr_old) { OpenStruct.new(id: 2, number: 2, updated_at: old_time, body: '') }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: last_run))
+
+          # Return mixed data
+          allow(octokit_client).to receive(:pull_requests)
+            .with('fake-org/repo1', pr_api_params)
+            .and_return([pr_new, pr_old])
+
+          # Mock sub-calls for the valid PR only
+          allow(octokit_client).to receive(:pull_request_reviews).with('fake-org/repo1', 1).and_return([])
+          allow(octokit_client).to receive(:pull_request_comments).with('fake-org/repo1', 1).and_return([])
+        end
+
+        it 'filters out PRs not updated since last run' do
+          # formatter should be called for pr_new only
+          expect(Utils::Warehouse::Github::PullRequestsFormat).to receive(:new).with(pr_new, repo1, anything)
+          expect(Utils::Warehouse::Github::PullRequestsFormat).not_to receive(:new).with(pr_old, any_args)
+
+          result = bot.process
+          expect(result[:success][:content].size).to eq(1)
+        end
+      end
+
+      context 'when pagination is required' do
+        let(:pr_page1) { OpenStruct.new(id: 1, number: 1, updated_at: now, body: '') }
+        let(:pr_page2) { OpenStruct.new(id: 2, number: 2, updated_at: now, body: '') }
+
+        # Pagination Mocks
+        let(:page1_response) { double('page1_response', data: [pr_page1], rels: { next: page2_link }) }
+        let(:page2_link) { double('page2_link', get: page2_response) }
+        let(:page2_response) { double('page2_response', data: [pr_page2], rels: { next: nil }) }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          # Initial call
+          allow(octokit_client).to receive(:pull_requests).and_return([pr_page1])
+
+          # Pagination chain
+          allow(octokit_client).to receive(:last_response).and_return(page1_response, page2_response)
+
+          # Mocks for sub-resources
+          allow(octokit_client).to receive(:pull_request_reviews).and_return([])
+          allow(octokit_client).to receive(:pull_request_comments).and_return([])
+        end
+
+        it 'iterates through pages and collects all PRs' do
+          result = bot.process
+          content = result.dig(:success, :content)
+          expect(content.size).to eq(2)
+        end
       end
     end
   end
 
   describe '#write' do
-    let(:content) { Array.new(150) { { normalized_pr: true } } } # 150 items
+    let(:content) { Array.new(150) { { normalized_pr: true } } }
     let(:process_response) { { success: { type: 'github_pull_request', content: content } } }
 
     before do
@@ -92,7 +185,6 @@ RSpec.describe Implementation::FetchPullRequestsFromGithub do
     end
 
     it 'writes records in pages of 100' do
-      # Expect 2 pages for 150 items (100, 50)
       expect(shared_storage).to receive(:write).exactly(2).times
       bot.write
     end
@@ -107,6 +199,7 @@ RSpec.describe Implementation::FetchPullRequestsFromGithub do
           total_records: 150
         }
       }
+
       second_page_record = {
         success: {
           type: 'github_pull_request',
@@ -116,8 +209,10 @@ RSpec.describe Implementation::FetchPullRequestsFromGithub do
           total_records: 150
         }
       }
+
       expect(shared_storage).to receive(:write).with(first_page_record).ordered
       expect(shared_storage).to receive(:write).with(second_page_record).ordered
+
       bot.write
     end
 

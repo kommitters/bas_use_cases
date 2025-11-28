@@ -5,7 +5,7 @@ require 'time'
 require_relative '../utils/warehouse/apex/request'
 require_relative '../utils/warehouse/apex/activity_formatter'
 require_relative '../utils/warehouse/apex/domain_formatter'
-require_relative '../utils/warehouse/apex/person_formatter'
+require_relative '../utils/warehouse/apex/people_formatter'
 require_relative '../utils/warehouse/apex/project_formatter'
 require_relative '../utils/warehouse/apex/work_item_formatter'
 require_relative '../utils/warehouse/apex/okr_formatter'
@@ -26,7 +26,7 @@ module Implementation
     FORMATTERS = {
       'domain' => Utils::Warehouse::Apex::Formatter::DomainFormatter,
       'activity' => Utils::Warehouse::Apex::Formatter::ActivityFormatter,
-      'person' => Utils::Warehouse::Apex::Formatter::PersonFormatter,
+      'people' => Utils::Warehouse::Apex::Formatter::PeopleFormatter,
       'project' => Utils::Warehouse::Apex::Formatter::ProjectFormatter,
       'work_item' => Utils::Warehouse::Apex::Formatter::WorkItemFormatter,
       'okr' => Utils::Warehouse::Apex::Formatter::OkrFormatter,

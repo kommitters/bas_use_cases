@@ -3,6 +3,7 @@
 require 'sequel'
 require 'rspec'
 require 'securerandom'
+require 'date'
 
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/github_release'
@@ -18,29 +19,32 @@ RSpec.describe Services::Postgres::GithubRelease do
   let(:service) { described_class.new(config) }
 
   before(:each) do
+    # Connection mock
+    allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
+
+    # Cleanup (reverse order)
     db.drop_table?(:github_releases_history)
     db.drop_table?(:github_releases)
 
     create_github_releases_table(db)
     create_github_releases_history_table(db)
-
-    allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
   end
 
   describe '#insert' do
     it 'creates a new github_release and returns its ID' do
       params = {
-        external_github_release_id: 1, # Changed from string to integer
+        external_github_release_id: 1,
         repository_id: 12_345,
         tag_name: 'v1.0.0',
         creation_timestamp: Time.now,
+        published_timestamp: Time.now,
         name: 'First Release'
       }
       id = service.insert(params)
       release = service.find(id)
 
       expect(release).not_to be_nil
-      expect(release[:external_github_release_id]).to eq(1) # Expect an integer
+      expect(release[:external_github_release_id]).to eq(1)
       expect(release[:repository_id]).to eq(12_345)
       expect(release[:tag_name]).to eq('v1.0.0')
       expect(release[:name]).to eq('First Release')
@@ -50,11 +54,13 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#update' do
     let!(:release_id) do
       service.insert(
-        external_github_release_id: 2, # Changed from string to integer
+        external_github_release_id: 2,
         repository_id: 54_321,
         tag_name: 'v1.1.0',
         name: 'Initial Release',
-        creation_timestamp: Time.now
+        creation_timestamp: Time.now,
+        published_timestamp: Time.now,
+        is_prerelease: false
       )
     end
 
@@ -93,8 +99,8 @@ RSpec.describe Services::Postgres::GithubRelease do
     end
 
     it 'raises an ArgumentError if no ID is provided' do
-      # Suppress console output from the `handle_error` method for this specific test.
-      allow($stdout).to receive(:write)
+      # Mock handle_error to suppress logging noise during this specific test
+      allow(service).to receive(:handle_error) { |e| raise e }
 
       expect do
         service.update(nil, { name: 'No ID' })
@@ -105,10 +111,12 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#delete' do
     it 'deletes a github_release by ID' do
       id_to_delete = service.insert(
-        external_github_release_id: 3, # Changed from string to integer
+        name: 'Release to Delete',
+        external_github_release_id: 3,
         repository_id: 67_890,
         tag_name: 'v2.0.0-beta',
-        creation_timestamp: Time.now
+        creation_timestamp: Time.now,
+        published_timestamp: Time.now
       )
 
       expect { service.delete(id_to_delete) }.to change { service.query.size }.by(-1)
@@ -119,18 +127,20 @@ RSpec.describe Services::Postgres::GithubRelease do
   describe '#query' do
     before do
       service.insert(
-        external_github_release_id: 4, # Changed from string to integer
+        external_github_release_id: 4,
         repository_id: 111,
         tag_name: 'v3.0.0',
         name: 'Find Me',
-        creation_timestamp: Time.now
+        creation_timestamp: Time.now,
+        published_timestamp: Time.now
       )
       service.insert(
-        external_github_release_id: 5, # Changed from string to integer
+        external_github_release_id: 5,
         repository_id: 222,
         tag_name: 'v3.0.1',
         name: 'Another One',
-        creation_timestamp: Time.now
+        creation_timestamp: Time.now,
+        published_timestamp: Time.now
       )
     end
 

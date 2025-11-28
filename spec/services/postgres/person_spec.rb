@@ -39,18 +39,6 @@ RSpec.describe Services::Postgres::Person do
       expect(person[:external_person_id]).to eq('ext-p-1')
     end
 
-    it 'assigns domain_id when given external_domain_id' do
-      domain_id = domain_service.insert(external_domain_id: 'dom-1', name: 'Domain1')
-      params = {
-        external_person_id: 'ext-p-2',
-        full_name: 'With Domain',
-        external_domain_id: 'dom-1'
-      }
-      id = service.insert(params)
-      person = service.find(id)
-      expect(person[:domain_id]).to eq(domain_id)
-    end
-
     it 'removes external_domain_id if it is present and nil' do
       params = {
         external_person_id: 'ext-p-3',
@@ -71,18 +59,6 @@ RSpec.describe Services::Postgres::Person do
       updated = service.find(id)
       expect(updated[:full_name]).to eq('Updated Name')
       expect(updated[:external_person_id]).to eq('ext-p-4')
-    end
-
-    it 'reassigns domain_id on update with external_domain_id' do
-      domain2 = domain_service.insert(external_domain_id: 'dom-2', name: 'Domain2')
-      id = service.insert(
-        external_person_id: 'ext-p-5',
-        full_name: 'To Update Domain',
-        external_domain_id: 'dom-1'
-      )
-      service.update(id, { external_domain_id: 'dom-2' })
-      updated = service.find(id)
-      expect(updated[:domain_id]).to eq(domain2)
     end
 
     it 'saves the previous state to the history table before updating' do

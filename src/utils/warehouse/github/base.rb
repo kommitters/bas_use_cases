@@ -13,7 +13,7 @@ module Utils
       # GitHub API responses (as hashes) into a standardized structure. It is designed
       # to be inherited by more specific formatters (e.g., for Pull Requests, Issues).
       #
-      class Base
+      class Base # rubocop:disable Metrics/ClassLength
         ##
         # Initializes the formatter with the main GitHub data object and an optional context hash.
         #
@@ -43,7 +43,11 @@ module Utils
         end
 
         def extract_created_at
-          @data.created_at
+          @data[:created_at]
+        end
+
+        def extract_updated_at
+          @data[:updated_at]
         end
 
         def extract_is_prerelease
@@ -88,12 +92,20 @@ module Utils
           @related_issues
         end
 
-        def extract_release_id
+        def extract_release_id # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
           return nil if @data[:merged_at].nil? || @releases.nil? || @releases.empty?
 
-          # Find the first release published *after* the PR was merged.
-          found_release = @releases.reverse.find { |release| release[:published_at] > @data[:merged_at] }
-          found_release&.[](:id)
+          merged_at = @data[:merged_at].is_a?(String) ? Time.parse(@data[:merged_at]) : @data[:merged_at]
+
+          found_release = @releases.sort_by { |r| r[:published_at] || Time.at(0) }
+                                   .reverse
+                                   .find { |release| release[:published_at] && release[:published_at] > merged_at }
+
+          id = found_release&.[](:id)
+
+          return nil if id.to_s.strip.empty?
+
+          id
         end
 
         def format_reviews_as_json

@@ -3,7 +3,7 @@
 require_relative '../../services/postgres/activity'
 require_relative '../../services/postgres/document'
 require_relative '../../services/postgres/document_activity_log'
-require_relative '../../services/postgres/person'
+require_relative '../../services/postgres/apex_people'
 require_relative '../../services/postgres/work_log'
 require_relative '../../services/postgres/github_release'
 require_relative '../../services/postgres/github_issue'
@@ -40,7 +40,7 @@ module Utils
         'document_activity_log' => {
           service: Services::Postgres::DocumentActivityLog, external_key: 'unique_identifier'
         },
-        'person' => { service: Services::Postgres::Person, external_key: 'external_person_id' },
+        'people' => { service: Services::Postgres::ApexPeople, external_key: 'external_person_id' },
         'operaton_process' => { service: Services::Postgres::OperatonProcess, external_key: 'external_process_id' },
         'operaton_activity' => { service: Services::Postgres::OperatonActivity, external_key: 'external_activity_id' },
         'operaton_incident' => { service: Services::Postgres::OperatonIncident, external_key: 'external_incident_id' },

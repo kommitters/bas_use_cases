@@ -192,11 +192,11 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       BigInt :external_github_release_id, null: false
       BigInt :repository_id, null: false
-      String :name, size: 255, null: true
-      String :tag_name, size: 255, null: false
+      String :name, size: 255, null: false
+      String :tag_name, size: 255, null: true
       Boolean :is_prerelease, null: false, default: false
-      DateTime :creation_timestamp, null: false
-      DateTime :published_timestamp, null: true
+      DateTime :creation_timestamp, null: true
+      DateTime :published_timestamp, null: false
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
@@ -206,11 +206,16 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     db.create_table(:github_issues) do
       primary_key :id
       BigInt :external_github_issue_id, null: false
-      foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :person_id, :apex_people, type: :uuid, null: true
       BigInt :repository_id, null: false
       BigInt :milestone_id, null: true
       column :assignees, 'text[]', null: true
       column :labels, 'text[]', null: true
+      column :status, 'text', null: true
+      column :title, 'text', null: true
+      column :number, 'bigint', null: true
+      DateTime :github_created_at, null: true
+      DateTime :github_updated_at, null: true
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
@@ -221,8 +226,8 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       primary_key :id
       BigInt :external_github_pull_request_id, null: false
       BigInt :repository_id, null: false
-      foreign_key :release_id, :github_releases, type: :uuid, null: false, on_delete: :cascade
-      foreign_key :issue_id, :github_issues, type: :uuid, null: true, on_delete: :cascade
+      foreign_key :release_id, :github_releases, type: :uuid, null: true
+      foreign_key :issue_id, :github_issues, type: :uuid, null: true
       column :related_issue_ids, 'bigint[]', null: true
       column :reviews_data, :jsonb, null: true
       String :title, size: 255, null: false
@@ -356,16 +361,21 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def create_github_issues_history_table(db) # rubocop:disable Metrics/MethodLength
+  def create_github_issues_history_table(db) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     db.create_table(:github_issues_history) do
       primary_key :id
       BigInt :external_github_issue_id, null: false
       foreign_key :issue_id, :github_issues, type: :uuid, null: false, on_delete: :cascade
-      foreign_key :person_id, :persons, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :person_id, :apex_people, type: :uuid, null: false, on_delete: :cascade
       BigInt :repository_id, null: false
       BigInt :milestone_id, null: true
       column :assignees, 'text[]', null: true
       column :labels, 'text[]', null: true
+      column :status, 'text', null: true
+      column :title, 'text', null: true
+      column :number, 'bigint', null: true
+      DateTime :github_created_at, null: true
+      DateTime :github_updated_at, null: true
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end
@@ -741,6 +751,45 @@ module TestDBHelpers # rubocop:disable Metrics/ModuleLength
       String :external_weekly_scope_task_id, size: 255, null: false
       foreign_key :task_id, :tasks, null: false, on_delete: :cascade, type: :uuid
       foreign_key :weekly_scope_id, :weekly_scopes, null: false, on_delete: :cascade, type: :uuid
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_apex_people_table(db) # rubocop:disable Metrics/MethodLength
+    db.create_table?(:apex_people) do
+      primary_key :id
+      String :external_person_id, size: 255, null: false
+      String :full_name, null: false
+      String :email_address
+      TrueClass :is_active, default: true
+      Date :hire_date
+      Date :exit_date
+      String :github_username
+      String :role
+      String :job_title
+      Integer :worklogs_user_id
+      foreign_key :org_unit_id, :organizational_units
+      DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+      DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
+    end
+  end
+
+  def create_apex_people_history_table(db) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    db.create_table?(:apex_people_history) do
+      primary_key :id
+      foreign_key :person_id, :apex_people, null: false, type: :uuid
+      String :external_person_id, size: 255, null: false
+      String :full_name
+      String :email_address
+      TrueClass :is_active
+      Date :hire_date
+      Date :exit_date
+      String :github_username
+      String :role
+      String :job_title
+      Integer :worklogs_user_id
+      Integer :org_unit_id
       DateTime :created_at, default: Sequel.lit('CURRENT_TIMESTAMP')
       DateTime :updated_at, default: Sequel.lit('CURRENT_TIMESTAMP')
     end

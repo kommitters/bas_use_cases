@@ -11,17 +11,17 @@ read_options = {
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  params: [false, 'FetchPersonsFromApex']
+  params: [false, 'FetchPeopleFromApex']
 }
 
 write_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchPersonsFromApex'
+  tag: 'FetchPeopleFromApex'
 }
 
 process_options = {
-  entity: 'person',
+  entity: 'people',
   endpoint: 'people'
 }
 
@@ -32,7 +32,7 @@ begin
 
   BAS_LOGGER.info({
                     invoker: 'FetchPersonsFromApex',
-                    message: 'Process completed successfully',
+                    message: 'Successfully fetched people from APEX.',
                     context: { action: 'fetch', entity: 'Persons' }
                   })
 rescue StandardError => e

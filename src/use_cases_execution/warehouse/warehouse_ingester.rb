@@ -21,7 +21,6 @@ array = PG::TextEncoder::Array.new.encode(
     FetchKpisFromNotionDatabase
     FetchKeyResultsFromWebhook
     FetchKpisFromWebhook
-    FetchPersonsFromApex
     FetchOkrsFromApex
     FetchKrsFromApex
     FetchMilestonesFromApex
@@ -32,6 +31,7 @@ array = PG::TextEncoder::Array.new.encode(
     FetchWeeklyScopesTasksFromApex
     FetchProcessesFromOperaton
     FetchIncidentsFromOperaton
+    FetchPeopleFromApex
   ]
 )
 
