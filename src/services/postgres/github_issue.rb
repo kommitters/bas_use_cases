@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-require_relative 'person'
+require_relative 'apex_people'
 
 module Services
   module Postgres
@@ -10,14 +10,15 @@ module Services
     #
     # Provides CRUD operations for the 'github_issues' table using the Base service.
     class GithubIssue < Services::Postgres::Base
-      ATTRIBUTES = %i[external_github_issue_id person_id repository_id milestone_id assignees labels].freeze
+      ATTRIBUTES = %i[external_github_issue_id person_id title status number repository_id milestone_id assignees
+                      labels github_created_at github_updated_at ].freeze
 
       TABLE = :github_issues
       HISTORY_TABLE = :github_issues_history
       HISTORY_FOREIGN_KEY = :issue_id
 
       RELATIONS = [
-        { service: Person, external: :external_person_id, internal: :person_id }
+        { service: ApexPeople, external: :github_username, internal: :person_id }
       ].freeze
 
       def insert(params)

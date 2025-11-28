@@ -154,6 +154,7 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/apex/fetch_tasks.rb", time: ['06:00'] },
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes.rb", time: ['06:05'] },
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
+      { path: "#{__dir__}/warehouse/apex/fetch_people.rb", time: ['06:15'] },
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 }
     ].freeze
 

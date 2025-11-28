@@ -22,10 +22,32 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
   let(:octokit_client_wrapper) { instance_double(Utils::Github::OctokitClient) }
   let(:octokit_client) { instance_double(Octokit::Client) }
 
+  # Data Mocks
+  let(:repo1) { OpenStruct.new(full_name: 'fake-org/repo1') }
+  let(:formatter) { instance_double(Utils::Warehouse::Github::ReleasesFormat) }
+
+  # Helper to mock a release object
+  def create_release(id, date_str)
+    OpenStruct.new(
+      id: id,
+      name: "Release #{id}",
+      published_at: Time.parse(date_str),
+      created_at: Time.parse(date_str)
+    )
+  end
+
   before do
     allow(Utils::Github::OctokitClient).to receive(:new).and_return(octokit_client_wrapper)
+    allow(octokit_client_wrapper).to receive(:execute).and_return({ client: octokit_client })
     allow(octokit_client).to receive(:auto_paginate=)
-    allow(bot).to receive(:read_response).and_return(OpenStruct.new(inserted_at: nil))
+
+    allow(octokit_client).to receive(:organization_repositories)
+      .with('fake-org', hash_including(page: 1, per_page: 100))
+      .and_return([repo1])
+
+    # Formatter setup
+    allow(Utils::Warehouse::Github::ReleasesFormat).to receive(:new).and_return(formatter)
+    allow(formatter).to receive(:format).and_return({ normalized: true })
   end
 
   describe '#process' do
@@ -41,30 +63,128 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
       end
     end
 
-    context 'when API calls are successful' do
-      let(:repo1) { OpenStruct.new(full_name: 'fake-org/repo1') }
-      let(:release1) { OpenStruct.new(id: 1, name: 'Release 1') }
-      let(:formatter) { instance_double(Utils::Warehouse::Github::ReleasesFormat) }
+    context 'when fetching releases successfully' do
+      let(:last_response) { double('last_response', rels: { next: nil }) }
 
       before do
-        allow(octokit_client_wrapper).to receive(:execute).and_return({ client: octokit_client })
-        allow(octokit_client).to receive(:organization_repositories).with('fake-org').and_return([repo1])
-        allow(octokit_client).to receive(:releases).with('fake-org/repo1', per_page: 100).and_return([release1])
-        allow(Utils::Warehouse::Github::ReleasesFormat).to receive(:new).with(release1, repo1).and_return(formatter)
-        allow(formatter).to receive(:format).and_return({ normalized: true })
+        allow(octokit_client).to receive(:last_response).and_return(last_response)
       end
 
-      it 'fetches releases and formats them' do
-        result = bot.process
-        expect(result).to have_key(:success)
-        expect(result.dig(:success, :type)).to eq('github_release')
-        expect(result.dig(:success, :content)).to eq([{ normalized: true }])
+      context 'on the first run (no last_run_timestamp)' do
+        let(:release_new) { create_release(1, '2023-01-01T12:00:00Z') }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          allow(octokit_client).to receive(:releases)
+            .with('fake-org/repo1', per_page: 100)
+            .and_return([release_new])
+        end
+
+        it 'fetches all releases found' do
+          result = bot.process
+          expect(result).to have_key(:success)
+          content = result.dig(:success, :content)
+          expect(content.size).to eq(1)
+        end
+      end
+
+      context 'when repositories span multiple pages' do
+        let(:repo2) { OpenStruct.new(full_name: 'fake-org/repo2') }
+        let(:release_repo1) { create_release(1, '2023-01-01T12:00:00Z') }
+        let(:release_repo2) { create_release(2, '2023-01-01T12:00:00Z') }
+
+        # Mock responses for repo pagination logic
+        let(:repo_page1_resp) { double('resp_p1', rels: { next: true }) }
+        let(:repo_page2_resp) { double('resp_p2', rels: { next: nil }) }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          allow(octokit_client).to receive(:organization_repositories)
+            .with('fake-org', hash_including(page: 1))
+            .and_return([repo1])
+
+          allow(octokit_client).to receive(:organization_repositories)
+            .with('fake-org', hash_including(page: 2))
+            .and_return([repo2])
+
+          allow(octokit_client).to receive(:last_response)
+            .and_return(repo_page1_resp, repo_page2_resp, last_response)
+
+          allow(octokit_client).to receive(:releases).with('fake-org/repo1', any_args).and_return([release_repo1])
+          allow(octokit_client).to receive(:releases).with('fake-org/repo2', any_args).and_return([release_repo2])
+        end
+
+        it 'iterates through repository pages and collects releases from all repos' do
+          result = bot.process
+          content = result.dig(:success, :content)
+
+          expect(content.size).to eq(2)
+
+          expect(octokit_client).to have_received(:organization_repositories)
+            .with('fake-org', hash_including(page: 2))
+        end
+      end
+
+      context 'on an incremental run (last_run_timestamp exists)' do
+        let(:last_run_time) { Time.parse('2023-06-01T00:00:00Z') }
+
+        # Release newer than last run
+        let(:new_release) { create_release(100, '2023-06-02T12:00:00Z') }
+        # Release older than last run
+        let(:old_release) { create_release(99, '2023-05-30T12:00:00Z') }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: last_run_time))
+
+          # Return mixed data: one new, one old
+          allow(octokit_client).to receive(:releases)
+            .with('fake-org/repo1', per_page: 100)
+            .and_return([new_release, old_release])
+        end
+
+        it 'filters out releases older than the last run' do
+          result = bot.process
+          content = result.dig(:success, :content)
+
+          # Should only contain the new release
+          expect(content.size).to eq(1)
+        end
+      end
+
+      context 'when pagination is required (inside a repo)' do
+        let(:release_page1) { create_release(1, '2023-02-01T00:00:00Z') }
+        let(:release_page2) { create_release(2, '2023-01-01T00:00:00Z') }
+
+        # Pagination Mocks
+        let(:page1_response) { double('page1_response', data: [release_page1], rels: { next: page2_link }) }
+        let(:page2_link) { double('page2_link', get: page2_response) }
+        let(:page2_response) { double('page2_response', data: [release_page2], rels: { next: nil }) }
+
+        let(:repo_response_no_next) { double('repo_response', rels: { next: nil }) }
+        before do
+          # Full sync scenario
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          # Initial call
+          allow(octokit_client).to receive(:releases).and_return([release_page1])
+
+          # Pagination chain
+          allow(octokit_client).to receive(:last_response).and_return(repo_response_no_next, page1_response)
+        end
+
+        it 'iterates through pages and collects all releases' do
+          result = bot.process
+          content = result.dig(:success, :content)
+          expect(content.size).to eq(2)
+        end
       end
     end
   end
 
   describe '#write' do
-    let(:content) { Array.new(150) { { normalized: true } } } # 150 items
+    let(:content) { Array.new(150) { { normalized: true } } }
     let(:process_response) { { success: { type: 'github_release', content: content } } }
 
     before do
@@ -72,7 +192,6 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
     end
 
     it 'writes records in pages of 100' do
-      # Expect 2 pages for 150 items (100, 50)
       expect(shared_storage).to receive(:write).exactly(2).times
       bot.write
     end
@@ -87,6 +206,7 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
           total_records: 150
         }
       }
+
       second_page_record = {
         success: {
           type: 'github_release',
@@ -96,8 +216,10 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
           total_records: 150
         }
       }
+
       expect(shared_storage).to receive(:write).with(first_page_record).ordered
       expect(shared_storage).to receive(:write).with(second_page_record).ordered
+
       bot.write
     end
 

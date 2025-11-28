@@ -8,13 +8,13 @@ module Services
     ##
     # Person Service for PostgreSQL
     #
-    # Provides CRUD operations for the 'persons' table using the Base service.
-    class Person < Services::Postgres::Base
+    # Provides CRUD operations for the 'apex_people' table using the Base service.
+    class ApexPeople < Services::Postgres::Base
       ATTRIBUTES = %i[external_person_id full_name email_address is_active hire_date exit_date github_username
                       role job_title worklogs_user_id org_unit_id].freeze
-      TABLE = :persons
+      TABLE = :apex_people
 
-      HISTORY_TABLE = :persons_history
+      HISTORY_TABLE = :apex_people_history
       HISTORY_FOREIGN_KEY = :person_id
 
       RELATIONS = [

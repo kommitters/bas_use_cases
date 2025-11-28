@@ -81,18 +81,28 @@ module Implementation
       return client_response if client_response[:error]
 
       client = client_response[:client]
+      client.auto_paginate = false
       { client: client }
     end
 
     # Fetches all repositories for the configured organization.
     def fetch_repositories(client)
-      client.organization_repositories(process_options[:organization])
+      page = 1
+      [].tap do |repositories|
+        loop do
+          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
+          break if repos.empty?
+
+          repositories.concat(repos)
+          break unless client.last_response.rels[:next]
+
+          page += 1
+        end
+      end
     end
 
     # Fetches all issues for a given list of repositories.
     def fetch_all_issues(client, repositories)
-      client.auto_paginate = false # Disable for manual pagination with `since`
-
       repositories.flat_map { |repo| process_repository(client, repo) }
     end
 
@@ -142,7 +152,9 @@ module Implementation
     end
 
     def normalize_response(issues, repo)
-      issues.map { |issue| Utils::Warehouse::Github::IssuesFormatter.new(issue, repo).format }
+      issues.filter_map do |issue_data|
+        Utils::Warehouse::Github::IssuesFormatter.new(issue_data, repo).format if issue?(issue_data)
+      end
     end
 
     def build_record(content:, page_index:, total_pages:, total_records:)
@@ -159,6 +171,10 @@ module Implementation
 
     def error_response(response)
       { error: { message: response[:error] } }
+    end
+
+    def issue?(issue_data)
+      issue_data[:pull_request].nil?
     end
   end
 end

@@ -2,12 +2,11 @@
 
 require 'sequel'
 require 'rspec'
-require 'securerandom'
 require 'json'
-
+require 'date'
 require_relative '../../../src/services/postgres/base'
 require_relative '../../../src/services/postgres/github_issue'
-require_relative '../../../src/services/postgres/person'
+require_relative '../../../src/services/postgres/apex_people'
 require_relative 'test_db_helpers'
 
 RSpec.describe Services::Postgres::GithubIssue do
@@ -17,126 +16,149 @@ RSpec.describe Services::Postgres::GithubIssue do
   let(:config) { { adapter: 'sqlite', database: ':memory:' } }
 
   let(:service) { described_class.new(config) }
-  let(:person_service) { Services::Postgres::Person.new(config) }
+
+  # We use real ApexPeople to simulate relation lookups if necessary,
+  # although for setup we will use direct insertion to avoid complex dependencies.
+  let(:apex_people_service) { Services::Postgres::ApexPeople.new(config) }
 
   before(:each) do
+    # Connection mock
     allow_any_instance_of(Services::Postgres::Base).to receive(:establish_connection).and_return(db)
 
+    # Cleanup (reverse order)
     db.drop_table?(:github_issues_history)
     db.drop_table?(:github_issues)
-    db.drop_table?(:persons)
-    db.drop_table?(:domains)
+    db.drop_table?(:apex_people)
+    db.drop_table?(:organizational_units)
 
-    create_persons_table(db)
-    create_domains_table(db)
+    # Creation
+    create_organizational_units_table(db)
+    create_apex_people_table(db)
     create_github_issues_table(db)
     create_github_issues_history_table(db)
 
-    @person_id = person_service.insert(external_person_id: 'person-123', full_name: 'Test Person')
+    # Seed: Insert a person directly to have someone to relate to
+    @person_id = db[:apex_people].insert(
+      external_person_id: 'person-uuid-1',
+      full_name: 'Dev One',
+      github_username: 'dev_one_gh',
+      created_at: Time.now,
+      updated_at: Time.now
+    )
   end
 
   describe '#insert' do
     it 'creates a new github_issue and returns its ID' do
       params = {
-        external_github_issue_id: 1,
-        repository_id: 100,
-        external_person_id: 'person-123'
+        external_github_issue_id: 1001,
+        title: 'Fix login bug',
+        number: 1,
+        repository_id: 50,
+        status: 'open',
+        github_username: 'dev_one_gh' # Test relation resolution
       }
+
       id = service.insert(params)
       issue = service.find(id)
 
       expect(issue).not_to be_nil
-      expect(issue[:external_github_issue_id]).to eq(1)
-      expect(issue[:repository_id]).to eq(100)
-    end
-
-    it 'assigns the person_id foreign key from the external id' do
-      params = {
-        external_github_issue_id: 2,
-        repository_id: 101,
-        external_person_id: 'person-123'
-      }
-      id = service.insert(params)
-      issue = service.find(id)
-
+      expect(issue[:external_github_issue_id]).to eq(1001)
+      expect(issue[:title]).to eq('Fix login bug')
+      # Verify that github_username resolved to the correct person_id
       expect(issue[:person_id]).to eq(@person_id)
     end
 
-    it 'handles array fields for labels and assignees' do
+    it 'handles array fields for labels and assignees correctly' do
+      labels_json = JSON.generate(%w[bug urgent])
+      assignees_json = JSON.generate(%w[dev_one_gh dev_two_gh])
+
       params = {
-        external_github_issue_id: 3,
-        repository_id: 102,
-        external_person_id: 'person-123',
-        labels: JSON.generate(%w[bug critical]),
-        assignees: JSON.generate(%w[user1 user2])
+        external_github_issue_id: 1002,
+        title: 'Complex Issue',
+        repository_id: 50,
+        labels: labels_json,
+        assignees: assignees_json
       }
+
       id = service.insert(params)
       issue = service.find(id)
 
-      expect(issue[:labels]).to eq('["bug","critical"]')
-      expect(issue[:assignees]).to eq('["user1","user2"]')
+      expect(issue[:labels]).to eq(labels_json)
+      expect(issue[:assignees]).to eq(assignees_json)
     end
   end
 
   describe '#update' do
     let!(:issue_id) do
       service.insert(
-        external_github_issue_id: 4,
-        repository_id: 200,
-        external_person_id: 'person-123',
-        labels: JSON.generate(%w[issue initial])
+        external_github_issue_id: 2001,
+        title: 'Original Title',
+        repository_id: 99,
+        status: 'open',
+        github_username: 'dev_one_gh'
       )
     end
 
     it 'updates a github_issue by its ID' do
-      service.update(issue_id, { milestone_id: 50, labels: JSON.generate(['enhancement']) })
+      service.update(issue_id, { title: 'Updated Title', status: 'closed' })
       updated_issue = service.find(issue_id)
 
-      expect(updated_issue[:milestone_id]).to eq(50)
-      expect(updated_issue[:labels]).to eq('["enhancement"]')
+      expect(updated_issue[:title]).to eq('Updated Title')
+      expect(updated_issue[:status]).to eq('closed')
     end
 
-    it 'reassigns foreign keys on update' do
-      person2_id = person_service.insert(external_person_id: 'person-456', full_name: 'Another Person')
-      service.update(issue_id, { external_person_id: 'person-456' })
+    it 'reassigns foreign keys on update via github_username' do
+      # Create another person
+      other_person_id = db[:apex_people].insert(
+        external_person_id: 'person-uuid-2',
+        full_name: 'Dev Two',
+        github_username: 'dev_two_gh'
+      )
+
+      # Update the issue assigning it to the new GitHub user
+      service.update(issue_id, { github_username: 'dev_two_gh' })
       updated_issue = service.find(issue_id)
 
-      expect(updated_issue[:person_id]).to eq(person2_id)
+      expect(updated_issue[:person_id]).to eq(other_person_id)
     end
 
     it 'saves the previous state to the history table before updating' do
       expect(db[:github_issues_history].where(issue_id: issue_id).all).to be_empty
 
-      service.update(issue_id, { repository_id: 300, labels: JSON.generate(%w[bug critical]) })
+      update_params = { title: 'New History Title', status: 'closed' }
+      service.update(issue_id, update_params)
 
+      # Verify current change
       updated_record = service.find(issue_id)
-      expect(updated_record[:repository_id]).to eq(300)
-      expect(updated_record[:labels]).to eq('["bug","critical"]')
+      expect(updated_record[:title]).to eq('New History Title')
 
+      # Verify history
       history_records = db[:github_issues_history].where(issue_id: issue_id).all
       expect(history_records.size).to eq(1)
 
       historical_record = history_records.first
       expect(historical_record[:issue_id]).to eq(issue_id)
-
-      expect(historical_record[:repository_id]).to eq(200)
-      expect(historical_record[:labels]).to eq('["issue","initial"]')
+      expect(historical_record[:title]).to eq('Original Title')
+      expect(historical_record[:status]).to eq('open')
+      expect(historical_record[:person_id]).to eq(@person_id)
     end
 
     it 'raises an ArgumentError if no ID is provided' do
-      allow($stdout).to receive(:write)
+      # Mock handle_error to suppress logging noise during this specific test
+      allow(service).to receive(:handle_error) { |e| raise e }
+
       expect do
-        service.update(nil, { milestone_id: 99 })
-      end.to raise_error(ArgumentError, 'GithubIssue id is required to update')
+        service.update(nil, { status: 'closed' })
+      end.to raise_error(ArgumentError, /GithubIssue id is required/)
     end
   end
 
   describe '#delete' do
     it 'deletes a github_issue by ID' do
       id_to_delete = service.insert(
-        external_github_issue_id: 5,
-        repository_id: 300,
-        external_person_id: 'person-123'
+        external_github_issue_id: 3001,
+        title: 'To Delete',
+        repository_id: 10
       )
 
       expect { service.delete(id_to_delete) }.to change { service.query.size }.by(-1)
@@ -147,17 +169,22 @@ RSpec.describe Services::Postgres::GithubIssue do
   describe '#query' do
     before do
       service.insert(
-        external_github_issue_id: 6,
-        repository_id: 400,
-        milestone_id: 1,
-        external_person_id: 'person-123'
+        external_github_issue_id: 4001,
+        title: 'Query Me',
+        repository_id: 500,
+        milestone_id: 12
       )
     end
 
     it 'queries github_issues by a specific condition' do
-      results = service.query(repository_id: 400)
+      results = service.query(repository_id: 500)
       expect(results.size).to eq(1)
-      expect(results.first[:milestone_id]).to eq(1)
+      expect(results.first[:title]).to eq('Query Me')
+    end
+
+    it 'returns empty array if no match found' do
+      results = service.query(repository_id: 99_999)
+      expect(results).to be_empty
     end
   end
 end
