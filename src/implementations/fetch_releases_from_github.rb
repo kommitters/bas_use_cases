@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'time'
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
