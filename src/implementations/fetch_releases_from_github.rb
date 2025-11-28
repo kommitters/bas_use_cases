@@ -39,7 +39,7 @@ module Implementation
   #
   #   Implementation::FetchReleasesFromGithub.new(options, shared_storage).execute
   #
-  class FetchReleasesFromGithub < Bas::Bot::Base
+  class FetchReleasesFromGithub < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
     PER_PAGE = 100
 
     # Orchestrates the fetching and formatting of records from GitHub.
@@ -70,11 +70,29 @@ module Implementation
     #
     def fetch_organization_content(client)
       last_run = fetch_last_run_timestamp
-      repositories = client.organization_repositories(process_options[:organization])
+      repositories = fetch_all_repositories(client)
 
       repositories.flat_map do |repo|
         fetch_repo_releases(client, repo, last_run).map do |release|
           format_release(release, repo)
+        end
+      end
+    end
+
+    ##
+    # Fetches ALL repositories for the organization, handling pagination.
+    #
+    def fetch_all_repositories(client)
+      page = 1
+      [].tap do |repositories|
+        loop do
+          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
+          break if repos.empty?
+
+          repositories.concat(repos)
+          break unless client.last_response.rels[:next]
+
+          page += 1
         end
       end
     end
@@ -146,10 +164,8 @@ module Implementation
     def paginate_and_write(content)
       paged_entities = content.each_slice(PER_PAGE).to_a
       paged_entities.each_with_index do |page, idx|
-        record = build_record(
-          content: page, page_index: idx + 1,
-          total_pages: paged_entities.size, total_records: content.size
-        )
+        record = build_record(content: page, page_index: idx + 1, total_pages: paged_entities.size,
+                              total_records: content.size)
         @shared_storage_writer.write(record)
       end
     end

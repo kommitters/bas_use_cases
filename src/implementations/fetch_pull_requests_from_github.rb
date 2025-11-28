@@ -72,12 +72,30 @@ module Implementation
     #
     def fetch_organization_content(client)
       last_run = fetch_last_run_timestamp
-      repositories = client.organization_repositories(process_options[:organization])
+      repositories = fetch_all_repositories(client)
       releases_map = fetch_releases_map(client, repositories)
 
       repositories.flat_map do |repo|
         fetch_repo_prs(client, repo, last_run).map do |pr|
           format_pr(client, pr, repo, releases_map[repo[:id]] || [])
+        end
+      end
+    end
+
+    ##
+    # Fetches ALL repositories for the organization, handling pagination.
+    #
+    def fetch_all_repositories(client)
+      page = 1
+      [].tap do |repositories|
+        loop do
+          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
+          break if repos.empty?
+
+          repositories.concat(repos)
+          break unless client.last_response.rels[:next]
+
+          page += 1
         end
       end
     end

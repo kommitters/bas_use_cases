@@ -40,7 +40,10 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
     allow(Utils::Github::OctokitClient).to receive(:new).and_return(octokit_client_wrapper)
     allow(octokit_client_wrapper).to receive(:execute).and_return({ client: octokit_client })
     allow(octokit_client).to receive(:auto_paginate=)
-    allow(octokit_client).to receive(:organization_repositories).with('fake-org').and_return([repo1])
+
+    allow(octokit_client).to receive(:organization_repositories)
+      .with('fake-org', hash_including(page: 1, per_page: 100))
+      .and_return([repo1])
 
     # Formatter setup
     allow(Utils::Warehouse::Github::ReleasesFormat).to receive(:new).and_return(formatter)
@@ -86,6 +89,44 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
         end
       end
 
+      context 'when repositories span multiple pages' do
+        let(:repo2) { OpenStruct.new(full_name: 'fake-org/repo2') }
+        let(:release_repo1) { create_release(1, '2023-01-01T12:00:00Z') }
+        let(:release_repo2) { create_release(2, '2023-01-01T12:00:00Z') }
+
+        # Mock responses for repo pagination logic
+        let(:repo_page1_resp) { double('resp_p1', rels: { next: true }) }
+        let(:repo_page2_resp) { double('resp_p2', rels: { next: nil }) }
+
+        before do
+          allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
+
+          allow(octokit_client).to receive(:organization_repositories)
+            .with('fake-org', hash_including(page: 1))
+            .and_return([repo1])
+
+          allow(octokit_client).to receive(:organization_repositories)
+            .with('fake-org', hash_including(page: 2))
+            .and_return([repo2])
+
+          allow(octokit_client).to receive(:last_response)
+            .and_return(repo_page1_resp, repo_page2_resp, last_response)
+
+          allow(octokit_client).to receive(:releases).with('fake-org/repo1', any_args).and_return([release_repo1])
+          allow(octokit_client).to receive(:releases).with('fake-org/repo2', any_args).and_return([release_repo2])
+        end
+
+        it 'iterates through repository pages and collects releases from all repos' do
+          result = bot.process
+          content = result.dig(:success, :content)
+
+          expect(content.size).to eq(2)
+
+          expect(octokit_client).to have_received(:organization_repositories)
+            .with('fake-org', hash_including(page: 2))
+        end
+      end
+
       context 'on an incremental run (last_run_timestamp exists)' do
         let(:last_run_time) { Time.parse('2023-06-01T00:00:00Z') }
 
@@ -109,14 +150,10 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
 
           # Should only contain the new release
           expect(content.size).to eq(1)
-
-          # Since old_release is encountered, page_is_fresh? becomes false for the old one
-          # Your logic: `stop_fetching?` checks `!page_is_fresh?`.
-          # Since the page contains an old record, it stops fetching further pages correctly.
         end
       end
 
-      context 'when pagination is required' do
+      context 'when pagination is required (inside a repo)' do
         let(:release_page1) { create_release(1, '2023-02-01T00:00:00Z') }
         let(:release_page2) { create_release(2, '2023-01-01T00:00:00Z') }
 
@@ -125,6 +162,7 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
         let(:page2_link) { double('page2_link', get: page2_response) }
         let(:page2_response) { double('page2_response', data: [release_page2], rels: { next: nil }) }
 
+        let(:repo_response_no_next) { double('repo_response', rels: { next: nil }) }
         before do
           # Full sync scenario
           allow(shared_storage).to receive(:read).and_return(OpenStruct.new(inserted_at: nil))
@@ -133,8 +171,7 @@ RSpec.describe Implementation::FetchReleasesFromGithub do
           allow(octokit_client).to receive(:releases).and_return([release_page1])
 
           # Pagination chain
-          # Note: Your implementation calls client.last_response initially, then updates it in the loop
-          allow(octokit_client).to receive(:last_response).and_return(page1_response, page2_response)
+          allow(octokit_client).to receive(:last_response).and_return(repo_response_no_next, page1_response)
         end
 
         it 'iterates through pages and collects all releases' do
