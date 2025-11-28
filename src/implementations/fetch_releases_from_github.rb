@@ -122,7 +122,7 @@ module Implementation
       [resp, resp.data]
     end
 
-    # Selecciona solo los registros nuevos de la página actual
+    # Selects releases that are newer than the last run timestamp.
     def filter_data(data, last_run)
       return data if page_is_fresh?(data, last_run)
 
