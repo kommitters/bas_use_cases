@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-##
-# This file is used to store the configuration of th
-# It contains the connection information to the database
-##
++##
++# Configuration for APEX API integration.
++# Exposes constants for the OAuth base URL, API base URL, and client credentials,
++# all sourced from environment variables (see .env.example).
++##
 
 require 'dotenv/load'
 
