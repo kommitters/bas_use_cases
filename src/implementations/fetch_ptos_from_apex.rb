@@ -38,6 +38,7 @@ module Implementation
       response = fetch_ptos
       Logger.new($stdout).info("[FetchPtosFromApex] HTTP #{response.code}")
       return handle_success(response) if response.code == 200
+
       handle_failure(response)
     rescue StandardError => e
       log_unexpected_error(e)

@@ -92,8 +92,8 @@ module ApexClient
 
   def self.apex_get(token, endpoint, params = {})
     endpoint_path = clean_endpoint(endpoint)
-    url   = "#{APEX_API_BASE}/#{endpoint_path}"
-    response   = perform_get(url, token, params)
+    url = "#{APEX_API_BASE}/#{endpoint_path}"
+    response = perform_get(url, token, params)
     sanitized_response = sanitize_response(response)
 
     unless sanitized_response.code.between?(200, 299)
