@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'sinatra/base'
-
 require_relative '../pto_next_week/fetch_next_week_pto_from_google_for_workspace'
 require_relative '../birthday/fetch_birthdays_from_google'
 require_relative '../birthday_next_week/fetch_next_week_birthday_from_google_for_workspace'
