@@ -10,11 +10,14 @@ require 'pg'
 
 array = PG::TextEncoder::Array.new.encode(
   %w[
+    FetchReleasesFromGithubKommitters
+    FetchPullRequestsFromGithubKommitters
+    FetchIssuesFromGithubKommitters
+    FetchReleasesFromGithubKommitCo
+    FetchPullRequestsFromGithubKommitCo
+    FetchIssuesFromGithubKommitCo
     FetchRecordsFromWorkLogs
     FetchHiredPersonsFromNotionDatabase
-    FetchReleasesFromGithub
-    FetchIssuesFromGithub
-    FetchPullRequestsFromGithub
     FetchGoogleDocumentsFromWorkspace
     FetchGoogleDocumentsActivityLogsFromWorkspace
     FetchCalendarEventsFromWebhook

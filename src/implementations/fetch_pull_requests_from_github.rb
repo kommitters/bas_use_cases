@@ -41,6 +41,7 @@ module Implementation
   class FetchPullRequestsFromGithub < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
     # The number of items to fetch per page from the GitHub API.
     PER_PAGE = 100
+    MAX_THREADS = 5
 
     ##
     # Orchestrates the fetching and formatting of records from GitHub.
@@ -48,6 +49,8 @@ module Implementation
     def process
       response = initialize_client
       return error_response(response) if response[:error]
+
+      Thread.abort_on_exception = false
 
       content = fetch_organization_content(response[:client])
       { success: { type: 'github_pull_request', content: content } }
@@ -70,16 +73,73 @@ module Implementation
     ##
     # Fetches all pull requests across all repositories in the organization.
     #
-    def fetch_organization_content(client)
+    def fetch_organization_content(main_client)
       last_run = fetch_last_run_timestamp
-      repositories = fetch_all_repositories(client)
-      releases_map = fetch_releases_map(client, repositories)
+      repositories = fetch_active_repositories(main_client)
 
-      repositories.flat_map do |repo|
-        fetch_repo_prs(client, repo, last_run).map do |pr|
-          format_pr(client, pr, repo, releases_map[repo[:id]] || [])
+      log_start_message(repositories.size)
+
+      process_batches(main_client, repositories, last_run)
+    end
+
+    ##
+    # Processes repositories in batches using multithreading.
+    #
+    def process_batches(main_client, repositories, last_run)
+      total_batches = (repositories.size.to_f / MAX_THREADS).ceil
+
+      repositories.each_slice(MAX_THREADS).with_index.flat_map do |batch, index|
+        log_batch_processing(batch, index + 1, total_batches)
+        process_batch_in_threads(main_client, batch, last_run)
+      end
+    end
+
+    ##
+    # Handles the multithreading logic for a single batch.
+    #
+    def process_batch_in_threads(main_client, batch, last_run)
+      threads = batch.map do |repo|
+        Thread.new do
+          safe_process_repo(main_client.dup, repo, last_run)
         end
       end
+
+      threads.map(&:value).flatten
+    end
+
+    ##
+    # Encapsulates the logic for processing a single repo securely within a thread.
+    # Handles errors locally to prevent crashing the batch.
+    #
+    def safe_process_repo(client, repo, last_run)
+      repo_releases = fetch_repo_releases(client, repo)
+
+      fetch_repo_prs(client, repo, last_run).map do |pr|
+        format_pr(client, pr, repo, repo_releases)
+      end
+    rescue StandardError => e
+      puts "  Error in repo #{repo[:name]}: #{e.message}"
+      [] # Return empty array to avoid blocking the process
+    end
+
+    def fetch_active_repositories(client)
+      fetch_all_repositories(client).reject { |repo| repo[:archived] }
+    end
+
+    ##
+    # Logs the start message with total repositories and batches.
+    #
+    def log_start_message(total_repos)
+      total_batches = (total_repos.to_f / MAX_THREADS).ceil
+      puts "--- Loading #{total_repos} repositories in #{total_batches} batches ---"
+    end
+
+    ##
+    # Logs the processing of the current batch.
+    #
+    def log_batch_processing(batch, current_batch_num, total_batches)
+      repo_names = batch.map { |r| r[:name] }.join(', ')
+      puts "[Batch #{current_batch_num}/#{total_batches}] Processing: #{repo_names}"
     end
 
     ##
@@ -122,17 +182,29 @@ module Implementation
     ##
     # Fetches a map of releases for each repository.
     #
-    def fetch_releases_map(client, repositories)
-      repositories.to_h do |repo|
-        releases = client.releases(repo[:full_name])
-        [repo[:id], releases.sort_by { |r| r[:published_at] }.reverse]
+    def fetch_repo_releases(client, repo) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      page = 1
+      all_releases = [].tap do |releases_acc|
+        loop do
+          releases = client.releases(repo[:full_name], per_page: PER_PAGE, page: page)
+          break if releases.empty?
+
+          releases_acc.concat(releases)
+          break unless client.last_response.rels[:next]
+
+          page += 1
+        end
       end
+      all_releases.sort_by { |r| r[:published_at] }.reverse
+    rescue Octokit::Error => e
+      puts "Error fetching releases for #{repo[:full_name]}: #{e.message}"
+      []
     end
 
     ##
     # Fetches all pull requests for a given repository, considering the last run timestamp.
     #
-    def fetch_repo_prs(client, repo, last_run)
+    def fetch_repo_prs(client, repo, last_run) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       data = client.pull_requests(repo[:full_name], prs_api_params)
       last_resp = client.last_response
 
@@ -143,9 +215,18 @@ module Implementation
           prs.concat(filter_data(data, last_run))
           break if stop_fetching?(data, last_run, last_resp)
 
+          sleep 0.1
           last_resp, data = fetch_next_page(last_resp)
         end
       end
+    rescue Octokit::Error => e
+      if e.is_a?(Octokit::TooManyRequests)
+        puts "Rate Limit in #{repo[:name]}. Waiting..."
+        sleep 60
+        retry
+      end
+      puts "Error PRs #{repo[:name]}: #{e.message}"
+      []
     end
 
     def stop_fetching?(data, last_run, last_resp)
@@ -174,7 +255,6 @@ module Implementation
     def format_pr(client, pull_request, repo, releases)
       context = {
         reviews: client.pull_request_reviews(repo[:full_name], pull_request[:number]),
-        comments: client.pull_request_comments(repo[:full_name], pull_request[:number]),
         related_issues: extract_related_issues(pull_request[:body]),
         releases: releases
       }

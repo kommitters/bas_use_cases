@@ -12,13 +12,13 @@ read_options = {
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  params: [false, 'FetchPullRequestsFromGithub']
+  params: [false, 'FetchPullRequestsFromGithubKommitters']
 }
 
 write_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchPullRequestsFromGithub'
+  tag: 'FetchPullRequestsFromGithubKommitters'
 }
 
 github_config = Config::Github.kommiters
@@ -28,13 +28,13 @@ begin
 
   Implementation::FetchPullRequestsFromGithub.new(github_config, shared_storage).execute
   BAS_LOGGER.info({
-                    invoker: 'FetchPullRequestsFromGithub',
+                    invoker: 'FetchPullRequestsFromGithubKommitters',
                     message: 'Process completed successfully from Kommitters.',
                     context: { action: 'fetch', entity: 'PullRequests' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
-                     invoker: 'FetchPullRequestsFromGithub',
+                     invoker: 'FetchPullRequestsFromGithubKommitters',
                      message: 'Error during fetching PullRequests from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'PullRequests' },
                      error: e.message

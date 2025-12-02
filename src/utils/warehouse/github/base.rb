@@ -14,7 +14,7 @@ module Utils
       # GitHub API responses (as hashes) into a standardized structure. It is designed
       # to be inherited by more specific formatters (e.g., for Pull Requests, Issues).
       #
-      class Base # rubocop:disable Metrics/ClassLength
+      class Base
         ##
         # Initializes the formatter with the main GitHub data object and an optional context hash.
         #
@@ -22,7 +22,6 @@ module Utils
           @data = github_data
           @repo = repository
           @reviews = context[:reviews]
-          @comments = context[:comments]
           @related_issues = context[:related_issues]
           @releases = context[:releases]
         end
@@ -112,10 +111,8 @@ module Utils
         def format_reviews_as_json
           return nil if @reviews.nil? || @reviews.empty?
 
-          comments_by_review_id = group_comments_by_review_id
           formatted_reviews = @reviews.map do |review|
-            review_comments = comments_by_review_id[review[:id]] || []
-            build_review_hash(review, review_comments)
+            build_review_hash(review)
           end
           formatted_reviews.to_json
         end
@@ -128,30 +125,15 @@ module Utils
 
         private
 
-        # Groups review comments by their parent review ID for efficient lookup.
-        def group_comments_by_review_id
-          (@comments || []).group_by { |c| c[:pull_request_review_id] }
-        end
-
         # Builds the hash for a single review, including its formatted comments.
-        def build_review_hash(review, comments)
+        def build_review_hash(review)
           {
             id: review[:id],
             user_login: review.dig(:user, :login),
             state: review[:state],
             body: review[:body],
             submitted_at: review[:submitted_at],
-            comments: comments.map { |comment| format_comment(comment) }
-          }
-        end
-
-        # Formats a single comment into a standardized hash.
-        def format_comment(comment)
-          {
-            id: comment[:id],
-            user_login: comment.dig(:user, :login),
-            body: comment[:body],
-            created_at: comment[:created_at]
+            comments: []
           }
         end
       end

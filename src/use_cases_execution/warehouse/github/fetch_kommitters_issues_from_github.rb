@@ -12,13 +12,13 @@ read_options = {
   db_table: 'warehouse_sync',
   avoid_process: true,
   where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  params: [false, 'FetchIssuesFromGithub']
+  params: [false, 'FetchIssuesFromGithubKommitters']
 }
 
 write_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
-  tag: 'FetchIssuesFromGithub'
+  tag: 'FetchIssuesFromGithubKommitters'
 }
 
 github_config = Config::Github.kommiters
@@ -28,13 +28,13 @@ begin
 
   Implementation::FetchIssuesFromGithub.new(github_config, shared_storage).execute
   BAS_LOGGER.info({
-                    invoker: 'FetchIssuesFromGithub',
+                    invoker: 'FetchIssuesFromGithubKommitters',
                     message: 'Process completed successfully from Kommitters.',
                     context: { action: 'fetch', entity: 'Issues' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
-                     invoker: 'FetchIssuesFromGithub',
+                     invoker: 'FetchIssuesFromGithubKommitters',
                      message: 'Error during fetching Issues from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'Issues' },
                      error: e.message
