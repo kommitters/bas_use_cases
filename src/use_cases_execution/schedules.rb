@@ -33,6 +33,7 @@ module UseCasesExecution
     ].freeze
 
     PTO_SCHEDULES = [
+      { path: "#{__dir__}/pto/fetch_pto_from_apex.rb", time: ['13:20'] },
       { path: "#{__dir__}/pto/humanize_pto_workspace.rb", time: ['13:25'] },
       { path: "#{__dir__}/pto/notify_pto_in_workspace.rb", time: ['13:35'] },
       { path: "#{__dir__}/pto/garbage_collector.rb", time: ['00:00'] }

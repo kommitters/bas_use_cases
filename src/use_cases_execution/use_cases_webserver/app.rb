@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'sinatra/base'
-require_relative '../pto/fetch_pto_from_google_for_workspace'
-require_relative '../pto_next_week/fetch_next_week_pto_from_google_for_workspace'
 require_relative '../birthday/fetch_birthdays_from_google'
 require_relative '../birthday_next_week/fetch_next_week_birthday_from_google_for_workspace'
 require_relative '../warehouse/google_workspace/listen_to_google_docs_updates'
@@ -19,8 +17,6 @@ require_relative '../warehouse/google_workspace/listen_to_google_kpis_file'
 # for all available endpoints.
 # WebServer is the main Sinatra application class.
 class WebServer < Sinatra::Base
-  use Routes::Pto
-  use Routes::PtoNextWeek
   use Routes::Birthdays
   use Routes::NextWeekBirthdays
   use Routes::GoogleDocuments
