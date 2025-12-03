@@ -50,8 +50,6 @@ module Implementation
       response = initialize_client
       return error_response(response) if response[:error]
 
-      Thread.abort_on_exception = false
-
       content = fetch_organization_content(response[:client])
       { success: { type: 'github_pull_request', content: content } }
     end

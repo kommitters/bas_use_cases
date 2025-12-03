@@ -24,6 +24,11 @@ write_options = {
 github_config = Config::Github.kommiters
 
 begin
+  BAS_LOGGER.info({
+                    invoker: 'FetchPullRequestsFromGithubKommitters',
+                    message: 'Starting process to fetch PullRequests from GitHub Kommitters.',
+                    context: { action: 'fetch', entity: 'PullRequests' }
+                  })
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Implementation::FetchPullRequestsFromGithub.new(github_config, shared_storage).execute
