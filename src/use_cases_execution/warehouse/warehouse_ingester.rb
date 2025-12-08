@@ -16,6 +16,8 @@ array = PG::TextEncoder::Array.new.encode(
     FetchReleasesFromGithubKommitCo
     FetchPullRequestsFromGithubKommitCo
     FetchIssuesFromGithubKommitCo
+    FetchRepositoriesFromGithubKommitters
+    FetchRepositoriesFromGithubKommitCo
     FetchRecordsFromWorkLogs
     FetchHiredPersonsFromNotionDatabase
     FetchGoogleDocumentsFromWorkspace

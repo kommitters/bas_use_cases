@@ -10,37 +10,68 @@ module Utils
       ##
       # Base class for formatting GitHub API data.
       #
-      # This class provides a set of methods to extract and format data from
-      # GitHub API responses (as hashes) into a standardized structure. It is designed
-      # to be inherited by more specific formatters (e.g., for Pull Requests, Issues).
+      # This class acts as a central library of extraction methods for GitHub objects
+      # (Repositories, Issues, Pull Requests, Releases). It standardizes how we parse
+      # dates, IDs, and arrays for the PostgreSQL database.
       #
       class Base
         ##
-        # Initializes the formatter with the main GitHub data object and an optional context hash.
+        # Initializes the formatter.
         #
-        def initialize(github_data, repository, context = {})
+        # @param github_data [Sawyer::Resource|Hash] The raw data from Octokit.
+        # @param context [Hash] Additional context (e.g., repository_id, organization_name, related records).
+        #
+        def initialize(github_data, context = {})
           @data = github_data
-          @repo = repository
-          @reviews = context[:reviews]
-          @related_issues = context[:related_issues]
-          @releases = context[:releases]
+          @context = context
+
+          # Context conveniences
+          @repository_id = context[:repository_id] # UUID from our DB
+          @organization = context[:organization]
         end
+
+        # -- Common Identity --
 
         def extract_id
-          @data.id
+          @data[:id]
         end
 
-        def extract_tag_name
-          @data.tag_name
+        def extract_node_id
+          @data[:node_id]
         end
+
+        # -- Repository Specifics --
 
         def extract_name
-          @data.name
+          @data[:name]
         end
 
-        def extract_published_at
-          @data.published_at
+        def extract_full_name
+          @data[:full_name]
         end
+
+        def extract_owner_login
+          # If the payload has owner info, use it; otherwise fallback to context
+          @data.dig(:owner, :login) || @organization
+        end
+
+        def extract_html_url
+          @data[:html_url]
+        end
+
+        def extract_default_branch
+          @data[:default_branch]
+        end
+
+        def extract_is_private
+          @data[:private] || false
+        end
+
+        def extract_is_archived
+          @data[:archived] || false
+        end
+
+        # -- Dates --
 
         def extract_created_at
           @data[:created_at]
@@ -50,91 +81,77 @@ module Utils
           @data[:updated_at]
         end
 
-        def extract_is_prerelease
-          @data.prerelease
-        end
-
-        def extract_repository_id
-          @repo&.[](:id)
-        end
-
-        def extract_milestone_id
-          @data.milestone&.id
-        end
-
-        def extract_assignees_logins
-          @data.assignees&.map(&:login)
-        end
-
-        def extract_labels_names
-          @data.labels&.map(&:name)
+        def extract_published_at
+          @data[:published_at]
         end
 
         def extract_merged_at
           @data[:merged_at]
         end
 
-        def extract_title
-          @data[:title]
+        def extract_closed_at
+          @data[:closed_at]
         end
 
-        def extract_state
-          @data[:state]
+        # -- Issues / PRs Specifics --
+
+        def extract_repository_fk
+          @repository_id
         end
 
         def extract_number
           @data[:number]
         end
 
-        def extract_related_issues
-          return [] if @related_issues.nil? || @related_issues.empty?
-
-          @related_issues
+        def extract_title
+          @data[:title]
         end
 
-        def extract_release_id # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-          return nil if @data[:merged_at].nil? || @releases.nil? || @releases.empty?
-
-          merged_at = @data[:merged_at].is_a?(String) ? Time.parse(@data[:merged_at]) : @data[:merged_at]
-
-          found_release = @releases.sort_by { |r| r[:published_at] || Time.at(0) }
-                                   .reverse
-                                   .find { |release| release[:published_at] && release[:published_at] > merged_at }
-
-          id = found_release&.[](:id)
-
-          return nil if id.to_s.strip.empty?
-
-          id
+        def extract_body
+          @data[:body]
         end
 
-        def format_reviews_as_json
-          return nil if @reviews.nil? || @reviews.empty?
-
-          formatted_reviews = @reviews.map do |review|
-            build_review_hash(review)
-          end
-          formatted_reviews.to_json
+        def extract_state
+          @data[:state]
         end
 
+        def extract_user_login
+          @data.dig(:user, :login)
+        end
+
+        def extract_milestone_id
+          @data.dig(:milestone, :id)
+        end
+
+        # -- Arrays / Associations --
+
+        def extract_assignees_logins
+          return [] unless @data[:assignees]
+
+          @data[:assignees].map { |u| u[:login] }
+        end
+
+        def extract_labels_names
+          return [] unless @data[:labels]
+
+          @data[:labels].map { |l| l[:name] }
+        end
+
+        # -- Helpers --
+
+        # Formats a Ruby array into a PostgreSQL array string format: "{a,b,c}"
         def format_pg_array(array)
           return nil if array.nil? || array.empty?
 
+          # Escape elements if necessary, though simple strings usually suffice
           "{#{array.map(&:to_s).join(',')}}"
         end
 
-        private
+        # Formats a hash or array to a JSON string for JSONB columns
+        def format_json(data)
+          return nil if data.nil? || data.empty?
 
-        # Builds the hash for a single review, including its formatted comments.
-        def build_review_hash(review)
-          {
-            id: review[:id],
-            user_login: review.dig(:user, :login),
-            state: review[:state],
-            body: review[:body],
-            submitted_at: review[:submitted_at],
-            comments: []
-          }
+          data.to_json
         end
       end
     end
