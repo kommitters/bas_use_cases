@@ -4,7 +4,8 @@ require 'time'
 require 'bas/bot/base'
 require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require_relative '../utils/warehouse/github/releases_format'
+require_relative '../utils/warehouse/github/releases_formatter'
+require_relative '../services/postgres/github_repository'
 
 module Implementation
   ##
@@ -39,128 +40,108 @@ module Implementation
   #
   #   Implementation::FetchReleasesFromGithub.new(options, shared_storage).execute
   #
-  class FetchReleasesFromGithub < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
+  class FetchReleasesFromGithub < Bas::Bot::Base
     PER_PAGE = 100
+    DEFAULT_SINCE = Time.parse('2015-01-01')
 
-    # Orchestrates the fetching and formatting of records from GitHub.
-    #
     def process
-      response = initialize_client
-      return error_response(response) if response[:error]
+      repo_service = Services::Postgres::GithubRepository.new(process_options[:db_connection])
 
-      content = fetch_organization_content(response[:client])
-      { success: { type: 'github_release', content: content } }
+      repo_record = repo_service.find_next_to_sync(
+        organization: process_options[:organization],
+        entity_field: :last_synced_releases_at
+      )
+
+      return { success: { message: 'All repositories are up to date.' } } unless repo_record
+
+      stats = process_repository(repo_record)
+
+      { success: { type: 'github_release', content: stats[:content], repo_processed: repo_record } }
     end
 
-    # Orchestrates the writing of processed data to the configured shared storage.
-    #
     def write
-      return @shared_storage_writer.write(process_response) if process_response[:error]
+      response = process_response
+      return if response[:error] || response.dig(:success, :repo_processed).nil?
 
-      content = process_response.dig(:success, :content) || []
-      return if content.empty?
+      content = response.dig(:success, :content) || []
+      repo = response.dig(:success, :repo_processed)
 
-      paginate_and_write(content)
+      paginate_and_write(content) unless content.empty?
+
+      repo_service = Services::Postgres::GithubRepository.new(process_options[:db_connection])
+
+      repo_service.update_sync_timestamp(repo[:id], :last_synced_releases_at, Time.now)
     end
 
     private
 
-    ##
-    # Fetches releases from all repositories in the specified organization.
-    #
-    def fetch_organization_content(client)
-      last_run = fetch_last_run_timestamp
-      repositories = fetch_all_repositories(client)
+    def initialize_client
+      Utils::Github::OctokitClient.new(client_params).execute
+    end
 
-      repositories.flat_map do |repo|
-        fetch_repo_releases(client, repo, last_run).map do |release|
-          format_release(release, repo)
-        end
-      end
+    def process_repository(repo)
+      client_response = initialize_client
+      return { content: [] } if client_response[:error]
+
+      client = client_response[:client]
+
+      # Reconstruct full_name (organization/name)
+      repo_full_name = "#{repo[:organization]}/#{repo[:name]}"
+
+      cutoff_date = repo[:last_synced_releases_at] || DEFAULT_SINCE
+
+      raw_releases = fetch_new_releases(client, repo_full_name, cutoff_date)
+      formatted_releases = normalize_response(raw_releases, repo)
+
+      { content: formatted_releases }
     end
 
     ##
-    # Fetches ALL repositories for the organization, handling pagination.
+    # Manually filters releases since the API doesn't support 'since'.
     #
-    def fetch_all_repositories(client)
-      page = 1
-      [].tap do |repositories|
-        loop do
-          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
-          break if repos.empty?
+    def fetch_new_releases(client, repo_full_name, cutoff_date) # rubocop:disable Metrics/MethodLength
+      [].tap do |collected|
+        page = 1
 
-          repositories.concat(repos)
-          break unless client.last_response.rels[:next]
+        loop do
+          batch = client.releases(repo_full_name, per_page: PER_PAGE, page: page)
+          break if batch.empty?
+
+          fresh_batch = filter_releases_by_date(batch, cutoff_date)
+          collected.concat(fresh_batch)
+
+          # Stop if we found old data (fresh < batch) or no more pages exist
+          break if stop_pagination?(client, batch, fresh_batch)
 
           page += 1
         end
       end
     end
 
-    def fetch_last_run_timestamp
-      read_result = @shared_storage_reader.read
-      Time.parse(read_result.inserted_at.to_s) if read_result.inserted_at
-    end
-
-    ##
-    # Initializes the GitHub client using provided credentials.
-    #
-    def initialize_client
-      response = Utils::Github::OctokitClient.new(client_params).execute
-      return response if response[:error]
-
-      response[:client].auto_paginate = false
-      response
-    end
-
-    ##
-    # Fetches releases for a specific repository, considering the last run timestamp.
-    #
-    def fetch_repo_releases(client, repo, last_run)
-      data = client.releases(repo.full_name, per_page: PER_PAGE)
-      last_resp = client.last_response
-
-      [].tap do |releases|
-        loop do
-          break if data.empty?
-
-          releases.concat(filter_data(data, last_run))
-          break if stop_fetching?(data, last_run, last_resp)
-
-          last_resp, data = fetch_next_page(last_resp)
-        end
+    # Helper to filter a batch of releases based on the cutoff date
+    def filter_releases_by_date(batch, cutoff_date)
+      batch.select do |r|
+        date = r[:published_at] || r[:created_at]
+        date && date > cutoff_date
       end
     end
 
-    def stop_fetching?(data, last_run, last_resp)
-      !page_is_fresh?(data, last_run) || !last_resp.rels[:next]
+    def stop_pagination?(client, batch, fresh_batch)
+      fresh_batch.size < batch.size || !client.last_response.rels[:next]
     end
 
-    def fetch_next_page(last_resp)
-      resp = last_resp.rels[:next].get
-      [resp, resp.data]
+    def normalize_response(releases, repo)
+      releases.map do |release_data|
+        Utils::Warehouse::Github::ReleasesFormatter.new(
+          release_data,
+          {
+            repository_id: repo[:id],
+            organization: repo[:organization]
+          }
+        ).format
+      end
     end
 
-    # Selects releases that are newer than the last run timestamp.
-    def filter_data(data, last_run)
-      return data if page_is_fresh?(data, last_run)
-
-      data.select { |r| release_date(r) > last_run }
-    end
-
-    def page_is_fresh?(data, last_run)
-      last_run.nil? || release_date(data.last) > last_run
-    end
-
-    def release_date(release)
-      release[:published_at] || release[:created_at]
-    end
-
-    def format_release(release, repo)
-      Utils::Warehouse::Github::ReleasesFormat.new(release, repo).format
-    end
-
-    # Paginates content and writes each page to the shared storage.
     def paginate_and_write(content)
       paged_entities = content.each_slice(PER_PAGE).to_a
       paged_entities.each_with_index do |page, idx|
@@ -170,29 +151,17 @@ module Implementation
       end
     end
 
+    def build_record(content:, page_index:, total_pages:, total_records:)
+      { success: { type: 'github_release', content: content, page_index: page_index, total_pages: total_pages,
+                   total_records: total_records } }
+    end
+
     def client_params
       {
         private_pem: process_options[:private_pem],
         app_id: process_options[:app_id],
         organization: process_options[:organization]
       }
-    end
-
-    def normalize_response(releases, repo)
-      releases.map { |release| Utils::Warehouse::Github::ReleasesFormat.new(release, repo).format }
-    end
-
-    def build_record(content:, page_index:, total_pages:, total_records:)
-      {
-        success: {
-          type: 'github_release', content: content, page_index: page_index,
-          total_pages: total_pages, total_records: total_records
-        }
-      }
-    end
-
-    def error_response(response)
-      { error: { message: response[:error] } }
     end
   end
 end
