@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'base'
-
 module Services
   module Postgres
     ##
@@ -51,18 +50,30 @@ module Services
       end
 
       ##
-      # Finds the repository that hasn't been synced for the longest time
-      # for a specific entity type.
+      # Finds the next repository to synchronize based on the specified criteria.
+      # It selects the repository with the oldest synchronization timestamp for the given entity field,
+      # optionally filtering by a dependency field.
       #
-      # @param organization [String] The organization name (e.g., 'kommitters')
-      # @param entity_field [Symbol] The field to check (e.g., :last_synced_issues_at)
-      #
-      def find_next_to_sync(organization:, entity_field:)
-        @db[TABLE]
-          .where(organization: organization, is_archived: false)
-          .order(Sequel.asc(entity_field).nulls_first) # NULLs first means new repos get priority
+      def find_next_to_sync(organization:, entity_field:, dependency_field: nil)
+        scope = @db[TABLE]
+                .where(organization: organization, is_archived: false)
+
+        scope = scope.exclude(dependency_field => nil) if dependency_field
+
+        scope
+          .order(
+            Sequel.asc(entity_field, nulls: :first),
+            Sequel.asc(:name)
+          )
           .limit(1)
           .first
+      end
+
+      ##
+      # Updates the synchronization timestamp for a specific entity on a repository.
+      #
+      def update_sync_timestamp(id, field, time)
+        update(id, { field => time, updated_at: Time.now })
       end
 
       private

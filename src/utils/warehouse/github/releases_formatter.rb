@@ -9,7 +9,7 @@ module Utils
       # This class formats Github release records into a standardized hash format,
       # inheriting extraction logic from the Base class, to match the database schema.
       #
-      class ReleasesFormat < Base
+      class ReleasesFormatter < Base
         ##
         # Formats the release data by calling the extraction methods from the Base class.
         #

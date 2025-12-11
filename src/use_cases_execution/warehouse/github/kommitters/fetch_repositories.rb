@@ -5,7 +5,6 @@ require_relative '../../../../implementations/fetch_repositories_from_github'
 require_relative '../../../../../log/bas_logger'
 require_relative '../../config'
 
-# 1. Read Options (Standard for Bot Base, though Discovery is mostly stateless)
 read_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
@@ -14,7 +13,6 @@ read_options = {
   params: [false, 'FetchRepositoriesFromGithubKommitters']
 }
 
-# 2. Write Options (Where data is staged for the Ingester)
 write_options = {
   connection: Config::Database::CONNECTION,
   db_table: 'warehouse_sync',
@@ -26,7 +24,6 @@ github_config = Config::Github.kommiters
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
-  # Execute the Bot
   Implementation::FetchRepositoriesFromGithub.new(github_config, shared_storage).execute
 
   BAS_LOGGER.info({

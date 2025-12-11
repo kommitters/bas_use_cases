@@ -93,9 +93,17 @@ module Utils
           @data[:closed_at]
         end
 
-        # -- Issues / PRs Specifics --
+        # -- Issues / PRs / Releases Specifics --
 
-        def extract_repository_fk
+        def extract_tag_name
+          @data[:tag_name]
+        end
+
+        def extract_is_prerelease
+          @data[:prerelease] || false
+        end
+
+        def extract_repository_id
           @repository_id
         end
 
