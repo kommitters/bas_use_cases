@@ -108,7 +108,7 @@ module Implementation
       cutoff_date = repo[:last_synced_pull_requests_at] || DEFAULT_SINCE
 
       raw_prs = fetch_updated_prs(client_response[:client], repo_full_name, cutoff_date)
-      formatted_prs = normalize_response(raw_prs, repo)
+      formatted_prs = normalize_response(raw_prs, repo, client_response[:client], repo_full_name)
 
       { content: formatted_prs }
     end
@@ -151,13 +151,23 @@ module Implementation
       !client.last_response.rels[:next]
     end
 
-    def normalize_response(prs, repo)
+    def normalize_response(prs, repo, client, repo_full_name)
       prs.map do |pr_data|
+        reviews = fetch_reviews_safely(client, repo_full_name, pr_data[:number])
+
         Utils::Warehouse::Github::PullRequestsFormatter.new(
           pr_data,
-          { repository_id: repo[:id] }
+          {
+            repository_id: repo[:id], reviews: reviews, db: process_options[:db_connection]
+          }
         ).format
       end
+    end
+
+    def fetch_reviews_safely(client, repo_full_name, pr_number)
+      client.pull_request_reviews(repo_full_name, pr_number)
+    rescue Octokit::Error
+      []
     end
 
     def paginate_and_write(content)

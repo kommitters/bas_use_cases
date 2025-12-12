@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../../../services/postgres/github_issue'
 
 module Utils
   module Warehouse
@@ -15,10 +16,11 @@ module Utils
         def format # rubocop:disable Metrics/MethodLength
           {
             external_github_pull_request_id: extract_id,
-            repository_id: extract_repository_id,
-            number: extract_number, # Acting like external_github_issue_id
+            github_username: extract_user_login,
             external_github_release_id: extract_release_id,
-            related_issue_ids: format_pg_array(extract_related_issues),
+            repository_id: extract_repository_id,
+            issue_id: extract_related_issue_external_ids.first,
+            related_issue_ids: format_pg_array(extract_related_issue_numbers),
             reviews_data: format_reviews_as_json,
             title: extract_title,
             creation_date: extract_created_at,
@@ -28,24 +30,67 @@ module Utils
 
         private
 
-        def extract_related_issues
-          body = extract_body
-          return [] if body.nil? || body.empty?
-
-          # Regex simple para capturar #123, #456
-          # Retorna un array de integers [123, 456]
-          body.scan(/#(\d+)/).flatten.map(&:to_i).uniq
-        end
-
-        def extract_release_id
-          @context[:release_id]
+        def filtered_reviews
+          @filtered_reviews ||= (@context[:reviews] || []).reject { |review| bot_user?(review) }
         end
 
         def format_reviews_as_json
-          reviews = @context[:reviews]
-          return nil if reviews.nil? || reviews.empty?
+          return nil if filtered_reviews.empty?
 
-          format_json(reviews)
+          filtered_reviews.map { |review| build_review_hash(review) }.to_json
+        end
+
+        def extract_related_issue_numbers
+          body = extract_body
+          return [] if body.nil? || body.empty?
+
+          body.scan(/#(\d+)/).flatten.map(&:to_i).uniq
+        end
+
+        def extract_related_issue_external_ids # rubocop:disable Metrics/MethodLength
+          numbers = extract_related_issue_numbers
+          return [] if numbers.empty?
+
+          first_number = numbers.first
+
+          issue_service = Services::Postgres::GithubIssue.new(@context[:db])
+
+          results = issue_service.query(
+            repository_id: @context[:repository_id],
+            number: first_number
+          )
+
+          results.map { |issue| issue[:id] }
+        rescue StandardError => e
+          puts "Error fetching related issue IDs via Service: #{e.message}"
+          []
+        end
+
+        def extract_release_id
+          @data.dig(:milestone, :id) || @data.dig('milestone', 'id')
+        end
+
+        def build_review_hash(review)
+          {
+            id: review[:id],
+            user_login: extract_login_from(review),
+            state: review[:state],
+            body: review[:body],
+            submitted_at: review[:submitted_at],
+            comments_count: review[:comments]&.size || 0,
+            comments: [] # Empty array as per requirement
+          }
+        end
+
+        def extract_login_from(item)
+          item.dig(:user, :login) || item.dig('user', 'login')
+        end
+
+        def bot_user?(item)
+          login = extract_login_from(item)
+          return true unless login # Si no hay login, lo tratamos como inválido/bot
+
+          login.to_s.downcase == 'coderabbitai[bot]' || login.to_s.include?('[bot]')
         end
       end
     end

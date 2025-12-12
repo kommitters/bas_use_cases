@@ -103,10 +103,12 @@ module Implementation
           batch = fetch_repo_page(client, org, page)
           break if batch.empty?
 
-          fresh_batch = filter_fresh_repos(batch, cutoff_time)
-          collected_repos.concat(fresh_batch)
+          time_fresh_batch = filter_by_date(batch, cutoff_time)
 
-          break if should_stop_fetching?(batch, fresh_batch, cutoff_time, client)
+          valid_batch = time_fresh_batch.select { |repo| valid_repository?(repo) }
+
+          collected_repos.concat(valid_batch)
+          break if should_stop_fetching?(batch, time_fresh_batch, cutoff_time, client)
 
           page += 1
         end
@@ -118,18 +120,22 @@ module Implementation
       client.organization_repositories(org, options)
     end
 
-    def filter_fresh_repos(batch, cutoff_time)
+    def filter_by_date(batch, cutoff_time)
       batch.select { |r| r[:updated_at] > cutoff_time }
     end
 
+    def valid_repository?(repo)
+      name = repo[:name]
+      return false if name.start_with?('.')
+
+      true
+    end
+
     def should_stop_fetching?(full_batch, fresh_batch, cutoff_time, client)
-      # Stop if we filtered out some items (meaning we hit the time limit in this page)
       return true if fresh_batch.size < full_batch.size
 
-      # Double check: Stop if the last item in the full batch is already old
       return true if full_batch.last[:updated_at] <= cutoff_time
 
-      # Stop if there are no more pages
       !client.last_response.rels[:next]
     end
 
@@ -152,10 +158,8 @@ module Implementation
       paged_entities = content.each_slice(PER_PAGE).to_a
       paged_entities.each_with_index do |page, idx|
         record = build_record(
-          content: page,
-          page_index: idx + 1,
-          total_pages: paged_entities.size,
-          total_records: content.size
+          content: page, page_index: idx + 1,
+          total_pages: paged_entities.size, total_records: content.size
         )
         @shared_storage_writer.write(record)
       end
@@ -164,11 +168,8 @@ module Implementation
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
-          type: 'github_repository',
-          content: content,
-          page_index: page_index,
-          total_pages: total_pages,
-          total_records: total_records
+          type: 'github_repository', content: content, page_index: page_index,
+          total_pages: total_pages, total_records: total_records
         }
       }
     end

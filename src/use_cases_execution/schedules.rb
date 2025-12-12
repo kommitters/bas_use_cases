@@ -140,12 +140,6 @@ module UseCasesExecution
 
     WAREHOUSE_SYNC_SCHEDULES = [
       { path: "#{__dir__}/warehouse/worklogs/fetch_work_logs.rb", time: ['05:00'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommit_co_releases_from_github.rb", time: ['05:05'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommitters_releases_from_github.rb", time: ['05:10'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommit_co_issues_from_github.rb", time: ['05:15'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['05:20'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['05:25'] },
-      # { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['05:30'] },
       { path: "#{__dir__}/warehouse/apex/fetch_okrs.rb", time: ['05:35'] },
       { path: "#{__dir__}/warehouse/apex/fetch_krs.rb", time: ['05:40'] },
       { path: "#{__dir__}/warehouse/apex/fetch_milestones.rb", time: ['05:45'] },
@@ -155,13 +149,19 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes.rb", time: ['06:05'] },
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
       { path: "#{__dir__}/warehouse/apex/fetch_people.rb", time: ['06:15'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_releases_from_github.rb", time: ['16:35'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_issues_from_github.rb", time: ['16:40'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommit_co_pull_requests_from_github.rb", time: ['16:45'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_releases_from_github.rb", time: ['16:50'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_issues_from_github.rb", time: ['16:55'] },
-      { path: "#{__dir__}/warehouse/github/fetch_kommitters_pull_requests_from_github.rb", time: ['17:00'] },
-      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 }
+
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", time: ['07:00'] },
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", time: ['07:10'] },
+
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: 900_000 }, # 15 minutes
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: 900_000 }, # 15 minutes
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
+
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: 900_000 }, # 15 minutes
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: 900_000 }, # 15 minutes
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
+
+      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 } # 30 minutes
     ].freeze
 
     OPERATON_WAREHOUSE_SYNC_SCHEDULES = [

@@ -11,8 +11,8 @@ module Services
     #
     # Provides CRUD operations for the 'github_pull_requests' table using the Base service.
     class GithubPullRequest < Services::Postgres::Base
-      ATTRIBUTES = %i[external_github_pull_request_id repository_id release_id issue_id related_issue_ids reviews_data
-                      title creation_date merge_date].freeze
+      ATTRIBUTES = %i[external_github_pull_request_id repository_id person_id release_id issue_id related_issue_ids
+                      reviews_data title creation_date merge_date].freeze
 
       TABLE = :github_pull_requests
       HISTORY_TABLE = :github_pull_requests_history
@@ -20,7 +20,7 @@ module Services
 
       RELATIONS = [
         { service: GithubRelease, external: :external_github_release_id, internal: :release_id },
-        { service: GithubIssue, external: :number, internal: :issue_id } # Linking via issue number
+        { service: ApexPeople, external: :github_username, internal: :person_id }
       ].freeze
 
       def insert(params)
