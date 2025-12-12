@@ -19,7 +19,7 @@ write_options = {
   tag: 'FetchRepositoriesFromGithubKommitCo'
 }
 
-github_config = Config::Github.kommiters
+github_config = Config::Github.kommit_co
 
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })

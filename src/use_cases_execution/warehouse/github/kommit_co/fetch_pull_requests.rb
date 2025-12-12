@@ -20,7 +20,7 @@ write_options = {
   tag: 'FetchPullRequestsFromGithubKommitCo'
 }
 
-github_config = Config::Github.kommiters.merge(
+github_config = Config::Github.kommit_co.merge(
   db_connection: Config::Database::WAREHOUSE_CONNECTION
 )
 
@@ -31,13 +31,13 @@ begin
 
   BAS_LOGGER.info({
                     invoker: 'FetchPullRequestsFromGithubKommitCo',
-                    message: 'Process completed successfully from Kommit-Co..',
+                    message: 'Process completed successfully from Kommit-Co.',
                     context: { action: 'fetch', entity: 'PullRequests' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
                      invoker: 'FetchPullRequestsFromGithubKommitCo',
-                     message: 'Error during fetching Pull Requests from GitHub Kommit-Co..',
+                     message: 'Error during fetching Pull Requests from GitHub Kommit-Co.',
                      context: { action: 'fetch', entity: 'PullRequests' },
                      error: e.message,
                      backtrace: e.backtrace&.first(20)
