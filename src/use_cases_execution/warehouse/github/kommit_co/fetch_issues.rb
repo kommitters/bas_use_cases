@@ -30,14 +30,15 @@ begin
   Implementation::FetchIssuesFromGithub.new(github_config, shared_storage).execute
   BAS_LOGGER.info({
                     invoker: 'FetchIssuesFromGithubKommitCo',
-                    message: 'Process completed successfully from Kommit Co.',
+                    message: 'Process completed successfully from Kommit-Co.',
                     context: { action: 'fetch', entity: 'Issues' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
                      invoker: 'FetchIssuesFromGithubKommitCo',
-                     message: 'Error during fetching Issues from GitHub Kommit Co.',
+                     message: 'Error during fetching Issues from GitHub Kommit-Co.',
                      context: { action: 'fetch', entity: 'Issues' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

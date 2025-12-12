@@ -39,6 +39,7 @@ rescue StandardError => e
                      invoker: 'FetchPullRequestsFromGithubKommitters',
                      message: 'Error during fetching Pull Requests from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'PullRequests' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

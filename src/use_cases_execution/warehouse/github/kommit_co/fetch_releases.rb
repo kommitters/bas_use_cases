@@ -31,14 +31,15 @@ begin
 
   BAS_LOGGER.info({
                     invoker: 'FetchReleasesFromGithubKommitCo',
-                    message: 'Process completed successfully from Kommit Co.',
+                    message: 'Process completed successfully from Kommit-Co.',
                     context: { action: 'fetch', entity: 'Releases' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
                      invoker: 'FetchReleasesFromGithubKommitCo',
-                     message: 'Error during fetching Releases from GitHub Kommit Co.',
+                     message: 'Error during fetching Releases from GitHub Kommit-Co.',
                      context: { action: 'fetch', entity: 'Releases' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

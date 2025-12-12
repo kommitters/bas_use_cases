@@ -39,6 +39,7 @@ rescue StandardError => e
                      invoker: 'FetchReleasesFromGithubKommitters',
                      message: 'Error during fetching Releases from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'Releases' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

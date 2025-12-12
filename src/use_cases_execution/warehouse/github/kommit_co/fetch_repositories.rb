@@ -29,13 +29,14 @@ begin
   BAS_LOGGER.info({
                     invoker: 'FetchRepositoriesFromGithubKommitCo',
                     message: 'Process completed successfully from Kommit Co.',
-                    context: { action: 'fetch', entity: 'Repositories', org: 'kommit_co' }
+                    context: { action: 'fetch', entity: 'Repositories', org: 'Kommit-Co' }
                   })
 rescue StandardError => e
   BAS_LOGGER.error({
                      invoker: 'FetchRepositoriesFromGithubKommitCo',
-                     message: 'Error during fetching Repositories from Kommit Co.',
+                     message: 'Error during fetching Repositories from Kommit-Co.',
                      context: { action: 'fetch', entity: 'Repositories' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end
