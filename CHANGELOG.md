@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.14.2 (12.12.25)
+- [Optimize and Fix GitHub Data Fetching Bots](https://github.com/kommitters/bas_use_cases/pull/272)
+- [Update GitHub bot implementations](https://github.com/kommitters/bas_use_cases/pull/270)
+- [Pto apex notification](https://github.com/kommitters/bas_use_cases/pull/268)
+
 ## 1.14.1 (20.11.25)
 - [Fix database connection in migration file](https://github.com/kommitters/bas_use_cases/pull/262)
 - [Organize labels for better understanding of logs, and add new vars to connect with Loki.](https://github.com/kommitters/bas_use_cases/pull/260)
