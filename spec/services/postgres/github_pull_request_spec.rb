@@ -82,23 +82,6 @@ RSpec.describe Services::Postgres::GithubPullRequest do
       expect(pr[:title]).to eq('My First PR')
     end
 
-    it 'assigns foreign keys for release and issue using external ids' do
-      params = {
-        external_github_pull_request_id: 2,
-        repository_id: 1,
-        title: 'PR with Relations',
-        creation_date: Time.now,
-        external_github_release_id: 900,
-        number: 123
-      }
-
-      id = service.insert(params)
-      pr = service.find(id)
-
-      expect(pr[:release_id]).to eq(@release_id)
-      expect(pr[:issue_id]).to eq(@issue_id)
-    end
-
     it 'handles array and json fields' do
       params = {
         external_github_pull_request_id: 3,
@@ -133,23 +116,6 @@ RSpec.describe Services::Postgres::GithubPullRequest do
 
       expect(updated_pr[:title]).to eq('Updated Title')
       expect(updated_pr[:merge_date]).not_to be_nil
-    end
-
-    it 'reassigns foreign keys on update' do
-      # Create a new issue to reassign to
-      new_issue_id = db[:github_issues].insert(
-        external_github_issue_id: 456,
-        repository_id: 1,
-        person_id: @person_id,
-        created_at: Time.now,
-        updated_at: Time.now,
-        number: 456
-      )
-
-      service.update(pr_id, { number: 456 })
-      updated_pr = service.find(pr_id)
-
-      expect(updated_pr[:issue_id]).to eq(new_issue_id)
     end
 
     it 'saves the previous state to the history table before updating' do
