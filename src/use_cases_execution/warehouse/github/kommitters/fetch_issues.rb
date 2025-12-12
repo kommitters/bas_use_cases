@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'bas/shared_storage/postgres'
-require 'bas/shared_storage/default'
 
-require_relative '../config'
-require_relative '../../../../log/bas_logger'
-require_relative '../../../implementations/fetch_issues_from_github'
+require_relative '../../../../implementations/fetch_issues_from_github'
+require_relative '../../../../../log/bas_logger'
+require_relative '../../config'
 
 read_options = {
   connection: Config::Database::CONNECTION,
@@ -21,7 +20,9 @@ write_options = {
   tag: 'FetchIssuesFromGithubKommitters'
 }
 
-github_config = Config::Github.kommiters
+github_config = Config::Github.kommiters.merge(
+  db_connection: Config::Database::WAREHOUSE_CONNECTION
+)
 
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
@@ -37,6 +38,7 @@ rescue StandardError => e
                      invoker: 'FetchIssuesFromGithubKommitters',
                      message: 'Error during fetching Issues from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'Issues' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

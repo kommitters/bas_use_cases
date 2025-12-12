@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'bas/shared_storage/postgres'
-require 'bas/shared_storage/default'
 
-require_relative '../config'
-require_relative '../../../../log/bas_logger'
-require_relative '../../../implementations/fetch_releases_from_github'
+require_relative '../../../../implementations/fetch_releases_from_github'
+require_relative '../../../../../log/bas_logger'
+require_relative '../../config'
 
 read_options = {
   connection: Config::Database::CONNECTION,
@@ -21,12 +20,15 @@ write_options = {
   tag: 'FetchReleasesFromGithubKommitters'
 }
 
-github_config = Config::Github.kommiters
+github_config = Config::Github.kommiters.merge(
+  db_connection: Config::Database::WAREHOUSE_CONNECTION
+)
 
 begin
   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
 
   Implementation::FetchReleasesFromGithub.new(github_config, shared_storage).execute
+
   BAS_LOGGER.info({
                     invoker: 'FetchReleasesFromGithubKommitters',
                     message: 'Process completed successfully from Kommitters.',
@@ -37,6 +39,7 @@ rescue StandardError => e
                      invoker: 'FetchReleasesFromGithubKommitters',
                      message: 'Error during fetching Releases from GitHub Kommitters.',
                      context: { action: 'fetch', entity: 'Releases' },
-                     error: e.message
+                     error: e.message,
+                     backtrace: e.backtrace&.first(20)
                    })
 end

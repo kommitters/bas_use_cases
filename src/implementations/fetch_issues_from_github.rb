@@ -1,32 +1,23 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require_relative '../../src/utils/warehouse/github/issues_format'
+require 'time'
+require_relative '../utils/warehouse/github/issues_formatter'
+require_relative '../services/postgres/github_repository'
 
 module Implementation
   ##
   # Implementation::FetchIssuesFromGithub
   #
-  # This class implements a bot that fetches issues from all repositories in a GitHub organization
-  # and saves them into shared storage (e.g., PostgresDB).
+  # This bot acts as a "Worker" in the new architecture. Instead of iterating through
+  # every repository in the organization, it asks the database for the *next* repository
+  # that needs synchronization (the one with the oldest sync timestamp).
+  #
+  # It fetches only issues modified since the last run for that specific repository,
+  # preventing memory overloads and API rate limiting.
   #
   # <b>Usage Example</b>
-  #
-  #   read_options = {
-  #     connection: Config::CONNECTION,
-  #     db_table: 'warehouse_sync',
-  #     avoid_process: true,
-  #     where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  #     params: [false, 'FetchIssuesFromGithub']
-  #   }
-  #
-  #   write_options = {
-  #     connection: Config::CONNECTION,
-  #     db_table: 'warehouse_sync',
-  #     tag: 'FetchIssuesFromGithub'
-  #   }
   #
   #   options = {
   #     private_pem: Config::GITHUB_PRIVATE_PEM,
@@ -34,102 +25,108 @@ module Implementation
   #     organization: Config::KOMMITERS_ORGANIZATION
   #   }
   #
-  #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
-  #
   #   Implementation::FetchIssuesFromGithub.new(options, shared_storage).execute
   #
   class FetchIssuesFromGithub < Bas::Bot::Base
     PER_PAGE = 100
+    DEFAULT_SINCE = Time.now - (365 * 2 * 24 * 60 * 60)
 
-    # Orchestrates the fetching and formatting of records from GitHub.
-    #
     def process
-      client_response = initialize_client
-      return error_response(client_response) if client_response[:error]
+      repo_service = Services::Postgres::GithubRepository.new(process_options[:db_connection])
 
-      client = client_response[:client]
-      repositories = fetch_repositories(client)
-      all_issues = fetch_all_issues(client, repositories)
+      repo_record = repo_service.find_next_to_sync(
+        organization: process_options[:organization],
+        entity_field: :last_synced_issues_at
+      )
 
-      { success: { type: 'github_issue', content: all_issues } }
+      return { success: { message: 'All repositories are up to date.' } } unless repo_record
+
+      stats = process_repository(repo_record)
+
+      {
+        success: { type: 'github_issue', content: stats[:content], repo_processed: repo_record }
+      }
     end
 
-    # Orchestrates the writing of processed data to the configured shared storage.
+    ##
+    # Writes the processed data to the warehouse_sync table AND updates the
+    # repository's synchronization timestamp in the master table.
     #
     def write
-      return @shared_storage_writer.write(process_response) if process_response[:error]
+      response = process_response
+      return if response[:error] || response.dig(:success, :repo_processed).nil?
 
-      content = process_response.dig(:success, :content) || []
-      return if content.empty?
+      content = response.dig(:success, :content) || []
+      repo = response.dig(:success, :repo_processed)
 
-      paginate_and_write(content)
+      paginate_and_write(content) unless content.empty?
+
+      repo_service = Services::Postgres::GithubRepository.new(process_options[:db_connection])
+      repo_service.update_sync_timestamp(repo[:id], :last_synced_issues_at, Time.now)
     end
 
     private
 
-    # Fetches the timestamp of the last successful run from shared storage.
-    def fetch_last_run_timestamp
-      read_result = @shared_storage_reader.read
-      return if read_result.inserted_at.nil?
-
-      Time.parse(read_result.inserted_at.to_s)
+    ##
+    # Initializes the Octokit client.
+    #
+    def initialize_client
+      Utils::Github::OctokitClient.new(client_params).execute
     end
 
-    # Initializes the Octokit client and handles authentication.
-    def initialize_client
-      client_response = Utils::Github::OctokitClient.new(client_params).execute
-      return client_response if client_response[:error]
+    ##
+    # Orchestrates the fetching and formatting for a single repository.
+    #
+    def process_repository(repo)
+      client_response = initialize_client
+      return { content: [] } if client_response[:error]
 
       client = client_response[:client]
+      repo_full_name = "#{repo[:organization]}/#{repo[:name]}"
+
+      # Determine "Since" cursor
+      since_date = repo[:last_synced_issues_at] || DEFAULT_SINCE
+
+      # Fetch only what changed since last time
+      raw_issues = fetch_issues_from_api(client, repo_full_name, since_date)
+
+      formatted_issues = normalize_response(raw_issues, repo)
+
+      { content: formatted_issues }
+    end
+
+    ##
+    # Fetches issues from the API using the native 'since' filter.
+    #
+    def fetch_issues_from_api(client, repo_full_name, since_date)
+      options = { state: 'all', since: since_date.iso8601, per_page: PER_PAGE }
+
+      # Auto-pagination is safe here because 'since' limits the dataset significantly
+      client.auto_paginate = true
+      issues = client.list_issues(repo_full_name, options)
       client.auto_paginate = false
-      { client: client }
-    end
-
-    # Fetches all repositories for the configured organization.
-    def fetch_repositories(client)
-      page = 1
-      [].tap do |repositories|
-        loop do
-          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
-          break if repos.empty?
-
-          repositories.concat(repos)
-          break unless client.last_response.rels[:next]
-
-          page += 1
-        end
-      end
-    end
-
-    # Fetches all issues for a given list of repositories.
-    def fetch_all_issues(client, repositories)
-      repositories.flat_map { |repo| process_repository(client, repo) }
-    end
-
-    # Processes a single repository to fetch and format its issues.
-    def process_repository(client, repo)
-      raw_issues = fetch_all_pages_for_repo(client, repo)
-      normalize_response(raw_issues, repo)
-    end
-
-    # Fetches all pages of issues for a single repository, handling pagination manually.
-    def fetch_all_pages_for_repo(client, repo)
-      api_params = {
-        state: 'all', per_page: PER_PAGE, since: fetch_last_run_timestamp&.iso8601
-      }.compact
-
-      issues = client.issues(repo.full_name, api_params)
-      last_response = client.last_response
-
-      while last_response&.rels&.[](:next)
-        last_response = last_response.rels[:next].get
-        issues.concat(last_response.data)
-      end
 
       issues
     end
 
-    # Paginates content and writes each page to the shared storage.
+    ##
+    # Maps raw Octokit objects to the database schema using the Formatter.
+    #
+    def normalize_response(issues, repo)
+      issues.filter_map do |issue_data|
+        next unless issue?(issue_data)
+
+        # We pass the Local Repo UUID (repo[:id]) to the formatter
+        Utils::Warehouse::Github::IssuesFormatter.new(
+          issue_data,
+          { repository_id: repo[:id] }
+        ).format
+      end
+    end
+
+    ##
+    # Splits content into pages and writes to shared storage.
+    #
     def paginate_and_write(content)
       paged_entities = content.each_slice(PER_PAGE).to_a
       paged_entities.each_with_index do |page, idx|
@@ -143,20 +140,6 @@ module Implementation
       end
     end
 
-    def client_params
-      {
-        private_pem: process_options[:private_pem],
-        app_id: process_options[:app_id],
-        organization: process_options[:organization]
-      }
-    end
-
-    def normalize_response(issues, repo)
-      issues.filter_map do |issue_data|
-        Utils::Warehouse::Github::IssuesFormatter.new(issue_data, repo).format if issue?(issue_data)
-      end
-    end
-
     def build_record(content:, page_index:, total_pages:, total_records:)
       {
         success: {
@@ -166,6 +149,14 @@ module Implementation
           total_pages: total_pages,
           total_records: total_records
         }
+      }
+    end
+
+    def client_params
+      {
+        private_pem: process_options[:private_pem],
+        app_id: process_options[:app_id],
+        organization: process_options[:organization]
       }
     end
 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require 'bas/bot/base'
-require 'bas/shared_storage/postgres'
 require 'bas/utils/github/octokit_client'
-require_relative '../../src/utils/warehouse/github/pull_requests_format'
+require 'time'
+require_relative '../../src/utils/warehouse/github/pull_requests_formatter'
+require_relative '../services/postgres/github_repository'
 
 module Implementation
-  ###
   # Implementation::FetchPullRequestsFromGithub
   #
   #  Implements a bot that fetches pull requests, their reviews, and all
@@ -15,257 +15,159 @@ module Implementation
   # <b>Usage Example</b>
   #
   #   read_options = {
-  #     connection: Config::CONNECTION,
+  #     connection: Config::Database::CONNECTION,
   #     db_table: 'warehouse_sync',
   #     avoid_process: true,
   #     where: 'archived=$1 AND tag=$2 ORDER BY inserted_at DESC',
-  #     params: [false, 'FetchPullRequestsFromGithub']
+  #     params: [false, 'FetchPullRequestsFromGithubKommitters']
   #   }
   #
   #   write_options = {
-  #     connection: Config::CONNECTION,
+  #     connection: Config::Database::CONNECTION,
   #     db_table: 'warehouse_sync',
-  #     tag: 'FetchPullRequestsFromGithub'
+  #     tag: 'FetchPullRequestsFromGithubKommitters'
   #   }
   #
-  #   options = {
-  #     private_pem: Config::GITHUB_PRIVATE_PEM,
-  #     app_id: Config::GITHUB_APP_ID,
-  #     organization: Config::KOMMITERS_ORGANIZATION
-  #   }
+  #   github_config = Config::Github.kommiters.merge(
+  #     db_connection: Config::Database::WAREHOUSE_CONNECTION
+  #   )
   #
   #   shared_storage = Bas::SharedStorage::Postgres.new({ read_options:, write_options: })
   #
-  #   Implementation::FetchPullRequestsFromGithub.new(options, shared_storage).execute
+  #   Implementation::FetchPullRequestsFromGithub.new(github_config, shared_storage).execute
   #
   class FetchPullRequestsFromGithub < Bas::Bot::Base # rubocop:disable Metrics/ClassLength
-    # The number of items to fetch per page from the GitHub API.
     PER_PAGE = 100
-    MAX_THREADS = 5
+    DEFAULT_SINCE = Time.now - (365 * 2 * 24 * 60 * 60)
 
     ##
-    # Orchestrates the fetching and formatting of records from GitHub.
+    # Main execution method.
+    # Finds the next eligible repository and processes it.
     #
     def process
-      response = initialize_client
-      return error_response(response) if response[:error]
+      repo_record = find_next_repository
+      return { success: { message: 'All eligible repositories are up to date.' } } unless repo_record
 
-      content = fetch_organization_content(response[:client])
-      { success: { type: 'github_pull_request', content: content } }
+      stats = process_repository(repo_record)
+
+      {
+        success: { type: 'github_pull_request', content: stats[:content], repo_processed: repo_record }
+      }
     end
 
     ##
-    # Orchestrates the writing of processed data to the configured shared storage.
+    # Writes data to storage and updates the repository timestamp.
     #
     def write
-      return @shared_storage_writer.write(process_response) if process_response[:error]
+      response = process_response
+      return if response[:error] || response.dig(:success, :repo_processed).nil?
 
-      content = process_response.dig(:success, :content) || []
-      return if content.empty?
+      content = response.dig(:success, :content) || []
+      repo = response.dig(:success, :repo_processed)
 
-      paginate_and_write(content)
+      paginate_and_write(content) unless content.empty?
+
+      mark_repository_as_synced(repo[:id])
     end
 
     private
 
     ##
-    # Fetches all pull requests across all repositories in the organization.
+    # Finds the next repository that needs synchronization, ensuring
+    # that Issues have been synced first.
     #
-    def fetch_organization_content(main_client)
-      last_run = fetch_last_run_timestamp
-      repositories = fetch_active_repositories(main_client)
-
-      log_start_message(repositories.size)
-
-      process_batches(main_client, repositories, last_run)
+    def find_next_repository
+      Services::Postgres::GithubRepository.new(process_options[:db_connection]).find_next_to_sync(
+        organization: process_options[:organization],
+        entity_field: :last_synced_pull_requests_at,
+        dependency_field: :last_synced_issues_at # Critical: Issues must exist first
+      )
     end
 
     ##
-    # Processes repositories in batches using multithreading.
+    # Updates the synchronization timestamp in the master table.
     #
-    def process_batches(main_client, repositories, last_run)
-      total_batches = (repositories.size.to_f / MAX_THREADS).ceil
-
-      repositories.each_slice(MAX_THREADS).with_index.flat_map do |batch, index|
-        log_batch_processing(batch, index + 1, total_batches)
-        process_batch_in_threads(main_client, batch, last_run)
-      end
+    def mark_repository_as_synced(repo_id)
+      Services::Postgres::GithubRepository.new(process_options[:db_connection]).update_sync_timestamp(
+        repo_id,
+        :last_synced_pull_requests_at,
+        Time.now
+      )
     end
 
-    ##
-    # Handles the multithreading logic for a single batch.
-    #
-    def process_batch_in_threads(main_client, batch, last_run)
-      threads = batch.map do |repo|
-        Thread.new do
-          safe_process_repo(main_client.dup, repo, last_run)
-        end
-      end
-
-      threads.map(&:value).flatten
-    end
-
-    ##
-    # Encapsulates the logic for processing a single repo securely within a thread.
-    # Handles errors locally to prevent crashing the batch.
-    #
-    def safe_process_repo(client, repo, last_run)
-      repo_releases = fetch_repo_releases(client, repo)
-
-      fetch_repo_prs(client, repo, last_run).map do |pr|
-        format_pr(client, pr, repo, repo_releases)
-      end
-    rescue StandardError => e
-      puts "  Error in repo #{repo[:name]}: #{e.message}"
-      [] # Return empty array to avoid blocking the process
-    end
-
-    def fetch_active_repositories(client)
-      fetch_all_repositories(client).reject { |repo| repo[:archived] }
-    end
-
-    ##
-    # Logs the start message with total repositories and batches.
-    #
-    def log_start_message(total_repos)
-      total_batches = (total_repos.to_f / MAX_THREADS).ceil
-      puts "--- Loading #{total_repos} repositories in #{total_batches} batches ---"
-    end
-
-    ##
-    # Logs the processing of the current batch.
-    #
-    def log_batch_processing(batch, current_batch_num, total_batches)
-      repo_names = batch.map { |r| r[:name] }.join(', ')
-      puts "[Batch #{current_batch_num}/#{total_batches}] Processing: #{repo_names}"
-    end
-
-    ##
-    # Fetches ALL repositories for the organization, handling pagination.
-    #
-    def fetch_all_repositories(client)
-      page = 1
-      [].tap do |repositories|
-        loop do
-          repos = client.organization_repositories(process_options[:organization], page: page, per_page: PER_PAGE)
-          break if repos.empty?
-
-          repositories.concat(repos)
-          break unless client.last_response.rels[:next]
-
-          page += 1
-        end
-      end
-    end
-
-    ##
-    # Fetches the timestamp of the last successful run from shared storage.
-    #
-    def fetch_last_run_timestamp
-      read_result = @shared_storage_reader.read
-      Time.parse(read_result.inserted_at.to_s) if read_result.inserted_at
-    end
-
-    ##
-    # Initializes the Octokit client and handles authentication.
-    #
     def initialize_client
-      response = Utils::Github::OctokitClient.new(client_params).execute
-      return response if response[:error]
+      Utils::Github::OctokitClient.new(client_params).execute
+    end
 
-      response[:client].auto_paginate = false
-      response
+    def process_repository(repo)
+      client_response = initialize_client
+      return { content: [] } if client_response[:error]
+
+      # Reconstruct full name dynamically
+      repo_full_name = "#{repo[:organization]}/#{repo[:name]}"
+      cutoff_date = repo[:last_synced_pull_requests_at] || DEFAULT_SINCE
+
+      raw_prs = fetch_updated_prs(client_response[:client], repo_full_name, cutoff_date)
+      formatted_prs = normalize_response(raw_prs, repo, client_response[:client], repo_full_name)
+
+      { content: formatted_prs }
     end
 
     ##
-    # Fetches a map of releases for each repository.
+    # Fetches pull requests updated since the cutoff date, handling pagination
     #
-    def fetch_repo_releases(client, repo) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def fetch_updated_prs(client, repo_full_name, cutoff_date) # rubocop:disable Metrics/MethodLength
       page = 1
-      all_releases = [].tap do |releases_acc|
-        loop do
-          releases = client.releases(repo[:full_name], per_page: PER_PAGE, page: page)
-          break if releases.empty?
 
-          releases_acc.concat(releases)
-          break unless client.last_response.rels[:next]
+      [].tap do |collected|
+        loop do
+          batch = fetch_pr_page(client, repo_full_name, page)
+          break if batch.empty?
+
+          fresh_batch = select_fresh_prs(batch, cutoff_date)
+          collected.concat(fresh_batch)
+
+          break if should_stop_fetching?(batch, fresh_batch, cutoff_date, client)
 
           page += 1
         end
       end
-      all_releases.sort_by { |r| r[:published_at] }.reverse
-    rescue Octokit::Error => e
-      puts "Error fetching releases for #{repo[:full_name]}: #{e.message}"
-      []
     end
 
-    ##
-    # Fetches all pull requests for a given repository, considering the last run timestamp.
-    #
-    def fetch_repo_prs(client, repo, last_run) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-      data = client.pull_requests(repo[:full_name], prs_api_params)
-      last_resp = client.last_response
+    def fetch_pr_page(client, repo_name, page)
+      options = { state: 'all', sort: 'updated', direction: 'desc', per_page: PER_PAGE, page: page }
+      client.pull_requests(repo_name, options)
+    end
 
-      [].tap do |prs|
-        loop do
-          break if data.empty?
+    def select_fresh_prs(batch, cutoff_date)
+      batch.select { |pr| pr[:updated_at] > cutoff_date }
+    end
 
-          prs.concat(filter_data(data, last_run))
-          break if stop_fetching?(data, last_run, last_resp)
+    def should_stop_fetching?(full_batch, fresh_batch, cutoff_date, client)
+      return true if fresh_batch.size < full_batch.size
 
-          sleep 0.1
-          last_resp, data = fetch_next_page(last_resp)
-        end
+      return true if full_batch.last[:updated_at] <= cutoff_date
+
+      !client.last_response.rels[:next]
+    end
+
+    def normalize_response(prs, repo, client, repo_full_name)
+      prs.map do |pr_data|
+        reviews = fetch_reviews_safely(client, repo_full_name, pr_data[:number])
+
+        Utils::Warehouse::Github::PullRequestsFormatter.new(
+          pr_data,
+          {
+            repository_id: repo[:id], reviews: reviews, db: process_options[:db_connection]
+          }
+        ).format
       end
-    rescue Octokit::Error => e
-      if e.is_a?(Octokit::TooManyRequests)
-        puts "Rate Limit in #{repo[:name]}. Waiting..."
-        sleep 60
-        retry
-      end
-      puts "Error PRs #{repo[:name]}: #{e.message}"
+    end
+
+    def fetch_reviews_safely(client, repo_full_name, pr_number)
+      client.pull_request_reviews(repo_full_name, pr_number)
+    rescue Octokit::Error
       []
-    end
-
-    def stop_fetching?(data, last_run, last_resp)
-      !page_is_fresh?(data, last_run) || !last_resp.rels[:next]
-    end
-
-    def fetch_next_page(last_resp)
-      resp = last_resp.rels[:next].get
-      [resp, resp.data]
-    end
-
-    def filter_data(data, last_run)
-      return data if page_is_fresh?(data, last_run)
-
-      data.select { |pr| pr[:updated_at] > last_run }
-    end
-
-    def prs_api_params
-      { state: 'all', sort: 'updated', direction: 'desc', per_page: PER_PAGE }
-    end
-
-    def page_is_fresh?(data, last_run)
-      last_run.nil? || data.last[:updated_at] > last_run
-    end
-
-    def format_pr(client, pull_request, repo, releases)
-      context = {
-        reviews: client.pull_request_reviews(repo[:full_name], pull_request[:number]),
-        related_issues: extract_related_issues(pull_request[:body]),
-        releases: releases
-      }
-      Utils::Warehouse::Github::PullRequestsFormat.new(pull_request, repo, context).format
-    end
-
-    ##
-    # Extracts issue numbers from a PR body and fetches the full issue objects.
-    #
-    def extract_related_issues(body)
-      return [] if body.nil?
-
-      body.scan(/(?:closes|fixes|resolves|fix|related)\s+#(\d+)/i).flatten.map(&:to_i)
     end
 
     def paginate_and_write(content)
@@ -273,10 +175,21 @@ module Implementation
       paged_entities.each_with_index do |page, idx|
         record = build_record(
           content: page, page_index: idx + 1,
-          total_pages: paged_entities.size, total_records: content.size
+          total_pages: paged_entities.size,
+          total_records: content.size
         )
         @shared_storage_writer.write(record)
       end
+    end
+
+    def build_record(content:, page_index:, total_pages:, total_records:)
+      {
+        success: {
+          type: 'github_pull_request', content: content, page_index: page_index,
+          total_pages: total_pages,
+          total_records: total_records
+        }
+      }
     end
 
     def client_params
@@ -285,19 +198,6 @@ module Implementation
         app_id: process_options[:app_id],
         organization: process_options[:organization]
       }
-    end
-
-    def build_record(content:, page_index:, total_pages:, total_records:)
-      {
-        success: {
-          type: 'github_pull_request', content: content, page_index: page_index,
-          total_pages: total_pages, total_records: total_records
-        }
-      }
-    end
-
-    def error_response(response)
-      { error: { message: response[:error] } }
     end
   end
 end

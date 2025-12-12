@@ -8,6 +8,7 @@ require_relative '../../services/postgres/work_log'
 require_relative '../../services/postgres/github_release'
 require_relative '../../services/postgres/github_issue'
 require_relative '../../services/postgres/github_pull_request'
+require_relative '../../services/postgres/github_repository'
 require_relative '../../services/postgres/kpi'
 require_relative '../../services/postgres/calendar_event'
 require_relative '../../services/postgres/operaton_process'
@@ -49,6 +50,8 @@ module Utils
         'github_issue' => { service: Services::Postgres::GithubIssue, external_key: 'external_github_issue_id' },
         'github_pull_request' => { service: Services::Postgres::GithubPullRequest,
                                    external_key: 'external_github_pull_request_id' },
+        'github_repository' => { service: Services::Postgres::GithubRepository,
+                                 external_key: 'external_repository_id' },
         'kpi' => { service: Services::Postgres::Kpi, external_key: 'external_kpi_id' },
         'calendar_event' => { service: Services::Postgres::CalendarEvent, external_key: 'external_calendar_event_id' },
         'okr' => { service: Services::Postgres::Okr, external_key: 'external_okr_id' },
