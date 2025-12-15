@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'bas/shared_storage/postgres'
-require_relative '../../../../implementations/warehouse/github/fetch_repositories_from_github'
+require_relative '../../../../implementations/fetch_repositories_from_github'
 require_relative '../../../../../log/bas_logger'
 require_relative '../../config'
 

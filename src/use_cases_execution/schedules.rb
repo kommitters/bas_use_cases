@@ -151,16 +151,16 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
       { path: "#{__dir__}/warehouse/apex/fetch_people.rb", time: ['06:15'] },
 
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", time: ['07:00'] },
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", time: ['07:10'] },
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", interval: 900_000 },
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", interval: 900_000 },
 
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: 900_000 }, # 15 minutes
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: 900_000 }, # 15 minutes
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
+      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: 900_000 }, # 15 minutes
+      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: 900_000 }, # 15 minutes
+      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
 
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: 900_000 }, # 15 minutes
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: 900_000 }, # 15 minutes
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
+      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: 900_000 }, # 15 minutes
+      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: 900_000 }, # 15 minutes
+      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
 
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 } # 30 minutes
     ].freeze
