@@ -23,7 +23,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 100M
+          memory: 512M
     logging:
       driver: loki
       options:
