@@ -9,6 +9,17 @@ module UseCasesExecution
   # time: The time when the script will be executed
   # day: The day when the script will be executed
   module Schedules
+    FIVE_MIN = 300_000
+    TEN_MIN = 600_000
+    FIFTEEN_MIN = 900_000
+    TWENTY_MIN = 1_200_000
+    TWENTY_FIVE_MIN = 1_500_000
+    THIRTY_MIN = 1_800_000
+    TWO_HOURS = 7_200_000
+
+    KOMMIT_CO_BASE  = 0
+    KOMMITTERS_BASE = 1_200_000
+
     def self.load
       constants.map { |const| const_get(const) }.flatten
     end
@@ -151,16 +162,15 @@ module UseCasesExecution
       { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
       { path: "#{__dir__}/warehouse/apex/fetch_people.rb", time: ['06:15'] },
 
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", interval: 900_000 },
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", interval: 900_000 },
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", interval: TWO_HOURS },
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: FIVE_MIN },
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: TEN_MIN },
+      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: FIFTEEN_MIN },
 
-      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: 900_000 }, # 15 minutes
-      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: 900_000 }, # 15 minutes
-      # { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
-
-      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: 900_000 }, # 15 minutes
-      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: 900_000 }, # 15 minutes
-      # { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: 2_700_000 }, # 45 minutes
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", interval: TWO_HOURS },
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: TWENTY_MIN },
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: TWENTY_FIVE_MIN },
+      { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: THIRTY_MIN },
 
       { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 } # 30 minutes
     ].freeze
