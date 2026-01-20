@@ -3,6 +3,9 @@
 require 'json'
 require 'bas/bot/base'
 require 'aws-sdk-s3'
+require 'open3'
+require 'logger'
+require 'shellwords'
 
 module Implementation
   ##
@@ -34,11 +37,19 @@ module Implementation
   #   Implementation::SaveBackupInR2.new(options, shared_storage_reader, shared_storage_writer).execute
   #
   class SaveBackupInR2 < Bas::Bot::Base
-    def process
+    def process # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
       dump_result = create_backup
-      save_dump_in_r2
+      return dump_result if dump_result[:error]
 
-      { success: { result: 'backup saved correctly' } }
+      upload_result = save_dump_in_r2
+      result_status = upload_result[:success] ? 'backup uploaded to R2 correctly' : upload_result[:error]
+      return { error: result_status } unless upload_result[:success]
+
+      delete_result = upload_result[:success] ? delete_backup : { error: 'local backup not uploaded, so not deleted' }
+      delete_status = delete_result[:success] ? 'local backup deleted correctly' : delete_result[:error]
+      return { error: "#{result_status}. #{delete_status}" } unless delete_result[:success]
+
+      { success: { result: "#{result_status}. #{delete_status}" } }
     rescue Aws::S3::Errors::ServiceError => e
       { error: { backup: dump_result, r2_api: e.message } }
     end
@@ -46,17 +57,28 @@ module Implementation
     private
 
     def create_backup
-      system(command) ? { success: :ok } : { error: 'error creating the dump' }
+      env = { 'PGPASSWORD' => process_options[:connection][:password].to_s }
+      _stdout, stderr, status = Open3.capture3(env, 'bash', '-lc', backup_command)
+      return { success: :ok } if status.success?
+
+      { error: "error creating the dump: #{stderr.strip}" }
     end
 
-    def command
-      db_user = process_options[:connection][:user]
-      db_host = process_options[:connection][:host]
-      db_port = process_options[:connection][:port]
-      db_name = process_options[:connection][:dbname]
-      password = process_options[:connection][:password]
+    def backup_command # rubocop:disable Metrics/AbcSize
+      db_user = Shellwords.escape(process_options[:connection][:user].to_s)
+      db_host = Shellwords.escape(process_options[:connection][:host].to_s)
+      db_port = Shellwords.escape(process_options[:connection][:port].to_s)
+      db_name = Shellwords.escape(process_options[:connection][:dbname].to_s)
+      out = Shellwords.escape(output_file.to_s)
 
-      "PGPASSWORD='#{password}' pg_dump -U #{db_user} -h #{db_host} -p #{db_port} #{db_name} | gzip > #{output_file}"
+      "set -o pipefail; pg_dump -U #{db_user} -h #{db_host} -p #{db_port} #{db_name} | gzip > #{out}"
+    end
+
+    def delete_backup
+      File.delete(output_file) == 1 ? { success: true } : { error: 'local dump file not deleted' }
+    rescue SystemCallError => e
+      Logger.new($stdout).error("#{e.class}: #{e.message}")
+      { error: "#{e.class}: #{e.message}" }
     end
 
     def output_file
@@ -64,11 +86,32 @@ module Implementation
     end
 
     def save_dump_in_r2
-      s3_client.put_object(
-        bucket: process_options[:bucket_name],
-        body: File.open(output_file, 'rb'),
-        key:
-      )
+      object_key = key
+      bucket_name = process_options[:bucket_name]
+      file_size = File.size(output_file)
+      result = upload_file(object_key, bucket_name, file_size)
+
+      return { success: true } if successful_upload?(result)
+      return { success: true } if verify_upload(object_key, bucket_name, file_size)
+
+      { error: 'error verifying uploaded backup in R2' }
+    rescue StandardError => e
+      { error: "#{e.class}: #{e.message}" }
+    end
+
+    def upload_file(object_key, bucket_name, file_size)
+      result = nil
+
+      if file_size >= 5 * 1024 * 1024 * 1024
+        obj = s3_resource.bucket(bucket_name).object(object_key)
+        result = obj.upload_file(output_file) ? obj : nil
+      else
+        File.open(output_file, 'rb') do |io|
+          result = s3_client.put_object(bucket: bucket_name, key: object_key, body: io)
+        end
+      end
+
+      result
     end
 
     def s3_client
@@ -81,8 +124,31 @@ module Implementation
       )
     end
 
+    def s3_resource
+      Aws::S3::Resource.new(client: s3_client)
+    end
+
+    def successful_upload?(result)
+      return false if result.nil?
+
+      if result.respond_to?(:context)
+        return result.context.http_response.status_code.between?(200, 299) && result.etag&.length&.positive?
+      end
+
+      return result.exists? if result.respond_to?(:exists?)
+
+      false
+    end
+
+    def verify_upload(object_key, bucket_name, expected_size)
+      head = s3_client.head_object(bucket: bucket_name, key: object_key)
+      head.context.http_response.status_code.between?(200, 299) && head.content_length.to_i == expected_size.to_i
+    rescue Aws::S3::Errors::NotFound
+      false
+    end
+
     def key
-      Time.now.strftime('%F-%T-backup')
+      Time.now.strftime('%F-%T-backup').gsub(':', '')
     end
   end
 end
