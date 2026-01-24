@@ -1,54 +1,78 @@
-name: Deploy to Prod
+name: Deploy to Prod (BAS)
 
 on:
   release:
     types: [created]
 
+concurrency:
+  group: deploy-prod-legacy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy-prod:
-    name: Deploy Prod
+    name: Deploy Prod (BAS)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get this repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install rsync
-        run: sudo apt-get install -y rsync
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y rsync zip unzip
 
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.3
+          bundler-cache: true
 
-      - name: Create env file
-        run: touch .env
-
-      - name: Add Secrets into yml file
+      - name: Create .env from secrets
         run: |
-          echo ${{secrets.SECRETS_B64}} | base64 --decode > .env
+          echo "${{ secrets.SECRETS_B64 }}" | base64 --decode > .env
 
-      - name: compress project
-        run: zip -r bas_scripts.zip .
+      - name: Compress project
+        run: |
+          zip -r bas_scripts.zip . \
+            -x ".git/*" \
+            -x "bas_scripts.zip"
 
-      - name: Transfer files to Droplet using rsync
+      - name: Transfer artifact to Droplet using rsync
         uses: burnett01/rsync-deployments@5.0
         with:
           switches: -avzr --delete
           path: bas_scripts.zip
-          remote_path: /root/app
+          remote_path: /root/releases/bas/incoming/
           remote_host: ${{ secrets.DO_DROPLET_IP }}
           remote_user: root
           remote_key: ${{ secrets.DO_SSH_KEY }}
+          remote_port: 22
 
-      - name: Deploy to DigitalOcean Droplet
+      - name: Deploy on DigitalOcean Droplet
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DO_DROPLET_IP }}
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
+          port: 22
           script: |
-            cd /root/app
-            unzip -o bas_scripts.zip
-            docker-compose stop
-            docker-compose down
-            docker-compose up -d bas_cronjobs bas_webserver
+            set -euo pipefail
+
+            APP_DIR="/root/app"
+            RELEASES_DIR="/root/releases/bas"
+            INCOMING_ZIP="${RELEASES_DIR}/incoming/bas_scripts.zip"
+
+            mkdir -p "${APP_DIR}" "${RELEASES_DIR}/incoming"
+            test -f "${INCOMING_ZIP}"
+
+            cd "${APP_DIR}"
+
+            shopt -s extglob dotglob nullglob
+            rm -rf -- !(*.pem|Dockerfile.web|.env)
+            shopt -u extglob dotglob nullglob
+
+            unzip -o "${INCOMING_ZIP}" -d "${APP_DIR}"
+
+            docker compose -p bas down --remove-orphans || true
+            docker compose -p bas up -d --build bas_cronjobs bas_webserver
+
+            rm -f "${INCOMING_ZIP}"

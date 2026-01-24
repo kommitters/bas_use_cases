@@ -1,76 +1,77 @@
-name: CI
+name: Integration Tests and Deploy to Staging (BAS)
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
-    env:
-      BUNDLE_GITHUB__COM: "${{ secrets.REPO_GITHUB_TOKEN }}:x-oauth-basic"
     name: Tests
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_GITHUB__COM: "${{ secrets.REPO_GITHUB_TOKEN }}:x-oauth-basic"
 
     steps:
-      - name: Get this repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.3
-
-      - name: Install Dependencies
-        run: |
-          gem install bundler
-          gem install rubocop
-          gem install rspec
-          bundle install
+          bundler-cache: true
 
       - name: Run linter
-        run: rubocop
+        run: bundle exec rubocop
 
       - name: Run tests
         run: bundle exec rspec
 
   deploy-staging:
-    if: github.ref == 'refs/heads/main' # Only run deploy on pushes to main
-    needs: tests # Only run deploy if test succeeds
-    name: Deploy Staging
+    name: Deploy Staging (BAS)
     runs-on: ubuntu-latest
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Get this repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install rsync
-        run: sudo apt-get install -y rsync
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y rsync zip unzip
 
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.3
+          bundler-cache: true
 
-      - name: Create env file
-        run: touch .env
-
-      - name: Add Secrets into yml file
+      - name: Add Secrets into env file
         run: |
-          echo ${{secrets.STG_SECRETS_B64}} | base64 --decode > .env
+          echo "${{ secrets.STG_SECRETS_B64 }}" | base64 --decode > .env
 
-      - name: compress project
-        run: zip -r bas_scripts.zip .
+      - name: Compress project
+        run: |
+          zip -r bas_scripts.zip . \
+            -x ".git/*" \
+            -x "bas_scripts.zip"
 
       - name: Transfer files to Droplet using rsync
         uses: burnett01/rsync-deployments@5.0
         with:
           switches: -avzr --delete
           path: bas_scripts.zip
-          remote_path: /root/app
+          remote_path: /root/releases/
           remote_host: ${{ secrets.DO_DROPLET_IP_STG }}
           remote_user: root
           remote_key: ${{ secrets.DO_SSH_KEY_STG }}
+          remote_port: 2222
 
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
@@ -78,11 +79,30 @@ jobs:
           host: ${{ secrets.DO_DROPLET_IP_STG }}
           username: root
           key: ${{ secrets.DO_SSH_KEY_STG }}
+          port: 2222
           script: |
-            docker stop $(docker ps -q)
-            docker-compose -f /root/bas_db/docker-compose.yml up -d
+            set -euo pipefail
+
+            mkdir -p /root/app /root/releases
+            test -f /root/releases/bas_scripts.zip
+
+            docker network create app_net || true
+            docker compose -p bas_db -f /root/bas_db/docker-compose.yml up -d
+
             cd /root/app
-            unzip -o bas_scripts.zip
-            docker-compose stop
-            docker-compose down
-            docker-compose up -d bas_cronjobs bas_webserver
+            shopt -s extglob dotglob nullglob
+            rm -rf -- !(*.pem|Dockerfile.web|.env)
+            shopt -u extglob dotglob nullglob
+
+            unzip -o /root/releases/bas_scripts.zip -d /root/app
+
+            docker rm -f bas_webserver bas_cronjobs 2>/dev/null || true
+            docker rm -f warehouse_webserver warehouse_cronjobs 2>/dev/null || true
+            docker rm -f app_bas_webserver app_bas_cronjobs 2>/dev/null || true
+
+            docker compose -p bas down --remove-orphans || true
+            docker compose -p warehouse down --remove-orphans || true
+
+            docker compose -p bas up -d --build bas_cronjobs bas_webserver
+
+            rm -f /root/releases/bas_scripts.zip
