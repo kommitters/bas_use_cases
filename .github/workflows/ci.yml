@@ -100,9 +100,11 @@ jobs:
             docker rm -f warehouse_webserver warehouse_cronjobs 2>/dev/null || true
             docker rm -f app_bas_webserver app_bas_cronjobs 2>/dev/null || true
 
-            docker compose -p bas down --remove-orphans || true
-            docker compose -p warehouse down --remove-orphans || true
+            docker compose -p bas down --remove-orphans --timeout 10 || true
+            docker compose -p warehouse down --remove-orphans --timeout 10 || true
 
-            docker compose -p bas up -d --build bas_cronjobs bas_webserver
+            docker compose -p bas build --progress=plain
+
+            docker compose -p bas up -d bas_cronjobs bas_webserver
 
             rm -f /root/releases/bas_scripts.zip

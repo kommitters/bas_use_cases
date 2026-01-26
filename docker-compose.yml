@@ -9,6 +9,7 @@ volumes:
       device: .
 
 x-common: &default-build
+  image: bas_app:latest
   build:
     context: .
 
@@ -37,7 +38,7 @@ services:
   bas_webserver:
     container_name: bas_webserver
     ports:
-      - 4567:4567
+      - "4567:4567"
     restart: always
     <<: *default-build
     volumes:
