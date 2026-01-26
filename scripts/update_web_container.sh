@@ -1,3 +1,7 @@
-# INITIALIZE WEBHOOKS
+#!/usr/bin/env bash
+set -euo pipefail
+
 echo "INITIALIZE WEBHOOKS"
-RACK_ENV=production ruby src/use_cases_execution/use_cases_webserver/app.rb
+export RACK_ENV="${APP_ENV:-staging}"
+
+exec bundle exec ruby src/use_cases_execution/use_cases_webserver/app.rb

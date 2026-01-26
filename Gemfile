@@ -47,6 +47,9 @@ gem 'googleauth'
 
 gem 'google-apis-chat_v1'
 
+gem 'puma'
+gem 'rackup'
+
 group :test do
   gem 'rack-test'
   gem 'sqlite3'
