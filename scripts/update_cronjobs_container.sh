@@ -1,8 +1,9 @@
-# UPDATE SHARED STORAGE DATABASE
+#!/usr/bin/env bash
+set -euo pipefail
+
 echo "UPDATE SHARED STORAGE DATABASE"
-rake -f /app/scripts/update_database.rb shared_storage:migrate
+bundle exec rake -f /app/scripts/update_database.rb shared_storage:migrate
 echo "SHARED STORAGE DATABASE UPDATED"
 
-# INITIALIZE CRONJOBS
 echo "INITIALIZE CRONJOBS"
-ruby /app/scripts/execute_orchestrator.rb
+exec bundle exec ruby /app/scripts/execute_orchestrator.rb

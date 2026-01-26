@@ -183,6 +183,7 @@ GEM
     net-smtp (0.4.0.1)
       net-protocol
     netrc (0.11.0)
+    nio4r (2.7.5)
     oauth (1.1.0)
       oauth-tty (~> 1.0, >= 1.0.1)
       snaky_hash (~> 2.0)
@@ -205,6 +206,8 @@ GEM
     pg (1.5.9-x64-mingw-ucrt)
     prism (1.4.0)
     public_suffix (6.0.2)
+    puma (7.2.0)
+      nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.1.16)
     rack-protection (4.1.1)
@@ -216,6 +219,8 @@ GEM
       rack (>= 3.0.0)
     rack-test (2.2.0)
       rack (>= 1.3)
+    rackup (2.3.1)
+      rack (>= 3)
     rainbow (3.1.1)
     rake (13.1.0)
     regexp_parser (2.10.0)
@@ -327,7 +332,9 @@ DEPENDENCIES
   net-smtp (~> 0.4.0.1)
   octokit (~> 8.1.0)
   openssl (~> 3.2)
+  puma
   rack-test
+  rackup
   rake (~> 13.1.0)
   rspec
   rubocop
