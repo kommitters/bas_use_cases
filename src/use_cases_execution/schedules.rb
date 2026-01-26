@@ -124,13 +124,6 @@ module UseCasesExecution
       { path: "#{__dir__}/ospo_maintenance/projects/tickspot_js.rb", time: ['18:17'] }
     ].freeze
 
-    EXPIRED_PROJECTS_SCHEDULES = [
-      { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
-      { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
-      { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] },
-      { path: "#{__dir__}/expired_projects/garbage_collector.rb", time: ['00:00'] }
-    ].freeze
-
     GITHUB_NOTION_ISSUES_SYNC_SCHEDULES = [
       { path: "#{__dir__}/github_notion_issues_sync/format_github_issues.rb",
         time: ['08:10', '11:10', '14:10', '17:10', '20:10'] },
@@ -139,37 +132,11 @@ module UseCasesExecution
       { path: "#{__dir__}/github_notion_issues_sync/garbage_collector.rb", time: ['21:05'] }
     ].freeze
 
-    WAREHOUSE_SYNC_SCHEDULES = [
-      { path: "#{__dir__}/warehouse/worklogs/fetch_work_logs.rb", time: ['05:00'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_okrs.rb", time: ['05:35'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_krs.rb", time: ['05:40'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_milestones.rb", time: ['05:45'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_organizational_units.rb", time: ['05:50'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_processes.rb", time: ['05:55'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_tasks.rb", time: ['06:00'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes.rb", time: ['06:05'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_weekly_scopes_tasks.rb", time: ['06:10'] },
-      { path: "#{__dir__}/warehouse/apex/fetch_people.rb", time: ['06:15'] },
-
-      # GitHub Kommit-Co Schedules
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_repositories.rb", interval: 7_200_000 },
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_issues.rb", interval: 300_000 },
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_releases.rb", interval: 600_000 },
-      { path: "#{__dir__}/warehouse/github/kommit_co/fetch_pull_requests.rb", interval: 900_000 },
-
-      # GitHub Kommitters Schedules
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_repositories.rb", interval: 7_200_000 },
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_issues.rb", interval: 1_200_000 },
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_releases.rb", interval: 1_500_000 },
-      { path: "#{__dir__}/warehouse/github/kommitters/fetch_pull_requests.rb", interval: 1_800_000 },
-
-      { path: "#{__dir__}/warehouse/warehouse_ingester.rb", interval: 1_800_000 } # 30 minutes
-    ].freeze
-
-    OPERATON_WAREHOUSE_SYNC_SCHEDULES = [
-      { path: "#{__dir__}/warehouse/operaton/fetch_processes.rb", interval: 7_200_000 },
-      # { path: "#{__dir__}/warehouse/operaton/fetch_activities.rb", interval: 3_600_000 },
-      { path: "#{__dir__}/warehouse/operaton/fetch_incidents.rb", interval: 7_200_000 }
-    ].freeze
+    # EXPIRED_PROJECTS_SCHEDULES = [
+    #   { path: "#{__dir__}/expired_projects/fetch_expired_projects.rb", time: ['12:40'] },
+    #   { path: "#{__dir__}/expired_projects/format_expired_projects.rb", time: ['12:50'] },
+    #   { path: "#{__dir__}/expired_projects/notify_expired_projects_in_workspace.rb", time: ['13:00'] },
+    #   { path: "#{__dir__}/expired_projects/garbage_collector.rb", time: ['00:00'] }
+    # ].freeze
   end
 end
