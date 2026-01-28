@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.0 (28.01.26)
+- [fix: change execution of scripts, and installs of gems.](https://github.com/kommitters/bas_use_cases/pull/287)
+- [Simplify staging deploy by using a single Docker image and removing build steps](https://github.com/kommitters/bas_use_cases/pull/285)
+- [feat: Remove warehouse-related web server routes](https://github.com/kommitters/bas_use_cases/pull/283)
+- [Cleanup BAS Use Cases by removing Warehouse implementations and updating pipelines ](https://github.com/kommitters/bas_use_cases/pull/282)
+- [Change variable to use raw value on interval for GitHub schedules.](https://github.com/kommitters/bas_use_cases/pull/280)
+- [Increase the docker memory limit](https://github.com/kommitters/bas_use_cases/pull/278)
+- [Change periodicity for GitHub Implementations.](https://github.com/kommitters/bas_use_cases/pull/277)
+- [Resolve problems with Cron Jobs in Staging](https://github.com/kommitters/bas_use_cases/pull/276)
+
+
 ## 1.14.2 (12.12.25)
 - [Optimize and Fix GitHub Data Fetching Bots](https://github.com/kommitters/bas_use_cases/pull/272)
 - [Update GitHub bot implementations](https://github.com/kommitters/bas_use_cases/pull/270)
