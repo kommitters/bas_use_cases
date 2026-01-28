@@ -10,7 +10,6 @@
 - [Change periodicity for GitHub Implementations.](https://github.com/kommitters/bas_use_cases/pull/277)
 - [Resolve problems with Cron Jobs in Staging](https://github.com/kommitters/bas_use_cases/pull/276)
 
-
 ## 1.14.2 (12.12.25)
 - [Optimize and Fix GitHub Data Fetching Bots](https://github.com/kommitters/bas_use_cases/pull/272)
 - [Update GitHub bot implementations](https://github.com/kommitters/bas_use_cases/pull/270)
