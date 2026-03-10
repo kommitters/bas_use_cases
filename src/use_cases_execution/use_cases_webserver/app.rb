@@ -12,8 +12,8 @@ require_relative '../birthday_next_week/fetch_next_week_birthday_from_google_for
 # for all available endpoints.
 # WebServer is the main Sinatra application class.
 class WebServer < Sinatra::Base
-  use Routes::Birthdays
-  use Routes::NextWeekBirthdays
+  # use Routes::Birthdays
+  # use Routes::NextWeekBirthdays
 
   get('/') { 'OK' }
 end
