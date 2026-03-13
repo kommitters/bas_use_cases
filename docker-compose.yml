@@ -34,26 +34,3 @@ services:
         loki-timeout: "10s"
         keep-file: "true"
         mode: "non-blocking"
-
-  bas_webserver:
-    container_name: bas_webserver
-    ports:
-      - "4567:4567"
-    restart: always
-    <<: *default-build
-    volumes:
-      - cronjobs:/app
-    command: ["bash", "/app/scripts/update_web_container.sh"]
-    deploy:
-      resources:
-        limits:
-          memory: 100M
-    logging:
-      driver: loki
-      options:
-        loki-url: "${GRAFANA_LOKI_FULL_URL}"
-        loki-retries: "10"
-        loki-max-backoff: "8s"
-        loki-timeout: "10s"
-        keep-file: "true"
-        mode: "non-blocking"
