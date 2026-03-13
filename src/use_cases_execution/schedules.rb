@@ -25,12 +25,12 @@ module UseCasesExecution
     #   { path: "#{__dir__}/birthday_next_week/garbage_collector.rb", time: ['00:00'] }
     # ].freeze
 
-    DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
-      { path: "#{__dir__}/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb", interval: 10_000 },
-      { path: "#{__dir__}/digital_ocean_bill_alert/format_do_bill_alert.rb", interval: 10_000 },
-      { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_workspace.rb", interval: 10_000 },
-      { path: "#{__dir__}/digital_ocean_bill_alert/garbage_collector.rb", time: ['00:00'] }
-    ].freeze
+    # DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
+    #   { path: "#{__dir__}/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb", interval: 10_000 },
+    #   { path: "#{__dir__}/digital_ocean_bill_alert/format_do_bill_alert.rb", interval: 10_000 },
+    #   { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_workspace.rb", interval: 10_000 },
+    #   { path: "#{__dir__}/digital_ocean_bill_alert/garbage_collector.rb", time: ['00:00'] }
+    # ].freeze
 
     # PTO_SCHEDULES = [
     #   { path: "#{__dir__}/pto/fetch_pto_from_apex.rb", time: ['13:20'] },
