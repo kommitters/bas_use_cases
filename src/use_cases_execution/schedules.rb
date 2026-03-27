@@ -13,37 +13,37 @@ module UseCasesExecution
       constants.map { |const| const_get(const) }.flatten
     end
 
-    # BIRTHDAY_SCHEDULES = [
-    #   { path: "#{__dir__}/birthday/format_birthday_workspace.rb", time: ['12:55'] },
-    #   { path: "#{__dir__}/birthday/notify_birthday_in_workspace.rb", time: ['13:05'] },
-    #   { path: "#{__dir__}/birthday/garbage_collector.rb", time: ['00:00'] }
-    # ].freeze
+    #BIRTHDAY_SCHEDULES = [
+    #  { path: "#{__dir__}/birthday/format_birthday_workspace.rb", time: ['12:55'] },
+    #  { path: "#{__dir__}/birthday/notify_birthday_in_workspace.rb", time: ['13:05'] },
+    #  { path: "#{__dir__}/birthday/garbage_collector.rb", time: ['00:00'] }
+    #].freeze
 
-    # BIRTHDAY_NEXT_WEEK_SCHEDULES = [
-    #   { path: "#{__dir__}/birthday_next_week/format_next_week_birthday_workspace.rb", time: ['12:55'] },
-    #   { path: "#{__dir__}/birthday_next_week/notify_next_week_birthday_in_workspace.rb", time: ['13:05'] },
-    #   { path: "#{__dir__}/birthday_next_week/garbage_collector.rb", time: ['00:00'] }
-    # ].freeze
+    #BIRTHDAY_NEXT_WEEK_SCHEDULES = [
+    #  { path: "#{__dir__}/birthday_next_week/format_next_week_birthday_workspace.rb", time: ['12:55'] },
+    #  { path: "#{__dir__}/birthday_next_week/notify_next_week_birthday_in_workspace.rb", time: ['13:05'] },
+    #  { path: "#{__dir__}/birthday_next_week/garbage_collector.rb", time: ['00:00'] }
+    #].freeze
 
-    # DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
-    #   { path: "#{__dir__}/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb", interval: 10_000 },
-    #   { path: "#{__dir__}/digital_ocean_bill_alert/format_do_bill_alert.rb", interval: 10_000 },
-    #   { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_workspace.rb", interval: 10_000 },
-    #   { path: "#{__dir__}/digital_ocean_bill_alert/garbage_collector.rb", time: ['00:00'] }
-    # ].freeze
+    #DIGITAL_OCEAN_BILL_ALERT_SCHEDULES = [
+    #  { path: "#{__dir__}/digital_ocean_bill_alert/fetch_billing_from_digital_ocean.rb", interval: 10_000 },
+    #  { path: "#{__dir__}/digital_ocean_bill_alert/format_do_bill_alert.rb", interval: 10_000 },
+    #  { path: "#{__dir__}/digital_ocean_bill_alert/notify_do_bill_alert_workspace.rb", interval: 10_000 },
+    #  { path: "#{__dir__}/digital_ocean_bill_alert/garbage_collector.rb", time: ['00:00'] }
+    #].freeze
 
-    # PTO_SCHEDULES = [
-    #   { path: "#{__dir__}/pto/fetch_pto_from_apex.rb", time: ['13:20'] },
-    #   { path: "#{__dir__}/pto/humanize_pto_workspace.rb", time: ['13:25'] },
-    #   { path: "#{__dir__}/pto/notify_pto_in_workspace.rb", time: ['13:35'] },
-    #   { path: "#{__dir__}/pto/garbage_collector.rb", time: ['00:00'] }
-    # ].freeze
+    #PTO_SCHEDULES = [
+    #  { path: "#{__dir__}/pto/fetch_pto_from_apex.rb", time: ['13:20'] },
+    #  { path: "#{__dir__}/pto/humanize_pto_workspace.rb", time: ['13:25'] },
+    #  { path: "#{__dir__}/pto/notify_pto_in_workspace.rb", time: ['13:35'] },
+    #  { path: "#{__dir__}/pto/garbage_collector.rb", time: ['00:00'] }
+    #].freeze
 
-    # PTO_NEXT_WEEK_SCHEDULES = [
-    #   { path: "#{__dir__}/pto_next_week/humanize_next_week_pto_workspace.rb", time: ['12:55'], day: ['Thursday'] },
-    #   { path: "#{__dir__}/pto_next_week/notify_pto_next_week_in_workspace.rb", time: ['13:05'], day: ['Thursday'] },
-    #   { path: "#{__dir__}/pto_next_week/garbage_collector.rb", time: ['23:00'], day: ['Thursday'] }
-    # ].freeze
+    #PTO_NEXT_WEEK_SCHEDULES = [
+    #  { path: "#{__dir__}/pto_next_week/humanize_next_week_pto_workspace.rb", time: ['12:55'], day: ['Thursday'] },
+    #  { path: "#{__dir__}/pto_next_week/notify_pto_next_week_in_workspace.rb", time: ['13:05'], day: ['Thursday'] },
+    #  { path: "#{__dir__}/pto_next_week/garbage_collector.rb", time: ['23:00'], day: ['Thursday'] }
+    #].freeze
 
     SUPPORT_EMAIL_SCHEDULES = [
       { path: "#{__dir__}/support_email/fetch_emails_from_imap.rb", time: ['12:40', '14:40', '18:40', '20:40'] },
@@ -67,11 +67,11 @@ module UseCasesExecution
       { path: "#{__dir__}/save_backup/delete_older_backup_in_r2.rb", time: ['00:20'] }
     ].freeze
 
-    MISSING_WORK_LOGS_SCHEDULES = [
-      { path: "#{__dir__}/missing_work_logs/fetch_people_with_missing_logs.rb", time: ['13:20'] },
-      { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", interval: 300_000 },
-      { path: "#{__dir__}/missing_work_logs/garbage_collector.rb", time: ['14:00'] }
-    ].freeze
+    #MISSING_WORK_LOGS_SCHEDULES = [
+    #  { path: "#{__dir__}/missing_work_logs/fetch_people_with_missing_logs.rb", time: ['13:20'] },
+    #  { path: "#{__dir__}/missing_work_logs/notify_missing_work_logs.rb", interval: 300_000 },
+    #  { path: "#{__dir__}/missing_work_logs/garbage_collector.rb", time: ['14:00'] }
+    #].freeze
 
     APOLLO_SYNC_SCHEDULE = [
       { path: "#{__dir__}/networks_sync/fetch_new_networks_from_apollo.rb", day: 'Sunday', time: ['10:00'] },
