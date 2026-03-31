@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 (31.03.26)
+- [fix: disable schedules in schedules.rb](https://github.com/kommitters/bas_use_cases/pull/292)
+- [deprecate: remove pto and birthday from schedules and webserver](https://github.com/kommitters/bas_use_cases/pull/291)
+- [chore: disable schedules and container startup](https://github.com/kommitters/bas_use_cases/pull/293)
+
 ## 2.0.0 (28.01.26)
 - [fix: change execution of scripts, and installs of gems.](https://github.com/kommitters/bas_use_cases/pull/287)
 - [Simplify staging deploy by using a single Docker image and removing build steps](https://github.com/kommitters/bas_use_cases/pull/285)
