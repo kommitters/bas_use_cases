@@ -73,6 +73,6 @@ jobs:
             unzip -o "${INCOMING_ZIP}" -d "${APP_DIR}"
 
             docker compose -p bas down --remove-orphans || true
-            docker compose -p bas up -d --build bas_cronjobs bas_webserver
+            # docker compose -p bas up -d --build bas_cronjobs bas_webserver
 
             rm -f "${INCOMING_ZIP}"
